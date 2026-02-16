@@ -13,15 +13,15 @@ export default function getColumns(): ColumnDef<CompanyWithCustomers>[] {
     > = {
         perdagangan: {
             label: 'Perdagangan',
-            className: 'bg-blue-600 text-white',
+            className: 'bg-blue-500 text-white',
         },
         fnb: {
             label: 'Food & Beverage',
-            className: 'bg-rose-600 text-white',
+            className: 'bg-rose-500 text-white',
         },
         jasa: {
             label: 'Jasa',
-            className: 'bg-emerald-600 text-white',
+            className: 'bg-emerald-500 text-white',
         },
         manufaktur: {
             label: 'Manufaktur',
@@ -29,12 +29,12 @@ export default function getColumns(): ColumnDef<CompanyWithCustomers>[] {
         },
         konstruksi: {
             label: 'Konstruksi',
-            className: 'bg-orange-600 text-white',
+            className: 'bg-orange-500 text-white',
         },
 
         pertanian: {
             label: 'Pertanian',
-            className: 'bg-lime-600 text-white',
+            className: 'bg-lime-500 text-white',
         },
         perkebunan: {
             label: 'Perkebunan',
@@ -42,54 +42,54 @@ export default function getColumns(): ColumnDef<CompanyWithCustomers>[] {
         },
         peternakan: {
             label: 'Peternakan',
-            className: 'bg-yellow-600 text-slate-900',
+            className: 'bg-yellow-500 text-slate-900',
         },
         perikanan: {
             label: 'Perikanan',
-            className: 'bg-cyan-600 text-white',
+            className: 'bg-cyan-500 text-white',
         },
 
         transportasi: {
             label: 'Transportasi & Logistik',
-            className: 'bg-indigo-600 text-white',
+            className: 'bg-indigo-500 text-white',
         },
         pariwisata: {
             label: 'Pariwisata',
-            className: 'bg-pink-600 text-white',
+            className: 'bg-pink-500 text-white',
         },
         kesehatan: {
             label: 'Kesehatan',
-            className: 'bg-red-600 text-white',
+            className: 'bg-red-500 text-white',
         },
         pendidikan: {
             label: 'Pendidikan',
-            className: 'bg-violet-600 text-white',
+            className: 'bg-violet-500 text-white',
         },
 
         teknologi: {
             label: 'Teknologi Informasi',
-            className: 'bg-sky-600 text-white',
+            className: 'bg-sky-500 text-white',
         },
         media: {
             label: 'Media & Kreatif',
-            className: 'bg-fuchsia-600 text-white',
+            className: 'bg-fuchsia-500 text-white',
         },
         keuangan: {
             label: 'Keuangan',
-            className: 'bg-amber-600 text-slate-900',
+            className: 'bg-amber-500 text-slate-900',
         },
         properti: {
             label: 'Properti & Real Estate',
-            className: 'bg-stone-600 text-white',
+            className: 'bg-stone-500 text-white',
         },
 
         industri_kreatif: {
             label: 'Industri Kreatif',
-            className: 'bg-purple-600 text-white',
+            className: 'bg-purple-500 text-white',
         },
         umkm: {
             label: 'UMKM',
-            className: 'bg-teal-600 text-white',
+            className: 'bg-teal-500 text-white',
         },
 
         lainnya: {
@@ -107,39 +107,39 @@ export default function getColumns(): ColumnDef<CompanyWithCustomers>[] {
     > = {
         pt: {
             label: 'Perseroan Terbatas (PT)',
-            className: 'bg-indigo-600 text-white',
+            className: 'bg-indigo-500 text-white',
         },
         cv: {
             label: 'Commanditaire Vennootschap (CV)',
-            className: 'bg-sky-600 text-white',
+            className: 'bg-sky-500 text-white',
         },
         firma: {
             label: 'Firma',
-            className: 'bg-emerald-600 text-white',
+            className: 'bg-emerald-500 text-white',
         },
         koperasi: {
             label: 'Koperasi',
-            className: 'bg-lime-600 text-slate-900',
+            className: 'bg-lime-500 text-slate-900',
         },
         yayasan: {
             label: 'Yayasan',
-            className: 'bg-violet-600 text-white',
+            className: 'bg-violet-500 text-white',
         },
         perorangan: {
             label: 'Usaha Perorangan',
-            className: 'bg-amber-600 text-slate-900',
+            className: 'bg-amber-500 text-slate-900',
         },
         umkm: {
             label: 'UMKM',
-            className: 'bg-teal-600 text-white',
+            className: 'bg-teal-500 text-white',
         },
         bumn: {
             label: 'BUMN',
-            className: 'bg-red-600 text-white',
+            className: 'bg-red-500 text-white',
         },
         bumd: {
             label: 'BUMD',
-            className: 'bg-rose-600 text-white',
+            className: 'bg-rose-500 text-white',
         },
         lainnya: {
             label: 'Lainnya',
@@ -160,7 +160,7 @@ export default function getColumns(): ColumnDef<CompanyWithCustomers>[] {
                 const { phone, email, address, city, province, postal_code } = row.original;
 
                 return (
-                    <div className="grid w-100 grid-cols-[90px_1fr] gap-x-2 gap-y-2 text-sm">
+                    <div className="grid w-full grid-cols-[90px_1fr] items-center gap-x-2 gap-y-2 text-sm">
                         <span className="col-span-2 text-xs font-bold text-muted-foreground">Kontak</span>
 
                         <span className="text-xs font-medium text-muted-foreground">No Telepon</span>

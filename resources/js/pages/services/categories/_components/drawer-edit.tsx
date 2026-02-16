@@ -42,6 +42,7 @@ export function DrawerEdit({ categoryId, open, onOpenChange }: DrawerEditProps) 
                     toast.error('Gagal', {
                         description: 'Terjadi kesalahan saat mengambil data kategori layanan',
                     });
+
                     onOpenChange(false);
                 })
                 .finally(() => {
@@ -52,10 +53,27 @@ export function DrawerEdit({ categoryId, open, onOpenChange }: DrawerEditProps) 
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        const id = toast.loading('Memproses...', {
+            description: 'Kategori layanan sedang diperbarui.',
+        });
+
         put(categories.update(categoryId).url, {
             preserveScroll: true,
             onSuccess: () => {
+                toast.success('Berhasil', {
+                    description: 'Kategori layanan berhasil diperbarui.',
+                });
+
                 onOpenChange(false);
+            },
+            onError: () => {
+                toast.error('Gagal', {
+                    description: 'Kategori layanan gagal diperbarui. Silakan periksa kembali data kategori layanan yang diisi.',
+                });
+            },
+            onFinish: () => {
+                toast.dismiss(id);
             },
         });
     };
@@ -97,7 +115,7 @@ export function DrawerEdit({ categoryId, open, onOpenChange }: DrawerEditProps) 
                                     )}
                                 </Button>
                                 <DrawerClose asChild>
-                                    <Button variant="outline" type="button">
+                                    <Button variant="secondary" type="button">
                                         Batal
                                     </Button>
                                 </DrawerClose>
@@ -130,7 +148,7 @@ export function DrawerEdit({ categoryId, open, onOpenChange }: DrawerEditProps) 
                                     Simpan Perubahan
                                 </Button>
                                 <DrawerClose asChild>
-                                    <Button variant="outline" type="button">
+                                    <Button variant="secondary" type="button">
                                         Batal
                                     </Button>
                                 </DrawerClose>

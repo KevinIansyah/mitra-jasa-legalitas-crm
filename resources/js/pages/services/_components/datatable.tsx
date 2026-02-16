@@ -80,9 +80,9 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
 
                         <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
                             <SheetTrigger asChild>
-                                <Button variant="outline" className="relative lg:w-30">
+                                <Button variant="secondary" className="relative gap-1.5 lg:w-30">
+                                    <Filter className="size-3.75" />
                                     <span className="hidden lg:inline">Filter</span>
-                                    <Filter className="size-3.5" />
                                     {activeFiltersCount > 0 && (
                                         <Badge className="ml-2 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-background">
                                             {activeFiltersCount}
@@ -97,21 +97,6 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
                                 </SheetHeader>
 
                                 <div className="mt-6 space-y-4 px-4">
-                                    <div className="space-y-2">
-                                        <Label>Status</Label>
-                                        <Select value={filters.status || ''} onValueChange={(value) => updateFilter('status', value || undefined)}>
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Pilih status" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    <SelectItem value="active">Active</SelectItem>
-                                                    <SelectItem value="inactive">Inactive</SelectItem>
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-
                                     <div className="space-y-2">
                                         <Label>Kategori</Label>
                                         <Select value={filters.category || ''} onValueChange={(value) => updateFilter('category', value || undefined)}>
@@ -130,6 +115,21 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
                                         </Select>
                                     </div>
 
+                                    <div className="space-y-2">
+                                        <Label>Status</Label>
+                                        <Select value={filters.status || ''} onValueChange={(value) => updateFilter('status', value || undefined)}>
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Pilih status" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    <SelectItem value="active">Active</SelectItem>
+                                                    <SelectItem value="inactive">Inactive</SelectItem>
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+
                                     {activeFiltersCount > 0 && (
                                         <Button className="w-full" onClick={resetFilters}>
                                             Reset Filter
@@ -143,7 +143,7 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
                     <div className="flex w-full gap-2 md:w-auto">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" className="flex-1 md:w-30">
+                                <Button variant="outline" className="flex-1 gap-1.5 md:w-30">
                                     Kolom <ChevronDown className="size-4" />
                                 </Button>
                             </DropdownMenuTrigger>
@@ -160,10 +160,10 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
                         </DropdownMenu>
 
                         <HasPermission permission="create-services">
-                            <Button className="flex-1 md:w-30" asChild>
+                            <Button className="flex-1 gap-1.5 md:w-30" asChild>
                                 <Link href={services.create().url}>
-                                    Tambah
                                     <Plus />
+                                    Tambah
                                 </Link>
                             </Button>
                         </HasPermission>
@@ -181,14 +181,6 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
                                 </Button>
                             </Badge>
                         )}
-                        {filters.status && (
-                            <Badge variant="secondary" className="gap-2">
-                                Status: {filters.status}
-                                <Button variant="ghost" size="sm" className="h-6 w-6 text-xs" onClick={() => updateFilter('status', undefined)}>
-                                    <X className="size-3" />
-                                </Button>
-                            </Badge>
-                        )}
                         {filters.category && selectedCategory && (
                             <Badge variant="secondary" className="flex items-center gap-2">
                                 Kategori: {selectedCategory.name}
@@ -197,7 +189,14 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
                                 </Button>
                             </Badge>
                         )}
-
+                        {filters.status && (
+                            <Badge variant="secondary" className="gap-2">
+                                Status: {filters.status}
+                                <Button variant="ghost" size="sm" className="h-6 w-6 text-xs" onClick={() => updateFilter('status', undefined)}>
+                                    <X className="size-3" />
+                                </Button>
+                            </Badge>
+                        )}
                         <Button variant="ghost" size="sm" className="h-7.5 text-xs" onClick={resetFilters}>
                             Reset semua
                         </Button>
@@ -268,19 +267,19 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
                     </div>
 
                     <div className="ml-auto flex items-center gap-2 lg:ml-0">
-                        <Button variant="outline" className="hidden h-8 w-8 p-0 lg:flex" onClick={() => goToPage(0)} disabled={!canPreviousPage}>
+                        <Button variant="secondary" className="hidden h-8 w-8 p-0 lg:flex" onClick={() => goToPage(0)} disabled={!canPreviousPage}>
                             <span className="sr-only">Go to first page</span>
                             <ChevronsLeftIcon />
                         </Button>
-                        <Button variant="outline" className="size-8" size="sm" onClick={() => goToPage(pageIndex - 1)} disabled={!canPreviousPage}>
+                        <Button variant="secondary" className="size-8" size="sm" onClick={() => goToPage(pageIndex - 1)} disabled={!canPreviousPage}>
                             <span className="sr-only">Go to previous page</span>
                             <ChevronLeftIcon />
                         </Button>
-                        <Button variant="outline" className="size-8" size="sm" onClick={() => goToPage(pageIndex + 1)} disabled={!canNextPage}>
+                        <Button variant="secondary" className="size-8" size="sm" onClick={() => goToPage(pageIndex + 1)} disabled={!canNextPage}>
                             <span className="sr-only">Go to next page</span>
                             <ChevronRightIcon />
                         </Button>
-                        <Button variant="outline" className="hidden size-8 lg:flex" size="sm" onClick={() => goToPage(totalPages - 1)} disabled={!canNextPage}>
+                        <Button variant="secondary" className="hidden size-8 lg:flex" size="sm" onClick={() => goToPage(totalPages - 1)} disabled={!canNextPage}>
                             <span className="sr-only">Go to last page</span>
                             <ChevronsRightIcon />
                         </Button>

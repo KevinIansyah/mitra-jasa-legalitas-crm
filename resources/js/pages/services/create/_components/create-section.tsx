@@ -1,6 +1,7 @@
 import { useForm } from '@inertiajs/react';
-import { ImagePlus, Plus, Sparkles, TableOfContents, X } from 'lucide-react';
+import { ImagePlus, Plus, TableOfContents, X } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
+
 import { toast } from 'sonner';
 import Tiptap from '@/components/tiptap';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -13,13 +14,28 @@ import { Spinner } from '@/components/ui/spinner';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
+
+import {
+    deleteItemAndReindex,
+    formatSize,
+    makeFaq,
+    makeLegalBasis,
+    makePackage,
+    makeProcessStep,
+    makeRequirementCategory,
+    moveItemDown,
+    moveItemUp,
+    readImageAsDataURL,
+    validateImageFile,
+} from '@/lib/service';
 import services from '@/routes/services';
 import type { ServiceCategory } from '@/types/service';
-import { FaqCard, type LocalFaq } from './faq-card';
-import { LegalBasisCard, type LocalLegalBasis } from './legal-basis-card';
-import { PackageCard, type LocalPackage } from './package-card';
-import { ProcessStepCard, type LocalProcessStep } from './process-step-card';
-import { RequirementCard, type LocalRequirementCategory } from './requirement-card';
+
+import { FaqCard, type LocalFaq } from '../../_components/faq-card';
+import { LegalBasisCard, type LocalLegalBasis } from '../../_components/legal-basis-card';
+import { PackageCard, type LocalPackage } from '../../_components/package-card';
+import { ProcessStepCard, type LocalProcessStep } from '../../_components/process-step-card';
+import { RequirementCard, type LocalRequirementCategory } from '../../_components/requirement-card';
 
 type FormData = {
     service_category_id: number | '';
@@ -38,68 +54,6 @@ type FormData = {
     requirement_categories: LocalRequirementCategory[];
     process_steps: LocalProcessStep[];
 };
-
-const uid = () => Math.random().toString(36).slice(2, 9);
-
-const formatSize = (bytes: number) => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-};
-
-const makePackage = (sort_order: number): LocalPackage => ({
-    _key: uid(),
-    name: 'Paket Baru',
-    price: 0,
-    original_price: null,
-    duration: '7-14 hari',
-    duration_days: null,
-    short_description: null,
-    is_highlighted: false,
-    badge: null,
-    sort_order,
-    features: [],
-});
-
-const makeFaq = (sort_order: number): LocalFaq => ({
-    _key: uid(),
-    question: '',
-    answer: '',
-    sort_order,
-});
-
-const makeLegalBasis = (sort_order: number): LocalLegalBasis => ({
-    _key: uid(),
-    document_type: 'Undang-Undang (UU)',
-    document_number: '',
-    title: '',
-    issued_date: '',
-    url: '',
-    description: '',
-    sort_order,
-});
-
-const makeRequirementCategory = (sort_order: number): LocalRequirementCategory => ({
-    _key: uid(),
-    name: '',
-    description: '',
-    sort_order,
-    requirements: [],
-});
-
-const makeProcessStep = (sort_order: number): LocalProcessStep => ({
-    _key: uid(),
-    title: '',
-    description: '',
-    duration: '',
-    duration_days: null,
-    required_documents: [],
-    notes: '',
-    icon: '',
-    sort_order,
-});
-
-const MAX_IMAGE_SIZE = 1 * 1024 * 1024;
 
 type CreateSectionProps = {
     categories: ServiceCategory[];
@@ -129,27 +83,36 @@ export function CreateSection({ categories }: CreateSectionProps) {
         process_steps: [],
     });
 
-    const handleFile = (file: File | undefined) => {
-        if (!file || !file.type.startsWith('image/')) return;
-        if (file.size > MAX_IMAGE_SIZE) {
-            setImageError(`Ukuran file terlalu besar (${formatSize(file.size)}). Maksimal 1 MB.`);
+    // ============================================================
+    // IMAGE HANDLERS
+    // ============================================================
+    const handleFile = async (file: File | undefined) => {
+        const error = validateImageFile(file);
+
+        if (error) {
+            setImageError(error);
+
             if (fileInputRef.current) fileInputRef.current.value = '';
+
             return;
         }
+
         setImageError(null);
-        setData('featured_image', file);
-        const reader = new FileReader();
-        reader.onload = (e) => setImagePreview({ src: e.target?.result as string, name: file.name, size: file.size });
-        reader.readAsDataURL(file);
+        setData('featured_image', file!);
+
+        const preview = await readImageAsDataURL(file!);
+        setImagePreview({ src: preview, name: file!.name, size: file!.size });
     };
 
     const handleDragEnter = useCallback((e: React.DragEvent) => {
         e.preventDefault();
+
         setIsDragging(true);
     }, []);
 
     const handleDragLeave = useCallback((e: React.DragEvent) => {
         e.preventDefault();
+
         if (!e.currentTarget.contains(e.relatedTarget as Node)) setIsDragging(false);
     }, []);
 
@@ -157,6 +120,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
 
     const handleDrop = (e: React.DragEvent) => {
         e.preventDefault();
+
         setIsDragging(false);
         handleFile(e.dataTransfer.files[0]);
     };
@@ -165,113 +129,127 @@ export function CreateSection({ categories }: CreateSectionProps) {
         setImagePreview(null);
         setImageError(null);
         setData('featured_image', null);
+
         if (fileInputRef.current) fileInputRef.current.value = '';
     };
 
-    // Generic move handlers
+    // ============================================================
+    // GENERIC MOVE HANDLERS
+    // ============================================================
     const createMoveHandlers = <T extends { sort_order: number }>(items: T[], setItems: (items: T[]) => void) => ({
-        moveUp: (index: number) => {
-            if (index === 0) return;
-            const newItems = [...items];
-            [newItems[index - 1], newItems[index]] = [newItems[index], newItems[index - 1]];
-            const reindexed = newItems.map((item, idx) => ({ ...item, sort_order: idx }));
-            setItems(reindexed);
-        },
-        moveDown: (index: number) => {
-            if (index === items.length - 1) return;
-            const newItems = [...items];
-            [newItems[index], newItems[index + 1]] = [newItems[index + 1], newItems[index]];
-            const reindexed = newItems.map((item, idx) => ({ ...item, sort_order: idx }));
-            setItems(reindexed);
-        },
+        moveUp: (index: number) => setItems(moveItemUp(items, index)),
+        moveDown: (index: number) => setItems(moveItemDown(items, index)),
     });
 
-    // Package handlers
+    // ============================================================
+    // PACKAGE HANDLERS
+    // ============================================================
     const addPackage = () => setData('packages', [...data.packages, makePackage(data.packages.length)]);
+
     const updatePackage = (_key: string, updated: LocalPackage) =>
         setData(
             'packages',
             data.packages.map((p) => (p._key === _key ? updated : p)),
         );
-    const deletePackage = (_key: string) =>
-        setData(
-            'packages',
-            data.packages.filter((p) => p._key !== _key),
-        );
+
+    const deletePackage = (_key: string) => setData('packages', deleteItemAndReindex(data.packages, _key));
+
     const packageHandlers = createMoveHandlers(data.packages, (packages) => setData('packages', packages));
 
-    // FAQ handlers
+    // ============================================================
+    // FAQ HANDLERS
+    // ============================================================
     const addFaq = () => setData('faqs', [...data.faqs, makeFaq(data.faqs.length)]);
+
     const updateFaq = (_key: string, updated: LocalFaq) =>
         setData(
             'faqs',
             data.faqs.map((f) => (f._key === _key ? updated : f)),
         );
-    const deleteFaq = (_key: string) => {
-        const filtered = data.faqs.filter((f) => f._key !== _key);
-        const reindexed = filtered.map((f, idx) => ({ ...f, sort_order: idx }));
-        setData('faqs', reindexed);
-    };
+
+    const deleteFaq = (_key: string) => setData('faqs', deleteItemAndReindex(data.faqs, _key));
+
     const faqHandlers = createMoveHandlers(data.faqs, (faqs) => setData('faqs', faqs));
 
-    // Legal Basis handlers
+    // ============================================================
+    // LEGAL BASIS HANDLERS
+    // ============================================================
     const addLegalBasis = () => setData('legal_bases', [...data.legal_bases, makeLegalBasis(data.legal_bases.length)]);
+
     const updateLegalBasis = (_key: string, updated: LocalLegalBasis) =>
         setData(
             'legal_bases',
             data.legal_bases.map((l) => (l._key === _key ? updated : l)),
         );
-    const deleteLegalBasis = (_key: string) =>
-        setData(
-            'legal_bases',
-            data.legal_bases.filter((l) => l._key !== _key),
-        );
+
+    const deleteLegalBasis = (_key: string) => setData('legal_bases', deleteItemAndReindex(data.legal_bases, _key));
+
     const legalBasisHandlers = createMoveHandlers(data.legal_bases, (legal_bases) => setData('legal_bases', legal_bases));
 
-    // Requirement handlers
+    // ============================================================
+    // REQUIREMENT CATEGORY HANDLERS
+    // ============================================================
     const addRequirementCategory = () => setData('requirement_categories', [...data.requirement_categories, makeRequirementCategory(data.requirement_categories.length)]);
+
     const updateRequirementCategory = (_key: string, updated: LocalRequirementCategory) =>
         setData(
             'requirement_categories',
             data.requirement_categories.map((r) => (r._key === _key ? updated : r)),
         );
-    const deleteRequirementCategory = (_key: string) =>
-        setData(
-            'requirement_categories',
-            data.requirement_categories.filter((r) => r._key !== _key),
-        );
+
+    const deleteRequirementCategory = (_key: string) => setData('requirement_categories', deleteItemAndReindex(data.requirement_categories, _key));
+
     const requirementCategoryHandlers = createMoveHandlers(data.requirement_categories, (requirement_categories) => setData('requirement_categories', requirement_categories));
 
-    // Process Step handlers
+    // ============================================================
+    // PROCESS STEP HANDLERS
+    // ============================================================
     const addProcessStep = () => setData('process_steps', [...data.process_steps, makeProcessStep(data.process_steps.length)]);
+
     const updateProcessStep = (_key: string, updated: LocalProcessStep) =>
         setData(
             'process_steps',
             data.process_steps.map((p) => (p._key === _key ? updated : p)),
         );
-    const deleteProcessStep = (_key: string) =>
-        setData(
-            'process_steps',
-            data.process_steps.filter((p) => p._key !== _key),
-        );
+
+    const deleteProcessStep = (_key: string) => setData('process_steps', deleteItemAndReindex(data.process_steps, _key));
+
     const processStepHandlers = createMoveHandlers(data.process_steps, (process_steps) => setData('process_steps', process_steps));
 
-    // Submit handlers
+    // ============================================================
+    // FORM SUBMISSION HANDLERS
+    // ============================================================
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
+        const id = toast.loading('Memproses...', {
+            description: 'Layanan sedang ditambahkan.',
+        });
+
         post(services.store().url, {
             forceFormData: true,
+            onSuccess: () => {
+                toast.success('Berhasil', {
+                    description: 'Layanan berhasil ditambahkan.',
+                });
+
+                handleCancel();
+            },
             onError: () => {
                 toast.error('Gagal', {
                     description: 'Gagal menambahkan data layanan. Silakan periksa kembali data layanan yang diisi.',
                 });
             },
+            onFinish: () => {
+                toast.dismiss(id);
+            },
         });
     };
 
-    // Reset handlers
-    const handleBatal = () => {
+    // ============================================================
+    // FORM RESET HANDLERS
+    // ============================================================
+    const handleCancel = () => {
         reset();
         setImagePreview(null);
         setImageError(null);
@@ -291,9 +269,9 @@ export function CreateSection({ categories }: CreateSectionProps) {
                     <TabsTrigger value="seo">SEO</TabsTrigger>
                 </TabsList>
 
-                {/* Tab: Informasi Dasar */}
+                {/* TAB: BASIC INFORMATION */}
                 <TabsContent value="basic-information">
-                    <div className="w-full rounded-md bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+                    <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                         <div className="space-y-6">
                             <div>
                                 <h2 className="text-xl font-bold">Informasi Dasar Layanan</h2>
@@ -301,7 +279,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                             </div>
 
                             <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-                                {/* Service Name */}
+                                {/* Name */}
                                 <Field>
                                     <FieldLabel htmlFor="name">
                                         Nama <span className="text-destructive">*</span>
@@ -320,7 +298,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                 </Field>
 
                                 <Field>
-                                    {/* Service Slug */}
+                                    {/* Slug */}
                                     <FieldLabel htmlFor="slug">Slug</FieldLabel>
                                     <Input
                                         id="slug"
@@ -334,13 +312,13 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                 </Field>
 
                                 <Field>
-                                    {/* Service Category */}
+                                    {/* Category */}
                                     <FieldLabel htmlFor="category">
                                         Kategori <span className="text-destructive">*</span>
                                     </FieldLabel>
                                     <Select
-                                        required
                                         value={data.service_category_id ? String(data.service_category_id) : ''}
+                                        required
                                         onValueChange={(val) => setData('service_category_id', Number(val))}
                                     >
                                         <SelectTrigger id="category">
@@ -425,7 +403,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                                     ? 'border-destructive bg-destructive/5'
                                                     : isDragging
                                                       ? 'border-primary bg-primary/10'
-                                                      : 'border-border hover:border-primary/60 hover:bg-muted/40',
+                                                      : 'border-border hover:border-primary hover:bg-muted/40',
                                             ].join(' ')}
                                         >
                                             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
@@ -481,7 +459,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                             <Field>
                                 <FieldLabel>Pengaturan Tampilan</FieldLabel>
                                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-                                    <div className="flex items-start gap-4 rounded-lg border border-primary/60 bg-transparent p-4 dark:bg-input/30">
+                                    <div className="flex items-start gap-4 rounded-lg border border-primary bg-transparent p-4 dark:bg-input/30">
                                         <Switch id="is_published" checked={data.is_published} onCheckedChange={(val) => setData('is_published', val)} />
                                         <div className="flex-1">
                                             <Label htmlFor="is_published" className="cursor-pointer text-sm font-medium">
@@ -491,7 +469,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                         </div>
                                     </div>
 
-                                    <div className="flex items-start gap-4 rounded-lg border border-primary/60 bg-transparent p-4 dark:bg-input/30">
+                                    <div className="flex items-start gap-4 rounded-lg border border-primary bg-transparent p-4 dark:bg-input/30">
                                         <Switch id="is_featured" checked={data.is_featured} onCheckedChange={(val) => setData('is_featured', val)} />
                                         <div className="flex-1">
                                             <Label htmlFor="is_featured" className="cursor-pointer text-sm font-medium">
@@ -503,7 +481,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                         </div>
                                     </div>
 
-                                    <div className="flex items-start gap-4 rounded-lg border border-primary/60 bg-transparent p-4 dark:bg-input/30">
+                                    <div className="flex items-start gap-4 rounded-lg border border-primary bg-transparent p-4 dark:bg-input/30">
                                         <Switch id="is_popular" checked={data.is_popular} onCheckedChange={(val) => setData('is_popular', val)} />
                                         <div className="flex-1">
                                             <Label htmlFor="is_popular" className="cursor-pointer text-sm font-medium">
@@ -518,9 +496,9 @@ export function CreateSection({ categories }: CreateSectionProps) {
                     </div>
                 </TabsContent>
 
-                {/* Tab: Konten */}
+                {/* TAB: CONTENT */}
                 <TabsContent value="content">
-                    <div className="w-full rounded-md bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+                    <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                         <div className="space-y-6">
                             {/* Header */}
                             <div className="flex items-start justify-between">
@@ -528,10 +506,10 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                     <h2 className="text-xl font-bold">Konten Layanan</h2>
                                     <p className="mt-0.5 text-sm text-muted-foreground">Kelola pengantar dan konten utama layanan untuk kebutuhan informasi dan optimasi SEO.</p>
                                 </div>
-                                <Button type="button" variant="outline" size="sm" className="shrink-0 gap-1.5" disabled>
+                                {/* <Button type="button" variant="outline" size="sm" className="shrink-0 gap-1.5" disabled>
                                     <Sparkles className="size-3.5" />
                                     AI Generate
-                                </Button>
+                                </Button> */}
                             </div>
 
                             {/* Introduction */}
@@ -564,32 +542,33 @@ export function CreateSection({ categories }: CreateSectionProps) {
                     </div>
                 </TabsContent>
 
-                {/*  Tab: Package Pricing */}
+                {/* TAB: PACKAGE */}
                 <TabsContent value="package">
-                    <div className="w-full rounded-md bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+                    <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                         <div className="space-y-6">
-                            {/* Header */}
                             <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
                                 <div>
                                     <h2 className="text-xl font-bold">Paket Harga</h2>
                                     <p className="mt-0.5 text-sm text-muted-foreground">Kelola paket harga dengan dokumen/fitur yang berbeda untuk setiap paket</p>
                                 </div>
                                 <div className="flex w-full items-center gap-2 md:w-auto">
-                                    <Button type="button" variant="outline" size="sm" className="flex-1 shrink-0 gap-1.5 md:flex-0" disabled>
+                                    {/* <Button type="button" variant="outline" size="sm" className="flex-1 shrink-0 gap-1.5 md:flex-0" disabled>
                                         <Sparkles className="size-3.5" />
                                         AI Generate
-                                    </Button>
-                                    <Button type="button" onClick={addPackage} size="sm" className="flex-1 gap-1.5 md:flex-0">
-                                        <Plus className="size-4" />
-                                        Tambah Paket
-                                    </Button>
+                                    </Button> */}
+                                    {data.packages.length > 0 && (
+                                        <Button type="button" onClick={addPackage} size="sm" className="flex-1 gap-1.5 md:flex-0">
+                                            <Plus className="size-4" />
+                                            Tambah Paket
+                                        </Button>
+                                    )}
                                 </div>
                             </div>
 
                             {data.packages.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
                                     <p className="text-sm">Belum ada paket harga</p>
-                                    <Button type="button" variant="outline" size="sm" onClick={addPackage} className="gap-1.5">
+                                    <Button type="button" size="sm" onClick={addPackage} className="gap-1.5">
                                         <Plus className="size-4" />
                                         Tambah Paket Pertama
                                     </Button>
@@ -606,33 +585,46 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                             onMoveUp={() => packageHandlers.moveUp(i)}
                                             onMoveDown={() => packageHandlers.moveDown(i)}
                                             totalItems={data.packages.length}
+                                            errors={errors}
                                         />
                                     ))}
+                                </div>
+                            )}
+
+                            {data.packages.length > 0 && (
+                                <div className="flex w-full justify-end">
+                                    <Button type="button" onClick={addPackage} size="sm" className="flex-1 gap-1.5 md:flex-0">
+                                        <Plus className="size-4" />
+                                        Tambah Paket
+                                    </Button>
                                 </div>
                             )}
                         </div>
                     </div>
                 </TabsContent>
 
-                {/* Tab: FAQ */}
+                {/* TAB: FAQ */}
                 <TabsContent value="faq">
-                    <div className="w-full rounded-md bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+                    <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                         <div className="space-y-6">
                             <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
                                 <div>
                                     <h2 className="text-xl font-bold">FAQ (Frequently Asked Questions)</h2>
                                     <p className="mt-0.5 text-sm text-muted-foreground">Kelola pertanyaan yang sering diajukan terkait layanan ini.</p>
                                 </div>
-                                <Button type="button" onClick={addFaq} size="sm" className="w-full gap-1.5 md:w-auto">
-                                    <Plus className="size-4" />
-                                    Tambah FAQ
-                                </Button>
+
+                                {data.faqs.length > 0 && (
+                                    <Button type="button" onClick={addFaq} size="sm" className="w-full gap-1.5 md:w-auto">
+                                        <Plus className="size-4" />
+                                        Tambah FAQ
+                                    </Button>
+                                )}
                             </div>
 
                             {data.faqs.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
                                     <p className="text-sm">Belum ada FAQ</p>
-                                    <Button type="button" variant="outline" size="sm" onClick={addFaq} className="gap-1.5">
+                                    <Button type="button" size="sm" onClick={addFaq} className="gap-1.5">
                                         <Plus className="size-4" />
                                         Tambah FAQ Pertama
                                     </Button>
@@ -649,33 +641,46 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                             onMoveUp={() => faqHandlers.moveUp(i)}
                                             onMoveDown={() => faqHandlers.moveDown(i)}
                                             totalItems={data.faqs.length}
+                                            errors={errors}
                                         />
                                     ))}
+                                </div>
+                            )}
+
+                            {data.faqs.length > 0 && (
+                                <div className="flex w-full justify-end">
+                                    <Button type="button" onClick={addFaq} size="sm" className="flex-1 gap-1.5 md:flex-0">
+                                        <Plus className="size-4" />
+                                        Tambah FAQ
+                                    </Button>
                                 </div>
                             )}
                         </div>
                     </div>
                 </TabsContent>
 
-                {/* Tab: Legal Basis */}
+                {/* TAB: LEGAL BASIS */}
                 <TabsContent value="legal-basis">
-                    <div className="w-full rounded-md bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+                    <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                         <div className="space-y-6">
                             <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
                                 <div>
                                     <h2 className="text-xl font-bold">Dasar Hukum</h2>
                                     <p className="mt-0.5 text-sm text-muted-foreground">Kelola referensi peraturan dan undang-undang yang menjadi dasar layanan.</p>
                                 </div>
-                                <Button type="button" onClick={addLegalBasis} size="sm" className="w-full gap-1.5 md:w-auto">
-                                    <Plus className="size-4" />
-                                    Tambah Dasar Hukum
-                                </Button>
+
+                                {data.legal_bases.length > 0 && (
+                                    <Button type="button" onClick={addLegalBasis} size="sm" className="w-full gap-1.5 md:w-auto">
+                                        <Plus className="size-4" />
+                                        Tambah Dasar Hukum
+                                    </Button>
+                                )}
                             </div>
 
                             {data.legal_bases.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
                                     <p className="text-sm">Belum ada dasar hukum</p>
-                                    <Button type="button" variant="outline" size="sm" onClick={addLegalBasis} className="gap-1.5">
+                                    <Button type="button" size="sm" onClick={addLegalBasis} className="gap-1.5">
                                         <Plus className="size-4" />
                                         Tambah Dasar Hukum Pertama
                                     </Button>
@@ -692,33 +697,46 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                             onMoveUp={() => legalBasisHandlers.moveUp(i)}
                                             onMoveDown={() => legalBasisHandlers.moveDown(i)}
                                             totalItems={data.legal_bases.length}
+                                            errors={errors}
                                         />
                                     ))}
+                                </div>
+                            )}
+
+                            {data.legal_bases.length > 0 && (
+                                <div className="flex w-full justify-end">
+                                    <Button type="button" onClick={addLegalBasis} size="sm" className="flex-1 gap-1.5 md:flex-0">
+                                        <Plus className="size-4" />
+                                        Tambah Dasar Hukum
+                                    </Button>
                                 </div>
                             )}
                         </div>
                     </div>
                 </TabsContent>
 
-                {/* Tab: Requirements */}
+                {/* TAB: REQUIREMENT */}
                 <TabsContent value="requirement">
-                    <div className="w-full rounded-md bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+                    <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                         <div className="space-y-6">
                             <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
                                 <div>
                                     <h2 className="text-xl font-bold">Persyaratan</h2>
                                     <p className="mt-0.5 text-sm text-muted-foreground">Kelola kategori dan daftar persyaratan dokumen yang dibutuhkan.</p>
                                 </div>
-                                <Button type="button" onClick={addRequirementCategory} size="sm" className="w-full gap-1.5 md:w-auto">
-                                    <Plus className="size-4" />
-                                    Tambah Kategori
-                                </Button>
+
+                                {data.requirement_categories.length > 0 && (
+                                    <Button type="button" onClick={addRequirementCategory} size="sm" className="w-full gap-1.5 md:w-auto">
+                                        <Plus className="size-4" />
+                                        Tambah Kategori
+                                    </Button>
+                                )}
                             </div>
 
                             {data.requirement_categories.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
                                     <p className="text-sm">Belum ada kategori persyaratan</p>
-                                    <Button type="button" variant="outline" size="sm" onClick={addRequirementCategory} className="gap-1.5">
+                                    <Button type="button" size="sm" onClick={addRequirementCategory} className="gap-1.5">
                                         <Plus className="size-4" />
                                         Tambah Kategori Pertama
                                     </Button>
@@ -735,33 +753,46 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                             onMoveUp={() => requirementCategoryHandlers.moveUp(i)}
                                             onMoveDown={() => requirementCategoryHandlers.moveDown(i)}
                                             totalItems={data.requirement_categories.length}
+                                            errors={errors}
                                         />
                                     ))}
+                                </div>
+                            )}
+
+                            {data.requirement_categories.length > 0 && (
+                                <div className="flex w-full justify-end">
+                                    <Button type="button" onClick={addRequirementCategory} size="sm" className="flex-1 gap-1.5 md:flex-0">
+                                        <Plus className="size-4" />
+                                        Tambah Kategori
+                                    </Button>
                                 </div>
                             )}
                         </div>
                     </div>
                 </TabsContent>
 
-                {/* Tab: Process Steps */}
+                {/* TAB: TIMELINE */}
                 <TabsContent value="timeline">
-                    <div className="w-full rounded-md bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+                    <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                         <div className="space-y-6">
                             <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
                                 <div>
                                     <h2 className="text-xl font-bold">Tahapan Proses</h2>
                                     <p className="mt-0.5 text-sm text-muted-foreground">Kelola langkah-langkah proses pengerjaan layanan secara berurutan.</p>
                                 </div>
-                                <Button type="button" onClick={addProcessStep} size="sm" className="w-full gap-1.5 md:w-auto">
-                                    <Plus className="size-4" />
-                                    Tambah Tahap
-                                </Button>
+
+                                {data.process_steps.length > 0 && (
+                                    <Button type="button" onClick={addProcessStep} size="sm" className="w-full gap-1.5 md:w-auto">
+                                        <Plus className="size-4" />
+                                        Tambah Tahap
+                                    </Button>
+                                )}
                             </div>
 
                             {data.process_steps.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
                                     <p className="text-sm">Belum ada tahapan proses</p>
-                                    <Button type="button" variant="outline" size="sm" onClick={addProcessStep} className="gap-1.5">
+                                    <Button type="button" size="sm" onClick={addProcessStep} className="gap-1.5">
                                         <Plus className="size-4" />
                                         Tambah Tahap Pertama
                                     </Button>
@@ -778,8 +809,18 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                             onMoveUp={() => processStepHandlers.moveUp(i)}
                                             onMoveDown={() => processStepHandlers.moveDown(i)}
                                             totalItems={data.process_steps.length}
+                                            errors={errors}
                                         />
                                     ))}
+                                </div>
+                            )}
+
+                            {data.process_steps.length > 0 && (
+                                <div className="flex w-full justify-end">
+                                    <Button type="button" onClick={addPackage} size="sm" className="flex-1 gap-1.5 md:flex-0">
+                                        <Plus className="size-4" />
+                                        Tambah Tahap
+                                    </Button>
                                 </div>
                             )}
                         </div>
@@ -787,7 +828,6 @@ export function CreateSection({ categories }: CreateSectionProps) {
                 </TabsContent>
             </Tabs>
 
-            {/* Footer Actions  */}
             <div className="mt-4 flex items-center gap-3">
                 <Button type="submit" disabled={processing}>
                     {processing ? (
@@ -799,7 +839,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                         'Simpan'
                     )}
                 </Button>
-                <Button type="button" variant="outline" onClick={handleBatal} disabled={processing}>
+                <Button type="button" variant="secondary" onClick={handleCancel} disabled={processing}>
                     Batal
                 </Button>
             </div>

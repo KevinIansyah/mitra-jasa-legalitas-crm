@@ -53,8 +53,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Separator } from '@/components/ui/separator';
 
 const lowlight = createLowlight(common);
 
@@ -197,7 +197,7 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
     ];
 
     return (
-        <div className="w-full overflow-hidden rounded-md border border-primary/60 bg-background">
+        <div className="w-full overflow-hidden rounded-md border border-primary bg-transparent dark:bg-input/30">
             <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
 
             <div className="flex flex-wrap items-center gap-1 border-b bg-input/30 p-2">
@@ -620,7 +620,7 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
                 </Popover>
             </div>
 
-            <div className="flex items-center justify-end gap-4 border-t border-b border-primary/60 px-3 py-1.5 text-xs text-muted-foreground">
+            <div className="flex items-center justify-end gap-4 border-t border-b border-primary px-3 py-1.5 text-xs text-muted-foreground">
                 <span>{wordCount} kata</span>
                 <span>{charCount} karakter</span>
             </div>

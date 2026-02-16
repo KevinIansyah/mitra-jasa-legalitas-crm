@@ -3,7 +3,7 @@ import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
 import companies from '@/routes/contacts/companies';
 import type { BreadcrumbItem } from '@/types';
-import type { Company } from '@/types/contact';
+import type { CompanyWithCustomers } from '@/types/contact';
 import type { Paginator } from '@/types/paginator';
 import { CompanySection } from './_components/company-section';
 
@@ -20,7 +20,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function Page() {
     const { companies, filters } = usePage<{
-        companies: Paginator<Company>;
+        companies: Paginator<CompanyWithCustomers>;
         filters: { search?: string };
     }>().props;
 

@@ -1,6 +1,7 @@
 import { useForm } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import * as React from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
@@ -18,11 +19,28 @@ export function DrawerAdd() {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        const id = toast.loading('Memproses...', {
+            description: 'Role sedang ditambahkan.',
+        });
+
         post(roles.store().url, {
             preserveScroll: true,
             onSuccess: () => {
+                toast.success('Berhasil', {
+                    description: 'Role berhasil ditambahkan.',
+                });
+
                 reset();
                 setOpen(false);
+            },
+            onError: () => {
+                toast.error('Gagal', {
+                    description: 'Role gagal ditambahkan. Silakan periksa kembali data role yang diisi.',
+                });
+            },
+            onFinish: () => {
+                toast.dismiss(id);
             },
         });
     };
@@ -30,9 +48,9 @@ export function DrawerAdd() {
     return (
         <Drawer direction="bottom" open={open} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
-                <Button className="flex-1 md:w-30">
-                    Tambah
+                <Button className="flex-1 gap-1.5 md:w-30">
                     <Plus />
+                    Tambah
                 </Button>
             </DrawerTrigger>
 

@@ -78,7 +78,7 @@ class CompanyController extends Controller
 
         Company::create($validated);
 
-        return back()->with('success', 'Perusahaan berhasil dibuat.');
+        return back()->with('success', 'Perusahaan berhasil ditambahkan.');
     }
 
     /**

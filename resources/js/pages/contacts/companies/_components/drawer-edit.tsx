@@ -78,10 +78,26 @@ export function DrawerEdit({ companyId, open, onOpenChange }: DrawerEditProps) {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        const id = toast.loading('Memproses...', {
+            description: 'Perusahaan sedang diperbarui.',
+        });
+
         put(companies.update(companyId).url, {
             preserveScroll: true,
             onSuccess: () => {
+                toast.success('Berhasil', {
+                    description: 'Perusahaan berhasil diperbarui.',
+                });
+
                 onOpenChange(false);
+            },
+            onError: () => {
+                toast.error('Gagal', {
+                    description: 'Perusahaan gagal diperbarui. Silakan periksa kembali data perusahaan yang diisi.',
+                });
+            },
+            onFinish: () => {
+                toast.dismiss(id);
             },
         });
     };
@@ -176,7 +192,7 @@ export function DrawerEdit({ companyId, open, onOpenChange }: DrawerEditProps) {
                                     Simpan Perubahan
                                 </Button>
                                 <DrawerClose asChild>
-                                    <Button variant="outline" type="button">
+                                    <Button variant="secondary" type="button">
                                         Batal
                                     </Button>
                                 </DrawerClose>
@@ -363,7 +379,7 @@ export function DrawerEdit({ companyId, open, onOpenChange }: DrawerEditProps) {
                                     )}
                                 </Button>
                                 <DrawerClose asChild>
-                                    <Button variant="outline" type="button">
+                                    <Button variant="secondary" type="button">
                                         Batal
                                     </Button>
                                 </DrawerClose>

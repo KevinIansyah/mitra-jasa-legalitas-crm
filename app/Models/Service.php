@@ -7,14 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
-use App\Models\ServiceCategory;
-use App\Models\ServiceFaq;
-use App\Models\ServiceLegalBasis;
-use App\Models\ServiceRequirement;
-use App\Models\ServiceRequirementCategory;
-use App\Models\ServicePackage;
-use App\Models\ServiceProcessStep;
-
 
 class Service extends Model
 {
@@ -146,6 +138,22 @@ class Service extends Model
     public function activeProcessSteps(): HasMany
     {
         return $this->hasMany(ServiceProcessStep::class)->active()->ordered();
+    }
+
+    /**
+     * Get the project templates for the service.
+     */
+    public function projectTemplates(): HasMany
+    {
+        return $this->hasMany(ProjectTemplate::class);
+    }
+
+    /**
+     * Get active project templates for the service.
+     */
+    public function activeProjectTemplates(): HasMany
+    {
+        return $this->hasMany(ProjectTemplate::class)->active();
     }
 
     /**

@@ -69,7 +69,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                 <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
                     <div className="flex w-full flex-1 items-center gap-2 md:w-auto">
                         <InputGroup className="max-w-sm">
-                            <InputGroupInput placeholder="Cari nama..." value={searchValue} onChange={handleSearchChange} />
+                            <InputGroupInput placeholder="Cari nama pelanggan..." value={searchValue} onChange={handleSearchChange} />
                             <InputGroupAddon>
                                 <Search />
                             </InputGroupAddon>
@@ -77,12 +77,14 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
 
                         <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
                             <SheetTrigger asChild>
-                                <Button variant="outline" className="relative lg:w-30">
+                                <Button variant="secondary" className="relative gap-1.5 lg:w-30">
+                                    <Filter className="size-3.75" />
                                     <span className="hidden lg:inline">Filter</span>
-                                    <Filter className="size-3.5" />
-                                    <Badge className="ml-2 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-background">
-                                        {activeFiltersCount}
-                                    </Badge>
+                                    {activeFiltersCount > 0 && (
+                                        <Badge className="ml-2 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-background">
+                                            {activeFiltersCount}
+                                        </Badge>
+                                    )}
                                 </Button>
                             </SheetTrigger>
                             <SheetContent>
@@ -137,7 +139,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                     <div className="flex w-full gap-2 md:w-auto">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" className="flex-1 md:w-30">
+                                <Button variant="outline" className="flex-1 gap-1.5 md:w-30">
                                     Kolom <ChevronDown className="size-4" />
                                 </Button>
                             </DropdownMenuTrigger>
@@ -200,7 +202,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => {
                                     return (
-                                        <TableHead key={header.id} className="font-medium text-white">
+                                        <TableHead key={header.id} className="font-medium text-background">
                                             {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                         </TableHead>
                                     );
@@ -256,19 +258,19 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                     </div>
 
                     <div className="ml-auto flex items-center gap-2 lg:ml-0">
-                        <Button variant="outline" className="hidden h-8 w-8 p-0 lg:flex" onClick={() => goToPage(0)} disabled={!canPreviousPage}>
+                        <Button variant="secondary" className="hidden h-8 w-8 p-0 lg:flex" onClick={() => goToPage(0)} disabled={!canPreviousPage}>
                             <span className="sr-only">Go to first page</span>
                             <ChevronsLeftIcon />
                         </Button>
-                        <Button variant="outline" className="size-8" size="sm" onClick={() => goToPage(pageIndex - 1)} disabled={!canPreviousPage}>
+                        <Button variant="secondary" className="size-8" size="sm" onClick={() => goToPage(pageIndex - 1)} disabled={!canPreviousPage}>
                             <span className="sr-only">Go to previous page</span>
                             <ChevronLeftIcon />
                         </Button>
-                        <Button variant="outline" className="size-8" size="sm" onClick={() => goToPage(pageIndex + 1)} disabled={!canNextPage}>
+                        <Button variant="secondary" className="size-8" size="sm" onClick={() => goToPage(pageIndex + 1)} disabled={!canNextPage}>
                             <span className="sr-only">Go to next page</span>
                             <ChevronRightIcon />
                         </Button>
-                        <Button variant="outline" className="hidden size-8 lg:flex" size="sm" onClick={() => goToPage(totalPages - 1)} disabled={!canNextPage}>
+                        <Button variant="secondary" className="hidden size-8 lg:flex" size="sm" onClick={() => goToPage(totalPages - 1)} disabled={!canNextPage}>
                             <span className="sr-only">Go to last page</span>
                             <ChevronsRightIcon />
                         </Button>

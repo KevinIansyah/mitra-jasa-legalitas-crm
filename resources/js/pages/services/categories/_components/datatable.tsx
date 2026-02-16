@@ -61,15 +61,16 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
         <>
             <div className="flex flex-col items-center justify-between gap-2 pb-4 md:flex-row">
                 <InputGroup className="max-w-sm">
-                    <InputGroupInput placeholder="Cari nama..." value={searchValue} onChange={handleSearchChange} />
+                    <InputGroupInput placeholder="Cari nama kategori layanan..." value={searchValue} onChange={handleSearchChange} />
                     <InputGroupAddon>
                         <Search />
                     </InputGroupAddon>
                 </InputGroup>
+
                 <div className="flex w-full gap-2 md:w-auto">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="flex-1 md:w-30">
+                            <Button variant="outline" className="flex-1 gap-1.5 md:w-30">
                                 Kolom <ChevronDown />
                             </Button>
                         </DropdownMenuTrigger>
@@ -153,19 +154,19 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                     </div>
 
                     <div className="ml-auto flex items-center gap-2 lg:ml-0">
-                        <Button variant="outline" className="hidden h-8 w-8 p-0 lg:flex" onClick={() => goToPage(0)} disabled={!canPreviousPage}>
+                        <Button variant="secondary" className="hidden h-8 w-8 p-0 lg:flex" onClick={() => goToPage(0)} disabled={!canPreviousPage}>
                             <span className="sr-only">Go to first page</span>
                             <ChevronsLeftIcon />
                         </Button>
-                        <Button variant="outline" className="size-8" size="sm" onClick={() => goToPage(pageIndex - 1)} disabled={!canPreviousPage}>
+                        <Button variant="secondary" className="size-8" size="sm" onClick={() => goToPage(pageIndex - 1)} disabled={!canPreviousPage}>
                             <span className="sr-only">Go to previous page</span>
                             <ChevronLeftIcon />
                         </Button>
-                        <Button variant="outline" className="size-8" size="sm" onClick={() => goToPage(pageIndex + 1)} disabled={!canNextPage}>
+                        <Button variant="secondary" className="size-8" size="sm" onClick={() => goToPage(pageIndex + 1)} disabled={!canNextPage}>
                             <span className="sr-only">Go to next page</span>
                             <ChevronRightIcon />
                         </Button>
-                        <Button variant="outline" className="hidden size-8 lg:flex" size="sm" onClick={() => goToPage(totalPages - 1)} disabled={!canNextPage}>
+                        <Button variant="secondary" className="hidden size-8 lg:flex" size="sm" onClick={() => goToPage(totalPages - 1)} disabled={!canNextPage}>
                             <span className="sr-only">Go to last page</span>
                             <ChevronsRightIcon />
                         </Button>

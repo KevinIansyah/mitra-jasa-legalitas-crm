@@ -2,6 +2,7 @@ import { useForm } from '@inertiajs/react';
 import axios from 'axios';
 import { Search, UserRoundX, X } from 'lucide-react';
 import * as React from 'react';
+import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
@@ -70,9 +71,8 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
                 });
 
                 setSearchResults(response.data.customers || []);
-            } catch (error) {
-                console.error('Search error:', error);
-
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            } catch (e) {
                 setSearchResults([]);
             } finally {
                 setIsSearching(false);
@@ -99,16 +99,29 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
             return;
         }
 
+        const id = toast.loading('Memproses...', {
+            description: 'Hubungan pelanggan dengan perusahaan sedang ditambahkan.',
+        });
+
         post(companies.attachCustomer({ company: company.id }).url, {
             preserveScroll: true,
             onSuccess: () => {
+                toast.success('Berhasil', {
+                    description: 'Hubungan pelanggan dengan perusahaan berhasil ditambahkan.',
+                });
+
                 reset();
                 setSelectedCustomer(null);
                 setSearchQuery('');
                 setActiveTab('list');
             },
-            onError: (error) => {
-                console.error(error);
+            onError: () => {
+                toast.error('Gagal', {
+                    description: 'Hubungan pelanggan dengan perusahaan gagal ditambahkan. Silakan periksa kembali data pelanggan yang diisi.',
+                });
+            },
+            onFinish: () => {
+                toast.dismiss(id);
             },
         });
     };
@@ -164,11 +177,11 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
                             <div className="h-full space-y-2">
                                 {customersCount === 0 ? (
                                     <div className="flex h-full flex-col items-center justify-center text-center">
-                                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary">
-                                            <UserRoundX className="size-6 text-white" />
+                                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                            <UserRoundX className="size-5 text-primary" />
                                         </div>
                                         <p className="mt-4 text-sm">Belum ada pelanggan yang terhubung</p>
-                                        <Button variant="outline" className="mt-4" onClick={() => setActiveTab('add')}>
+                                        <Button className="mt-4" onClick={() => setActiveTab('add')}>
                                             Tambah Pelanggan
                                         </Button>
                                     </div>
@@ -192,7 +205,7 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
                                         </FieldLabel>
 
                                         {selectedCustomer ? (
-                                            <div className="flex items-center justify-between rounded-md border bg-muted p-3">
+                                            <div className="flex items-center justify-between rounded-md border border-primary bg-card p-3 dark:border-none">
                                                 <div className="flex-1">
                                                     <p className="text-sm font-medium">{selectedCustomer.name}</p>
                                                     <p className="mb-2 text-sm text-muted-foreground">
@@ -202,7 +215,7 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
                                                         <Badge className={tierVariantMap[selectedCustomer.tier] ?? 'bg-muted text-muted-foreground'}>{selectedCustomer.tier}</Badge>
                                                     )}
                                                 </div>
-                                                <Button type="button" variant="ghost" size="sm" onClick={handleRemoveCustomer}>
+                                                <Button type="button" variant="ghost" size="sm" className="h-8 w-8" onClick={handleRemoveCustomer}>
                                                     <X className="size-4" />
                                                 </Button>
                                             </div>
@@ -220,7 +233,7 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
                                                 </InputGroup>
 
                                                 {searchResults.length > 0 && (
-                                                    <div className="mt-2 max-h-64 space-y-1 overflow-y-auto rounded-md border bg-background p-2">
+                                                    <div className="mt-2 max-h-64 space-y-1 overflow-y-auto rounded-md border border-primary bg-muted/30 p-2 dark:border-none">
                                                         {searchResults.map((customer) => (
                                                             <button
                                                                 key={customer.id}
@@ -263,7 +276,7 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
                                         {errors.position_at_company && <FieldError>{errors.position_at_company}</FieldError>}
                                     </Field>
 
-                                    <div className="flex items-center gap-4 rounded-lg border bg-card p-4">
+                                    <div className="flex items-center gap-4 rounded-lg border border-primary bg-transparent p-4 dark:bg-input/30">
                                         <Switch id="is_primary" checked={data.is_primary} onCheckedChange={(checked) => setData('is_primary', checked as boolean)} />
                                         <div className="flex-1">
                                             <Label htmlFor="is_primary" className="cursor-pointer text-sm font-medium">
@@ -287,7 +300,7 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
                                                 'Tambahkan'
                                             )}
                                         </Button>
-                                        <Button type="button" variant="outline" className="flex-1" onClick={() => setActiveTab('list')}>
+                                        <Button type="button" variant="secondary" className="flex-1" onClick={() => setActiveTab('list')}>
                                             Batal
                                         </Button>
                                     </div>

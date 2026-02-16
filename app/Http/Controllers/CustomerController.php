@@ -81,7 +81,7 @@ class CustomerController extends Controller
         //     ]);
         // }
 
-        return back()->with('success', 'Customer berhasil dibuat.');
+        return back()->with('success', 'Customer berhasil ditambahkan.');
     }
 
     /**

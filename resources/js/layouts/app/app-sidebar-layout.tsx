@@ -1,31 +1,23 @@
-import { usePage } from '@inertiajs/react';
-import { toast } from 'sonner';
 import { AppContent } from '@/components/app-content';
 import { AppShell } from '@/components/app-shell';
 import { AppSidebar } from '@/components/app-sidebar';
 import { AppSidebarHeader } from '@/components/app-sidebar-header';
-import type { AppLayoutProps, SharedData } from '@/types';
+import type { AppLayoutProps } from '@/types';
 
 export default function AppSidebarLayout({ children, breadcrumbs = [] }: AppLayoutProps) {
-    const { flash } = usePage<SharedData>().props;
+    // const { flash } = usePage<SharedData>().props;
 
-    if (flash?.success) {
-        toast.success('Berhasil', { description: flash.success });
-    }
+    // if (flash?.success) {
+    //     toast.success('Berhasil', { description: flash.success });
+    // }
 
-    if (flash?.error) {
-        toast.error('Gagal', { description: flash.error });
-    }
+    // if (flash?.error) {
+    //     toast.error('Gagal', { description: flash.error });
+    // }
 
     return (
         <AppShell variant="sidebar">
             <AppSidebar />
-            {/* <div className="flex w-full flex-col">
-                <AppSidebarHeader breadcrumbs={breadcrumbs} />
-                <AppContent variant="sidebar" className="overflow-x-hidden">
-                    {children}
-                </AppContent>
-            </div> */}
             <AppContent variant="sidebar" className="overflow-x-hidden">
                 <AppSidebarHeader breadcrumbs={breadcrumbs} />
                 {children}

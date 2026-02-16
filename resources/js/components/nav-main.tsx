@@ -23,12 +23,36 @@ export function NavMain({ section }: { section: NavSection }) {
         const currentPath = page.url.split('?')[0];
         const itemPath = url.split('?')[0];
 
-        if (itemPath === '/services') {
-            return currentPath === '/services';
+        // =========================
+        // DASHBOARD
+        // =========================
+
+        if (itemPath === '/') {
+            return currentPath === '/';
         }
 
-        if (url === '/services/categories') {
+        // =========================
+        // SERVICES
+        // =========================
+
+        if (itemPath === '/services') {
+            return currentPath === '/services' || (currentPath.startsWith('/services/') && !currentPath.startsWith('/services/categories'));
+        }
+
+        if (itemPath === '/services/categories') {
             return currentPath.startsWith('/services/categories');
+        }
+
+        // =========================
+        // PROJECTS
+        // =========================
+
+        if (itemPath === '/projects') {
+            return currentPath === '/projects' || (currentPath.startsWith('/projects/') && !currentPath.startsWith('/projects/categories'));
+        }
+
+        if (itemPath === '/projects/categories') {
+            return currentPath.startsWith('/projects/categories');
         }
 
         return currentPath.startsWith(itemPath);

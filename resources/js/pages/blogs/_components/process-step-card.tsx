@@ -1,21 +1,24 @@
 import { ArrowDown, ArrowUp, Clock, FileText, GripVertical, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Field, FieldLabel } from '@/components/ui/field';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import type { ServiceStatus } from '@/types/service';
 
 export type LocalProcessStep = {
     id?: number;
     _key: string;
     title: string;
-    description: string;
-    duration: string;
+    description: string | null;
+    duration: string | null;
     duration_days: number | null;
-    required_documents: string[];
-    notes: string;
-    icon: string;
+    required_documents: string[] | null;
+    notes: string | null;
+    icon: string | null;
     sort_order: number;
+    status: ServiceStatus;
 };
 
 type ProcessStepCardProps = {
@@ -26,9 +29,11 @@ type ProcessStepCardProps = {
     onDelete: () => void;
     onMoveUp: () => void;
     onMoveDown: () => void;
+    isEdit?: boolean | false;
+    errors?: Record<string, string>;
 };
 
-export function ProcessStepCard({ step, index, totalItems, onChange, onDelete, onMoveUp, onMoveDown }: ProcessStepCardProps) {
+export function ProcessStepCard({ step, index, totalItems, onChange, onDelete, onMoveUp, onMoveDown, isEdit, errors = {} }: ProcessStepCardProps) {
     const [documentInput, setDocumentInput] = useState('');
 
     const update = (patch: Partial<LocalProcessStep>) => onChange({ ...step, ...patch });
@@ -37,19 +42,18 @@ export function ProcessStepCard({ step, index, totalItems, onChange, onDelete, o
         const trimmed = documentInput.trim();
         if (!trimmed) return;
         update({
-            required_documents: [...step.required_documents, trimmed],
+            required_documents: [...(step.required_documents ?? []), trimmed],
         });
         setDocumentInput('');
     };
 
     const deleteDocument = (docIndex: number) =>
         update({
-            required_documents: step.required_documents.filter((_, i) => i !== docIndex),
+            required_documents: (step.required_documents ?? []).filter((_, i) => i !== docIndex),
         });
 
     return (
-        <div className="space-y-4 rounded-xl border border-primary/60 bg-input/30 p-4">
-            {/* Header */}
+        <div className="space-y-4 rounded-xl border border-primary/30 bg-input/30 p-4 dark:border-none">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-muted-foreground">
                     <GripVertical className="size-4 cursor-grab" />
@@ -70,19 +74,38 @@ export function ProcessStepCard({ step, index, totalItems, onChange, onDelete, o
                 </div>
             </div>
 
+            {/* Status */}
+            {isEdit && (
+                <Field>
+                    <FieldLabel>Status</FieldLabel>
+                    <Select value={step.status} onValueChange={(value) => update({ status: value as ServiceStatus })}>
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Pilih status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectItem value="active">Active</SelectItem>
+                                <SelectItem value="inactive">Inactive</SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                </Field>
+            )}
+
             {/* Title */}
             <Field>
                 <FieldLabel>
                     Judul Tahap <span className="text-destructive">*</span>
                 </FieldLabel>
-                <Input value={step.title} onChange={(e) => update({ title: e.target.value })} placeholder="Contoh: Konsultasi Awal & Analisis Kebutuhan" />
+                <Input value={step.title} required onChange={(e) => update({ title: e.target.value })} placeholder="Contoh: Konsultasi Awal & Analisis Kebutuhan" />
+                {errors[`process_steps.${index}.title`] && <FieldError>{errors[`process_steps.${index}.title`]}</FieldError>}
             </Field>
 
             {/* Description */}
             <Field>
                 <FieldLabel>Deskripsi</FieldLabel>
                 <Textarea
-                    value={step.description}
+                    value={step.description ?? ''}
                     onChange={(e) => update({ description: e.target.value })}
                     placeholder="Jelaskan detail tahapan ini"
                     className="min-h-24 resize-none"
@@ -96,7 +119,7 @@ export function ProcessStepCard({ step, index, totalItems, onChange, onDelete, o
                     <FieldLabel>Durasi/Waktu</FieldLabel>
                     <div className="relative">
                         <Clock className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input value={step.duration} onChange={(e) => update({ duration: e.target.value })} placeholder="Contoh: 1-2 hari kerja" className="pl-10" />
+                        <Input value={step.duration ?? ''} onChange={(e) => update({ duration: e.target.value })} placeholder="Contoh: 1-2 hari kerja" className="pl-10" />
                     </div>
                 </Field>
 
@@ -116,7 +139,7 @@ export function ProcessStepCard({ step, index, totalItems, onChange, onDelete, o
             {/* Required Documents */}
             <Field>
                 <FieldLabel>Dokumen yang Diperlukan</FieldLabel>
-                {step.required_documents.length > 0 && (
+                {step.required_documents && step.required_documents.length > 0 && (
                     <div className="mb-3 space-y-2">
                         {step.required_documents.map((doc, docIndex) => (
                             <div key={docIndex} className="flex items-center gap-3 rounded-lg border border-border bg-muted/30 px-3 py-2">
@@ -147,10 +170,10 @@ export function ProcessStepCard({ step, index, totalItems, onChange, onDelete, o
             <Field>
                 <FieldLabel>Catatan</FieldLabel>
                 <Textarea
-                    value={step.notes}
+                    value={step.notes ?? ''}
                     onChange={(e) => update({ notes: e.target.value })}
                     placeholder="Catatan atau informasi tambahan"
-                    className="min-h-16 resize-none"
+                    className="min-h-24 resize-none"
                     rows={2}
                 />
             </Field>
@@ -158,7 +181,7 @@ export function ProcessStepCard({ step, index, totalItems, onChange, onDelete, o
             {/* Icon (optional field for future icon picker) */}
             <Field>
                 <FieldLabel>Icon</FieldLabel>
-                <Input value={step.icon} onChange={(e) => update({ icon: e.target.value })} placeholder="Nama icon atau kelas CSS" />
+                <Input value={step.icon ?? ''} onChange={(e) => update({ icon: e.target.value })} placeholder="Nama icon atau kelas CSS" />
             </Field>
         </div>
     );

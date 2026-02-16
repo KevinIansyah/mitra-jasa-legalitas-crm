@@ -48,7 +48,7 @@ class RoleController extends Controller
 
         Role::create($validated);
 
-        return back()->with('success', 'Role berhasil dibuat.');
+        return back()->with('success', 'Role berhasil ditambahkan.');
     }
 
     /**

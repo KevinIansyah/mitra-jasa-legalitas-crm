@@ -1,5 +1,6 @@
-import { Link } from '@inertiajs/react';
+import { router } from '@inertiajs/react';
 import { Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -23,6 +24,29 @@ interface AlertDeleteDialogProps {
 }
 
 export function DialogDelete({ title = 'Apakah Anda yakin?', description, deleteUrl, tooltipText = 'Hapus', isDisabled = false }: AlertDeleteDialogProps) {
+    const handleDelete = () => {
+        const id = toast.loading('Memproses...', {
+            description: 'Data sedang dihapus.',
+        });
+
+        router.delete(deleteUrl, {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success('Berhasil', {
+                    description: 'Data berhasil dihapus.',
+                });
+            },
+            onError: () => {
+                toast.error('Gagal', {
+                    description: 'Data gagal dihapus.',
+                });
+            },
+            onFinish: () => {
+                toast.dismiss(id);
+            },
+        });
+    };
+
     return (
         <Tooltip>
             <AlertDialog>
@@ -40,10 +64,8 @@ export function DialogDelete({ title = 'Apakah Anda yakin?', description, delete
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Batal</AlertDialogCancel>
-                        <AlertDialogAction variant="destructive" asChild>
-                            <Link href={deleteUrl} method="delete" as="button">
-                                Hapus
-                            </Link>
+                        <AlertDialogAction variant="destructive" onClick={handleDelete}>
+                            Hapus
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

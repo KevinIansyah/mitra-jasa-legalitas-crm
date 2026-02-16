@@ -1,11 +1,14 @@
 import { ArrowLeft, ArrowRight, GripVertical, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Field, FieldLabel } from '@/components/ui/field';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
+import { formatRupiah, uid } from '@/lib/service';
+import type { ServiceStatus } from '@/types/service';
 
 export type LocalFeature = {
     _key: string;
@@ -26,17 +29,9 @@ export type LocalPackage = {
     is_highlighted: boolean;
     badge: string | null;
     sort_order: number;
+    status?: string;
     features: LocalFeature[];
 };
-
-const uid = () => Math.random().toString(36).slice(2, 9);
-
-const formatRupiah = (value: number) =>
-    new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
-        maximumFractionDigits: 0,
-    }).format(value);
 
 type PackageCardProps = {
     pkg: LocalPackage;
@@ -46,9 +41,11 @@ type PackageCardProps = {
     onDelete: () => void;
     onMoveUp: () => void;
     onMoveDown: () => void;
+    isEdit?: boolean | false;
+    errors?: Record<string, string>;
 };
 
-export function PackageCard({ pkg, index, totalItems, onChange, onDelete, onMoveUp, onMoveDown }: PackageCardProps) {
+export function PackageCard({ pkg, index, totalItems, onChange, onDelete, onMoveUp, onMoveDown, isEdit, errors = {} }: PackageCardProps) {
     const [featureInput, setFeatureInput] = useState('');
 
     const update = (patch: Partial<LocalPackage>) => onChange({ ...pkg, ...patch });
@@ -82,8 +79,7 @@ export function PackageCard({ pkg, index, totalItems, onChange, onDelete, onMove
         });
 
     return (
-        <div className="space-y-4 rounded-xl border border-primary/60 bg-input/30 p-4">
-            {/* Header */}
+        <div className="space-y-4 rounded-xl border border-primary/30 bg-input/30 p-4 dark:border-none">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-muted-foreground">
                     <GripVertical className="size-4 cursor-grab" />
@@ -104,35 +100,44 @@ export function PackageCard({ pkg, index, totalItems, onChange, onDelete, onMove
                 </div>
             </div>
 
-            {/* Package Order */}
-            {/* <Field>
-                <FieldLabel>Order</FieldLabel>
-                <Input
-                    type="number"
-                    min={1}
-                    value={pkg.sort_order + 1}
-                    onChange={(e) =>
-                        update({
-                            sort_order: Math.max(0, Number(e.target.value) - 1),
-                        })
-                    }
-                />
-            </Field> */}
+            {/* Status */}
+            {isEdit && (
+                <Field>
+                    <FieldLabel>Status</FieldLabel>
+                    <Select value={pkg.status} onValueChange={(value) => update({ status: value as ServiceStatus })}>
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Pilih status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectItem value="active">Active</SelectItem>
+                                <SelectItem value="inactive">Inactive</SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                </Field>
+            )}
 
-            {/* Package Name */}
+            {/* Name */}
             <Field>
-                <FieldLabel>Nama Paket</FieldLabel>
-                <Input value={pkg.name} onChange={(e) => update({ name: e.target.value })} placeholder="Contoh: Paket Basic" />
+                <FieldLabel>
+                    Nama Paket <span className="text-destructive">*</span>
+                </FieldLabel>
+                <Input value={pkg.name} required onChange={(e) => update({ name: e.target.value })} placeholder="Contoh: Paket Basic" />
+                {errors[`packages.${index}.name`] && <FieldError>{errors[`packages.${index}.name`]}</FieldError>}
             </Field>
 
-            {/* Package Price */}
+            {/* Price */}
             <Field>
-                <FieldLabel>Harga (Rp)</FieldLabel>
-                <Input type="number" min={0} value={pkg.price} onChange={(e) => update({ price: Number(e.target.value) })} placeholder="0" />
+                <FieldLabel>
+                    Harga (Rp) <span className="text-destructive">*</span>
+                </FieldLabel>
+                <Input type="number" min={0} value={pkg.price} required onChange={(e) => update({ price: Number(e.target.value) })} placeholder="0" />
                 <p className="text-xs text-muted-foreground">{formatRupiah(pkg.price)}</p>
+                {errors[`packages.${index}.price`] && <FieldError>{errors[`packages.${index}.price`]}</FieldError>}
             </Field>
 
-            {/* Package Original Price */}
+            {/* Original Price */}
             {/* <Field>
                 <FieldLabel>Harga Asli / Coret (opsional)</FieldLabel>
                 <Input
@@ -149,24 +154,27 @@ export function PackageCard({ pkg, index, totalItems, onChange, onDelete, onMove
                 {pkg.original_price ? <p className="text-xs text-muted-foreground">{formatRupiah(pkg.original_price)}</p> : null}
             </Field> */}
 
-            {/* Package Duration */}
+            {/* Duration */}
             <Field>
-                <FieldLabel>Durasi/Waktu</FieldLabel>
-                <Input value={pkg.duration} onChange={(e) => update({ duration: e.target.value })} placeholder="Contoh: 7-14 hari" />
+                <FieldLabel>
+                    Durasi/Waktu <span className="text-destructive">*</span>
+                </FieldLabel>
+                <Input value={pkg.duration} required onChange={(e) => update({ duration: e.target.value })} placeholder="Contoh: 7-14 hari" />
+                {errors[`packages.${index}.duration`] && <FieldError>{errors[`packages.${index}.duration`]}</FieldError>}
             </Field>
 
-            {/* Package Short Description */}
+            {/* Short Description */}
             <Field>
-                <FieldLabel>Deskripsi Singkat (opsional)</FieldLabel>
+                <FieldLabel>Deskripsi Singkat</FieldLabel>
                 <Textarea
                     value={pkg.short_description ?? ''}
                     onChange={(e) => update({ short_description: e.target.value || null })}
                     placeholder="Penjelasan singkat tentang paket ini"
-                    className="min-h-20 resize-none"
+                    className="min-h-24 resize-none"
                 />
             </Field>
 
-            {/* Package Features */}
+            {/* Features */}
             <Field>
                 <FieldLabel>Dokumen/Fitur yang Didapat</FieldLabel>
                 {pkg.features.length > 0 && (
@@ -201,7 +209,7 @@ export function PackageCard({ pkg, index, totalItems, onChange, onDelete, onMove
                 </div>
             </Field>
 
-            {/* Package Highlights */}
+            {/* Highlights */}
             <div className="space-y-3 border-t border-border pt-3">
                 <div className="flex items-center justify-between">
                     <Label htmlFor={`highlight-${pkg._key}`} className="cursor-pointer text-sm">

@@ -1,5 +1,6 @@
 import { useForm } from '@inertiajs/react';
 import * as React from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { Switch } from '@/components/ui/switch';
@@ -86,6 +87,21 @@ export default function PermissionSection({ role, allPermissions }: PermissionSe
                             itemName = 'Pelanggan (PIC)';
 
                             break;
+                    }
+
+                    break;
+                }
+
+                // Project Management
+                case resource.startsWith('project'): {
+                    groupName = 'Manajemen Project';
+
+                    if (resource === 'projects') {
+                        itemName = 'Semua Project';
+                    }
+
+                    if (resource === 'project-templates') {
+                        itemName = 'Template Project (AI)';
                     }
 
                     break;
@@ -193,8 +209,25 @@ export default function PermissionSection({ role, allPermissions }: PermissionSe
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        const id = toast.loading('Memproses...', {
+            description: 'Role sedang diperbarui.',
+        });
+
         put(roles.permission.update(role.id).url, {
             preserveScroll: true,
+            onSuccess: () => {
+                toast.success('Berhasil', {
+                    description: 'Role berhasil diperbarui.',
+                });
+            },
+            onError: () => {
+                toast.error('Gagal', {
+                    description: 'Role gagal diperbarui. Silakan periksa kembali data role yang diisi.',
+                });
+            },
+            onFinish: () => {
+                toast.dismiss(id);
+            },
         });
     };
 

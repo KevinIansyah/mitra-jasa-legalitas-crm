@@ -44,7 +44,7 @@ export default function getColumns(): ColumnDef<Customer>[] {
                 const isActive = status === 'active';
 
                 return isActive ? (
-                    <Badge className="bg-emerald-600 text-white">{status.charAt(0).toUpperCase() + status.slice(1)}</Badge>
+                    <Badge className="bg-emerald-500 text-white">{status.charAt(0).toUpperCase() + status.slice(1)}</Badge>
                 ) : (
                     <Badge variant="destructive">{status.charAt(0).toUpperCase() + status.slice(1)}</Badge>
                 );
@@ -56,7 +56,7 @@ export default function getColumns(): ColumnDef<Customer>[] {
             cell: ({ row }) => {
                 const userId = row.getValue<number | null>('user_id');
 
-                return userId ? <Badge className="bg-emerald-600 text-white">Terdaftar</Badge> : <Badge variant="secondary">Belum</Badge>;
+                return userId ? <Badge className="bg-emerald-500 text-white">Terdaftar</Badge> : <Badge variant="secondary">Belum</Badge>;
             },
         },
 

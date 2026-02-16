@@ -59,7 +59,7 @@ export function CustomerItem({ customer, companyId }: CustomerItemProps) {
     };
 
     return (
-        <div className="space-y-2 rounded-lg border bg-card p-4">
+        <div className="space-y-2 rounded-lg border border-primary bg-muted/30 p-4 dark:border-none">
             <div className="flex items-center justify-between">
                 <div>
                     {Boolean(isEditing ? data.is_primary : customer.pivot?.is_primary) && <Badge className="mr-1">Utama</Badge>}
@@ -69,16 +69,16 @@ export function CustomerItem({ customer, companyId }: CustomerItemProps) {
                 <div className="flex items-center gap-1">
                     {isEditing ? (
                         <>
-                            <Button variant="outline" size="sm" className="h-8 w-8" onClick={handleSave} disabled={processing}>
+                            <Button variant="secondary" size="sm" className="h-8 w-8" onClick={handleSave} disabled={processing}>
                                 {processing ? <Spinner className="size-4" /> : <Check className="size-4" />}
                             </Button>
-                            <Button variant="outline" size="sm" className="h-8 w-8" onClick={handleCancel} disabled={processing}>
+                            <Button variant="secondary" size="sm" className="h-8 w-8" onClick={handleCancel} disabled={processing}>
                                 <X className="size-4" />
                             </Button>
                         </>
                     ) : (
                         <>
-                            <Button variant="outline" size="sm" className="h-8 w-8" onClick={handleEdit}>
+                            <Button variant="secondary" size="sm" className="h-8 w-8" onClick={handleEdit}>
                                 <Pencil className="size-4" />
                             </Button>
                             <DialogDelete
@@ -110,7 +110,7 @@ export function CustomerItem({ customer, companyId }: CustomerItemProps) {
                         />
                     </Field>
 
-                    <div className="flex items-center gap-4 rounded-lg border bg-card p-4">
+                    <div className="flex items-center gap-4 rounded-lg border border-primary bg-transparent p-4 dark:bg-input/30">
                         <Switch id={`primary-switch-${customer.id}`} checked={data.is_primary} onCheckedChange={(checked) => setData('is_primary', checked as boolean)} />
                         <div className="flex-1">
                             <Label htmlFor={`primary-switch-${customer.id}`} className="cursor-pointer text-sm font-medium">

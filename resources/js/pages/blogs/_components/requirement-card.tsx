@@ -1,19 +1,21 @@
 import { ArrowDown, ArrowUp, GripVertical, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Field, FieldLabel } from '@/components/ui/field';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
+import type { ServiceStatus } from '@/types/service';
 
 export type LocalRequirementItem = {
     id?: number;
     _key: string;
     name: string;
-    description: string;
+    description: string | null;
     is_required: boolean;
-    document_format: string;
-    notes: string;
+    document_format: string | null;
+    notes: string | null;
     sort_order: number;
 };
 
@@ -21,9 +23,10 @@ export type LocalRequirementCategory = {
     id?: number;
     _key: string;
     name: string;
-    description: string;
+    description: string | null;
     sort_order: number;
     requirements: LocalRequirementItem[];
+    status: ServiceStatus;
 };
 
 type RequirementCardProps = {
@@ -34,11 +37,13 @@ type RequirementCardProps = {
     onDelete: () => void;
     onMoveUp: () => void;
     onMoveDown: () => void;
+    isEdit?: boolean | false;
+    errors?: Record<string, string>;
 };
 
 const uid = () => Math.random().toString(36).slice(2, 9);
 
-export function RequirementCard({ category, index, totalItems, onChange, onDelete, onMoveUp, onMoveDown }: RequirementCardProps) {
+export function RequirementCard({ category, index, totalItems, onChange, onDelete, onMoveUp, onMoveDown, isEdit, errors = {} }: RequirementCardProps) {
     const [requirementInput, setRequirementInput] = useState('');
 
     const update = (patch: Partial<LocalRequirementCategory>) => onChange({ ...category, ...patch });
@@ -74,8 +79,7 @@ export function RequirementCard({ category, index, totalItems, onChange, onDelet
         });
 
     return (
-        <div className="space-y-4 rounded-xl border border-primary/60 bg-input/30 p-4">
-            {/* Header */}
+        <div className="space-y-4 rounded-xl border border-primary/30 bg-input/30 p-4 dark:border-none">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-muted-foreground">
                     <GripVertical className="size-4 cursor-grab" />
@@ -96,22 +100,41 @@ export function RequirementCard({ category, index, totalItems, onChange, onDelet
                 </div>
             </div>
 
-            {/* Category Name */}
+            {/* Status */}
+            {isEdit && (
+                <Field>
+                    <FieldLabel>Status</FieldLabel>
+                    <Select value={category.status} onValueChange={(value) => update({ status: value as ServiceStatus })}>
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Pilih status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectItem value="active">Active</SelectItem>
+                                <SelectItem value="inactive">Inactive</SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                </Field>
+            )}
+
+            {/* Name */}
             <Field>
                 <FieldLabel>
                     Nama Kategori <span className="text-destructive">*</span>
                 </FieldLabel>
-                <Input value={category.name} onChange={(e) => update({ name: e.target.value })} placeholder="Contoh: Dokumen Pribadi Pemohon" />
+                <Input value={category.name} required onChange={(e) => update({ name: e.target.value })} placeholder="Contoh: Dokumen Pribadi Pemohon" />
+                {errors[`requirement_categories.${index}.name`] && <FieldError>{errors[`requirement_categories.${index}.name`]}</FieldError>}
             </Field>
 
-            {/* Category Description */}
+            {/* Description */}
             <Field>
                 <FieldLabel>Deskripsi Kategori</FieldLabel>
                 <Textarea
-                    value={category.description}
+                    value={category.description || ''}
                     onChange={(e) => update({ description: e.target.value })}
                     placeholder="Penjelasan singkat tentang kategori ini"
-                    className="min-h-16 resize-none"
+                    className="min-h-24 resize-none"
                     rows={2}
                 />
             </Field>
@@ -120,7 +143,7 @@ export function RequirementCard({ category, index, totalItems, onChange, onDelet
             <Field>
                 <FieldLabel>Daftar Persyaratan</FieldLabel>
                 {category.requirements.length > 0 && (
-                    <div className="mb-3 space-y-2">
+                    <div className="mb-3 space-y-4">
                         {category.requirements.map((req) => (
                             <div key={req._key} className="space-y-4 rounded-lg border border-border bg-muted/30 p-4">
                                 <div className="flex items-center gap-3">
@@ -136,21 +159,24 @@ export function RequirementCard({ category, index, totalItems, onChange, onDelet
                                         <Trash2 className="size-3.5" />
                                     </button>
                                 </div>
+                                {/* Requirement Description */}
                                 <Input
-                                    value={req.description}
+                                    value={req.description || ''}
                                     onChange={(e) => updateRequirement(req._key, { description: e.target.value })}
                                     placeholder="Deskripsi / keterangan"
                                     className="text-xs"
                                 />
                                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                    {/* Requirement Document Format */}
                                     <Input
-                                        value={req.document_format}
+                                        value={req.document_format || ''}
                                         onChange={(e) => updateRequirement(req._key, { document_format: e.target.value })}
                                         placeholder="Format (PDF, JPG, dll)"
                                         className="text-xs"
                                     />
+                                    {/* Requirement Notes */}
                                     <Input
-                                        value={req.notes}
+                                        value={req.notes || ''}
                                         onChange={(e) => updateRequirement(req._key, { notes: e.target.value })}
                                         placeholder="Catatan tambahan"
                                         className="text-xs"
@@ -161,6 +187,7 @@ export function RequirementCard({ category, index, totalItems, onChange, onDelet
                     </div>
                 )}
                 <div className="flex gap-2">
+                    {/* Requirement Name */}
                     <Input
                         value={requirementInput}
                         onChange={(e) => setRequirementInput(e.target.value)}

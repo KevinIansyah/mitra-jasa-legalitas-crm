@@ -39,7 +39,6 @@ export function DrawerEdit({ customerId, open, onOpenChange }: DrawerEditProps) 
                 .get(customers.edit(customerId).url)
                 .then((response) => {
                     const customer = response.data.customer;
-                    console.log(customer);
                     setData({
                         name: customer.name || '',
                         phone: customer.phone || '',
@@ -63,10 +62,27 @@ export function DrawerEdit({ customerId, open, onOpenChange }: DrawerEditProps) 
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        const id = toast.loading('Memproses...', {
+            description: 'Pelanggan sedang diperbarui.',
+        });
+
         put(customers.update(customerId).url, {
             preserveScroll: true,
             onSuccess: () => {
+                toast.success('Berhasil', {
+                    description: 'Pelanggan berhasil diperbarui.',
+                });
+
                 onOpenChange(false);
+            },
+            onError: () => {
+                toast.error('Gagal', {
+                    description: 'Pelanggan gagal diperbarui. Silakan periksa kembali data pelanggan yang diisi.',
+                });
+            },
+            onFinish: () => {
+                toast.dismiss(id);
             },
         });
     };
@@ -139,7 +155,7 @@ export function DrawerEdit({ customerId, open, onOpenChange }: DrawerEditProps) 
                                     Simpan Perubahan
                                 </Button>
                                 <DrawerClose asChild>
-                                    <Button variant="outline" type="button">
+                                    <Button variant="secondary" type="button">
                                         Batal
                                     </Button>
                                 </DrawerClose>
@@ -268,7 +284,7 @@ export function DrawerEdit({ customerId, open, onOpenChange }: DrawerEditProps) 
                                     )}
                                 </Button>
                                 <DrawerClose asChild>
-                                    <Button variant="outline" type="button">
+                                    <Button variant="secondary" type="button">
                                         Batal
                                     </Button>
                                 </DrawerClose>

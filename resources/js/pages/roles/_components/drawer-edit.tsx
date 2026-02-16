@@ -51,10 +51,26 @@ export function DrawerEdit({ roleId, open, onOpenChange }: DrawerEditProps) {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        const id = toast.loading('Memproses...', {
+            description: 'Role sedang diperbarui.',
+        });
+
         put(roles.update(roleId).url, {
             preserveScroll: true,
             onSuccess: () => {
+                toast.success('Berhasil', {
+                    description: 'Role berhasil diperbarui.',
+                });
                 onOpenChange(false);
+            },
+            onError: () => {
+                toast.error('Gagal', {
+                    description: 'Role gagal diperbarui. Silakan periksa kembali data role yang diisi.',
+                });
+            },
+            onFinish: () => {
+                toast.dismiss(id);
             },
         });
     };

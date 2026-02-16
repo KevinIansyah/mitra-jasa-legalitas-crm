@@ -1,8 +1,10 @@
 import { ArrowDown, ArrowUp, GripVertical, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Field, FieldLabel } from '@/components/ui/field';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import type { ServiceStatus } from '@/types/service';
 
 export type LocalFaq = {
     id?: number;
@@ -10,6 +12,7 @@ export type LocalFaq = {
     question: string;
     answer: string;
     sort_order: number;
+    status: ServiceStatus;
 };
 
 type FaqCardProps = {
@@ -20,14 +23,15 @@ type FaqCardProps = {
     onDelete: () => void;
     onMoveUp: () => void;
     onMoveDown: () => void;
+    isEdit?: boolean | false;
+    errors?: Record<string, string>;
 };
 
-export function FaqCard({ faq, index, totalItems, onChange, onDelete, onMoveUp, onMoveDown }: FaqCardProps) {
+export function FaqCard({ faq, index, totalItems, onChange, onDelete, onMoveUp, onMoveDown, isEdit, errors = {} }: FaqCardProps) {
     const update = (patch: Partial<LocalFaq>) => onChange({ ...faq, ...patch });
 
     return (
-        <div className="space-y-4 rounded-xl border border-primary/60 bg-input/30 p-4">
-            {/* Header */}
+        <div className="space-y-4 rounded-xl border border-primary/30 bg-input/30 p-4 dark:border-none">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-muted-foreground">
                     <GripVertical className="size-4 cursor-grab" />
@@ -48,26 +52,47 @@ export function FaqCard({ faq, index, totalItems, onChange, onDelete, onMoveUp, 
                 </div>
             </div>
 
-            {/* FAQ Question */}
+            {/* Status */}
+            {isEdit && (
+                <Field>
+                    <FieldLabel>Status</FieldLabel>
+                    <Select value={faq.status || 'active'} required onValueChange={(value) => update({ status: value as ServiceStatus })}>
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Pilih status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectItem value="active">Active</SelectItem>
+                                <SelectItem value="inactive">Inactive</SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                </Field>
+            )}
+
+            {/* Question */}
             <Field>
                 <FieldLabel>
                     Pertanyaan <span className="text-destructive">*</span>
                 </FieldLabel>
-                <Input value={faq.question} onChange={(e) => update({ question: e.target.value })} placeholder="Contoh: Berapa lama proses pengurusan?" />
+                <Input value={faq.question} required onChange={(e) => update({ question: e.target.value })} placeholder="Contoh: Berapa lama proses pengurusan?" />
+                {errors[`faqs.${index}.question`] && <FieldError>{errors[`faqs.${index}.question`]}</FieldError>}
             </Field>
 
-            {/* FAQ Answer */}
+            {/* Answer */}
             <Field>
                 <FieldLabel>
                     Jawaban <span className="text-destructive">*</span>
                 </FieldLabel>
                 <Textarea
                     value={faq.answer}
+                    required
                     onChange={(e) => update({ answer: e.target.value })}
                     placeholder="Jelaskan jawaban secara detail"
                     className="min-h-32 resize-none"
                     rows={6}
                 />
+                {errors[`faqs.${index}.answer`] && <FieldError>{errors[`faqs.${index}.answer`]}</FieldError>}
             </Field>
         </div>
     );

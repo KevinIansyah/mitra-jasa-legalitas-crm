@@ -37,6 +37,16 @@ class RolePermissionSeeder extends Seeder
             'create-service-categories',
             'edit-service-categories',
             'delete-service-categories',
+
+            'view-projects',
+            'create-projects',
+            'edit-projects',
+            'delete-projects',
+
+            'view-project-templates',
+            'create-project-templates',
+            'edit-project-templates',
+            'delete-project-templates',
         ];
 
         foreach ($permissions as $permission) {

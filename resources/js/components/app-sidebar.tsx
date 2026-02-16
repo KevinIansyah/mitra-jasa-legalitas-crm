@@ -1,6 +1,6 @@
 'use client';
 
-import { Briefcase, ChartBar, Clock, Command, DollarSign, FileText, LayoutGrid, MessageSquare, PenLine, Search, Settings, Settings2, Table2, Users } from 'lucide-react';
+import { Briefcase, ChartBar, Clock, Command, DollarSign, LayoutGrid, MessageSquare, Newspaper, Settings, Settings2, Table2, Users } from 'lucide-react';
 import * as React from 'react';
 
 import { NavMain } from '@/components/nav-main';
@@ -9,6 +9,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { usePermission } from '@/hooks/use-permission';
 import contacts from '@/routes/contacts';
 import dashboard from '@/routes/dashboard';
+import projects from '@/routes/projects';
 import roles from '@/routes/roles';
 import services from '@/routes/services';
 import type { NavItem, NavSection } from '@/types';
@@ -65,15 +66,15 @@ const allNavData: {
                 icon: Table2,
                 items: [
                     { title: 'Semua Project', url: '#' },
-                    { title: 'Milestone & Progress', url: '#' },
-                    { title: 'Template Project (AI)', url: '#' },
+                    // { title: 'Milestone & Progress', url: '' },
+                    { title: 'Template', url: projects.templates.index().url },
                 ],
             },
-            {
-                title: 'Dokumen',
-                url: '#',
-                icon: FileText,
-            },
+            // {
+            //     title: 'Dokumen',
+            //     url: '#',
+            //     icon: FileText,
+            // },
         ],
     },
 
@@ -134,25 +135,43 @@ const allNavData: {
                 ],
             },
             {
-                title: 'Content',
+                title: 'Blog',
                 url: '#',
-                icon: PenLine,
+                icon: Newspaper,
+                permission: ['view-services', 'view-service-categories'],
                 items: [
-                    { title: 'Halaman Layanan', url: '#' },
-                    { title: 'Blog', url: '#' },
-                    { title: 'Email Templates', url: '#' },
+                    {
+                        title: 'Semua Blog',
+                        url: services.index().url,
+                        permission: 'view-services',
+                    },
+                    {
+                        title: 'Tag',
+                        url: services.categories.index().url,
+                        permission: 'view-service-categories',
+                    },
                 ],
             },
-            {
-                title: 'SEO',
-                url: '#',
-                icon: Search,
-                items: [
-                    { title: 'AI SEO Dashboard', url: '#' },
-                    { title: 'Schema Management', url: '#' },
-                    { title: 'Media & Image Optimizer', url: '#' },
-                ],
-            },
+            // {
+            //     title: 'Content',
+            //     url: '#',
+            //     icon: PenLine,
+            //     items: [
+            //         { title: 'Halaman Layanan', url: '#' },
+            //         { title: 'Blog', url: '#' },
+            //         { title: 'Email Templates', url: '#' },
+            //     ],
+            // },
+            // {
+            //     title: 'SEO',
+            //     url: '#',
+            //     icon: Search,
+            //     items: [
+            //         { title: 'AI SEO Dashboard', url: '#' },
+            //         { title: 'Schema Management', url: '#' },
+            //         { title: 'Media & Image Optimizer', url: '#' },
+            //     ],
+            // },
         ],
     },
 

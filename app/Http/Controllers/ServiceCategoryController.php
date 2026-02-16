@@ -46,7 +46,7 @@ class ServiceCategoryController extends Controller
 
         ServiceCategory::create($validated);
 
-        return back()->with('success', 'Kategori berhasil dibuat.');
+        return back()->with('success', 'Kategori berhasil ditambahkan.');
     }
 
     /**
