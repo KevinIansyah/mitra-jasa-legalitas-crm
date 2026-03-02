@@ -2,6 +2,7 @@ import { useForm } from '@inertiajs/react';
 import { Check, Pencil, X } from 'lucide-react';
 
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { DialogDelete } from '@/components/dialog-delete';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -42,10 +43,20 @@ export function CustomerItem({ customer, companyId }: CustomerItemProps) {
     };
 
     const handleSave = () => {
+        const toastId = toast.loading('Memproses...', { description: 'Data sedang diperbarui.' });
+
         patch(companies.updateCustomer({ company: companyId, customer: customer.id }).url, {
             preserveScroll: true,
             onSuccess: () => {
                 setIsEditing(false);
+
+                toast.success('Berhasil', { description: 'Data berhasil diperbarui.' });
+            },
+            onError: () => {
+                toast.error('Gagal', { description: 'Data gagal diperbarui.' });
+            },
+            onFinish: () => {
+                toast.dismiss(toastId);
             },
         });
     };

@@ -48,11 +48,25 @@ export function NavMain({ section }: { section: NavSection }) {
         // =========================
 
         if (itemPath === '/projects') {
-            return currentPath === '/projects' || (currentPath.startsWith('/projects/') && !currentPath.startsWith('/projects/categories'));
+            return (
+                currentPath === '/projects' ||
+                (currentPath.startsWith('/projects/') &&
+                    !currentPath.startsWith('/projects/templates') &&
+                    !currentPath.startsWith('/projects/documents') &&
+                    !currentPath.startsWith('/projects/deliverables'))
+            );
         }
 
-        if (itemPath === '/projects/categories') {
-            return currentPath.startsWith('/projects/categories');
+        if (itemPath === '/projects/templates') {
+            return currentPath.startsWith('/projects/templates');
+        }
+
+        if (itemPath === '/projects/documents') {
+            return currentPath.startsWith('/projects/documents');
+        }
+
+        if (itemPath === '/projects/deliverables') {
+            return currentPath.startsWith('/projects/deliverables');
         }
 
         return currentPath.startsWith(itemPath);

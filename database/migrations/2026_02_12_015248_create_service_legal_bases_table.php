@@ -16,15 +16,15 @@ return new class extends Migration
             $table->foreignId('service_id')->constrained()->cascadeOnDelete();
 
             // Document Type
-            $table->string('document_type'); // e.g., "Undang-Undang", "Peraturan Pemerintah", etc.
+            $table->string('document_type');    // e.g., "Undang-Undang", "Peraturan Pemerintah", etc.
 
             // Document Details
-            $table->string('document_number'); // e.g., "No. 40 Tahun 2007"
-            $table->string('title'); // e.g., "Tentang Perseroan Terbatas"
+            $table->string('document_number');  // e.g., "No. 40 Tahun 2007"
+            $table->string('title');            // e.g., "Tentang Perseroan Terbatas"
 
             // Additional Information
             $table->date('issued_date')->nullable();
-            $table->string('url')->nullable(); // Link to the document
+            $table->string('url')->nullable();  // Link to the document
             $table->text('description')->nullable();
 
             $table->integer('sort_order')->default(0);

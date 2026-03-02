@@ -10,6 +10,8 @@ import { usePermission } from '@/hooks/use-permission';
 import contacts from '@/routes/contacts';
 import dashboard from '@/routes/dashboard';
 import projects from '@/routes/projects';
+import { index as deliverablesIndex } from '@/routes/projects/deliverables';
+import { index as documentsIndex } from '@/routes/projects/documents';
 import roles from '@/routes/roles';
 import services from '@/routes/services';
 import type { NavItem, NavSection } from '@/types';
@@ -62,12 +64,30 @@ const allNavData: {
             },
             {
                 title: 'Project',
-                url: '#',
+                url: projects.index().url,
                 icon: Table2,
+                permission: ['view-projects', 'view-project-templates'],
                 items: [
-                    { title: 'Semua Project', url: '#' },
-                    // { title: 'Milestone & Progress', url: '' },
-                    { title: 'Template', url: projects.templates.index().url },
+                    {
+                        title: 'Semua Project',
+                        url: projects.index().url,
+                        permission: 'view-projects',
+                    },
+                    {
+                        title: 'Dokumen',
+                        url: documentsIndex().url,
+                        permission: 'view-project-documents',
+                    },
+                    {
+                        title: 'Hasil Akhir',
+                        url: deliverablesIndex().url,
+                        permission: 'view-project-deliverables',
+                    },
+                    {
+                        title: 'Template',
+                        url: projects.templates.index().url,
+                        permission: 'view-project-templates',
+                    },
                 ],
             },
             // {

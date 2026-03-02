@@ -42,8 +42,12 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:roles,name',
+            'name'       => 'required|string|max:255|unique:roles,name',
             'guard_name' => 'nullable|string',
+        ], [
+            'name.required' => 'Nama role wajib diisi.',
+            'name.max'      => 'Nama role maksimal 255 karakter.',
+            'name.unique'   => 'Nama role sudah digunakan.',
         ]);
 
         Role::create($validated);
@@ -67,8 +71,12 @@ class RoleController extends Controller
     public function update(Request $request, Role $role)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:roles,name,' . $role->id,
+            'name'       => 'required|string|max:255|unique:roles,name,' . $role->id,
             'guard_name' => 'nullable|string',
+        ], [
+            'name.required' => 'Nama role wajib diisi.',
+            'name.max'      => 'Nama role maksimal 255 karakter.',
+            'name.unique'   => 'Nama role sudah digunakan.',
         ]);
 
         $role->update($validated);
@@ -110,8 +118,12 @@ class RoleController extends Controller
     public function updatePermission(Request $request, Role $role)
     {
         $validated = $request->validate([
-            'permissions' => 'required|array',
+            'permissions'   => 'required|array',
             'permissions.*' => 'exists:permissions,name',
+        ], [
+            'permissions.required' => 'Minimal satu hak akses wajib dipilih.',
+            'permissions.array'    => 'Format hak akses tidak valid.',
+            'permissions.*.exists' => 'Hak akses yang dipilih tidak valid.',
         ]);
 
         $role->syncPermissions($validated['permissions']);

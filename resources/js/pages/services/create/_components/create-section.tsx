@@ -1,5 +1,5 @@
 import { useForm } from '@inertiajs/react';
-import { ImagePlus, Plus, TableOfContents, X } from 'lucide-react';
+import { ImagePlus, Pencil, Plus, TableOfContents, Trash } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 
 import { toast } from 'sonner';
@@ -15,6 +15,7 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import {
     deleteItemAndReindex,
     formatSize,
@@ -359,7 +360,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                     <TableOfContents />
                                     <AlertTitle>Panduan Ukuran Gambar Ideal</AlertTitle>
                                     <AlertDescription>
-                                        <ul className="list-inside list-disc space-y-1.5 text-sm">
+                                        <ul className="mt-2 list-inside list-disc space-y-1.5 text-sm text-foreground/70">
                                             <li>
                                                 <strong>Hero Background:</strong> 1920x1080px (16:9 aspect ratio)
                                                 <br />
@@ -371,7 +372,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                                 <span className="ml-5">Untuk card vertikal di sidebar proposal</span>
                                             </li>
                                             <li>
-                                                <strong>Format & Kualitas:</strong> JPG/PNG, maksimal 1MB
+                                                <strong>Format & Kualitas:</strong> JPG/PNG, maksimal 5MB
                                                 <br />
                                                 <span className="ml-5">Kompresi 80-90% untuk performa optimal</span>
                                             </li>
@@ -416,7 +417,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                                 </p>
                                             </div>
                                             <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-                                                JPG · PNG · WEBP · GIF · SVG · Maks. 1 MB
+                                                JPG · PNG · WEBP · GIF · SVG · Maks. 5 MB
                                             </span>
                                         </div>
                                         {imageError && <FieldError>{imageError}</FieldError>}
@@ -424,18 +425,8 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                     </>
                                 ) : (
                                     <div className="relative overflow-visible">
-                                        <Button
-                                            type="button"
-                                            variant="destructive"
-                                            size="icon"
-                                            onClick={handleRemoveImage}
-                                            className="absolute -top-3 -right-3 z-10 h-7 w-7 rounded-full shadow-md"
-                                            title="Hapus gambar"
-                                        >
-                                            <X className="size-3.5" />
-                                        </Button>
                                         <img src={imagePreview.src} alt={imagePreview.name} className="aspect-video w-full rounded-lg border border-border object-cover" />
-                                        <div className="mt-2 flex items-center gap-3 rounded-lg border border-border bg-muted/40 px-3 py-2">
+                                        <div className="mt-2 flex items-center gap-3 rounded-lg border border-primary bg-input/30 px-3 py-2">
                                             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10">
                                                 <ImagePlus className="size-4 text-primary" />
                                             </div>
@@ -443,13 +434,26 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                                 <p className="truncate text-sm font-medium text-foreground">{imagePreview.name}</p>
                                                 <p className="text-xs text-muted-foreground">{formatSize(imagePreview.size)}</p>
                                             </div>
-                                            <button
-                                                type="button"
-                                                onClick={() => fileInputRef.current?.click()}
-                                                className="shrink-0 text-xs text-primary underline underline-offset-2 hover:text-primary/80"
-                                            >
-                                                Ganti
-                                            </button>
+
+                                            <div className="space-x-1">
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <Button type="button" variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} className="h-8 w-8">
+                                                            <Pencil className="size-3.5" />
+                                                        </Button>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>Ganti File</TooltipContent>
+                                                </Tooltip>
+
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <Button type="button" variant="destructive" size="sm" onClick={handleRemoveImage} className="h-8 w-8">
+                                                            <Trash className="size-3.5" />
+                                                        </Button>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>Hapus File</TooltipContent>
+                                                </Tooltip>
+                                            </div>
                                         </div>
                                     </div>
                                 )}
@@ -552,12 +556,12 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                     <p className="mt-0.5 text-sm text-muted-foreground">Kelola paket harga dengan dokumen/fitur yang berbeda untuk setiap paket</p>
                                 </div>
                                 <div className="flex w-full items-center gap-2 md:w-auto">
-                                    {/* <Button type="button" variant="outline" size="sm" className="flex-1 shrink-0 gap-1.5 md:flex-0" disabled>
+                                    {/* <Button type="button" variant="outline" size="sm" className="flex-1 shrink-0 gap-1.5 md:flex-none" disabled>
                                         <Sparkles className="size-3.5" />
                                         AI Generate
                                     </Button> */}
                                     {data.packages.length > 0 && (
-                                        <Button type="button" onClick={addPackage} size="sm" className="flex-1 gap-1.5 md:flex-0">
+                                        <Button type="button" onClick={addPackage} size="sm" className="flex-1 gap-1.5 md:flex-none">
                                             <Plus className="size-4" />
                                             Tambah Paket
                                         </Button>
@@ -593,7 +597,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
 
                             {data.packages.length > 0 && (
                                 <div className="flex w-full justify-end">
-                                    <Button type="button" onClick={addPackage} size="sm" className="flex-1 gap-1.5 md:flex-0">
+                                    <Button type="button" onClick={addPackage} size="sm" className="flex-1 gap-1.5 md:flex-none">
                                         <Plus className="size-4" />
                                         Tambah Paket
                                     </Button>
@@ -649,7 +653,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
 
                             {data.faqs.length > 0 && (
                                 <div className="flex w-full justify-end">
-                                    <Button type="button" onClick={addFaq} size="sm" className="flex-1 gap-1.5 md:flex-0">
+                                    <Button type="button" onClick={addFaq} size="sm" className="flex-1 gap-1.5 md:flex-none">
                                         <Plus className="size-4" />
                                         Tambah FAQ
                                     </Button>
@@ -705,7 +709,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
 
                             {data.legal_bases.length > 0 && (
                                 <div className="flex w-full justify-end">
-                                    <Button type="button" onClick={addLegalBasis} size="sm" className="flex-1 gap-1.5 md:flex-0">
+                                    <Button type="button" onClick={addLegalBasis} size="sm" className="flex-1 gap-1.5 md:flex-none">
                                         <Plus className="size-4" />
                                         Tambah Dasar Hukum
                                     </Button>
@@ -761,7 +765,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
 
                             {data.requirement_categories.length > 0 && (
                                 <div className="flex w-full justify-end">
-                                    <Button type="button" onClick={addRequirementCategory} size="sm" className="flex-1 gap-1.5 md:flex-0">
+                                    <Button type="button" onClick={addRequirementCategory} size="sm" className="flex-1 gap-1.5 md:flex-none">
                                         <Plus className="size-4" />
                                         Tambah Kategori
                                     </Button>
@@ -817,7 +821,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
 
                             {data.process_steps.length > 0 && (
                                 <div className="flex w-full justify-end">
-                                    <Button type="button" onClick={addPackage} size="sm" className="flex-1 gap-1.5 md:flex-0">
+                                    <Button type="button" onClick={addProcessStep} size="sm" className="flex-1 gap-1.5 md:flex-none">
                                         <Plus className="size-4" />
                                         Tambah Tahap
                                     </Button>

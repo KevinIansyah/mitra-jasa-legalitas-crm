@@ -23,9 +23,10 @@ class Company extends Model
         'notes',
     ];
 
-    /**
-     * Get all Customers for this company
-     */
+    // ============================================================
+    // RELATIONS
+    // ============================================================
+
     public function customers()
     {
         return $this->belongsToMany(Customer::class, 'company_customer')
@@ -33,14 +34,24 @@ class Company extends Model
             ->withTimestamps();
     }
 
-    /**
-     * Get primary Customer for this company
-     */
+    // ============================================================
+    // SCOPES
+    // ============================================================
+
     public function primaryCustomer()
     {
         return $this->belongsToMany(Customer::class, 'company_customer')
             ->wherePivot('is_primary', true)
             ->withPivot('is_primary', 'position_at_company')
             ->withTimestamps();
+    }
+    
+    public function scopeSearch($query, $search)
+    {
+        return $query->where(function ($query) use ($search) {
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('city', 'like', "%{$search}%")
+                ->orWhere('province', 'like', "%{$search}%");
+        });
     }
 }

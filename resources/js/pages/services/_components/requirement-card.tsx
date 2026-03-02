@@ -5,13 +5,13 @@ import { ServiceCardAction } from '@/components/service-card-action';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import { uid } from '@/lib/service';
-import type { ServiceStatus } from '@/types/service';
+import { DOCUMENT_FORMAT_OPTIONS, type ServiceStatus } from '@/types/service';
 
 export type LocalRequirementItem = {
     id?: number;
@@ -62,7 +62,7 @@ export function RequirementCard({ category, index, totalItems, onChange, onDelet
                     name: trimmed,
                     description: '',
                     is_required: true,
-                    document_format: '',
+                    document_format: 'pdf',
                     notes: '',
                     sort_order: category.requirements.length,
                 },
@@ -132,6 +132,7 @@ export function RequirementCard({ category, index, totalItems, onChange, onDelet
                     className="min-h-24 resize-none"
                     rows={2}
                 />
+                {errors[`requirement_categories.${index}.description`] && <FieldError>{errors[`requirement_categories.${index}.description`]}</FieldError>}
             </Field>
 
             {/* Requirements List */}
@@ -139,7 +140,7 @@ export function RequirementCard({ category, index, totalItems, onChange, onDelet
                 <FieldLabel>Daftar Persyaratan</FieldLabel>
                 {category.requirements.length > 0 && (
                     <div className="mb-3 space-y-4">
-                        {category.requirements.map((req) => (
+                        {category.requirements.map((req, indexRequirement) => (
                             <div key={req._key} className="space-y-4 rounded-lg border border-border bg-muted/30 p-4">
                                 <div className="flex items-center gap-3">
                                     <Switch id={`req-${req._key}`} checked={req.is_required} onCheckedChange={(val) => updateRequirement(req._key, { is_required: val })} />
@@ -164,28 +165,52 @@ export function RequirementCard({ category, index, totalItems, onChange, onDelet
                                 </div>
 
                                 {/* Requirement Description */}
-                                <Input
-                                    value={req.description || ''}
-                                    onChange={(e) => updateRequirement(req._key, { description: e.target.value })}
-                                    placeholder="Deskripsi / keterangan"
-                                    className="text-xs"
-                                />
+                                <Field>
+                                    <FieldLabel>Deskripsi Persyaratan</FieldLabel>
+                                    <Input
+                                        value={req.description || ''}
+                                        onChange={(e) => updateRequirement(req._key, { description: e.target.value })}
+                                        placeholder="Deskripsi / keterangan"
+                                    />
+                                    {errors[`requirement_categories.${index}.requirements.${indexRequirement}.description`] && (
+                                        <FieldError>{errors[`requirement_categories.${index}.requirements.${indexRequirement}.description`]}</FieldError>
+                                    )}
+                                </Field>
+
                                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                     {/* Requirement Document Format */}
-                                    <Input
-                                        value={req.document_format || ''}
-                                        onChange={(e) => updateRequirement(req._key, { document_format: e.target.value })}
-                                        placeholder="Format (PDF, JPG, dll)"
-                                        className="text-xs"
-                                    />
+                                    <Field>
+                                        <FieldLabel>
+                                            Format Dokumen <span className="text-destructive">*</span>
+                                        </FieldLabel>
+                                        <Select value={req.document_format || 'pdf'} required onValueChange={(value) => updateRequirement(req._key, { document_format: value })}>
+                                            <SelectTrigger id="document_format">
+                                                <SelectValue placeholder="Pilih format dokumen" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    <SelectLabel>Format Dokumen</SelectLabel>
+                                                    {DOCUMENT_FORMAT_OPTIONS.map((format) => (
+                                                        <SelectItem key={format.value} value={format.value}>
+                                                            {format.label}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                        {errors[`requirement_categories.${index}.requirements.${indexRequirement}.document_format`] && (
+                                            <FieldError>{errors[`requirement_categories.${index}.requirements.${indexRequirement}.document_format`]}</FieldError>
+                                        )}
+                                    </Field>
 
                                     {/* Requirement Notes */}
-                                    <Input
-                                        value={req.notes || ''}
-                                        onChange={(e) => updateRequirement(req._key, { notes: e.target.value })}
-                                        placeholder="Catatan tambahan"
-                                        className="text-xs"
-                                    />
+                                    <Field>
+                                        <FieldLabel>Catatan Tambahan</FieldLabel>
+                                        <Input value={req.notes || ''} onChange={(e) => updateRequirement(req._key, { notes: e.target.value })} placeholder="Catatan tambahan" />
+                                        {errors[`requirement_categories.${index}.requirements.${indexRequirement}.notes`] && (
+                                            <FieldError>{errors[`requirement_categories.${index}.requirements.${indexRequirement}.notes`]}</FieldError>
+                                        )}
+                                    </Field>
                                 </div>
                             </div>
                         ))}

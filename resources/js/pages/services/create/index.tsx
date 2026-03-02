@@ -24,7 +24,7 @@ export default function Page() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Edit Layanan" />
+            <Head title="Tambah Layanan" />
             <div className="p-4 md:p-6">
                 <Heading title="Tambah Layanan" description="Tambahkan layanan baru untuk ditampilkan di sistem" />
 

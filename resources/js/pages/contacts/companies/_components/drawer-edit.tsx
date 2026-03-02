@@ -2,6 +2,7 @@ import { useForm } from '@inertiajs/react';
 import axios from 'axios';
 import * as React from 'react';
 import { toast } from 'sonner';
+
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
@@ -10,9 +11,9 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
-import { categoryBusinessOptions, statusLegalOptions } from '@/constans';
+
 import companies from '@/routes/contacts/companies';
-import type { CompanyFormData } from '@/types/contact';
+import { CATEGORY_BUSINESS, STATUS_LEGAL, type CompanyFormData } from '@/types/contact';
 
 type DrawerEditProps = {
     companyId: number;
@@ -91,10 +92,9 @@ export function DrawerEdit({ companyId, open, onOpenChange }: DrawerEditProps) {
 
                 onOpenChange(false);
             },
-            onError: () => {
-                toast.error('Gagal', {
-                    description: 'Perusahaan gagal diperbarui. Silakan periksa kembali data perusahaan yang diisi.',
-                });
+            onError: (errors) => {
+                const msg = Object.values(errors)[0] ?? 'Terjadi kesalahan saat memperbarui perusahaan, coba lagi.';
+                toast.error('Gagal', { description: String(msg) });
             },
             onFinish: () => {
                 toast.dismiss(id);
@@ -111,7 +111,7 @@ export function DrawerEdit({ companyId, open, onOpenChange }: DrawerEditProps) {
                     loadingFocusRef.current?.focus();
                 }}
             >
-                <div className="mx-auto flex w-full max-w-lg flex-1 flex-col overflow-y-auto">
+                <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 overflow-y-auto">
                     <DrawerHeader className="px-4">
                         <DrawerTitle>Edit Pelanggan</DrawerTitle>
                         <DrawerDescription>Perbarui data pelanggan yang sudah ada melalui formulir di bawah ini.</DrawerDescription>
@@ -319,7 +319,7 @@ export function DrawerEdit({ companyId, open, onOpenChange }: DrawerEditProps) {
                                             <SelectContent>
                                                 <SelectGroup>
                                                     <SelectLabel>Status Legal</SelectLabel>
-                                                    {statusLegalOptions.map((item) => (
+                                                    {STATUS_LEGAL.map((item) => (
                                                         <SelectItem key={item.value} value={item.value}>
                                                             {item.label}
                                                         </SelectItem>
@@ -341,7 +341,7 @@ export function DrawerEdit({ companyId, open, onOpenChange }: DrawerEditProps) {
                                             <SelectContent>
                                                 <SelectGroup>
                                                     <SelectLabel>Kategori Bisnis</SelectLabel>
-                                                    {categoryBusinessOptions.map((item) => (
+                                                    {CATEGORY_BUSINESS.map((item) => (
                                                         <SelectItem key={item.value} value={item.value}>
                                                             {item.label}
                                                         </SelectItem>

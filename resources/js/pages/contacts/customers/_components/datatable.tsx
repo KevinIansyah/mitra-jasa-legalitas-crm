@@ -2,15 +2,18 @@ import type { VisibilityState } from '@tanstack/react-table';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { ChevronDown, ChevronLeftIcon, ChevronRightIcon, ChevronsLeftIcon, ChevronsRightIcon, Filter, Search, X } from 'lucide-react';
 import * as React from 'react';
+
 import { HasPermission } from '@/components/has-permission';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Field, FieldLabel } from '@/components/ui/field';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
 import customers from '@/routes/contacts/customers';
 import type { Customer } from '@/types/contact';
@@ -28,6 +31,7 @@ interface DataTableProps {
         search?: string;
         tier?: string;
         status?: string;
+        have_account?: string;
     };
 }
 
@@ -69,7 +73,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                 <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
                     <div className="flex w-full flex-1 items-center gap-2 md:w-auto">
                         <InputGroup className="max-w-sm">
-                            <InputGroupInput placeholder="Cari nama pelanggan..." value={searchValue} onChange={handleSearchChange} />
+                            <InputGroupInput placeholder="Cari nama, email, atau nomor telepon pelanggan..." value={searchValue} onChange={handleSearchChange} />
                             <InputGroupAddon>
                                 <Search />
                             </InputGroupAddon>
@@ -94,14 +98,15 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                                 </SheetHeader>
 
                                 <div className="mt-6 space-y-4 px-4">
-                                    <div className="space-y-2">
-                                        <Label>Tier Pelanggan</Label>
+                                    <Field>
+                                        <FieldLabel htmlFor="tier">Tier Pelanggan</FieldLabel>
                                         <Select value={filters.tier || ''} onValueChange={(value) => updateFilter('tier', value || undefined)}>
                                             <SelectTrigger className="w-full">
                                                 <SelectValue placeholder="Pilih tier" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
+                                                    <SelectLabel>Tier Pelanggan</SelectLabel>
                                                     <SelectItem value="bronze">Bronze</SelectItem>
                                                     <SelectItem value="silver">Silver</SelectItem>
                                                     <SelectItem value="gold">Gold</SelectItem>
@@ -109,22 +114,39 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
-                                    </div>
+                                    </Field>
 
-                                    <div className="space-y-2">
-                                        <Label>Status</Label>
+                                    <Field>
+                                        <FieldLabel htmlFor="status">Status</FieldLabel>
                                         <Select value={filters.status || ''} onValueChange={(value) => updateFilter('status', value || undefined)}>
                                             <SelectTrigger className="w-full">
                                                 <SelectValue placeholder="Pilih status" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
+                                                    <SelectLabel>Status</SelectLabel>
                                                     <SelectItem value="active">Active</SelectItem>
                                                     <SelectItem value="inactive">Inactive</SelectItem>
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
-                                    </div>
+                                    </Field>
+
+                                    <Field>
+                                        <FieldLabel htmlFor="have_account">Kepemilikan Akun</FieldLabel>
+                                        <Select value={filters.have_account || ''} onValueChange={(value) => updateFilter('have_account', value || undefined)}>
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Pilih kepemilikan akun" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    <SelectLabel>Kepemilikan Akun</SelectLabel>
+                                                    <SelectItem value="registered">Terdaftar</SelectItem>
+                                                    <SelectItem value="unregistered">Belum Terdaftar</SelectItem>
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    </Field>
 
                                     {activeFiltersCount > 0 && (
                                         <Button className="w-full" onClick={resetFilters}>
@@ -173,7 +195,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                             </Badge>
                         )}
                         {filters.tier && (
-                            <Badge variant="secondary" className="flex items-center gap-2">
+                            <Badge variant="secondary" className="flex items-center gap-2 capitalize">
                                 Tier: {filters.tier}
                                 <Button variant="ghost" size="sm" className="h-6 w-6 text-xs" onClick={() => updateFilter('tier', undefined)}>
                                     <X className="size-3" />
@@ -181,9 +203,17 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                             </Badge>
                         )}
                         {filters.status && (
-                            <Badge variant="secondary" className="gap-2">
+                            <Badge variant="secondary" className="gap-2 capitalize">
                                 Status: {filters.status}
                                 <Button variant="ghost" size="sm" className="h-6 w-6 text-xs" onClick={() => updateFilter('status', undefined)}>
+                                    <X className="size-3" />
+                                </Button>
+                            </Badge>
+                        )}
+                        {filters.have_account && (
+                            <Badge variant="secondary" className="gap-2 capitalize">
+                                Akun: {filters.have_account === 'registered' ? 'Terdaftar' : 'Belum Terdaftar'}
+                                <Button variant="ghost" size="sm" className="h-6 w-6 text-xs" onClick={() => updateFilter('have_account', undefined)}>
                                     <X className="size-3" />
                                 </Button>
                             </Badge>
@@ -195,14 +225,14 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                 )}
             </div>
 
-            <div className="overflow-hidden rounded-md border-b">
+            <div className="overflow-hidden rounded-t-md border-b">
                 <Table>
-                    <TableHeader className="bg-primary hover:bg-primary">
+                    <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
+                            <TableRow key={headerGroup.id} className="border-none">
                                 {headerGroup.headers.map((header) => {
                                     return (
-                                        <TableHead key={header.id} className="font-medium text-background">
+                                        <TableHead key={header.id}>
                                             {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                         </TableHead>
                                     );

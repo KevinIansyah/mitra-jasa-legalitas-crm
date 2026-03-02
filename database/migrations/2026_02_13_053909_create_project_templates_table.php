@@ -13,17 +13,31 @@ return new class extends Migration
     {
         Schema::create('project_templates', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('service_id')
-                ->nullable()
-                ->constrained('services')
-                ->nullOnDelete();
+
+            // Project
+            $table->foreignId('service_id')->nullable()->constrained('services')->nullOnDelete();
+
+            // Basic Info
             $table->string('name');
             $table->text('description')->nullable();
+
+            // Timeline
+            $table->integer('estimated_duration')->nullable();
             $table->integer('estimated_duration_days')->nullable();
+
+            // Milestones
             $table->json('milestones')->nullable();
+
+            // Documents
             $table->json('documents')->nullable();
+
+            // Notes
             $table->text('notes')->nullable();
+
+            // Status
             $table->enum('status', ['active', 'inactive'])->default('active');
+
+
             $table->softDeletes();
             $table->timestamps();
         });

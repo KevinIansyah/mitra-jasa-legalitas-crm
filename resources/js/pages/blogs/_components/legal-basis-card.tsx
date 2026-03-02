@@ -1,4 +1,5 @@
 import { ArrowDown, ArrowUp, Calendar, GripVertical, Link as LinkIcon, Trash2 } from 'lucide-react';
+import { DatePicker } from '@/components/date-picker';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
@@ -132,7 +133,7 @@ export function LegalBasisCard({ legalBasis, index, totalItems, onChange, onDele
                     <FieldLabel>Tanggal Terbit</FieldLabel>
                     <div className="relative">
                         <Calendar className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input type="date" value={legalBasis.issued_date ?? ''} onChange={(e) => update({ issued_date: e.target.value })} className="pl-10" />
+                        <DatePicker value={legalBasis.issued_date ?? ''} onChange={(value) => update({ issued_date: value })} fromYear={2000} toYear={2040} />
                     </div>
                 </Field>
 

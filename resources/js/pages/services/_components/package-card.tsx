@@ -166,6 +166,7 @@ export function PackageCard({ pkg, index, totalItems, onChange, onDelete, onMove
                     placeholder="Penjelasan singkat tentang paket ini"
                     className="min-h-24 resize-none"
                 />
+                {errors[`packages.${index}.short_description`] && <FieldError>{errors[`packages.${index}.short_description`]}</FieldError>}
             </Field>
 
             {/* Features */}

@@ -18,17 +18,15 @@ class Customer extends Model
         'notes',
     ];
 
-    /**
-     * Get the user account for this Customer
-     */
+    // ============================================================
+    // RELATIONS
+    // ============================================================
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Get all companies for this Customer
-     */
     public function companies()
     {
         return $this->belongsToMany(Company::class, 'company_customer')
@@ -36,11 +34,31 @@ class Customer extends Model
             ->withTimestamps();
     }
 
-    /**
-     * Check if Customer has user account
-     */
     public function hasAccount(): bool
     {
         return !is_null($this->user_id);
+    }
+
+    // ============================================================
+    // SCOPES
+    // ============================================================
+
+    public function scopeSearch($query, $search)
+    {
+        return $query->where(function ($query) use ($search) {
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('phone', 'like', "%{$search}%");
+        });
+    }
+
+    public function scopeHaveAccount($query)
+    {
+        return $query->whereNotNull('user_id');
+    }
+
+    public function scopeNoAccount($query)
+    {
+        return $query->whereNull('user_id');
     }
 }

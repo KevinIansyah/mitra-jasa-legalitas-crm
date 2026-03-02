@@ -2,6 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\FileHelper;
+use App\Http\Requests\Services\StoreRequest;
+use App\Http\Requests\Services\UpdateBasicInformationRequest;
+use App\Http\Requests\Services\UpdateContentRequest;
+use App\Http\Requests\Services\UpdateFaqsRequest;
+use App\Http\Requests\Services\UpdateLegalBasesRequest;
+use App\Http\Requests\Services\UpdatePackagesRequest;
+use App\Http\Requests\Services\UpdateProcessStepsRequest;
+use App\Http\Requests\Services\UpdateRequirementsRequest;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\ServiceFaq;
@@ -13,44 +22,13 @@ use App\Models\ServiceRequirement;
 use App\Models\ServiceRequirementCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
-/**
- * ServiceController
- *
- * Handles complete lifecycle management of services including CRUD operations,
- * tab-based partial updates, and nested relational data management.
- *
- * Features:
- * - Multi-step service creation with nested relationships
- * - Tab-based editing for better UX (Basic Info, Content, Packages, FAQs, etc.)
- * - Atomic database transactions for data integrity
- * - Slug uniqueness enforcement
- * - Featured image management
- * - Status and publication state management
- *
- * Domain: Service Management
- * Architecture: Uses Inertia.js for frontend rendering
- *
- * @package App\Http\Controllers
- */
 class ServiceController extends Controller
 {
     /**
      * Display paginated listing of services with filters.
-     *
-     * Supports filtering by:
-     * - Search keyword (matches service name)
-     * - Status (active/inactive)
-     * - Category
-     * - Per-page limit (20, 30, 40, 50)
-     *
-     * Eager loads category relationship for performance optimization.
-     *
-     * @param Request $request
-     * @return \Inertia\Response
      */
     public function index(Request $request)
     {
@@ -60,11 +38,12 @@ class ServiceController extends Controller
         $search = $request->get('search');
         $status = $request->get('status');
         $category = $request->get('category');
+        $isPublished = $request->get('is_published');
 
         $query = Service::with('category');
 
         if ($search) {
-            $query->where('name', 'like', "%{$search}%");
+            $query->search($search);
         }
 
         if ($status) {
@@ -73,6 +52,12 @@ class ServiceController extends Controller
 
         if ($category) {
             $query->where('service_category_id', $category);
+        }
+
+        if ($isPublished === 'published') {
+            $query->where('is_published', true);
+        } elseif ($isPublished === 'unpublished') {
+            $query->where('is_published', false);
         }
 
         $services = $query->latest()->paginate($perPage);
@@ -94,10 +79,6 @@ class ServiceController extends Controller
 
     /**
      * Show the form for creating a new service.
-     *
-     * Loads active categories for dropdown selection.
-     *
-     * @return \Inertia\Response
      */
     public function create()
     {
@@ -127,83 +108,10 @@ class ServiceController extends Controller
      * Slug Generation:
      * - Uses provided slug or auto-generates from service name
      * - Ensures uniqueness by appending counter if needed
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
-        $validated = $request->validate([
-            // Basic Information
-            'service_category_id'  => 'required|exists:service_categories,id',
-            'name'                 => 'required|string|max:255',
-            'slug'                 => 'nullable|string|max:255|unique:services,slug',
-            'short_description'    => 'nullable|string',
-            'introduction'         => 'nullable|string',
-            'content'              => 'nullable|string',
-            'featured_image'       => 'nullable|image|mimes:jpg,jpeg,png,webp,gif,svg|max:1024',
-            'is_published'         => 'boolean',
-            'is_featured'          => 'boolean',
-            'is_popular'           => 'boolean',
-
-            // Packages
-            'packages'                           => 'nullable|array',
-            'packages.*.name'                    => 'required|string|max:255',
-            'packages.*.price'                   => 'required|numeric|min:0',
-            'packages.*.original_price'          => 'nullable|numeric|min:0',
-            'packages.*.duration'                => 'required|string|max:255',
-            'packages.*.duration_days'           => 'nullable|integer|min:0',
-            'packages.*.short_description'       => 'nullable|string',
-            'packages.*.is_highlighted'          => 'boolean',
-            'packages.*.badge'                   => 'nullable|string|max:255',
-            'packages.*.sort_order'              => 'nullable|integer|min:0',
-            'packages.*.features'                => 'nullable|array',
-            'packages.*.features.*.feature_name' => 'required|string|max:255',
-            'packages.*.features.*.description'  => 'nullable|string',
-            'packages.*.features.*.is_included'  => 'boolean',
-            'packages.*.features.*.sort_order'   => 'nullable|integer|min:0',
-
-            // FAQs
-            'faqs'              => 'nullable|array',
-            'faqs.*.question'   => 'required|string',
-            'faqs.*.answer'     => 'required|string',
-            'faqs.*.sort_order' => 'nullable|integer|min:0',
-
-            // Legal Bases
-            'legal_bases'                   => 'nullable|array',
-            'legal_bases.*.document_type'   => 'required|string|max:255',
-            'legal_bases.*.document_number' => 'required|string|max:255',
-            'legal_bases.*.title'           => 'required|string|max:255',
-            'legal_bases.*.issued_date'     => 'nullable|date',
-            'legal_bases.*.url'             => 'nullable|url|max:255',
-            'legal_bases.*.description'     => 'nullable|string',
-            'legal_bases.*.sort_order'      => 'nullable|integer|min:0',
-
-            // Requirement Categories
-            'requirement_categories'                              => 'nullable|array',
-            'requirement_categories.*.name'                       => 'required|string|max:255',
-            'requirement_categories.*.description'                => 'nullable|string',
-            'requirement_categories.*.sort_order'                 => 'nullable|integer|min:0',
-            'requirement_categories.*.requirements'               => 'nullable|array',
-            'requirement_categories.*.requirements.*.name'        => 'required|string|max:255',
-            'requirement_categories.*.requirements.*.description' => 'nullable|string',
-            'requirement_categories.*.requirements.*.is_required' => 'boolean',
-            'requirement_categories.*.requirements.*.document_format' => 'nullable|string|max:255',
-            'requirement_categories.*.requirements.*.notes'       => 'nullable|string',
-            'requirement_categories.*.requirements.*.sort_order'  => 'nullable|integer|min:0',
-
-            // Process Steps
-            'process_steps'                        => 'nullable|array',
-            'process_steps.*.title'                => 'required|string|max:255',
-            'process_steps.*.description'          => 'nullable|string',
-            'process_steps.*.duration'             => 'nullable|string|max:255',
-            'process_steps.*.duration_days'        => 'nullable|integer|min:0',
-            'process_steps.*.required_documents'   => 'nullable|array',
-            'process_steps.*.required_documents.*' => 'string|max:255',
-            'process_steps.*.notes'                => 'nullable|string',
-            'process_steps.*.icon'                 => 'nullable|string|max:255',
-            'process_steps.*.sort_order'           => 'nullable|integer|min:0',
-        ]);
+        $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $request) {
             // Generate unique slug
@@ -221,8 +129,11 @@ class ServiceController extends Controller
             // Handle featured image upload
             $featuredImagePath = null;
             if ($request->hasFile('featured_image')) {
-                $featuredImagePath = $request->file('featured_image')
-                    ->store('services/images', 'public');
+                $fileData = FileHelper::uploadToR2Public(
+                    $request->file('featured_image'),
+                    'services/images',
+                );
+                $featuredImagePath = $fileData['path'];
             }
 
             // Create service
@@ -340,11 +251,6 @@ class ServiceController extends Controller
 
     /**
      * Show the form for editing the specified service.
-     *
-     * Eager loads all related entities for edit form population.
-     *
-     * @param Service $service
-     * @return \Inertia\Response
      */
     public function edit(Service $service)
     {
@@ -390,25 +296,10 @@ class ServiceController extends Controller
      * - Unpublishing changes status to inactive but keeps timestamp
      * - Slug must remain unique (excluding current service)
      * - Old images are deleted when replaced or removed
-     *
-     * @param Request $request
-     * @param Service $service
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateBasicInformation(Request $request, Service $service)
+    public function updateBasicInformation(UpdateBasicInformationRequest $request, Service $service)
     {
-        $validated = $request->validate([
-            'service_category_id' => 'required|exists:service_categories,id',
-            'name'                => 'required|string|max:255',
-            'slug'                => 'nullable|string|max:255|unique:services,slug,' . $service->id,
-            'short_description'   => 'nullable|string',
-            'featured_image'      => 'nullable|image|mimes:jpg,jpeg,png,webp,gif,svg|max:1024',
-            'remove_image'        => 'boolean',
-            'is_published'        => 'boolean',
-            'is_featured'         => 'boolean',
-            'is_popular'          => 'boolean',
-            'status'              => 'string|in:active,inactive',
-        ]);
+        $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $request, $service) {
             // Generate and ensure unique slug
@@ -429,16 +320,21 @@ class ServiceController extends Controller
             $featuredImagePath = $service->featured_image;
 
             if ($request->boolean('remove_image') && $service->featured_image) {
-                Storage::disk('public')->delete($service->featured_image);
+                FileHelper::deleteFromR2($service->featured_image, isPublic: true);
                 $featuredImagePath = null;
             }
 
             if ($request->hasFile('featured_image')) {
                 if ($service->featured_image) {
-                    Storage::disk('public')->delete($service->featured_image);
+                    FileHelper::deleteFromR2($service->featured_image, isPublic: true);
                 }
-                $featuredImagePath = $request->file('featured_image')
-                    ->store('services/images', 'public');
+
+                $fileData = FileHelper::uploadToR2Public(
+                    $request->file('featured_image'),
+                    'services/images',
+                );
+
+                $featuredImagePath = $fileData['path'];
             }
 
             // Manage publication state
@@ -473,17 +369,10 @@ class ServiceController extends Controller
 
     /**
      * Update content tab (introduction and main content).
-     *
-     * @param Request $request
-     * @param Service $service
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateContent(Request $request, Service $service)
+    public function updateContent(UpdateContentRequest $request, Service $service)
     {
-        $validated = $request->validate([
-            'introduction' => 'nullable|string',
-            'content'      => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         $service->update([
             'introduction' => $validated['introduction'],
@@ -503,33 +392,10 @@ class ServiceController extends Controller
      *
      * This maintains referential integrity and prevents orphaned records.
      * Wrapped in transaction to ensure atomicity.
-     *
-     * @param Request $request
-     * @param Service $service
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function updatePackages(Request $request, Service $service)
+    public function updatePackages(UpdatePackagesRequest $request, Service $service)
     {
-        $validated = $request->validate([
-            'packages'                           => 'required|array|min:1',
-            'packages.*.id'                      => 'nullable|exists:service_packages,id',
-            'packages.*.name'                    => 'required|string|max:255',
-            'packages.*.price'                   => 'required|numeric|min:0',
-            'packages.*.original_price'          => 'nullable|numeric|min:0',
-            'packages.*.duration'                => 'required|string|max:255',
-            'packages.*.duration_days'           => 'nullable|integer|min:0',
-            'packages.*.short_description'       => 'nullable|string',
-            'packages.*.is_highlighted'          => 'boolean',
-            'packages.*.badge'                   => 'nullable|string|max:255',
-            'packages.*.sort_order'              => 'nullable|integer|min:0',
-            'packages.*.status'                  => 'string|in:active,inactive',
-            'packages.*.features'                => 'nullable|array',
-            'packages.*.features.*.id'           => 'nullable|exists:service_package_features,id',
-            'packages.*.features.*.feature_name' => 'required|string|max:255',
-            'packages.*.features.*.description'  => 'nullable|string',
-            'packages.*.features.*.is_included'  => 'boolean',
-            'packages.*.features.*.sort_order'   => 'nullable|integer|min:0',
-        ]);
+        $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $service) {
             // Identify packages to delete
@@ -622,21 +488,10 @@ class ServiceController extends Controller
      * - Deletes FAQs not in submission
      * - Updates existing FAQs
      * - Creates new FAQs
-     *
-     * @param Request $request
-     * @param Service $service
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateFaqs(Request $request, Service $service)
+    public function updateFaqs(UpdateFaqsRequest $request, Service $service)
     {
-        $validated = $request->validate([
-            'faqs'              => 'nullable|array',
-            'faqs.*.id'         => 'nullable|exists:service_faqs,id',
-            'faqs.*.question'   => 'required|string',
-            'faqs.*.answer'     => 'required|string',
-            'faqs.*.sort_order' => 'nullable|integer|min:0',
-            'faqs.*.status'     => 'nullable|string|in:active,inactive',
-        ]);
+        $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $service) {
             // Identify FAQs to delete
@@ -683,25 +538,10 @@ class ServiceController extends Controller
      * - Deletes legal bases not in submission
      * - Updates existing legal bases
      * - Creates new legal bases
-     *
-     * @param Request $request
-     * @param Service $service
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateLegalBases(Request $request, Service $service)
+    public function updateLegalBases(UpdateLegalBasesRequest $request, Service $service)
     {
-        $validated = $request->validate([
-            'legal_bases'                   => 'nullable|array',
-            'legal_bases.*.id'              => 'nullable|exists:service_legal_bases,id',
-            'legal_bases.*.document_type'   => 'required|string|max:255',
-            'legal_bases.*.document_number' => 'required|string|max:255',
-            'legal_bases.*.title'           => 'required|string|max:255',
-            'legal_bases.*.issued_date'     => 'nullable|date',
-            'legal_bases.*.url'             => 'nullable|url|max:255',
-            'legal_bases.*.description'     => 'nullable|string',
-            'legal_bases.*.sort_order'      => 'nullable|integer|min:0',
-            'legal_bases.*.status'          => 'nullable|string|in:active,inactive',
-        ]);
+        $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $service) {
             // Identify legal bases to delete
@@ -757,29 +597,10 @@ class ServiceController extends Controller
      *   - Requirements (nested under each category)
      *
      * Applies same synchronization logic as packages/features.
-     *
-     * @param Request $request
-     * @param Service $service
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateRequirements(Request $request, Service $service)
+    public function updateRequirements(UpdateRequirementsRequest $request, Service $service)
     {
-        $validated = $request->validate([
-            'requirement_categories'                              => 'nullable|array',
-            'requirement_categories.*.id'                         => 'nullable|exists:service_requirement_categories,id',
-            'requirement_categories.*.name'                       => 'required|string|max:255',
-            'requirement_categories.*.description'                => 'nullable|string',
-            'requirement_categories.*.sort_order'                 => 'nullable|integer|min:0',
-            'requirement_categories.*.status'                     => 'nullable|string|in:active,inactive',
-            'requirement_categories.*.requirements'               => 'nullable|array',
-            'requirement_categories.*.requirements.*.id'          => 'nullable|exists:service_requirements,id',
-            'requirement_categories.*.requirements.*.name'        => 'required|string|max:255',
-            'requirement_categories.*.requirements.*.description' => 'nullable|string',
-            'requirement_categories.*.requirements.*.is_required' => 'boolean',
-            'requirement_categories.*.requirements.*.document_format' => 'nullable|string|max:255',
-            'requirement_categories.*.requirements.*.notes'       => 'nullable|string',
-            'requirement_categories.*.requirements.*.sort_order'  => 'nullable|integer|min:0',
-        ]);
+        $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $service) {
             // Identify requirement categories to delete
@@ -865,27 +686,10 @@ class ServiceController extends Controller
      * - Deletes steps not in submission
      * - Updates existing steps
      * - Creates new steps
-     *
-     * @param Request $request
-     * @param Service $service
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateProcessSteps(Request $request, Service $service)
+    public function updateProcessSteps(UpdateProcessStepsRequest $request, Service $service)
     {
-        $validated = $request->validate([
-            'process_steps'                        => 'nullable|array',
-            'process_steps.*.id'                   => 'nullable|exists:service_process_steps,id',
-            'process_steps.*.title'                => 'required|string|max:255',
-            'process_steps.*.description'          => 'nullable|string',
-            'process_steps.*.duration'             => 'nullable|string|max:255',
-            'process_steps.*.duration_days'        => 'nullable|integer|min:0',
-            'process_steps.*.required_documents'   => 'nullable|array',
-            'process_steps.*.required_documents.*' => 'string|max:255',
-            'process_steps.*.notes'                => 'nullable|string',
-            'process_steps.*.icon'                 => 'nullable|string|max:255',
-            'process_steps.*.sort_order'           => 'nullable|integer|min:0',
-            'process_steps.*.status'               => 'nullable|string|in:active,inactive',
-        ]);
+        $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $service) {
             // Identify process steps to delete
@@ -947,22 +751,17 @@ class ServiceController extends Controller
      * in migrations for proper cleanup of related records.
      *
      * Wrapped in transaction for consistency.
-     *
-     * @param Service $service
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Service $service)
     {
         DB::transaction(function () use ($service) {
-            // Delete featured image from storage
             if ($service->featured_image) {
-                Storage::disk('public')->delete($service->featured_image);
+                FileHelper::deleteFromR2($service->featured_image, isPublic: true);
             }
 
-            // Delete service (cascade deletes related records)
             $service->delete();
         });
 
-        return redirect()->back()->with('success', 'Layanan berhasil dihapus.');
+        return back()->with('success', 'Layanan berhasil dihapus.');
     }
 }

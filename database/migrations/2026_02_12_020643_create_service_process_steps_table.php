@@ -13,25 +13,31 @@ return new class extends Migration
     {
         Schema::create('service_process_steps', function (Blueprint $table) {
             $table->id();
+
+            // Service
             $table->foreignId('service_id')->constrained()->cascadeOnDelete();
 
-            // Step Information
-            $table->string('title'); // e.g., "Konsultasi & Persiapan Dokumen"
+            // Basic Infor
+            $table->string('title');
             $table->text('description')->nullable();
 
-            // Duration Information
-            $table->string('duration')->nullable(); // e.g., "1-2 hari kerja", "3 minggu"
-            $table->integer('duration_days')->nullable(); // For calculation purposes
+            // Duration
+            $table->string('duration')->nullable();          // eg: 2 days 
+            $table->integer('duration_days')->nullable();    // eg: 2 (for calculation purposes)
 
-            // Required Documents (optional, can reference requirement IDs)
-            $table->json('required_documents')->nullable(); // Array of document names or IDs
+            // Required Documents
+            $table->json('required_documents')->nullable();
 
             // Step Details
             $table->text('notes')->nullable();
-            $table->string('icon')->nullable(); // For UI purposes
+            $table->string('icon')->nullable();
 
+            // Order
             $table->integer('sort_order')->default(0);
+
+            // Status
             $table->enum('status', ['active', 'inactive'])->default('active');
+
             $table->timestamps();
         });
     }

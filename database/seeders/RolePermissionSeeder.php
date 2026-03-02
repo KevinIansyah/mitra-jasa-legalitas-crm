@@ -5,12 +5,13 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\PermissionRegistrar;
 
 class RolePermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
 
         $permissions = [
             'view-roles',
@@ -23,6 +24,7 @@ class RolePermissionSeeder extends Seeder
             'create-contact-companies',
             'edit-contact-companies',
             'delete-contact-companies',
+
             'view-contact-customers',
             'create-contact-customers',
             'edit-contact-customers',
@@ -47,18 +49,88 @@ class RolePermissionSeeder extends Seeder
             'create-project-templates',
             'edit-project-templates',
             'delete-project-templates',
+
+            'view-project-members',
+            'create-project-members',
+            'edit-project-members',
+            'delete-project-members',
+
+            'view-project-tasks',
+            'create-project-tasks',
+            'edit-project-tasks',
+            'delete-project-tasks',
+
+            'view-project-milestones',
+            'create-project-milestones',
+            'edit-project-milestones',
+            'delete-project-milestones',
+
+            'view-project-documents',
+            'create-project-documents',
+            'edit-project-documents',
+            'delete-project-documents',
+
+            'view-project-deliverables',
+            'create-project-deliverables',
+            'edit-project-deliverables',
+            'delete-project-deliverables',
+
+            'view-project-discussions',
+            'create-project-discussions',
+            'edit-project-discussions',
+            'delete-project-discussions',
+
+            'view-finance-invoices',
+            'create-finance-invoices',
+            'edit-finance-invoices',
+            'delete-finance-invoices',
+
+            'view-finance-payments',
+            'create-finance-payments',
+            'edit-finance-payments',
+            'delete-finance-payments',
+
+            'view-finance-expenses',
+            'create-finance-expenses',
+            'edit-finance-expenses',
+            'delete-finance-expenses',
         ];
 
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::firstOrCreate([
+                'name' => $permission,
+                'guard_name' => 'web',
+            ]);
         }
 
-        $roleAdmin = Role::create(['name' => 'super-admin']);
-        $roleAdmin->givePermissionTo(Permission::all());
+        // ========================
+        // ROLES
+        // ========================
 
-        $roleEditor = Role::create(['name' => 'staff']);
-        $roleEditor->givePermissionTo(['view-contact-companies', 'create-contact-companies', 'edit-contact-companies', 'delete-contact-companies']);
+        $roleAdmin = Role::firstOrCreate([
+            'name' => 'super-admin',
+            'guard_name' => 'web',
+        ]);
 
-        $roleUser = Role::create(['name' => 'user']);
+        $roleAdmin->syncPermissions(Permission::all());
+
+        $roleStaff = Role::firstOrCreate([
+            'name' => 'staff',
+            'guard_name' => 'web',
+        ]);
+
+        $roleStaff->syncPermissions([
+            'view-contact-companies',
+            'create-contact-companies',
+            'edit-contact-companies',
+            'delete-contact-companies',
+        ]);
+
+        Role::firstOrCreate([
+            'name' => 'user',
+            'guard_name' => 'web',
+        ]);
+
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
 }

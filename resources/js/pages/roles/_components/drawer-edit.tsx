@@ -84,7 +84,7 @@ export function DrawerEdit({ roleId, open, onOpenChange }: DrawerEditProps) {
                     loadingFocusRef.current?.focus();
                 }}
             >
-                <div className="mx-auto flex w-full max-w-lg flex-1 flex-col overflow-y-auto">
+                <div className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-4 overflow-y-auto">
                     <DrawerHeader className="px-4">
                         <DrawerTitle>Edit Role</DrawerTitle>
                         <DrawerDescription>Perbarui data role yang sudah ada melalui formulir di bawah ini.</DrawerDescription>

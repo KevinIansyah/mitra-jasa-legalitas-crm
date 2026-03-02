@@ -16,6 +16,8 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "laravel/wayfinder": "^0.1.9",
+        "league/flysystem-aws-s3-v3": "3.0",
+        "spatie/laravel-activitylog": "^4.11",
         "spatie/laravel-permission": "^6.24"
     },
     "require-dev": {
@@ -33,7 +35,10 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "app/Helpers/FileHelper.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

@@ -2,6 +2,7 @@ import { useForm } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import * as React from 'react';
 import { toast } from 'sonner';
+
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
@@ -9,9 +10,9 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
-import { categoryBusinessOptions, statusLegalOptions } from '@/constans';
+
 import companies from '@/routes/contacts/companies';
-import type { CompanyFormData } from '@/types/contact';
+import { CATEGORY_BUSINESS, STATUS_LEGAL, type CompanyFormData } from '@/types/contact';
 
 export function DrawerAdd() {
     const [open, setOpen] = React.useState(false);
@@ -48,10 +49,9 @@ export function DrawerAdd() {
                 reset();
                 setOpen(false);
             },
-            onError: () => {
-                toast.error('Gagal', {
-                    description: 'Perusahaan gagal ditambahkan. Silakan periksa kembali data perusahaan yang diisi.',
-                });
+            onError: (errors) => {
+                const msg = Object.values(errors)[0] ?? 'Terjadi kesalahan saat menambahkan perusahaan, coba lagi.';
+                toast.error('Gagal', { description: String(msg) });
             },
             onFinish: () => {
                 toast.dismiss(id);
@@ -69,7 +69,7 @@ export function DrawerAdd() {
             </DrawerTrigger>
 
             <DrawerContent className="flex h-screen flex-col">
-                <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col overflow-y-auto">
+                <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 overflow-y-auto">
                     <DrawerHeader className="px-4">
                         <DrawerTitle>Tambah Perusahaan Baru</DrawerTitle>
                         <DrawerDescription>Isi formulir di bawah untuk menambahkan data perusahaan ke sistem</DrawerDescription>
@@ -188,7 +188,7 @@ export function DrawerAdd() {
                                         <SelectContent>
                                             <SelectGroup>
                                                 <SelectLabel>Status Legal</SelectLabel>
-                                                {statusLegalOptions.map((item) => (
+                                                {STATUS_LEGAL.map((item) => (
                                                     <SelectItem key={item.value} value={item.value}>
                                                         {item.label}
                                                     </SelectItem>
@@ -210,7 +210,7 @@ export function DrawerAdd() {
                                         <SelectContent>
                                             <SelectGroup>
                                                 <SelectLabel>Kategori Bisnis</SelectLabel>
-                                                {categoryBusinessOptions.map((item) => (
+                                                {CATEGORY_BUSINESS.map((item) => (
                                                     <SelectItem key={item.value} value={item.value}>
                                                         {item.label}
                                                     </SelectItem>

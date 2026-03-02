@@ -1,6 +1,7 @@
 import { Head, usePage } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
+import projects from '@/routes/projects';
 import type { BreadcrumbItem } from '@/types';
 import type { Paginator } from '@/types/paginator';
 import type { ProjectTemplate } from '@/types/project-template';
@@ -10,7 +11,7 @@ import { TemplateSection } from './_components/template-section';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Project',
-        href: '#',
+        href: projects.index().url,
     },
     {
         title: 'Template',

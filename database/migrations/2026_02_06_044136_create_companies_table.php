@@ -24,7 +24,6 @@ return new class extends Migration
             $table->string('npwp')->nullable();
             $table->string('status_legal')->nullable();
             $table->string('category_business')->nullable();
-            // $table->enum('type', ['client', 'prospect', 'partner'])->default('prospect');
             $table->text('notes')->nullable();
             $table->timestamps();
         });

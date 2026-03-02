@@ -36,10 +36,9 @@ export function DialogDelete({ title = 'Apakah Anda yakin?', description, delete
                     description: 'Data berhasil dihapus.',
                 });
             },
-            onError: () => {
-                toast.error('Gagal', {
-                    description: 'Data gagal dihapus.',
-                });
+            onError: (errors) => {
+                const msg = Object.values(errors)[0] ?? 'Terjadi kesalahan saat menghapus data, coba lagi.';
+                toast.error('Gagal', { description: String(msg) });
             },
             onFinish: () => {
                 toast.dismiss(id);
@@ -63,9 +62,9 @@ export function DialogDelete({ title = 'Apakah Anda yakin?', description, delete
                         <AlertDialogDescription>{description}</AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Batal</AlertDialogCancel>
+                        <AlertDialogCancel variant="secondary">Batal</AlertDialogCancel>
                         <AlertDialogAction variant="destructive" onClick={handleDelete}>
-                            Hapus
+                            Ya, Hapus
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

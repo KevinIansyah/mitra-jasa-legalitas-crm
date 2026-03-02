@@ -2,41 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Projects\Templates\StoreRequest;
+use App\Http\Requests\Projects\Templates\UpdateRequest;
 use App\Models\ProjectTemplate;
 use App\Models\Service;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
-/**
- * ProjectTemplateController
- *
- * Handles CRUD operations for project templates including:
- * - Creating custom templates or templates from services
- * - Managing template milestones and documents (stored as JSON)
- * - Soft delete functionality for archiving
- * - Service search for template creation
- *
- * Domain: Project Management
- * Architecture: Uses Inertia.js for frontend rendering
- *
- * @package App\Http\Controllers
- */
 class ProjectTemplateController extends Controller
 {
     /**
      * Display paginated listing of project templates with filters.
-     *
-     * Supports filtering by:
-     * - Search keyword (matches template name)
-     * - Service ID (service-based templates)
-     * - Template type (service_based, custom, all)
-     * - Active status
-     * - Include archived templates
-     * - Per-page limit (20, 30, 40, 50)
-     *
-     * @param Request $request
-     * @return \Inertia\Response
      */
     public function index(Request $request)
     {
@@ -95,10 +71,6 @@ class ProjectTemplateController extends Controller
 
     /**
      * Show the form for creating a new template.
-     *
-     * Loads active services for "from service" creation mode.
-     *
-     * @return \Inertia\Response
      */
     public function create()
     {
@@ -112,49 +84,13 @@ class ProjectTemplateController extends Controller
     }
 
     /**
-     * Store a newly created template.
-     *
-     * Supports two creation modes:
-     * 1. Custom: User manually fills all fields
-     * 2. From Service: Auto-populate from service data
-     *
-     * Template data structure:
-     * - Basic info (name, description, duration, notes)
-     * - Milestones (JSON array)
-     * - Documents (JSON array)
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
+     * Store a newly created template.e
      */
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
-        $validated = $request->validate([
-            'service_id' => 'nullable|exists:services,id',
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'estimated_duration_days' => 'nullable|integer|min:1',
-            'notes' => 'nullable|string',
-            'status' => 'string|in:active,inactive',
+        $validated = $request->validated();
 
-            // Milestones validation
-            'milestones' => 'required|array|min:1',
-            'milestones.*.title' => 'required|string|max:255',
-            'milestones.*.description' => 'nullable|string',
-            'milestones.*.estimated_duration_days' => 'required|integer|min:1',
-            'milestones.*.day_offset' => 'required|integer|min:0',
-            'milestones.*.sort_order' => 'required|integer|min:1',
-
-            // Documents validation
-            'documents' => 'required|array|min:1',
-            'documents.*.name' => 'required|string|max:255',
-            'documents.*.description' => 'nullable|string',
-            'documents.*.document_format' => 'nullable|string|max:255',
-            'documents.*.is_required' => 'required|boolean',
-            'documents.*.notes' => 'nullable|string',
-            'documents.*.sort_order' => 'required|integer|min:1',
-        ]);
-
-        $template = ProjectTemplate::create([
+        ProjectTemplate::create([
             'service_id' => $validated['service_id'] ?? null,
             'name' => $validated['name'],
             'description' => $validated['description'] ?? null,
@@ -171,11 +107,6 @@ class ProjectTemplateController extends Controller
 
     /**
      * Show the form for editing the specified template.
-     *
-     * Loads template with service relationship.
-     *
-     * @param ProjectTemplate $template
-     * @return \Inertia\Response
      */
     public function edit(ProjectTemplate $template)
     {
@@ -193,43 +124,10 @@ class ProjectTemplateController extends Controller
 
     /**
      * Update the specified template.
-     *
-     * Allows full update of template including:
-     * - Basic information
-     * - Milestones (full replacement)
-     * - Documents (full replacement)
-     *
-     * @param Request $request
-     * @param ProjectTemplate $template
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, ProjectTemplate $template)
+    public function update(UpdateRequest $request, ProjectTemplate $template)
     {
-        $validated = $request->validate([
-            'service_id' => 'nullable|exists:services,id',
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'estimated_duration_days' => 'nullable|integer|min:1',
-            'notes' => 'nullable|string',
-            'status' => 'string|in:active,inactive',
-
-            // Milestones validation
-            'milestones' => 'required|array|min:1',
-            'milestones.*.title' => 'required|string|max:255',
-            'milestones.*.description' => 'nullable|string',
-            'milestones.*.estimated_duration_days' => 'required|integer|min:1',
-            'milestones.*.day_offset' => 'required|integer|min:0',
-            'milestones.*.sort_order' => 'required|integer|min:1',
-
-            // Documents validation
-            'documents' => 'required|array|min:1',
-            'documents.*.name' => 'required|string|max:255',
-            'documents.*.description' => 'nullable|string',
-            'documents.*.document_format' => 'nullable|string|max:255',
-            'documents.*.is_required' => 'required|boolean',
-            'documents.*.notes' => 'nullable|string',
-            'documents.*.sort_order' => 'required|integer|min:1',
-        ]);
+        $validated = $request->validated();
 
         $template->update([
             'service_id' => $validated['service_id'] ?? null,
@@ -248,12 +146,6 @@ class ProjectTemplateController extends Controller
 
     /**
      * Soft delete the specified template (archive).
-     *
-     * Uses soft delete to allow restoration if needed.
-     * Archived templates can be viewed by enabling "include_archived" filter.
-     *
-     * @param ProjectTemplate $template
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(ProjectTemplate $template)
     {
@@ -271,9 +163,6 @@ class ProjectTemplateController extends Controller
      * - Second duplicate: "Template A (Duplicate 2)"
      * - Third duplicate: "Template A (Duplicate 3)"
      * - etc.
-     *
-     * @param ProjectTemplate $template
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function duplicate(ProjectTemplate $template)
     {
@@ -299,45 +188,34 @@ class ProjectTemplateController extends Controller
         return back()->with('success', 'Template berhasil diduplikasi.');
     }
 
-
     /**
      * Get template data generated from service.
      *
      * Returns pre-populated milestone and document data based on service
      * process steps and requirements. Used for AJAX call when user selects
      * "create from service" mode.
-     *
-     * @param Service $service
-     * @return \Illuminate\Http\JsonResponse
      */
     public function getTemplateFromService(Service $service)
     {
-        // Build milestones from process steps
-        $milestones = $service->processSteps()
+        $steps = $service->processSteps()
             ->where('status', 'active')
             ->orderBy('sort_order')
-            ->get()
-            ->map(function ($step, $index) use ($service) {
-                // Calculate day_offset from previous steps
-                $dayOffset = 0;
-                if ($index > 0) {
-                    $dayOffset = $service->processSteps()
-                        ->where('status', 'active')
-                        ->orderBy('sort_order')
-                        ->take($index)
-                        ->sum('duration_days') ?? 0;
-                }
+            ->get();
 
-                return [
-                    'title' => $step->title,
-                    'description' => $step->description,
-                    'estimated_duration_days' => $step->duration_days ?? 1,
-                    'day_offset' => $dayOffset,
-                    'sort_order' => $index,
-                ];
-            })->toArray();
+        $dayOffset = 0;
+        $milestones = $steps->map(function ($step, $index) use (&$dayOffset) {
+            $currentOffset = $dayOffset;
+            $dayOffset += $step->duration_days ?? 0;
 
-        // Build documents from requirements
+            return [
+                'title' => $step->title,
+                'description' => $step->description,
+                'estimated_duration_days' => $step->duration_days ?? 1,
+                'day_offset' => $currentOffset,
+                'sort_order' => $index,
+            ];
+        })->toArray();
+
         $documents = [];
         $sortOrder = 0;
 
@@ -362,10 +240,7 @@ class ProjectTemplateController extends Controller
             }
         }
 
-        // Calculate total duration
-        $estimatedDuration = $service->processSteps()
-            ->where('status', 'active')
-            ->sum('duration_days');
+        $estimatedDuration = $steps->sum('duration_days');
 
         return response()->json([
             'milestones' => $milestones,

@@ -40,10 +40,9 @@ export function DrawerAdd() {
                 reset();
                 setOpen(false);
             },
-            onError: () => {
-                toast.error('Gagal', {
-                    description: 'Pelanggan gagal ditambahkan. Silakan periksa kembali data pelanggan yang diisi.',
-                });
+            onError: (errors) => {
+                const msg = Object.values(errors)[0] ?? 'Terjadi kesalahan saat menambahkan pelanggan, coba lagi.';
+                toast.error('Gagal', { description: String(msg) });
             },
             onFinish: () => {
                 toast.dismiss(id);
@@ -61,7 +60,7 @@ export function DrawerAdd() {
             </DrawerTrigger>
 
             <DrawerContent className="flex h-screen flex-col">
-                <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col overflow-y-auto">
+                <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 overflow-y-auto">
                     <DrawerHeader className="px-4">
                         <DrawerTitle>Tambah Pelanggan Baru (PIC)</DrawerTitle>
                         <DrawerDescription>Isi formulir di bawah untuk menambahkan data pelanggan ke sistem</DrawerDescription>

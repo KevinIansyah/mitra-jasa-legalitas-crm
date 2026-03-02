@@ -42,7 +42,7 @@ export function DrawerEdit({ categoryId, open, onOpenChange }: DrawerEditProps) 
                     toast.error('Gagal', {
                         description: 'Terjadi kesalahan saat mengambil data kategori layanan',
                     });
-                    
+
                     onOpenChange(false);
                 })
                 .finally(() => {
@@ -63,7 +63,7 @@ export function DrawerEdit({ categoryId, open, onOpenChange }: DrawerEditProps) 
             onSuccess: () => {
                 toast.success('Berhasil', {
                     description: 'Kategori layanan berhasil diperbarui.',
-                })
+                });
 
                 onOpenChange(false);
             },
@@ -144,8 +144,14 @@ export function DrawerEdit({ categoryId, open, onOpenChange }: DrawerEditProps) 
 
                             <DrawerFooter className="mt-auto px-0">
                                 <Button type="submit" disabled={processing}>
-                                    {processing && <Spinner />}
-                                    Simpan Perubahan
+                                    {processing ? (
+                                        <>
+                                            <Spinner className="mr-2" />
+                                            Menyimpan...
+                                        </>
+                                    ) : (
+                                        'Simpan'
+                                    )}
                                 </Button>
                                 <DrawerClose asChild>
                                     <Button variant="outline" type="button">

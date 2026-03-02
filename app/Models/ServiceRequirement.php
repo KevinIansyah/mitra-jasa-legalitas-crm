@@ -26,17 +26,15 @@ class ServiceRequirement extends Model
         'sort_order' => 'integer',
     ];
 
-    /**
-     * Get the category that owns the requirement.
-     */
+    // ============================================================
+    // RELATIONS
+    // ============================================================
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(ServiceRequirementCategory::class, 'service_requirement_category_id');
     }
 
-    /**
-     * Get the service through the category.
-     */
     public function service()
     {
         return $this->hasOneThrough(
@@ -49,41 +47,30 @@ class ServiceRequirement extends Model
         );
     }
 
-    /**
-     * Scope a query to only include active requirements.
-     */
+    // ============================================================
+    // SCOPES
+    // ============================================================
+
     public function scopeActive($query)
     {
         return $query->where('status', 'active');
     }
 
-    /**
-     * Scope a query to only include required documents.
-     */
     public function scopeRequired($query)
     {
         return $query->where('is_required', true);
     }
 
-    /**
-     * Scope a query to only include optional documents.
-     */
     public function scopeOptional($query)
     {
         return $query->where('is_required', false);
     }
 
-    /**
-     * Scope a query to order by sort order.
-     */
     public function scopeOrdered($query)
     {
         return $query->orderBy('sort_order');
     }
 
-    /**
-     * Get requirement type badge.
-     */
     public function getRequirementTypeBadgeAttribute(): string
     {
         return $this->is_required ? 'Wajib' : 'Opsional';

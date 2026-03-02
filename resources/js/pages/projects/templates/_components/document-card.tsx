@@ -5,8 +5,10 @@ import { ServiceCardAction } from '@/components/service-card-action';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
+import { DOCUMENT_FORMAT_OPTIONS } from '@/types/service';
 
 export type LocalDocument = {
     _key: string;
@@ -88,9 +90,24 @@ export function DocumentCard({ document, index, totalItems, onChange, onDelete, 
 
             {/* Document Format */}
             <Field>
-                <FieldLabel>Format Dokumen</FieldLabel>
-                <Input value={document.document_format ?? ''} onChange={(e) => update({ document_format: e.target.value })} placeholder="Contoh: PDF, JPEG, PNG" />
-                <p className="mt-1 text-xs text-muted-foreground">Format file yang diterima (opsional)</p>
+                <FieldLabel>
+                    Format Dokumen <span className="text-destructive">*</span>
+                </FieldLabel>
+                <Select value={document.document_format || 'pdf'} required onValueChange={(value) => update({ document_format: value })}>
+                    <SelectTrigger id="document_format">
+                        <SelectValue placeholder="Pilih format dokumen" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectGroup>
+                            <SelectLabel>Format Dokumen</SelectLabel>
+                            {DOCUMENT_FORMAT_OPTIONS.map((format) => (
+                                <SelectItem key={format.value} value={format.value}>
+                                    {format.label}
+                                </SelectItem>
+                            ))}
+                        </SelectGroup>
+                    </SelectContent>
+                </Select>
             </Field>
 
             {/* Notes */}

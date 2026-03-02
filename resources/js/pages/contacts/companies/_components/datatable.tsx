@@ -2,19 +2,21 @@ import type { VisibilityState } from '@tanstack/react-table';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { ChevronDown, ChevronLeftIcon, ChevronRightIcon, ChevronsLeftIcon, ChevronsRightIcon, Filter, Search, X } from 'lucide-react';
 import * as React from 'react';
+
 import { HasPermission } from '@/components/has-permission';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Field, FieldLabel } from '@/components/ui/field';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { categoryBusinessOptions, statusLegalOptions } from '@/constans';
+
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
 import companies from '@/routes/contacts/companies';
-import type { CompanyWithCustomers } from '@/types/contact';
+import { CATEGORY_BUSINESS, STATUS_LEGAL, type CompanyWithCustomers } from '@/types/contact';
 import getColumns from './columns';
 import { DrawerAdd } from './drawer-add';
 
@@ -48,6 +50,9 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
 
     const columns = getColumns();
 
+    const selectedCategoryBusiness = CATEGORY_BUSINESS.find((category) => category.value === filters.category_business);
+    const selectedStatusLegal = STATUS_LEGAL.find((status) => status.value === filters.status_legal);
+
     const table = useReactTable({
         data,
         columns,
@@ -70,7 +75,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                 <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
                     <div className="flex w-full flex-1 items-center gap-2 md:w-auto">
                         <InputGroup className="max-w-sm">
-                            <InputGroupInput placeholder="Cari nama perusahaan..." value={searchValue} onChange={handleSearchChange} />
+                            <InputGroupInput placeholder="Cari nama, kota, atau provinsi perusahaan..." value={searchValue} onChange={handleSearchChange} />
                             <InputGroupAddon>
                                 <Search className="mr-1" />
                             </InputGroupAddon>
@@ -82,9 +87,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                                     <Filter className="size-3.75" />
                                     <span className="hidden lg:inline">Filter</span>
                                     {activeFiltersCount > 0 && (
-                                        <Badge className="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-background">
-                                            {activeFiltersCount}
-                                        </Badge>
+                                        <Badge className="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-background">{activeFiltersCount}</Badge>
                                     )}
                                 </Button>
                             </SheetTrigger>
@@ -94,16 +97,17 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                                     <SheetDescription>Atur filter untuk menyaring data perusahaan</SheetDescription>
                                 </SheetHeader>
 
-                                <div className="mt-6 space-y-4 px-4">
-                                    <div className="space-y-2">
-                                        <Label>Status Legal</Label>
+                                <div className="space-y-4 px-4">
+                                    <Field>
+                                        <FieldLabel htmlFor="status_legal">Status Legal</FieldLabel>
                                         <Select value={filters.status_legal || ''} onValueChange={(value) => updateFilter('status_legal', value || undefined)}>
                                             <SelectTrigger className="w-full">
                                                 <SelectValue placeholder="Pilih status legal" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
-                                                    {statusLegalOptions.map((item) => (
+                                                    <SelectLabel>Status Legal</SelectLabel>
+                                                    {STATUS_LEGAL.map((item) => (
                                                         <SelectItem key={item.value} value={item.value}>
                                                             {item.label}
                                                         </SelectItem>
@@ -111,17 +115,18 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
-                                    </div>
+                                    </Field>
 
-                                    <div className="space-y-2">
-                                        <Label>Kategori Bisnis</Label>
+                                    <Field>
+                                        <FieldLabel htmlFor="category_business">Kategori Bisnis</FieldLabel>
                                         <Select value={filters.category_business || ''} onValueChange={(value) => updateFilter('category_business', value || undefined)}>
                                             <SelectTrigger className="w-full">
                                                 <SelectValue placeholder="Pilih kategori bisnis" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
-                                                    {categoryBusinessOptions.map((item) => (
+                                                    <SelectLabel>Kategori Bisnis</SelectLabel>
+                                                    {CATEGORY_BUSINESS.map((item) => (
                                                         <SelectItem key={item.value} value={item.value}>
                                                             {item.label}
                                                         </SelectItem>
@@ -129,7 +134,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
-                                    </div>
+                                    </Field>
 
                                     {activeFiltersCount > 0 && (
                                         <Button className="w-full" onClick={resetFilters}>
@@ -144,8 +149,8 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                     <div className="flex w-full gap-2 md:w-auto">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" className="flex-1 md:w-30 gap-1.5">
-                                    Kolom 
+                                <Button variant="outline" className="flex-1 gap-1.5 md:w-30">
+                                    Kolom
                                     <ChevronDown className="size-4" />
                                 </Button>
                             </DropdownMenuTrigger>
@@ -180,7 +185,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                         )}
                         {filters.status_legal && (
                             <Badge variant="secondary" className="flex items-center gap-2">
-                                Status Legal: {filters.status_legal}
+                                Status Legal: {selectedStatusLegal?.label}
                                 <Button variant="ghost" size="sm" className="h-6 w-6 text-xs" onClick={() => updateFilter('status_legal', undefined)}>
                                     <X className="size-3" />
                                 </Button>
@@ -188,7 +193,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                         )}
                         {filters.category_business && (
                             <Badge variant="secondary" className="gap-2">
-                                Kategori Bisnis: {filters.category_business}
+                                Kategori Bisnis: {selectedCategoryBusiness?.label}
                                 <Button variant="ghost" size="sm" className="h-6 w-6 text-xs" onClick={() => updateFilter('category_business', undefined)}>
                                     <X className="size-3" />
                                 </Button>
@@ -201,14 +206,14 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                 )}
             </div>
 
-            <div className="overflow-hidden rounded-md border-b">
+            <div className="overflow-hidden rounded-t-md border-b">
                 <Table>
-                    <TableHeader className="bg-primary hover:bg-primary">
+                    <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
+                            <TableRow key={headerGroup.id} className="border-none">
                                 {headerGroup.headers.map((header) => {
                                     return (
-                                        <TableHead key={header.id} className="font-medium text-background">
+                                        <TableHead key={header.id}>
                                             {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                         </TableHead>
                                     );

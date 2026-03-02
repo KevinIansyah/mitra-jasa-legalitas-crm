@@ -8,9 +8,10 @@ import { HasPermission } from '@/components/has-permission';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Field, FieldLabel } from '@/components/ui/field';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
@@ -101,14 +102,15 @@ export function DataTable({ data, services, pageIndex, setPageIndex, totalPages,
                                 </SheetHeader>
 
                                 <div className="mt-6 space-y-4 px-4">
-                                    <div className="space-y-2">
-                                        <Label>Layanan</Label>
+                                    <Field>
+                                        <FieldLabel htmlFor="service_id">Layanan</FieldLabel>
                                         <Select value={filters.service_id || ''} onValueChange={(value) => updateFilter('service_id', value || undefined)}>
                                             <SelectTrigger className="w-full">
                                                 <SelectValue placeholder="Pilih layanan" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
+                                                    <SelectLabel>Layanan</SelectLabel>
                                                     {services.map((service) => (
                                                         <SelectItem key={service.id} value={String(service.id)}>
                                                             {service.name}
@@ -117,37 +119,39 @@ export function DataTable({ data, services, pageIndex, setPageIndex, totalPages,
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
-                                    </div>
+                                    </Field>
 
-                                    <div className="space-y-2">
-                                        <Label>Tipe</Label>
+                                    <Field>
+                                        <FieldLabel htmlFor="template_type">Tipe</FieldLabel>
                                         <Select value={filters.template_type || ''} onValueChange={(value) => updateFilter('template_type', value || undefined)}>
                                             <SelectTrigger className="w-full">
                                                 <SelectValue placeholder="Pilih tipe" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
+                                                    <SelectLabel>Tipe</SelectLabel>
                                                     <SelectItem value="service_based">Service Based</SelectItem>
                                                     <SelectItem value="custom">Custom</SelectItem>
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
-                                    </div>
+                                    </Field>
 
-                                    <div className="space-y-2">
-                                        <Label>Status</Label>
+                                    <Field>
+                                        <FieldLabel htmlFor="status">Status</FieldLabel>
                                         <Select value={filters.status || ''} onValueChange={(value) => updateFilter('status', value || undefined)}>
                                             <SelectTrigger className="w-full">
                                                 <SelectValue placeholder="Pilih status" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
+                                                    <SelectLabel>Status</SelectLabel>
                                                     <SelectItem value="active">Active</SelectItem>
                                                     <SelectItem value="inactive">Inactive</SelectItem>
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
-                                    </div>
+                                    </Field>
 
                                     {activeFiltersCount > 0 && (
                                         <Button className="w-full" onClick={resetFilters}>
@@ -210,14 +214,14 @@ export function DataTable({ data, services, pageIndex, setPageIndex, totalPages,
                         )}
                         {filters.template_type && (
                             <Badge variant="secondary" className="gap-2">
-                                Tipe: {filters.template_type}
+                                Tipe: {filters.template_type === 'service_based' ? 'Service Based' : 'Custom'}
                                 <Button variant="ghost" size="sm" className="h-6 w-6 text-xs" onClick={() => updateFilter('template_type', undefined)}>
                                     <X className="size-3" />
                                 </Button>
                             </Badge>
                         )}
                         {filters.status && (
-                            <Badge variant="secondary" className="gap-2">
+                            <Badge variant="secondary" className="gap-2 capitalize">
                                 Status: {filters.status}
                                 <Button variant="ghost" size="sm" className="h-6 w-6 text-xs" onClick={() => updateFilter('status', undefined)}>
                                     <X className="size-3" />
@@ -231,14 +235,14 @@ export function DataTable({ data, services, pageIndex, setPageIndex, totalPages,
                 )}
             </div>
 
-            <div className="overflow-hidden rounded-md border-b">
+            <div className="overflow-hidden rounded-t-md border-b">
                 <Table>
-                    <TableHeader className="bg-primary hover:bg-primary">
+                    <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
+                            <TableRow key={headerGroup.id} className="border-none">
                                 {headerGroup.headers.map((header) => {
                                     return (
-                                        <TableHead key={header.id} className="font-medium text-background">
+                                        <TableHead key={header.id}>
                                             {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                         </TableHead>
                                     );

@@ -48,6 +48,15 @@ export const useDataTableWithFilters = <T extends Record<string, string | undefi
         return cleanFilters as Partial<T>;
     });
 
+    // const safeInitialFilters = initialFilters ?? ({} as T);
+
+    // const [searchValue, setSearchValue] = useState(urlParams.search || safeInitialFilters.search || '');
+    // const [filters, setFilters] = useState<Partial<T>>(() => {
+    //     const { search: _search, page: _page, per_page: _per_page, ...restFilters } = urlParams;
+    //     const cleanFilters = Object.fromEntries(Object.entries(restFilters).filter(([_, value]) => value && value !== 'all'));
+    //     return { ...safeInitialFilters, ...cleanFilters } as Partial<T>;
+    // });
+
     const buildParams = (newParams: Record<string, string | number | undefined> = {}) => {
         const params: Record<string, string | number> = {};
 

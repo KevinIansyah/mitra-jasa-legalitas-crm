@@ -342,10 +342,30 @@ export interface SelectOption {
     label: string;
 }
 
-export const DOCUMENT_TYPES = ['Law', 'Government Regulation', 'Presidential Regulation', 'Ministerial Regulation', 'Ministerial Decree', 'Regional Regulation'] as const;
-
 export type DocumentType = (typeof DOCUMENT_TYPES)[number];
 
 export const PACKAGE_BADGES = ['Most Popular', 'Recommended', 'Best Value', 'Budget', 'Premium', 'New'] as const;
 
 export type PackageBadge = (typeof PACKAGE_BADGES)[number];
+
+export const DOCUMENT_FORMAT_OPTIONS = [
+    { value: 'pdf', label: 'PDF' },
+    { value: 'doc', label: 'DOC' },
+    { value: 'docx', label: 'DOCX (Word)' },
+    { value: 'xls', label: 'XLS' },
+    { value: 'xlsx', label: 'XLSX (Excel)' },
+    { value: 'jpg', label: 'JPG' },
+] as const;
+
+export type DocumentFormat = (typeof DOCUMENT_FORMAT_OPTIONS)[number]['value'];
+
+export const DOCUMENT_TYPES = [
+    'Undang-Undang (UU)',
+    'Peraturan Pemerintah (PP)',
+    'Peraturan Presiden (Perpres)',
+    'Peraturan Menteri (Permen)',
+    'Keputusan Menteri (Kepmen)',
+    'Peraturan Daerah (Perda)',
+] as const;
+
+export type RequirementDocumentFormat = (typeof DOCUMENT_TYPES)[number];

@@ -3,6 +3,7 @@ import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
@@ -25,15 +26,15 @@ export default function Login({ status, canResetPassword }: Props) {
                 {({ processing, errors }) => (
                     <>
                         <div className="grid gap-6">
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Alamat Email</Label>
+                            <Field>
+                                <FieldLabel htmlFor="email">Alamat Email</FieldLabel>
                                 <Input id="email" type="email" name="email" required autoFocus tabIndex={1} autoComplete="email" placeholder="email@contoh.com" />
                                 <InputError message={errors.email} />
-                            </div>
+                            </Field>
 
-                            <div className="grid gap-2">
+                            <Field>
                                 <div className="flex items-center">
-                                    <Label htmlFor="password">Kata Sandi</Label>
+                                    <FieldLabel htmlFor="password">Kata Sandi</FieldLabel>
                                     {canResetPassword && (
                                         <TextLink href={request()} className="ml-auto text-sm" tabIndex={5}>
                                             Lupa kata sandi?
@@ -42,27 +43,18 @@ export default function Login({ status, canResetPassword }: Props) {
                                 </div>
                                 <Input id="password" type="password" name="password" required tabIndex={2} autoComplete="current-password" placeholder="Masukkan kata sandi" />
                                 <InputError message={errors.password} />
-                            </div>
+                            </Field>
 
                             <div className="flex items-center space-x-3">
                                 <Checkbox id="remember" name="remember" tabIndex={3} />
                                 <Label htmlFor="remember">Ingat saya</Label>
                             </div>
 
-                            <Button type="submit" className="mt-4 w-full" tabIndex={4} disabled={processing} data-test="login-button">
+                            <Button type="submit" className="w-full" tabIndex={4} disabled={processing} data-test="login-button">
                                 {processing && <Spinner className="mr-2" />}
                                 {processing ? 'Sedang masuk...' : 'Masuk'}
                             </Button>
                         </div>
-
-                        {/* {canRegister && (
-                            <div className="text-center text-sm text-muted-foreground">
-                                Belum punya akun?{' '}
-                                <TextLink href={register()} tabIndex={5}>
-                                    Daftar
-                                </TextLink>
-                            </div>
-                        )} */}
                     </>
                 )}
             </Form>

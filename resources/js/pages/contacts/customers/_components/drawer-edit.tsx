@@ -76,10 +76,9 @@ export function DrawerEdit({ customerId, open, onOpenChange }: DrawerEditProps) 
 
                 onOpenChange(false);
             },
-            onError: () => {
-                toast.error('Gagal', {
-                    description: 'Pelanggan gagal diperbarui. Silakan periksa kembali data pelanggan yang diisi.',
-                });
+            onError: (errors) => {
+                const msg = Object.values(errors)[0] ?? 'Terjadi kesalahan saat memperbarui pelanggan, coba lagi.';
+                toast.error('Gagal', { description: String(msg) });
             },
             onFinish: () => {
                 toast.dismiss(id);
@@ -96,7 +95,7 @@ export function DrawerEdit({ customerId, open, onOpenChange }: DrawerEditProps) 
                     loadingFocusRef.current?.focus();
                 }}
             >
-                <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col overflow-y-auto">
+                <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 overflow-y-auto">
                     <DrawerHeader className="px-4">
                         <DrawerTitle>Edit Pelanggan</DrawerTitle>
                         <DrawerDescription>Perbarui data pelanggan yang sudah ada melalui formulir di bawah ini.</DrawerDescription>

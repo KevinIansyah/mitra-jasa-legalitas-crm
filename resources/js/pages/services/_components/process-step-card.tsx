@@ -107,6 +107,7 @@ export function ProcessStepCard({ step, index, totalItems, onChange, onDelete, o
                     className="min-h-24 resize-none"
                     rows={4}
                 />
+                {errors[`process_steps.${index}.description`] && <FieldError>{errors[`process_steps.${index}.description`]}</FieldError>}
             </Field>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -117,6 +118,7 @@ export function ProcessStepCard({ step, index, totalItems, onChange, onDelete, o
                         <Clock className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                         <Input value={step.duration ?? ''} onChange={(e) => update({ duration: e.target.value })} placeholder="Contoh: 1-2 hari kerja" className="pl-10" />
                     </div>
+                    {errors[`process_steps.${index}.duration`] && <FieldError>{errors[`process_steps.${index}.duration`]}</FieldError>}
                 </Field>
 
                 {/* Duration Days */}
@@ -129,6 +131,7 @@ export function ProcessStepCard({ step, index, totalItems, onChange, onDelete, o
                         onChange={(e) => update({ duration_days: e.target.value ? Number(e.target.value) : null })}
                         placeholder="Opsional"
                     />
+                    {errors[`process_steps.${index}.duration_days`] && <FieldError>{errors[`process_steps.${index}.duration_days`]}</FieldError>}
                 </Field>
             </div>
 
@@ -187,12 +190,14 @@ export function ProcessStepCard({ step, index, totalItems, onChange, onDelete, o
                     className="min-h-24 resize-none"
                     rows={2}
                 />
+                {errors[`process_steps.${index}.notes`] && <FieldError>{errors[`process_steps.${index}.notes`]}</FieldError>}
             </Field>
 
             {/* Icon (optional field for future icon picker) */}
             <Field>
                 <FieldLabel>Icon</FieldLabel>
                 <Input value={step.icon ?? ''} onChange={(e) => update({ icon: e.target.value })} placeholder="Nama icon atau kelas CSS" />
+                {errors[`process_steps.${index}.icon`] && <FieldError>{errors[`process_steps.${index}.icon`]}</FieldError>}
             </Field>
         </div>
     );

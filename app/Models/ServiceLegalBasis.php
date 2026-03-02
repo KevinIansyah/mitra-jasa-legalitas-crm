@@ -27,33 +27,33 @@ class ServiceLegalBasis extends Model
         'sort_order' => 'integer',
     ];
 
-    /**
-     * Get the service that owns the legal basis.
-     */
+    // ============================================================
+    // RELATIONS
+    // ============================================================
     public function service(): BelongsTo
     {
         return $this->belongsTo(Service::class);
     }
 
-    /**
-     * Scope a query to only include active legal bases.
-     */
+    // ============================================================
+    // SCOPES
+    // ============================================================
+
     public function scopeActive($query)
     {
         return $query->where('status', 'active');
     }
 
-    /**
-     * Scope a query to order by sort order.
-     */
     public function scopeOrdered($query)
     {
         return $query->orderBy('sort_order');
     }
 
-    /**
-     * Get formatted document reference.
-     */
+
+    // ============================================================
+    // COMPUTED
+    // ============================================================
+    
     public function getFullReferenceAttribute(): string
     {
         return "{$this->document_type} {$this->document_number}";

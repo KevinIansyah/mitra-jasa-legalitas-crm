@@ -100,8 +100,50 @@ export default function PermissionSection({ role, allPermissions }: PermissionSe
                         itemName = 'Semua Project';
                     }
 
+                    if (resource === 'project-members') {
+                        itemName = 'Tim';
+                    }
+
+                    if (resource === 'project-tasks') {
+                        itemName = 'Tugas';
+                    }
+
+                    if (resource === 'project-milestones') {
+                        itemName = 'Milestone';
+                    }
+
+                    if (resource === 'project-documents') {
+                        itemName = 'Dokumen';
+                    }
+
+                    if (resource === 'project-deliverables') {
+                        itemName = 'Hasil Akhir';
+                    }
+
+                    if (resource === 'project-discussions') {
+                        itemName = 'Diskusi';
+                    }
+
                     if (resource === 'project-templates') {
-                        itemName = 'Template Project (AI)';
+                        itemName = 'Template';
+                    }
+
+                    break;
+                }
+
+                case resource.startsWith('finance'): {
+                    groupName = 'Manajemen Keuangan';
+
+                    if (resource === 'finance-invoices') {
+                        itemName = 'Invoice';
+                    }
+
+                    if (resource === 'finance-payments') {
+                        itemName = 'Pembayaran';
+                    }
+
+                    if (resource === 'finance-expenses') {
+                        itemName = 'Pengeluaran';
                     }
 
                     break;
@@ -240,73 +282,81 @@ export default function PermissionSection({ role, allPermissions }: PermissionSe
     return (
         <div className="w-full rounded-xl bg-sidebar p-4">
             <form onSubmit={handleSubmit}>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-25">Menu</TableHead>
-                            <TableHead className="w-25">Semua</TableHead>
-                            <TableHead className="w-25">Lihat</TableHead>
-                            <TableHead className="w-25">Tambah</TableHead>
-                            <TableHead className="w-25">Edit</TableHead>
-                            <TableHead className="w-25">Hapus</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {permissionGroups.map((group, groupIndex) => (
-                            <React.Fragment key={`group-${groupIndex}`}>
-                                {/* Group Title */}
-                                <TableRow className="border-b-0">
-                                    <TableCell colSpan={6} className="font-semibold">
-                                        {group.title}
-                                    </TableCell>
-                                </TableRow>
-
-                                {/* Group Items */}
-                                {group.items.map((item, itemIndex) => (
-                                    <TableRow key={`item-${groupIndex}-${itemIndex}`} className={itemIndex === group.items.length - 1 ? '' : 'border-b-0'}>
-                                        <TableCell>{item.name}</TableCell>
-
-                                        {/* Toggle All */}
-                                        <TableCell>
-                                            <Switch checked={areAllPermissionsSelected(item.permissions)} onCheckedChange={() => toggleAllForItem(item.permissions)} />
-                                        </TableCell>
-
-                                        {/* View Permission */}
-                                        <TableCell>
-                                            {item.permissions.view ? (
-                                                <Switch checked={isPermissionSelected(item.permissions.view)} onCheckedChange={() => togglePermission(item.permissions.view)} />
-                                            ) : null}
-                                        </TableCell>
-
-                                        {/* Create Permission */}
-                                        <TableCell>
-                                            {item.permissions.create ? (
-                                                <Switch checked={isPermissionSelected(item.permissions.create)} onCheckedChange={() => togglePermission(item.permissions.create)} />
-                                            ) : null}
-                                        </TableCell>
-
-                                        {/* Edit Permission */}
-                                        <TableCell>
-                                            {item.permissions.edit ? (
-                                                <Switch checked={isPermissionSelected(item.permissions.edit)} onCheckedChange={() => togglePermission(item.permissions.edit)} />
-                                            ) : null}
-                                        </TableCell>
-
-                                        {/* Delete Permission */}
-                                        <TableCell>
-                                            {item.permissions.delete ? (
-                                                <Switch checked={isPermissionSelected(item.permissions.delete)} onCheckedChange={() => togglePermission(item.permissions.delete)} />
-                                            ) : null}
+                <div className="overflow-hidden rounded-t-md border-b">
+                    <Table className="">
+                        <TableHeader>
+                            <TableRow className="border-none">
+                                <TableHead className="w-25">Menu</TableHead>
+                                <TableHead className="w-25">Semua</TableHead>
+                                <TableHead className="w-25">Lihat</TableHead>
+                                <TableHead className="w-25">Tambah</TableHead>
+                                <TableHead className="w-25">Edit</TableHead>
+                                <TableHead className="w-25">Hapus</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {permissionGroups.map((group, groupIndex) => (
+                                <React.Fragment key={`group-${groupIndex}`}>
+                                    {/* Group Title */}
+                                    <TableRow className="border-none">
+                                        <TableCell colSpan={6} className="font-semibold">
+                                            {group.title}
                                         </TableCell>
                                     </TableRow>
-                                ))}
-                            </React.Fragment>
-                        ))}
-                    </TableBody>
-                </Table>
 
-                <div className="mt-8 flex items-center justify-end gap-2">
-                    <Button type="submit" className="flex-1 md:w-40 md:flex-none" disabled={processing}>
+                                    {/* Group Items */}
+                                    {group.items.map((item, itemIndex) => (
+                                        <TableRow key={`item-${groupIndex}-${itemIndex}`} className={itemIndex === group.items.length - 1 ? '' : 'border-b-0'}>
+                                            <TableCell>{item.name}</TableCell>
+
+                                            {/* Toggle All */}
+                                            <TableCell>
+                                                <Switch checked={areAllPermissionsSelected(item.permissions)} onCheckedChange={() => toggleAllForItem(item.permissions)} />
+                                            </TableCell>
+
+                                            {/* View Permission */}
+                                            <TableCell>
+                                                {item.permissions.view ? (
+                                                    <Switch checked={isPermissionSelected(item.permissions.view)} onCheckedChange={() => togglePermission(item.permissions.view)} />
+                                                ) : null}
+                                            </TableCell>
+
+                                            {/* Create Permission */}
+                                            <TableCell>
+                                                {item.permissions.create ? (
+                                                    <Switch
+                                                        checked={isPermissionSelected(item.permissions.create)}
+                                                        onCheckedChange={() => togglePermission(item.permissions.create)}
+                                                    />
+                                                ) : null}
+                                            </TableCell>
+
+                                            {/* Edit Permission */}
+                                            <TableCell>
+                                                {item.permissions.edit ? (
+                                                    <Switch checked={isPermissionSelected(item.permissions.edit)} onCheckedChange={() => togglePermission(item.permissions.edit)} />
+                                                ) : null}
+                                            </TableCell>
+
+                                            {/* Delete Permission */}
+                                            <TableCell>
+                                                {item.permissions.delete ? (
+                                                    <Switch
+                                                        checked={isPermissionSelected(item.permissions.delete)}
+                                                        onCheckedChange={() => togglePermission(item.permissions.delete)}
+                                                    />
+                                                ) : null}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </React.Fragment>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
+
+                <div className="mt-4 flex items-center justify-start gap-2">
+                    <Button type="submit" className="flex-1 md:w-45 md:flex-none" disabled={processing}>
                         {processing ? (
                             <>
                                 <Spinner className="mr-2" />
@@ -316,7 +366,7 @@ export default function PermissionSection({ role, allPermissions }: PermissionSe
                             'Simpan'
                         )}
                     </Button>
-                    <Button variant="outline" type="button" className="flex-1 md:w-40 md:flex-none" onClick={handleReset}>
+                    <Button variant="secondary" type="button" className="flex-1 md:w-45 md:flex-none" onClick={handleReset}>
                         Reset
                     </Button>
                 </div>

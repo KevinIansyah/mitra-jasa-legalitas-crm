@@ -42,6 +42,10 @@ class ServiceCategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:service_categories,name',
+        ], [
+            'name.required' => 'Nama kategori wajib diisi.',
+            'name.max'      => 'Nama kategori maksimal 255 karakter.',
+            'name.unique'   => 'Nama kategori sudah digunakan.',
         ]);
 
         ServiceCategory::create($validated);
@@ -66,6 +70,10 @@ class ServiceCategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:service_categories,name,' . $category->id,
+        ], [
+            'name.required' => 'Nama kategori wajib diisi.',
+            'name.max'      => 'Nama kategori maksimal 255 karakter.',
+            'name.unique'   => 'Nama kategori sudah digunakan.',
         ]);
 
         $category->update($validated);

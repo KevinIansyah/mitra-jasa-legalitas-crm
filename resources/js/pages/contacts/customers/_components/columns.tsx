@@ -1,16 +1,9 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
-import type { Customer } from '@/types/contact';
+import { TIER_VARIANT_MAP, type Customer } from '@/types/contact';
 import Actions from './actions';
 
 export default function getColumns(): ColumnDef<Customer>[] {
-    const tierVariantMap: Record<string, string> = {
-        bronze: 'bg-amber-700 text-white',
-        silver: 'bg-slate-400 text-slate-900',
-        gold: 'bg-yellow-500 text-white',
-        platinum: 'bg-indigo-600 text-white',
-    };
-
     return [
         {
             accessorKey: 'name',
@@ -33,7 +26,7 @@ export default function getColumns(): ColumnDef<Customer>[] {
             cell: ({ row }) => {
                 const tier = row.getValue<string>('tier');
 
-                return <Badge className={tierVariantMap[tier] ?? 'bg-muted text-muted-foreground'}>{tier.charAt(0).toUpperCase() + tier.slice(1)}</Badge>;
+                return <Badge className={TIER_VARIANT_MAP[tier] ?? 'bg-muted text-muted-foreground'}>{tier.charAt(0).toUpperCase() + tier.slice(1)}</Badge>;
             },
         },
         {
@@ -56,7 +49,7 @@ export default function getColumns(): ColumnDef<Customer>[] {
             cell: ({ row }) => {
                 const userId = row.getValue<number | null>('user_id');
 
-                return userId ? <Badge className="bg-emerald-500 text-white">Terdaftar</Badge> : <Badge variant="secondary">Belum</Badge>;
+                return userId ? <Badge className="bg-emerald-500 text-white">Terdaftar</Badge> : <Badge variant="secondary">Belum Terdaftar</Badge>;
             },
         },
 

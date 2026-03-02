@@ -232,7 +232,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                 toast.success('Berhasil', {
                     description: 'Layanan berhasil ditambahkan.',
                 });
-                
+
                 handleCancel();
             },
             onError: () => {
@@ -552,11 +552,11 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                     <p className="mt-0.5 text-sm text-muted-foreground">Kelola paket harga dengan dokumen/fitur yang berbeda untuk setiap paket</p>
                                 </div>
                                 <div className="flex w-full items-center gap-2 md:w-auto">
-                                    {/* <Button type="button" variant="outline" size="sm" className="flex-1 shrink-0 gap-1.5 md:flex-0" disabled>
+                                    {/* <Button type="button" variant="outline" size="sm" className="flex-1 shrink-0 gap-1.5 md:flex-none" disabled>
                                         <Sparkles className="size-3.5" />
                                         AI Generate
                                     </Button> */}
-                                    <Button type="button" onClick={addPackage} size="sm" className="flex-1 gap-1.5 md:flex-0">
+                                    <Button type="button" onClick={addPackage} size="sm" className="flex-1 gap-1.5 md:flex-none">
                                         <Plus className="size-4" />
                                         Tambah Paket
                                     </Button>

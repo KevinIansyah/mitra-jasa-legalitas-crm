@@ -1,12 +1,13 @@
-import { Calendar, GripVertical, Link as LinkIcon } from 'lucide-react';
+import { GripVertical, Link as LinkIcon } from 'lucide-react';
 
+import { DatePicker } from '@/components/date-picker';
 import { ServiceCardAction } from '@/components/service-card-action';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 
-import type { ServiceStatus } from '@/types/service';
+import { DOCUMENT_TYPES, type ServiceStatus } from '@/types/service';
 
 export type LocalLegalBasis = {
     id?: number;
@@ -20,15 +21,6 @@ export type LocalLegalBasis = {
     sort_order: number;
     status: ServiceStatus;
 };
-
-export const DOCUMENT_TYPES = [
-    'Undang-Undang (UU)',
-    'Peraturan Pemerintah (PP)',
-    'Peraturan Presiden (Perpres)',
-    'Peraturan Menteri (Permen)',
-    'Keputusan Menteri (Kepmen)',
-    'Peraturan Daerah (Perda)',
-] as const;
 
 type LegalBasisCardProps = {
     legalBasis: LocalLegalBasis;
@@ -122,10 +114,8 @@ export function LegalBasisCard({ legalBasis, index, totalItems, onChange, onDele
                 {/* Issued Date */}
                 <Field>
                     <FieldLabel>Tanggal Terbit</FieldLabel>
-                    <div className="relative">
-                        <Calendar className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input type="date" value={legalBasis.issued_date ?? ''} onChange={(e) => update({ issued_date: e.target.value })} className="pl-10" />
-                    </div>
+                    <DatePicker value={legalBasis.issued_date ?? ''} onChange={(value) => update({ issued_date: value })} fromYear={2000} toYear={2040} />
+                    {errors[`legal_bases.${index}.issued_date`] && <FieldError>{errors[`legal_bases.${index}.issued_date`]}</FieldError>}
                 </Field>
 
                 {/* URL */}
@@ -135,6 +125,7 @@ export function LegalBasisCard({ legalBasis, index, totalItems, onChange, onDele
                         <LinkIcon className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                         <Input type="url" value={legalBasis.url ?? ''} onChange={(e) => update({ url: e.target.value })} placeholder="https://..." className="pl-10" />
                     </div>
+                    {errors[`legal_bases.${index}.url`] && <FieldError>{errors[`legal_bases.${index}.url`]}</FieldError>}
                 </Field>
             </div>
 
@@ -148,6 +139,7 @@ export function LegalBasisCard({ legalBasis, index, totalItems, onChange, onDele
                     className="min-h-24 resize-none"
                     rows={3}
                 />
+                {errors[`legal_bases.${index}.description`] && <FieldError>{errors[`legal_bases.${index}.description`]}</FieldError>}
             </Field>
         </div>
     );

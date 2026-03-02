@@ -90,14 +90,14 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                     </HasPermission>
                 </div>
             </div>
-            <div className="overflow-hidden rounded-md border-b">
+            <div className="overflow-hidden rounded-t-md border-b">
                 <Table>
-                    <TableHeader className="bg-primary hover:bg-primary">
+                    <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
+                            <TableRow key={headerGroup.id} className="border-none">
                                 {headerGroup.headers.map((header) => {
                                     return (
-                                        <TableHead key={header.id} className="font-medium text-background">
+                                        <TableHead key={header.id}>
                                             {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                         </TableHead>
                                     );

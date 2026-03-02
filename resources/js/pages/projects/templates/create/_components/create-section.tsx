@@ -109,19 +109,6 @@ export function CreateSection({ services }: CreateSectionProps) {
         moveDown: (index: number) => setItems(moveItemDown(items, index)),
     });
 
-    // const addMilestone = () =>
-    //     setData('milestones', [
-    //         ...data.milestones,
-    //         {
-    //             _key: Math.random().toString(36).slice(2, 9),
-    //             title: '',
-    //             description: null,
-    //             estimated_duration_days: 1,
-    //             day_offset: data.milestones.length > 0 ? data.milestones.reduce((sum, m) => sum + (m.estimated_duration_days || 0), 0) : 0,
-    //             sort_order: data.milestones.length,
-    //         },
-    //     ]);
-
     const addMilestone = () => {
         let newDayOffset = 0;
         if (data.milestones.length > 0) {
@@ -162,7 +149,7 @@ export function CreateSection({ services }: CreateSectionProps) {
                 _key: Math.random().toString(36).slice(2, 9),
                 name: '',
                 description: null,
-                document_format: 'PDF',
+                document_format: 'pdf',
                 is_required: true,
                 notes: null,
                 sort_order: data.documents.length,
@@ -196,10 +183,12 @@ export function CreateSection({ services }: CreateSectionProps) {
                 });
                 reset();
             },
-            onError: () => {
+            onError: (e) => {
                 toast.error('Gagal', {
                     description: 'Template gagal ditambahkan. Silakan periksa kembali data yang diisi.',
                 });
+
+                console.error(e);
             },
             onFinish: () => {
                 toast.dismiss(id);
@@ -224,7 +213,7 @@ export function CreateSection({ services }: CreateSectionProps) {
 
                     <RadioGroup value={mode} onValueChange={(val) => setMode(val as CreationMode)}>
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                            <div className="flex items-start gap-4 rounded-lg border border-border bg-transparent p-4 dark:bg-input/30">
+                            <div className="flex items-start gap-4 rounded-lg border border-primary bg-transparent p-4 dark:bg-input/30">
                                 <RadioGroupItem value="custom" id="mode-custom" />
                                 <div className="flex-1">
                                     <Label htmlFor="mode-custom" className="cursor-pointer font-medium">
@@ -234,7 +223,7 @@ export function CreateSection({ services }: CreateSectionProps) {
                                 </div>
                             </div>
 
-                            <div className="flex items-start gap-4 rounded-lg border border-border bg-transparent p-4 dark:bg-input/30">
+                            <div className="flex items-start gap-4 rounded-lg border border-primary bg-transparent p-4 dark:bg-input/30">
                                 <RadioGroupItem value="from_service" id="mode-service" />
                                 <div className="flex-1">
                                     <Label htmlFor="mode-service" className="cursor-pointer font-medium">
@@ -302,7 +291,7 @@ export function CreateSection({ services }: CreateSectionProps) {
                                 type="number"
                                 min={1}
                                 placeholder="Contoh: 30"
-                                value={data.estimated_duration_days || ''}
+                                value={data.estimated_duration_days || 0}
                                 onChange={(e) => setData('estimated_duration_days', e.target.value ? Number(e.target.value) : null)}
                             />
                             {errors.estimated_duration_days && <FieldError>{errors.estimated_duration_days}</FieldError>}
@@ -444,18 +433,18 @@ export function CreateSection({ services }: CreateSectionProps) {
             </div>
 
             {/* ACTIONS */}
-            <div className="flex items-center gap-3">
-                <Button type="submit" disabled={processing || isLoadingService}>
+            <div className="flex items-center gap-2">
+                <Button type="submit" className="flex-1 md:w-45 md:flex-none" disabled={processing || isLoadingService}>
                     {processing ? (
                         <>
                             <Spinner className="mr-2" />
                             Menyimpan...
                         </>
                     ) : (
-                        'Simpan Template'
+                        'Simpan'
                     )}
                 </Button>
-                <Button type="button" variant="secondary" onClick={handleCancel} disabled={processing || isLoadingService}>
+                <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={handleCancel} disabled={processing || isLoadingService}>
                     Batal
                 </Button>
             </div>

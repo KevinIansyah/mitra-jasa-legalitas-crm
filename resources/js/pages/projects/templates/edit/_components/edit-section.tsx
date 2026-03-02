@@ -189,7 +189,6 @@ export function EditSection({ services, template }: EditSectionProps) {
 
                     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                         {/* Status */}
-
                         <Field>
                             <FieldLabel>Status</FieldLabel>
                             <Select value={data.status} onValueChange={(value) => setData('status', value as ServiceStatus)}>
@@ -384,8 +383,8 @@ export function EditSection({ services, template }: EditSectionProps) {
             </div>
 
             {/* ACTIONS */}
-            <div className="flex items-center gap-3">
-                <Button type="submit" disabled={processing}>
+            <div className="flex items-center gap-2">
+                <Button type="submit" className="flex-1 md:w-45 md:flex-none" disabled={processing}>
                     {processing ? (
                         <>
                             <Spinner className="mr-2" />
@@ -395,7 +394,7 @@ export function EditSection({ services, template }: EditSectionProps) {
                         'Simpan Perubahan'
                     )}
                 </Button>
-                <Button type="button" variant="secondary" onClick={handleCancel} disabled={processing}>
+                <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={handleCancel} disabled={processing}>
                     Batal
                 </Button>
             </div>

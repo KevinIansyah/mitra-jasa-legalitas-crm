@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('service_requirements', function (Blueprint $table) {
             $table->id();
             $table->foreignId('service_requirement_category_id')->constrained()->cascadeOnDelete();
-            $table->string('name'); // e.g., "KTP Direktur", "Akta Pendirian"
+            $table->string('name');                         // e.g., "KTP Direktur", "Akta Pendirian"
             $table->text('description')->nullable();
             $table->boolean('is_required')->default(true);
-            $table->string('document_format')->nullable(); // e.g., "PDF, JPEG", "Original + Fotokopi"
-            $table->text('notes')->nullable(); // Additional notes or instructions
+            $table->string('document_format')->nullable();  // e.g., "PDF, JPEG", "Original + Fotokopi"
+            $table->text('notes')->nullable();              // Additional notes or instructions
             $table->integer('sort_order')->default(0);
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();

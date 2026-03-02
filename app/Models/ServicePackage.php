@@ -33,25 +33,20 @@ class ServicePackage extends Model
         'sort_order' => 'integer',
     ];
 
-    /**
-     * Get the service that owns the package.
-     */
+    // ============================================================
+    // RELATIONS
+    // ============================================================
+
     public function service(): BelongsTo
     {
         return $this->belongsTo(Service::class);
     }
 
-    /**
-     * Get the features for the package.
-     */
     public function features(): HasMany
     {
         return $this->hasMany(ServicePackageFeature::class);
     }
 
-    /**
-     * Get included features for the package.
-     */
     public function includedFeatures(): HasMany
     {
         return $this->hasMany(ServicePackageFeature::class)
@@ -59,33 +54,29 @@ class ServicePackage extends Model
             ->ordered();
     }
 
-    /**
-     * Scope a query to only include active packages.
-     */
+    // ============================================================
+    // SCOPES
+    // ============================================================
+
     public function scopeActive($query)
     {
         return $query->where('status', 'active');
     }
 
-    /**
-     * Scope a query to only include highlighted packages.
-     */
     public function scopeHighlighted($query)
     {
         return $query->where('is_highlighted', true);
     }
 
-    /**
-     * Scope a query to order by sort order.
-     */
     public function scopeOrdered($query)
     {
         return $query->orderBy('sort_order');
     }
 
-    /**
-     * Get discount percentage.
-     */
+    // ============================================================
+    // COMPUTED
+    // ============================================================
+
     public function getDiscountPercentageAttribute(): ?float
     {
         if ($this->original_price && $this->original_price > $this->price) {
@@ -94,25 +85,16 @@ class ServicePackage extends Model
         return null;
     }
 
-    /**
-     * Get formatted price.
-     */
     public function getFormattedPriceAttribute(): string
     {
         return 'Rp ' . number_format($this->price, 0, ',', '.');
     }
 
-    /**
-     * Get formatted original price.
-     */
     public function getFormattedOriginalPriceAttribute(): ?string
     {
         return $this->original_price ? 'Rp ' . number_format($this->original_price, 0, ',', '.') : null;
     }
-
-    /**
-     * Check if package has discount.
-     */
+    
     public function hasDiscount(): bool
     {
         return $this->discount_percentage !== null;

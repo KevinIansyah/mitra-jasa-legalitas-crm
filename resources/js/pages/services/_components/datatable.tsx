@@ -3,15 +3,18 @@ import type { VisibilityState } from '@tanstack/react-table';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { ChevronDown, ChevronLeftIcon, ChevronRightIcon, ChevronsLeftIcon, ChevronsRightIcon, Filter, Plus, Search, X } from 'lucide-react';
 import * as React from 'react';
+
 import { HasPermission } from '@/components/has-permission';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Field, FieldLabel } from '@/components/ui/field';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
 import services from '@/routes/services';
 import type { Service, ServiceCategory } from '@/types/service';
@@ -29,6 +32,7 @@ interface DataTableProps {
         search?: string;
         status?: string;
         category?: string;
+        is_published?: string;
     };
 }
 
@@ -96,15 +100,16 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
                                     <SheetDescription>Atur filter untuk menyaring data pelanggan</SheetDescription>
                                 </SheetHeader>
 
-                                <div className="mt-6 space-y-4 px-4">
-                                    <div className="space-y-2">
-                                        <Label>Kategori</Label>
+                                <div className="space-y-4 px-4">
+                                    <Field>
+                                        <FieldLabel htmlFor="category">Kategori</FieldLabel>
                                         <Select value={filters.category || ''} onValueChange={(value) => updateFilter('category', value || undefined)}>
                                             <SelectTrigger className="w-full">
                                                 <SelectValue placeholder="Pilih kategori" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
+                                                    <SelectLabel>Kategori</SelectLabel>
                                                     {categories.map((category) => (
                                                         <SelectItem key={category.id} value={String(category.id)}>
                                                             {category.name}
@@ -113,22 +118,39 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
-                                    </div>
+                                    </Field>
 
-                                    <div className="space-y-2">
-                                        <Label>Status</Label>
+                                    <Field>
+                                        <FieldLabel htmlFor="is_published">Publikasi</FieldLabel>
+                                        <Select value={filters.is_published || ''} onValueChange={(value) => updateFilter('is_published', value || undefined)}>
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Pilih publikasi" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    <SelectLabel>Publikasi</SelectLabel>
+                                                    <SelectItem value="published">Publik</SelectItem>
+                                                    <SelectItem value="unpublished">Tidak Publik</SelectItem>
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    </Field>
+
+                                    <Field>
+                                        <FieldLabel htmlFor="status">Status</FieldLabel>
                                         <Select value={filters.status || ''} onValueChange={(value) => updateFilter('status', value || undefined)}>
                                             <SelectTrigger className="w-full">
                                                 <SelectValue placeholder="Pilih status" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
+                                                    <SelectLabel>Status</SelectLabel>
                                                     <SelectItem value="active">Active</SelectItem>
                                                     <SelectItem value="inactive">Inactive</SelectItem>
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
-                                    </div>
+                                    </Field>
 
                                     {activeFiltersCount > 0 && (
                                         <Button className="w-full" onClick={resetFilters}>
@@ -189,8 +211,16 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
                                 </Button>
                             </Badge>
                         )}
+                        {filters.is_published && (
+                            <Badge variant="secondary" className="gap-2 capitalize">
+                                Publikasi: {filters.is_published === 'public' ? 'Publik' : 'Tidak Publik'}
+                                <Button variant="ghost" size="sm" className="h-6 w-6 text-xs" onClick={() => updateFilter('is_published', undefined)}>
+                                    <X className="size-3" />
+                                </Button>
+                            </Badge>
+                        )}
                         {filters.status && (
-                            <Badge variant="secondary" className="gap-2">
+                            <Badge variant="secondary" className="gap-2 capitalize">
                                 Status: {filters.status}
                                 <Button variant="ghost" size="sm" className="h-6 w-6 text-xs" onClick={() => updateFilter('status', undefined)}>
                                     <X className="size-3" />
@@ -206,15 +236,11 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
 
             <div className="overflow-hidden rounded-md border-b">
                 <Table>
-                    <TableHeader className="bg-primary hover:bg-primary">
+                    <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
+                            <TableRow key={headerGroup.id} className="border-none">
                                 {headerGroup.headers.map((header) => {
-                                    return (
-                                        <TableHead key={header.id} className="font-medium text-background">
-                                            {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                                        </TableHead>
-                                    );
+                                    return <TableHead key={header.id}>{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}</TableHead>;
                                 })}
                             </TableRow>
                         ))}

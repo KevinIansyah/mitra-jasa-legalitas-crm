@@ -1,5 +1,5 @@
 import { Link, router, usePage } from '@inertiajs/react';
-import {  ChevronsUpDown, LogOut, Settings } from 'lucide-react';
+import { ChevronsUpDown, LogOut, Settings } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -60,17 +60,17 @@ export function NavUser() {
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
-                            <DropdownMenuItem asChild>
-                                <Link className='w-full' href={profile.edit()} prefetch onClick={cleanup}>
-                                    <Settings className="mr-2" />
+                            <DropdownMenuItem className="group" asChild>
+                                <Link className="w-full" href={profile.edit()} prefetch onClick={cleanup}>
+                                    <Settings className="mr-2 hover:text-background" />
                                     Pengaturan Profil
                                 </Link>
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild>
+                        <DropdownMenuItem className="group" asChild>
                             <Link className="w-full" href={logout()} onClick={handleLogout}>
-                                <LogOut className="mr-2" />
+                                <LogOut className="mr-2 hover:text-background" />
                                 Log out
                             </Link>
                         </DropdownMenuItem>

@@ -55,7 +55,7 @@ export function DrawerAdd() {
             </DrawerTrigger>
 
             <DrawerContent className="flex h-screen flex-col">
-                <div className="mx-auto flex w-full max-w-lg flex-1 flex-col overflow-y-auto px-4">
+                <div className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-4 overflow-y-auto px-4">
                     <DrawerHeader className="px-4">
                         <DrawerTitle>Tambah Kategori Layanan Baru</DrawerTitle>
                         <DrawerDescription>Isi formulir di bawah untuk menambahkan kategori layanan baru ke sistem</DrawerDescription>

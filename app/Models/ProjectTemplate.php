@@ -33,41 +33,33 @@ class ProjectTemplate extends Model
         'documents_count',
     ];
 
-    /**
-     * Get the service that owns the template.
-     */
+    // ============================================================
+    // RELATIONS
+    // ============================================================
+
     public function service(): BelongsTo
     {
         return $this->belongsTo(Service::class);
     }
 
-    /**
-     * Scope a query to only include active templates.
-     */
+    // ============================================================
+    // SCOPES
+    // ============================================================
     public function scopeActive($query)
     {
         return $query->where('status', 'active');
     }
 
-    /**
-     * Scope a query to only include service-based templates.
-     */
     public function scopeServiceBased($query)
     {
         return $query->whereNotNull('service_id');
     }
 
-    /**
-     * Scope a query to only include custom templates.
-     */
     public function scopeCustom($query)
     {
         return $query->whereNull('service_id');
     }
 
-    /**
-     * Scope a query to search templates.
-     */
     public function scopeSearch($query, $search)
     {
         return $query->where(function ($query) use ($search) {
@@ -75,41 +67,30 @@ class ProjectTemplate extends Model
         });
     }
 
-    /**
-     * Check if template is service-based.
-     */
+    // ============================================================
+    // COMPUTED
+    // ============================================================
+
     public function isServiceBased(): bool
     {
         return !is_null($this->service_id);
     }
 
-    /**
-     * Check if template is custom.
-     */
     public function isCustom(): bool
     {
         return is_null($this->service_id);
     }
 
-    /**
-     * Get total milestones count.
-     */
     public function getMilestonesCountAttribute(): int
     {
         return is_array($this->milestones) ? count($this->milestones) : 0;
     }
 
-    /**
-     * Get total documents count.
-     */
     public function getDocumentsCountAttribute(): int
     {
         return is_array($this->documents) ? count($this->documents) : 0;
     }
 
-    /**
-     * Get required documents count.
-     */
     public function getRequiredDocumentsCountAttribute(): int
     {
         if (!is_array($this->documents)) {
@@ -121,9 +102,6 @@ class ProjectTemplate extends Model
             ->count();
     }
 
-    /**
-     * Get total calculated duration from milestones.
-     */
     public function getCalculatedDurationAttribute(): int
     {
         if (!is_array($this->milestones)) {
@@ -134,9 +112,6 @@ class ProjectTemplate extends Model
             ->sum('estimated_duration_days');
     }
 
-    /**
-     * Check if template has complete data.
-     */
     public function isComplete(): bool
     {
         return !empty($this->name) &&
@@ -145,12 +120,6 @@ class ProjectTemplate extends Model
             $this->documents_count > 0;
     }
 
-    /**
-     * Create template from service.
-     * 
-     * @param Service $service
-     * @return static
-     */
     public static function createFromService(Service $service): static
     {
         // Build milestones from process steps

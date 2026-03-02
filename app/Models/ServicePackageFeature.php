@@ -23,33 +23,28 @@ class ServicePackageFeature extends Model
         'sort_order' => 'integer',
     ];
 
-    /**
-     * Get the package that owns the feature.
-     */
+    // ============================================================
+    // RELATIONS
+    // ============================================================
+
     public function package(): BelongsTo
     {
         return $this->belongsTo(ServicePackage::class, 'service_package_id');
     }
 
-    /**
-     * Scope a query to only include included features.
-     */
+    // ============================================================
+    // SCOPES
+    // ============================================================
     public function scopeIncluded($query)
     {
         return $query->where('is_included', true);
     }
 
-    /**
-     * Scope a query to only include excluded features.
-     */
     public function scopeExcluded($query)
     {
         return $query->where('is_included', false);
     }
 
-    /**
-     * Scope a query to order by sort order.
-     */
     public function scopeOrdered($query)
     {
         return $query->orderBy('sort_order');

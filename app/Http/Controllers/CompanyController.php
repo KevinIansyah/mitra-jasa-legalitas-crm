@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Companies\StoreRequest;
+use App\Http\Requests\Companies\UpdateRequest;
+use App\Http\Requests\Customers\AttachCompanyRequest;
 use App\Models\Company;
 use App\Models\Customer;
 use Illuminate\Http\Request;
@@ -28,11 +31,7 @@ class CompanyController extends Controller
             ->withCount('customers');
 
         if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%");
-            });
+            $query->search($search);
         }
 
         if ($statusLegal) {
@@ -59,22 +58,9 @@ class CompanyController extends Controller
     /**
      * Store a newly created company in storage.
      */
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:255',
-            'email' => 'nullable|email|max:255|unique:companies,email',
-            'website' => 'nullable|url|max:255',
-            'address' => 'nullable|string',
-            'city' => 'nullable|string|max:255',
-            'province' => 'nullable|string|max:255',
-            'postal_code' => 'nullable|string|max:20',
-            'npwp' => 'nullable|string|max:255',
-            'status_legal' => 'required|string|max:255',
-            'category_business' => 'required|string|max:255',
-            'notes' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         Company::create($validated);
 
@@ -108,22 +94,9 @@ class CompanyController extends Controller
     /**
      * Update the specified company in storage.
      */
-    public function update(Request $request, Company $company)
+    public function update(UpdateRequest $request, Company $company)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:255',
-            'email' => 'nullable|email|max:255|unique:companies,email,' . $company->id,
-            'website' => 'nullable|url|max:255',
-            'address' => 'nullable|string',
-            'city' => 'nullable|string|max:255',
-            'province' => 'nullable|string|max:255',
-            'postal_code' => 'nullable|string|max:20',
-            'npwp' => 'nullable|string|max:255',
-            'status_legal' => 'required|string|max:255',
-            'category_business' => 'required|string|max:255',
-            'notes' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         $company->update($validated);
 
@@ -135,7 +108,6 @@ class CompanyController extends Controller
      */
     public function destroy(Company $company)
     {
-        // Check if company has customers
         if ($company->customers()->exists()) {
             return back()->with('error', 'Tidak dapat menghapus perusahaan yang masih memiliki pelanggan (PIC).');
         }
@@ -148,13 +120,9 @@ class CompanyController extends Controller
     /**
      * Attach customer to company
      */
-    public function attachCustomer(Request $request, Company $company)
+    public function attachCustomer(AttachCompanyRequest $request, Company $company)
     {
-        $validated = $request->validate([
-            'customer_id' => 'required|exists:customers,id',
-            'is_primary' => 'boolean',
-            'position_at_company' => 'nullable|string|max:255',
-        ]);
+        $validated = $request->validated();
 
         if ($company->customers()->where('customer_id', $validated['customer_id'])->exists()) {
             return back()->with('error', 'Pelanggan (PIC) sudah terhubung dengan perusahaan ini.');
@@ -184,45 +152,14 @@ class CompanyController extends Controller
     public function updateCustomerPivot(Request $request, Company $company, $customerId)
     {
         $validated = $request->validate([
-            'is_primary' => 'boolean',
+            'is_primary'          => 'boolean',
             'position_at_company' => 'nullable|string|max:255',
+        ], [
+            'position_at_company.max' => 'Posisi maksimal 255 karakter.',
         ]);
 
         $company->customers()->updateExistingPivot($customerId, $validated);
 
         return back()->with('success', 'Data pelanggan (PIC) berhasil diperbarui.');
-    }
-
-    /**
-     * Search customer
-     */
-    public function searchCustomer(Request $request)
-    {
-        $search = $request->get('search', '');
-        $companyId = $request->get('company_id');
-
-        $query = Customer::query();
-
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%");
-            });
-        }
-
-        if ($companyId) {
-            $query->whereDoesntHave('companies', function ($q) use ($companyId) {
-                $q->where('company_id', $companyId);
-            });
-        }
-
-        $customers = $query->select('id', 'name', 'email', 'phone', 'tier')
-            ->limit(10)
-            ->get();
-
-        return response()->json([
-            'customers' => $customers,
-        ]);
     }
 }

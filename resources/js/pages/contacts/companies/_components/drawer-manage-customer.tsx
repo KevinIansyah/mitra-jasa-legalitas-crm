@@ -10,11 +10,11 @@ import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
 import { Spinner } from '@/components/ui/spinner';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import companies from '@/routes/contacts/companies';
+import search from '@/routes/search';
 import type { AttachCustomerToCompanyFormData, CompanyWithCustomers, Customer } from '@/types/contact';
 import { CustomerItem } from './customer-item';
 
@@ -63,7 +63,7 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
             setIsSearching(true);
 
             try {
-                const response = await axios.get(companies.searchCustomers().url, {
+                const response = await axios.get(search.customers().url, {
                     params: {
                         search: query,
                         company_id: company.id,
@@ -72,7 +72,7 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
 
                 setSearchResults(response.data.customers || []);
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            } catch (e) {
+            } catch (error) {
                 setSearchResults([]);
             } finally {
                 setIsSearching(false);
@@ -115,10 +115,9 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
                 setSearchQuery('');
                 setActiveTab('list');
             },
-            onError: () => {
-                toast.error('Gagal', {
-                    description: 'Hubungan pelanggan dengan perusahaan gagal ditambahkan. Silakan periksa kembali data pelanggan yang diisi.',
-                });
+            onError: (errors) => {
+                const msg = Object.values(errors)[0] ?? 'Terjadi kesalahan saat menambahkan hubungan pelanggan dengan perusahaan, coba lagi.';
+                toast.error('Gagal', { description: String(msg) });
             },
             onFinish: () => {
                 toast.dismiss(id);
@@ -155,7 +154,7 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
                         <DrawerDescription>Tambah atau hapus hubungan antara pelanggan dengan perusahaan {company.name}</DrawerDescription>
                     </DrawerHeader>
 
-                    <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'list' | 'add')} className="flex flex-1 flex-col overflow-hidden">
+                    <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'list' | 'add')} className="flex flex-1 flex-col gap-4 overflow-hidden">
                         <div className="px-4">
                             <TabsList className="w-full">
                                 <TabsTrigger value="list" className="flex-1">
@@ -173,7 +172,7 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
                         </div>
 
                         {/* Tab: List Customers */}
-                        <TabsContent value="list" className="mt-4 flex-1 overflow-y-auto px-4 pb-8">
+                        <TabsContent value="list" className="flex-1 overflow-y-auto px-4 pb-8">
                             <div className="h-full space-y-2">
                                 {customersCount === 0 ? (
                                     <div className="flex h-full flex-col items-center justify-center text-center">
@@ -199,8 +198,8 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
                         <TabsContent value="add" className="mt-4 flex-1 overflow-y-auto px-4">
                             <form onSubmit={handleSubmit} className="flex h-full flex-col">
                                 <div className="flex-1 space-y-4">
-                                    <Field>
-                                        <FieldLabel htmlFor="search-customer">
+                                    <Field className="gap-0">
+                                        <FieldLabel htmlFor="search-customer" className="mb-3">
                                             Cari Customer <span className="text-destructive">*</span>
                                         </FieldLabel>
 
@@ -233,7 +232,7 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
                                                 </InputGroup>
 
                                                 {searchResults.length > 0 && (
-                                                    <div className="mt-2 max-h-64 space-y-1 overflow-y-auto rounded-md border border-primary bg-muted/30 p-2 dark:border-none">
+                                                    <div className="mt-1 max-h-64 space-y-1 overflow-y-auto rounded-md border border-primary bg-muted/30 p-2 dark:border-none">
                                                         {searchResults.map((customer) => (
                                                             <button
                                                                 key={customer.id}
@@ -243,7 +242,7 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
                                                             >
                                                                 <div className="flex-1">
                                                                     <p className="text-sm font-medium">{customer.name}</p>
-                                                                    <p className="text-sm text-muted-foreground">{customer.email || customer.phone || 'No contact info'}</p>
+                                                                    <p className="text-sm text-muted-foreground">{customer.email || customer.phone || 'Tidak ada info kontak'}</p>
                                                                 </div>
                                                                 {customer.tier && (
                                                                     <Badge className={tierVariantMap[customer.tier] ?? 'bg-muted text-muted-foreground'}>{customer.tier}</Badge>
@@ -261,8 +260,6 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
 
                                         {errors.customer_id && <FieldError>{errors.customer_id}</FieldError>}
                                     </Field>
-
-                                    <Separator />
 
                                     <Field>
                                         <FieldLabel htmlFor="position">Jabatan di Perusahaan</FieldLabel>

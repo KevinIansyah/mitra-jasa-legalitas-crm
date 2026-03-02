@@ -1,5 +1,5 @@
 import { router, useForm } from '@inertiajs/react';
-import { ImagePlus, Plus, Sparkles, X } from 'lucide-react';
+import { ImagePlus, Pencil, Plus, Sparkles, Trash } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 
 import { toast } from 'sonner';
@@ -14,6 +14,7 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import {
     deleteItemAndReindex,
     formatSize,
@@ -28,7 +29,7 @@ import {
     validateImageFile,
 } from '@/lib/service';
 import services from '@/routes/services';
-import type { Service, ServiceCategory, ServiceStatus } from '@/types/service';
+import type { Service, ServiceCategory } from '@/types/service';
 
 import { FaqCard, type LocalFaq } from '../../_components/faq-card';
 import { LegalBasisCard, type LocalLegalBasis } from '../../_components/legal-basis-card';
@@ -46,7 +47,6 @@ type BasicInfoFormData = {
     is_published: boolean;
     is_featured: boolean;
     is_popular: boolean;
-    status: ServiceStatus;
 };
 
 type ContentFormData = {
@@ -81,12 +81,15 @@ type EditSectionProps = {
     categories: ServiceCategory[];
 };
 
+const R2_PUBLIC_URL = import.meta.env.VITE_CLOUDFLARE_R2_URL;
+
 export function EditSection({ service, categories }: EditSectionProps) {
+    console.log(`${R2_PUBLIC_URL}/${service.featured_image}`);
     const [activeTab, setActiveTab] = useState<TabId>('basic-information');
     const [imagePreview, setImagePreview] = useState<{ src: string; name: string; size: number } | null>(
         service.featured_image
             ? {
-                  src: `/storage/${service.featured_image}`,
+                  src: `${R2_PUBLIC_URL}/${service.featured_image}`,
                   name: service.featured_image.split('/').pop() || 'image',
                   size: 0,
               }
@@ -109,7 +112,6 @@ export function EditSection({ service, categories }: EditSectionProps) {
         is_published: service.is_published,
         is_featured: service.is_featured,
         is_popular: service.is_popular,
-        status: service.status,
     });
 
     const contentForm = useForm<ContentFormData>({
@@ -219,17 +221,6 @@ export function EditSection({ service, categories }: EditSectionProps) {
         requirement: requirementCategoriesForm.isDirty,
         timeline: processStepsForm.isDirty,
     } satisfies Record<TabId, boolean>;
-
-    // const handleTabChange = (value: string) => {
-    //     const newTab = value as TabId;
-
-    //     if (hasUnsavedChanges[activeTab]) {
-    //         const confirmed = window.confirm('Ada perubahan yang belum disimpan. Yakin ingin pindah tab?');
-    //         if (!confirmed) return;
-    //     }
-
-    //     setActiveTab(newTab);
-    // };
 
     const handleTabChange = (value: string) => {
         const newTab = value as TabId;
@@ -401,8 +392,9 @@ export function EditSection({ service, categories }: EditSectionProps) {
             description: 'Informasi dasar sedang diperbarui.',
         });
 
-        basicInfoForm.patch(services.update.basicInformation(service.id).url, {
+        basicInfoForm.post(services.update.basicInformation(service.id).url, {
             preserveScroll: true,
+            forceFormData: true,
             onSuccess: () => {
                 toast.success('Behasil', {
                     description: 'Informasi dasar berhasil diperbarui.',
@@ -631,23 +623,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                 <p className="mt-0.5 text-sm text-muted-foreground">Kelola identitas, kategori, deskripsi singkat, dan pengaturan publikasi layanan.</p>
                             </div>
 
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                {/* Status */}
-                                <Field>
-                                    <FieldLabel>Status</FieldLabel>
-                                    <Select value={basicInfoForm.data.status} onValueChange={(val) => basicInfoForm.setData('status', val as ServiceStatus)}>
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Pilih status" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                <SelectItem value="active">Active</SelectItem>
-                                                <SelectItem value="inactive">Inactive</SelectItem>
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                </Field>
-
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                                 {/* Name */}
                                 <Field>
                                     <FieldLabel htmlFor="name">
@@ -755,7 +731,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                                 </p>
                                             </div>
                                             <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-                                                JPG · PNG · WEBP · GIF · SVG · Maks. 1 MB
+                                                JPG · PNG · WEBP · GIF · SVG · Maks. 5 MB
                                             </span>
                                         </div>
                                         {imageError && <FieldError>{imageError}</FieldError>}
@@ -763,18 +739,8 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                     </>
                                 ) : (
                                     <div className="relative overflow-visible">
-                                        <Button
-                                            type="button"
-                                            variant="destructive"
-                                            size="icon"
-                                            onClick={handleRemoveImage}
-                                            className="absolute -top-3 -right-3 z-10 h-7 w-7 rounded-full shadow-md"
-                                            title="Hapus gambar"
-                                        >
-                                            <X className="size-3.5" />
-                                        </Button>
                                         <img src={imagePreview.src} alt={imagePreview.name} className="aspect-video w-full rounded-lg border border-border object-cover" />
-                                        <div className="mt-2 flex items-center gap-3 rounded-lg border border-border bg-muted/40 px-3 py-2">
+                                        <div className="mt-2 flex items-center gap-3 rounded-lg border border-primary bg-input/30 px-3 py-2">
                                             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary/10">
                                                 <ImagePlus className="size-4 text-primary" />
                                             </div>
@@ -782,13 +748,25 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                                 <p className="truncate text-sm font-medium text-foreground">{imagePreview.name}</p>
                                                 {imagePreview.size > 0 && <p className="text-xs text-muted-foreground">{formatSize(imagePreview.size)}</p>}
                                             </div>
-                                            <button
-                                                type="button"
-                                                onClick={() => fileInputRef.current?.click()}
-                                                className="shrink-0 text-xs text-primary underline underline-offset-2 hover:text-primary/80"
-                                            >
-                                                Ganti
-                                            </button>
+                                            <div className="space-x-1">
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <Button type="button" variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} className="h-8 w-8">
+                                                            <Pencil className="size-3.5" />
+                                                        </Button>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>Ganti File</TooltipContent>
+                                                </Tooltip>
+
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <Button type="button" variant="destructive" size="sm" onClick={handleRemoveImage} className="h-8 w-8">
+                                                            <Trash className="size-3.5" />
+                                                        </Button>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>Hapus File</TooltipContent>
+                                                </Tooltip>
+                                            </div>
                                         </div>
                                     </div>
                                 )}

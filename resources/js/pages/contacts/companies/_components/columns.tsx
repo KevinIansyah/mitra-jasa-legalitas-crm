@@ -1,152 +1,9 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
-import type { CompanyWithCustomers } from '@/types/contact';
+import { CATEGORY_BUSINESS_MAP, STATUS_LEGAL_MAP, type CompanyWithCustomers } from '@/types/contact';
 import Actions from './actions';
 
 export default function getColumns(): ColumnDef<CompanyWithCustomers>[] {
-    const categoryBusinessMap: Record<
-        string,
-        {
-            label: string;
-            className: string;
-        }
-    > = {
-        perdagangan: {
-            label: 'Perdagangan',
-            className: 'bg-blue-500 text-white',
-        },
-        fnb: {
-            label: 'Food & Beverage',
-            className: 'bg-rose-500 text-white',
-        },
-        jasa: {
-            label: 'Jasa',
-            className: 'bg-emerald-500 text-white',
-        },
-        manufaktur: {
-            label: 'Manufaktur',
-            className: 'bg-slate-700 text-white',
-        },
-        konstruksi: {
-            label: 'Konstruksi',
-            className: 'bg-orange-500 text-white',
-        },
-
-        pertanian: {
-            label: 'Pertanian',
-            className: 'bg-lime-500 text-white',
-        },
-        perkebunan: {
-            label: 'Perkebunan',
-            className: 'bg-green-700 text-white',
-        },
-        peternakan: {
-            label: 'Peternakan',
-            className: 'bg-yellow-500 text-slate-900',
-        },
-        perikanan: {
-            label: 'Perikanan',
-            className: 'bg-cyan-500 text-white',
-        },
-
-        transportasi: {
-            label: 'Transportasi & Logistik',
-            className: 'bg-indigo-500 text-white',
-        },
-        pariwisata: {
-            label: 'Pariwisata',
-            className: 'bg-pink-500 text-white',
-        },
-        kesehatan: {
-            label: 'Kesehatan',
-            className: 'bg-red-500 text-white',
-        },
-        pendidikan: {
-            label: 'Pendidikan',
-            className: 'bg-violet-500 text-white',
-        },
-
-        teknologi: {
-            label: 'Teknologi Informasi',
-            className: 'bg-sky-500 text-white',
-        },
-        media: {
-            label: 'Media & Kreatif',
-            className: 'bg-fuchsia-500 text-white',
-        },
-        keuangan: {
-            label: 'Keuangan',
-            className: 'bg-amber-500 text-slate-900',
-        },
-        properti: {
-            label: 'Properti & Real Estate',
-            className: 'bg-stone-500 text-white',
-        },
-
-        industri_kreatif: {
-            label: 'Industri Kreatif',
-            className: 'bg-purple-500 text-white',
-        },
-        umkm: {
-            label: 'UMKM',
-            className: 'bg-teal-500 text-white',
-        },
-
-        lainnya: {
-            label: 'Lainnya',
-            className: 'bg-muted text-muted-foreground',
-        },
-    };
-
-    const statusLegalMap: Record<
-        string,
-        {
-            label: string;
-            className: string;
-        }
-    > = {
-        pt: {
-            label: 'Perseroan Terbatas (PT)',
-            className: 'bg-indigo-500 text-white',
-        },
-        cv: {
-            label: 'Commanditaire Vennootschap (CV)',
-            className: 'bg-sky-500 text-white',
-        },
-        firma: {
-            label: 'Firma',
-            className: 'bg-emerald-500 text-white',
-        },
-        koperasi: {
-            label: 'Koperasi',
-            className: 'bg-lime-500 text-slate-900',
-        },
-        yayasan: {
-            label: 'Yayasan',
-            className: 'bg-violet-500 text-white',
-        },
-        perorangan: {
-            label: 'Usaha Perorangan',
-            className: 'bg-amber-500 text-slate-900',
-        },
-        umkm: {
-            label: 'UMKM',
-            className: 'bg-teal-500 text-white',
-        },
-        bumn: {
-            label: 'BUMN',
-            className: 'bg-red-500 text-white',
-        },
-        bumd: {
-            label: 'BUMD',
-            className: 'bg-rose-500 text-white',
-        },
-        lainnya: {
-            label: 'Lainnya',
-            className: 'bg-muted text-muted-foreground',
-        },
-    };
-
     return [
         {
             accessorKey: 'name',
@@ -159,29 +16,59 @@ export default function getColumns(): ColumnDef<CompanyWithCustomers>[] {
             cell: ({ row }) => {
                 const { phone, email, address, city, province, postal_code } = row.original;
 
+                const hasData = phone || email || address || city || province || postal_code;
+
+                if (!hasData) {
+                    return <span>-</span>;
+                }
+
                 return (
-                    <div className="grid w-full grid-cols-[90px_1fr] items-center gap-x-2 gap-y-2 text-sm">
-                        <span className="col-span-2 text-xs font-bold text-muted-foreground">Kontak</span>
+                    <div className="grid w-full grid-cols-[110px_1fr] items-start gap-x-2 gap-y-2 text-sm">
+                        {(phone || email) && <span className="col-span-2 text-xs font-bold text-muted-foreground">Kontak</span>}
 
-                        <span className="text-xs font-medium text-muted-foreground">No Telepon</span>
-                        <span>{phone || '-'}</span>
+                        {phone && (
+                            <>
+                                <span className="text-xs font-medium text-muted-foreground">No. Telepon</span>
+                                <span>{phone}</span>
+                            </>
+                        )}
 
-                        <span className="text-xs font-medium text-muted-foreground">Email</span>
-                        <span>{email || '-'}</span>
+                        {email && (
+                            <>
+                                <span className="text-xs font-medium text-muted-foreground">Email</span>
+                                <span>{email}</span>
+                            </>
+                        )}
 
-                        <span className="col-span-2 mt-4 text-xs font-bold text-muted-foreground">Alamat</span>
+                        {(address || city || province || postal_code) && <span className="col-span-2 mt-3 text-xs font-bold text-muted-foreground">Alamat</span>}
 
-                        <span className="text-xs font-medium text-muted-foreground">Alamat Lengkap</span>
-                        <span className="whitespace-normal">{address || '-'}</span>
+                        {address && (
+                            <>
+                                <span className="text-xs font-medium text-muted-foreground">Alamat</span>
+                                <span className="whitespace-normal">{address}</span>
+                            </>
+                        )}
 
-                        <span className="text-xs font-medium text-muted-foreground">Kota</span>
-                        <span>{city || '-'}</span>
+                        {city && (
+                            <>
+                                <span className="text-xs font-medium text-muted-foreground">Kota</span>
+                                <span>{city}</span>
+                            </>
+                        )}
 
-                        <span className="text-xs font-medium text-muted-foreground">Provinsi</span>
-                        <span>{province || '-'}</span>
+                        {province && (
+                            <>
+                                <span className="text-xs font-medium text-muted-foreground">Provinsi</span>
+                                <span>{province}</span>
+                            </>
+                        )}
 
-                        <span className="text-xs font-medium text-muted-foreground">Kode Pos</span>
-                        <span>{postal_code || '-'}</span>
+                        {postal_code && (
+                            <>
+                                <span className="text-xs font-medium text-muted-foreground">Kode Pos</span>
+                                <span>{postal_code}</span>
+                            </>
+                        )}
                     </div>
                 );
             },
@@ -193,8 +80,8 @@ export default function getColumns(): ColumnDef<CompanyWithCustomers>[] {
                 const statusKey = row.original.status_legal;
                 const categoryKey = row.original.category_business;
 
-                const status = statusKey ? statusLegalMap[statusKey] : null;
-                const category = categoryKey ? categoryBusinessMap[categoryKey] : null;
+                const status = statusKey ? STATUS_LEGAL_MAP[statusKey] : null;
+                const category = categoryKey ? CATEGORY_BUSINESS_MAP[categoryKey] : null;
 
                 return (
                     <div className="grid w-70 grid-cols-[50px_1fr] gap-y-2 text-xs">

@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Customers\AttachCompanyRequest;
+use App\Http\Requests\Customers\StoreRequest;
+use App\Http\Requests\Customers\UpdateRequest;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -19,17 +22,14 @@ class CustomerController extends Controller
         $search = $request->get('search');
         $status = $request->get('status');
         $tier = $request->get('tier');
+        $haveAccount = $request->get('have_account');
 
         $query = Customer::query()->with(['companies' => function ($query) {
             $query->withPivot('is_primary', 'position_at_company');
         }]);
 
         if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%");
-            });
+            $query->search($search);
         }
 
         if ($status) {
@@ -38,6 +38,12 @@ class CustomerController extends Controller
 
         if ($tier) {
             $query->where('tier', $tier);
+        }
+
+        if ($haveAccount === 'registered') {
+            $query->haveAccount();
+        } elseif ($haveAccount === 'unregistered') {
+            $query->noAccount();
         }
 
         $customers = $query->latest()->paginate($perPage);
@@ -56,30 +62,11 @@ class CustomerController extends Controller
     /**
      * Store a newly created customer in storage.
      */
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:customers,email',
-            'tier' => 'required|string|max:255|in:bronze,silver,gold,platinum',
-            'notes' => 'nullable|string',
-            // Optional: attach to company on create
-            // 'company_id' => 'nullable|exists:companies,id',
-            // 'is_primary' => 'boolean',
-            // 'position_at_company' => 'nullable|string|max:255',
-        ]);
+        $validated = $request->validated();
 
-        // $customerData = collect($validated)->except(['company_id', 'is_primary', 'position_at_company'])->toArray();
-        $customer = Customer::create($validated);
-
-        // Attach to company if provided
-        // if (isset($validated['company_id'])) {
-        //     $customer->companies()->attach($validated['company_id'], [
-        //         'is_primary' => $validated['is_primary'] ?? false,
-        //         'position_at_company' => $validated['position_at_company'] ?? null,
-        //     ]);
-        // }
+        Customer::create($validated);
 
         return back()->with('success', 'Customer berhasil ditambahkan.');
     }
@@ -111,16 +98,9 @@ class CustomerController extends Controller
     /**
      * Update the specified customer in storage.
      */
-    public function update(Request $request, Customer $customer)
+    public function update(UpdateRequest $request, Customer $customer)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:255',
-            'email' => 'nullable|email|max:255|unique:customers,email,' . $customer->id,
-            'status' => 'nullable|string|max:255',
-            'tier' => 'nullable|string|max:255',
-            'notes' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         $customer->update($validated);
 
@@ -144,13 +124,9 @@ class CustomerController extends Controller
     /**
      * Attach company to customer
      */
-    public function attachCompany(Request $request, Customer $customer)
+    public function attachCompany(AttachCompanyRequest $request, Customer $customer)
     {
-        $validated = $request->validate([
-            'company_id' => 'required|exists:companies,id',
-            'is_primary' => 'boolean',
-            'position_at_company' => 'nullable|string|max:255',
-        ]);
+        $validated = $request->validated();
 
         if ($customer->companies()->where('company_id', $validated['company_id'])->exists()) {
             return back()->with('error', 'Perusahaan sudah terhubung dengan customer ini.');

@@ -23,49 +23,38 @@ class ServiceRequirementCategory extends Model
         'sort_order' => 'integer',
     ];
 
-    /**
-     * Get the service that owns the requirement category.
-     */
+    // ============================================================
+    // RELATIONS
+    // ============================================================
     public function service(): BelongsTo
     {
         return $this->belongsTo(Service::class);
     }
 
-    /**
-     * Get the requirements for the category.
-     */
     public function requirements(): HasMany
     {
         return $this->hasMany(ServiceRequirement::class);
     }
 
-    /**
-     * Get active requirements for the category.
-     */
     public function activeRequirements(): HasMany
     {
         return $this->hasMany(ServiceRequirement::class)->active()->ordered();
     }
 
-    /**
-     * Scope a query to only include active categories.
-     */
+    // ============================================================
+    // SCOPES
+    // ============================================================
+
     public function scopeActive($query)
     {
         return $query->where('status', 'active');
     }
 
-    /**
-     * Scope a query to order by sort order.
-     */
     public function scopeOrdered($query)
     {
         return $query->orderBy('sort_order');
     }
-
-    /**
-     * Scope a query to include requirements count.
-     */
+    
     public function scopeWithRequirementsCount($query)
     {
         return $query->withCount(['requirements' => function ($query) {
