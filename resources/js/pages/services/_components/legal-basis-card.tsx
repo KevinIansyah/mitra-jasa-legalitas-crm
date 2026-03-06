@@ -38,7 +38,7 @@ export function LegalBasisCard({ legalBasis, index, totalItems, onChange, onDele
     const update = (patch: Partial<LocalLegalBasis>) => onChange({ ...legalBasis, ...patch });
 
     return (
-        <div className="space-y-4 rounded-xl border border-primary/30 bg-input/30 p-4 dark:border-none">
+        <div className="space-y-4 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-muted-foreground">
                     <GripVertical className="size-4 cursor-grab" />
@@ -60,6 +60,7 @@ export function LegalBasisCard({ legalBasis, index, totalItems, onChange, onDele
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectGroup>
+                                    <SelectLabel>Status</SelectLabel>
                                     <SelectItem value="active">Active</SelectItem>
                                     <SelectItem value="inactive">Inactive</SelectItem>
                                 </SelectGroup>

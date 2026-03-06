@@ -94,7 +94,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                                     <SheetDescription>Atur filter untuk menyaring data perusahaan</SheetDescription>
                                 </SheetHeader>
 
-                                <div className="mt-6 space-y-4 px-4">
+                                <div className="space-y-4 px-4">
                                     <Field>
                                         <FieldLabel htmlFor="status">Status</FieldLabel>
                                         <Select value={filters.status || ''} onValueChange={(value) => updateFilter('status', value || undefined)}>

@@ -5,7 +5,7 @@ import { HasPermission } from '@/components/has-permission';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import companies from '@/routes/contacts/companies';
-import type { CompanyWithCustomers } from '@/types/contact';
+import type { Company, CompanyWithCustomers } from '@/types/contact';
 import { DrawerEdit } from './drawer-edit';
 import { DrawerManageCustomers } from './drawer-manage-customer';
 
@@ -14,7 +14,7 @@ type ActionsProps = {
 };
 
 export default function Actions({ company }: ActionsProps) {
-    const [editingCompanyId, setEditingCompanyId] = useState<number | null>(null);
+    const [editingCompany, setEditingCompany] = useState<Company | null>(null);
     const [isManagingCustomers, setIsManagingCustomers] = useState(false);
 
     return (
@@ -50,7 +50,7 @@ export default function Actions({ company }: ActionsProps) {
                 <HasPermission permission="edit-contact-companies">
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="secondary" size="sm" className="h-8 w-8" onClick={() => setEditingCompanyId(company.id)}>
+                            <Button variant="secondary" size="sm" className="h-8 w-8" onClick={() => setEditingCompany(company)}>
                                 <Pencil className="size-3.5" />
                             </Button>
                         </TooltipTrigger>
@@ -71,12 +71,12 @@ export default function Actions({ company }: ActionsProps) {
             </div>
 
             {/* Edit Drawer */}
-            {editingCompanyId && (
+            {editingCompany && (
                 <DrawerEdit
-                    companyId={editingCompanyId}
-                    open={!!editingCompanyId}
+                    company={editingCompany}
+                    open={!!editingCompany}
                     onOpenChange={(open) => {
-                        if (!open) setEditingCompanyId(null);
+                        if (!open) setEditingCompany(null);
                     }}
                 />
             )}

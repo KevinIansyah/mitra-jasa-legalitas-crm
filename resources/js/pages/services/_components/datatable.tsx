@@ -234,7 +234,7 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
                 )}
             </div>
 
-            <div className="overflow-hidden rounded-md border-b">
+            <div className="overflow-hidden rounded-t-md border-b">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (

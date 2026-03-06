@@ -103,7 +103,7 @@ export function DrawerAdd() {
                                         type="text"
                                         name="phone"
                                         required
-                                        placeholder="Contoh: 6281234567890"
+                                        placeholder="628xxxxxxxxxx"
                                         value={data.phone}
                                         onChange={(e) => setData('phone', e.target.value)}
                                     />
@@ -119,7 +119,7 @@ export function DrawerAdd() {
                                         type="email"
                                         name="email"
                                         required
-                                        placeholder="Contoh: nama@email.com"
+                                        placeholder="company@email.com"
                                         value={data.email}
                                         onChange={(e) => setData('email', e.target.value)}
                                     />
@@ -132,7 +132,7 @@ export function DrawerAdd() {
                                         id="website"
                                         type="url"
                                         name="website"
-                                        placeholder="Contoh: https://example.com"
+                                        placeholder="https://example.com"
                                         value={data.website}
                                         onChange={(e) => setData('website', e.target.value)}
                                     />

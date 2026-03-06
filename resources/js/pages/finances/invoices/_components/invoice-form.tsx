@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Search, X } from 'lucide-react';
+import { Import, Plus, Search, Table2, X } from 'lucide-react';
 import * as React from 'react';
 
 import { toast } from 'sonner';
@@ -26,10 +26,11 @@ type InvoiceFormProps = {
     errors: InvoiceFormErrors;
     projects: Project[];
     fromProject: boolean;
+    isEdit?: boolean;
     onChange: (val: Partial<ProjectInvoiceFormData>) => void;
 };
 
-export function InvoiceForm({ data, errors, projects, fromProject, onChange }: InvoiceFormProps) {
+export function InvoiceForm({ data, errors, projects, fromProject, isEdit, onChange }: InvoiceFormProps) {
     const [searchQuery, setSearchQuery] = React.useState('');
     const [searchResults, setSearchResults] = React.useState<Project[]>([]);
     const [isSearching, setIsSearching] = React.useState(false);
@@ -108,19 +109,24 @@ export function InvoiceForm({ data, errors, projects, fromProject, onChange }: I
                     </div>
 
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        <Field className="col-span-2 gap-0">
-                            <FieldLabel htmlFor="search-project" className="mb-3">
+                        <Field className="col-span-2">
+                            <FieldLabel htmlFor="search-project">
                                 Project <span className="text-destructive">*</span>
                             </FieldLabel>
 
                             {selectedProject ? (
-                                <div className="flex items-center justify-between rounded-md border border-primary bg-card p-3 dark:border-none">
-                                    <div className="flex-1">
-                                        <p className="text-sm font-medium">{selectedProject.name}</p>
-                                        {selectedProject.customer && <p className="mb-1 text-xs text-muted-foreground">{selectedProject.customer.name}</p>}
-                                        <Badge className={PROJECT_STATUSES_MAP[selectedProject.status]?.classes}>{PROJECT_STATUSES_MAP[selectedProject.status]?.label}</Badge>
+                                <div className="flex items-center justify-between rounded-md bg-primary/10 p-3 dark:bg-muted/40">
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10">
+                                            <Table2 className="size-4 text-primary" />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-medium">{selectedProject.name}</p>
+                                            {selectedProject.customer && <p className="mb-1 text-xs text-muted-foreground">{selectedProject.customer.name}</p>}
+                                            <Badge className={PROJECT_STATUSES_MAP[selectedProject.status]?.classes}>{PROJECT_STATUSES_MAP[selectedProject.status]?.label}</Badge>
+                                        </div>
                                     </div>
-                                    {!fromProject && (
+                                    {!fromProject && !isEdit && (
                                         <Button type="button" variant="ghost" size="sm" className="h-8 w-8" onClick={handleRemoveProject}>
                                             <X className="size-4" />
                                         </Button>
@@ -140,14 +146,17 @@ export function InvoiceForm({ data, errors, projects, fromProject, onChange }: I
                                     </InputGroup>
 
                                     {searchResults.length > 0 && (
-                                        <div className="mt-1 max-h-64 space-y-1 overflow-y-auto rounded-md border border-primary bg-muted/30 p-2 dark:border-none">
+                                        <div className="-mt-2 max-h-64 space-y-1 overflow-y-auto">
                                             {searchResults.map((project) => (
                                                 <button
                                                     key={project.id}
                                                     type="button"
                                                     onClick={() => handleSelectProject(project)}
-                                                    className="flex w-full items-center gap-2 rounded-md p-2 text-left hover:bg-muted"
+                                                    className="flex w-full items-center gap-3 rounded-md bg-primary/10 p-3 text-left hover:bg-primary/20 dark:bg-muted/40 dark:hover:bg-muted/50"
                                                 >
+                                                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10">
+                                                        <Table2 className="size-3.5 text-primary" />
+                                                    </div>
                                                     <div className="flex-1">
                                                         <p className="text-sm font-medium">{project.name}</p>
                                                         {project.customer && <p className="text-xs text-muted-foreground">{project.customer.name}</p>}
@@ -288,22 +297,46 @@ export function InvoiceForm({ data, errors, projects, fromProject, onChange }: I
             {isAdditional && (
                 <div className="rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                     <div className="space-y-4">
-                        <div className="flex items-start justify-between gap-4">
+                        <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
                             <div>
                                 <h2 className="text-xl font-bold">Item Invoice</h2>
                                 <p className="mt-0.5 text-sm text-muted-foreground">Rincian biaya tambahan</p>
                             </div>
 
-                            {data.project_id > 0 && (
-                                <Button type="button" variant="secondary" onClick={() => setShowBillablePicker((v) => !v)} className="shrink-0">
-                                    {showBillablePicker ? 'Sembunyikan' : 'Import dari Pengeluaran'}
+                            <div className="flex w-full items-center gap-2 md:w-auto">
+                                {data.project_id > 0 && (
+                                    <>
+                                        {showBillablePicker ? (
+                                            <Button type="button" variant="secondary" className="flex-1 lg:w-40 lg:flex-none" onClick={() => setShowBillablePicker((v) => !v)}>
+                                                <Import className="size-4" />
+                                                Sembunyikan
+                                            </Button>
+                                        ) : (
+                                            <Button type="button" variant="secondary" className="flex-1 lg:w-30 lg:flex-none" onClick={() => setShowBillablePicker((v) => !v)}>
+                                                <Import className="size-4" />
+                                                Import
+                                            </Button>
+                                        )}
+                                    </>
+                                )}
+
+                                <Button
+                                    type="button"
+                                    className="flex-1 lg:w-30 lg:flex-none"
+                                    onClick={() =>
+                                        onChange({
+                                            items: [...(data.items ?? []), { description: '', quantity: 1, unit_price: 0, tax_percent: 11, discount_percent: 0 }],
+                                        })
+                                    }
+                                >
+                                    <Plus className="size-4" />
+                                    Tambah
                                 </Button>
-                            )}
+                            </div>
                         </div>
 
-                        {/* Billable Expense Picker */}
                         {showBillablePicker && data.project_id > 0 && (
-                            <div className="rounded-lg border border-border bg-input/30 p-4">
+                            <div className="rounded-lg bg-primary/10 p-4 dark:bg-muted/40">
                                 <p className="mb-3 text-sm font-medium text-foreground">Pengeluaran billable yang belum ditagihkan</p>
                                 <BillableExpensePicker
                                     projectId={data.project_id}
@@ -316,12 +349,19 @@ export function InvoiceForm({ data, errors, projects, fromProject, onChange }: I
                             </div>
                         )}
 
-                        <InvoiceItemsEditor items={data.items ?? []} onChange={(items) => onChange({ items })} />
+                        <InvoiceItemsEditor
+                            items={data.items ?? []}
+                            onChange={(items) => onChange({ items })}
+                            onAdd={() =>
+                                onChange({
+                                    items: [...(data.items ?? []), { description: '', quantity: 1, unit_price: 0, tax_percent: 11, discount_percent: 0 }],
+                                })
+                            }
+                        />
                         {errors.items && <FieldError>{errors.items}</FieldError>}
                     </div>
                 </div>
             )}
-
             {/* Catatan */}
             <div className="rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
@@ -336,7 +376,7 @@ export function InvoiceForm({ data, errors, projects, fromProject, onChange }: I
                             value={data.notes ?? ''}
                             onChange={(e) => onChange({ notes: e.target.value })}
                             placeholder="Catatan tambahan untuk customer..."
-                            className="min-h-20 resize-none"
+                            className="min-h-24 resize-none"
                             rows={3}
                         />
                     </Field>
@@ -347,7 +387,7 @@ export function InvoiceForm({ data, errors, projects, fromProject, onChange }: I
                             value={data.payment_instructions ?? ''}
                             onChange={(e) => onChange({ payment_instructions: e.target.value })}
                             placeholder="Contoh: Transfer ke BCA 1234567890 a.n. PT Mitra Jasa..."
-                            className="min-h-20 resize-none"
+                            className="min-h-24 resize-none"
                             rows={3}
                         />
                     </Field>

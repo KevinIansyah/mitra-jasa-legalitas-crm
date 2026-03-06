@@ -5,6 +5,12 @@
 import type { Service } from './service';
 
 // ============================================================
+// CORE TYPES
+// ============================================================
+
+export type ProjectTemplateStatus = 'active' | 'inactive';
+
+// ============================================================
 // PROJECT TEMPLATE MODELS
 // ============================================================
 
@@ -34,7 +40,7 @@ export interface ProjectTemplate {
     milestones: ProjectTemplateMilestone[] | null;
     documents: ProjectTemplateDocument[] | null;
     notes: string | null;
-    is_active: boolean;
+    status: ProjectTemplateStatus;
     deleted_at: string | null;
     created_at: string;
     updated_at: string;
@@ -86,7 +92,7 @@ export interface ProjectTemplateFormData {
     milestones: ProjectTemplateMilestoneFormData[];
     documents: ProjectTemplateDocumentFormData[];
     notes?: string | null;
-    is_active?: boolean;
+    status: ProjectTemplateStatus;
 }
 
 export interface CreateTemplateFromServiceFormData {
@@ -160,5 +166,5 @@ export const DEFAULT_TEMPLATE: ProjectTemplateFormData = {
     milestones: [],
     documents: [],
     notes: null,
-    is_active: true,
+    status: 'active',
 };

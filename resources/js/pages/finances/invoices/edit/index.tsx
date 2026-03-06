@@ -1,11 +1,11 @@
 import { Head, usePage } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
-import invoices from '@/routes/invoices';
 
 import type { BreadcrumbItem } from '@/types';
 import type { Project, ProjectInvoice } from '@/types/project';
 import EditSection from './_components/edit-section';
+import invoices from '@/routes/finances/invoices';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -19,10 +19,11 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Page() {
-    const { invoice, projects, fromProject } = usePage<{
+    const { invoice, projects, fromProject, isEdit } = usePage<{
         invoice: ProjectInvoice;
         projects: Project[];
         fromProject: boolean;
+        isEdit: boolean;
     }>().props;
 
     return (
@@ -31,7 +32,7 @@ export default function Page() {
             <div className="p-4 md:p-6">
                 <Heading title={`Edit Invoice ${invoice.invoice_number}`} description="Perbarui detail invoice" />
 
-                <EditSection invoice={invoice} projects={projects} fromProject={fromProject} />
+                <EditSection invoice={invoice} projects={projects} fromProject={fromProject} isEdit={isEdit} />
             </div>
         </AppLayout>
     );

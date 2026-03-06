@@ -1,5 +1,5 @@
 import { router } from '@inertiajs/react';
-import { Circle, CircleCheck, CircleX, Clock, Plus } from 'lucide-react';
+import { Circle, CircleCheck, CircleX, Clock, Plus, Target } from 'lucide-react';
 import { useState } from 'react';
 
 import { HasPermission } from '@/components/has-permission';
@@ -121,7 +121,7 @@ export default function Milestones({ project }: MilestonesProps) {
             {!showAddForm && milestones.length > 0 && (
                 <HasPermission permission="create-project-milestones">
                     <div className="flex w-full justify-end">
-                        <Button type="button" className="w-full md:w-35" onClick={() => setShowAddForm(true)}>
+                        <Button type="button" className="w-full md:w-30" onClick={() => setShowAddForm(true)}>
                             <Plus className="size-4" />
                             Tambah
                         </Button>
@@ -173,7 +173,10 @@ export default function Milestones({ project }: MilestonesProps) {
                       ))
                     : !showAddForm && (
                           <div className="min-h-40 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                              <div className="flex w-full flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
+                              <div className="flex w-full flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
+                                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                      <Target className="size-5 text-primary" />
+                                  </div>
                                   <p className="text-sm">Belum ada milestone untuk project ini</p>
                                   <HasPermission permission="create-project-milestones">
                                       <Button type="button" size="sm" onClick={() => setShowAddForm(true)} className="gap-1.5">

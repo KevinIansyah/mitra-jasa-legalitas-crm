@@ -7,10 +7,76 @@ use App\Http\Requests\Expenses\StoreRequest;
 use App\Http\Requests\Expenses\UpdateRequest;
 use App\Models\Expense;
 use App\Models\Project;
+use App\Models\Vendor;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class ExpenseController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
+    {
+        $perPage  = $request->get('per_page', 20);
+        $perPage  = in_array($perPage, [20, 30, 40, 50]) ? $perPage : 20;
+        $search   = $request->get('search');
+        $category = $request->get('category');
+        $billable = $request->get('is_billable');
+        $billed   = $request->get('is_billed');
+
+        $query = Expense::with([
+            'project',
+            'project.customer',
+            'invoice:id,invoice_number',
+            'user',
+            'vendor:id,name,category',
+        ]);
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('description', 'like', "%{$search}%")
+                    ->orWhereHas('project', fn($q) => $q->where('name', 'like', "%{$search}%"));
+            });
+        }
+
+        if ($category) $query->where('category', $category);
+
+        if ($billable !== null) $query->where('is_billable', filter_var($billable, FILTER_VALIDATE_BOOLEAN));
+
+        if ($billed === 'true')  $query->whereNotNull('invoice_id');
+
+        if ($billed === 'false') $query->whereNull('invoice_id')->where('is_billable', true);
+
+        $expenses = $query->latest('expense_date')->paginate($perPage);
+
+        $vendors = Vendor::active()->orderBy('name')->get(['id', 'name', 'category']);
+
+        $summary = Expense::query()
+            ->selectRaw("
+        COUNT(*) as total,
+        COALESCE(SUM(amount), 0) as total_amount,
+        COALESCE(SUM(CASE WHEN is_billable = 1 THEN amount ELSE 0 END), 0) as billable_amount,
+        COALESCE(SUM(CASE WHEN is_billable = 1 AND invoice_id IS NOT NULL THEN amount ELSE 0 END), 0) as billed_amount,
+        COALESCE(SUM(CASE WHEN is_billable = 1 AND invoice_id IS NULL THEN 1 ELSE 0 END), 0) as unbilled_count
+    ")
+            ->first();
+
+        return Inertia::render('finances/expenses/index', [
+            'expenses' => $expenses,
+            'vendors'  => $vendors,
+            'summary'  => $summary,
+            'filters'  => [
+                'search'      => $search,
+                'per_page'    => $perPage,
+                'category'    => $category,
+                'is_billable' => $billable,
+                'is_billed'   => $billed,
+            ],
+        ]);
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -30,7 +96,9 @@ class ExpenseController extends Controller
 
         Expense::create([
             ...$validated,
-            'user_id' => Auth::id(),
+            'user_id'     => Auth::id(),
+            'vendor_id'   => $validated['vendor_id'] ?? null,
+            'vendor_name' => $validated['vendor_name'] ?? null,
         ]);
 
         return back()->with('success', 'Pengeluaran berhasil ditambahkan.');

@@ -97,7 +97,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                                     <SheetDescription>Atur filter untuk menyaring data pelanggan</SheetDescription>
                                 </SheetHeader>
 
-                                <div className="mt-6 space-y-4 px-4">
+                                <div className="space-y-4 px-4">
                                     <Field>
                                         <FieldLabel htmlFor="tier">Tier Pelanggan</FieldLabel>
                                         <Select value={filters.tier || ''} onValueChange={(value) => updateFilter('tier', value || undefined)}>
@@ -224,18 +224,13 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                     </div>
                 )}
             </div>
-
             <div className="overflow-hidden rounded-t-md border-b">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id} className="border-none">
                                 {headerGroup.headers.map((header) => {
-                                    return (
-                                        <TableHead key={header.id}>
-                                            {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                                        </TableHead>
-                                    );
+                                    return <TableHead key={header.id}>{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}</TableHead>;
                                 })}
                             </TableRow>
                         ))}
@@ -259,7 +254,6 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                     </TableBody>
                 </Table>
             </div>
-
             <div className="flex items-center justify-between gap-8 pt-4">
                 <div className="hidden flex-1 text-sm md:flex">
                     Menampilkan {Math.min(pageIndex * perPage + 1, totalItems)} sampai {Math.min((pageIndex + 1) * perPage, totalItems)} dari {totalItems} hasil

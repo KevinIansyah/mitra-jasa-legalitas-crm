@@ -77,6 +77,7 @@ export function LegalBasisCard({ legalBasis, index, totalItems, onChange, onDele
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectGroup>
+                                    <SelectLabel>Status</SelectLabel>
                                     <SelectItem value="active">Active</SelectItem>
                                     <SelectItem value="inactive">Inactive</SelectItem>
                                 </SelectGroup>

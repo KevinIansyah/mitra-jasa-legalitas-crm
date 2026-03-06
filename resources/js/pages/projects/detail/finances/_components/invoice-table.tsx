@@ -14,9 +14,9 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 import { formatRupiah } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
-import invoicesRoutes from '@/routes/invoices';
 import type { InvoiceStatus, ProjectInvoice } from '@/types/project';
 import { INVOICE_STATUSES, INVOICE_STATUSES_MAP, INVOICE_TYPES_MAP, type Project } from '@/types/project';
+import invoicesRoutes from '@/routes/finances/invoices';
 
 type InvoiceTableProps = {
     project: Project;

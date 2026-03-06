@@ -131,19 +131,21 @@ export function TaskCard({ task, projectId, members, milestones }: TaskCardProps
 
     return (
         <>
-            <div className={`rounded-xl bg-sidebar p-4 shadow md:p-5 dark:shadow-none ${isDone ? 'opacity-60' : ''}`}>
+            <div className={`rounded-xl bg-sidebar shadow dark:shadow-none ${isDone ? 'opacity-60' : ''}`}>
                 {mode === 'edit' ? (
-                    <TaskForm
-                        data={editData}
-                        processing={loading}
-                        members={members}
-                        milestones={milestones}
-                        onChange={set}
-                        onSubmit={handleEditSubmit}
-                        onCancel={() => setMode('view')}
-                    />
+                    <div className="p-4 md:p-6">
+                        <TaskForm
+                            data={editData}
+                            processing={loading}
+                            members={members}
+                            milestones={milestones}
+                            onChange={set}
+                            onSubmit={handleEditSubmit}
+                            onCancel={() => setMode('view')}
+                        />
+                    </div>
                 ) : (
-                    <>
+                    <div className="space-y-4 p-4 md:p-6">
                         <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-start">
                             {/* Left — title + meta */}
                             <div className="flex-1 space-y-2">
@@ -215,8 +217,6 @@ export function TaskCard({ task, projectId, members, milestones }: TaskCardProps
                                         </span>
                                     )}
                                 </div>
-
-                                {task.description && <p className="text-sm text-muted-foreground">{task.description}</p>}
                             </div>
 
                             {/* Right — status + actions */}
@@ -275,7 +275,9 @@ export function TaskCard({ task, projectId, members, milestones }: TaskCardProps
                                 </DropdownMenu>
                             </div>
                         </div>
-                    </>
+
+                        {task.description && <p className="text-sm text-muted-foreground">{task.description}</p>}
+                    </div>
                 )}
             </div>
         </>

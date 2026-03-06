@@ -93,12 +93,19 @@ class Project extends Model
             ->withTimestamps();
     }
 
-    public function projectLeader(): BelongsToMany
+    public function projectLeaders(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'project_members')
             ->wherePivot('role', 'project_leader')
             ->withPivot('role', 'can_approve_documents', 'assigned_at')
             ->withTimestamps();
+    }
+
+    public function getProjectLeaderAttribute(): ?User
+    {
+        return $this->relationLoaded('projectLeaders')
+            ? $this->getRelation('projectLeaders')->first()
+            : null;
     }
 
     public function invoices(): HasMany

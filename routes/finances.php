@@ -3,6 +3,7 @@
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\ProjectInvoiceController;
 use App\Http\Controllers\ProjectPaymentController;
+use App\Http\Controllers\VendorController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
@@ -13,7 +14,7 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
     |--------------------------------------------------------------------------
     */
 
-  Route::prefix('invoices')->name('invoices.')->group(function () {
+  Route::prefix('finances/invoices')->name('finances.invoices.')->group(function () {
     Route::get('/',                        [ProjectInvoiceController::class, 'index'])->middleware('permission:view-finance-invoices')->name('index');
     Route::get('/create',                  [ProjectInvoiceController::class, 'create'])->middleware('permission:create-finance-invoices')->name('create');
     Route::post('/',                       [ProjectInvoiceController::class, 'store'])->middleware('permission:create-finance-invoices')->name('store');
@@ -29,8 +30,11 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
     |--------------------------------------------------------------------------
     */
 
-  Route::prefix('invoices/{invoice}/payments')->name('invoices.payments.')->group(function () {
-    Route::get('/',                      [ProjectPaymentController::class, 'index'])->middleware('permission:view-finance-payments')->name('index');
+  Route::get('/finances/payments', [ProjectPaymentController::class, 'index'])
+    ->middleware('permission:view-finance-payments')
+    ->name('finances.payments.index');
+
+  Route::prefix('finances/invoices/{invoice}/payments')->name('finances.invoices.payments.')->group(function () {
     Route::post('/',                     [ProjectPaymentController::class, 'store'])->middleware('permission:create-finance-payments')->name('store');
     Route::post('/{payment}',            [ProjectPaymentController::class, 'update'])->middleware('permission:edit-finance-payments')->name('update');
     Route::delete('/{payment}',          [ProjectPaymentController::class, 'destroy'])->middleware('permission:delete-finance-payments')->name('destroy');
@@ -43,7 +47,7 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
     |--------------------------------------------------------------------------
     */
 
-  Route::prefix('expenses')->name('expenses.')->group(function () {
+  Route::prefix('finances/expenses')->name('finances.expenses.')->group(function () {
     Route::get('/',                        [ExpenseController::class, 'index'])->middleware('permission:view-finance-expenses')->name('index');
     Route::post('/',                       [ExpenseController::class, 'store'])->middleware('permission:create-finance-expenses')->name('store');
     Route::post('/{expense}',               [ExpenseController::class, 'update'])->middleware('permission:edit-finance-expenses')->name('update');
@@ -51,4 +55,20 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
   });
 
   Route::get('/projects/{project}/unbilled-expenses', [ExpenseController::class, 'unbilled'])->name('projects.unbilled-expenses');
+
+
+  /*
+    |--------------------------------------------------------------------------
+    | VENDORS
+    |--------------------------------------------------------------------------
+    */
+
+  Route::prefix('finances/vendors')->name('finances.vendors.')->group(function () {
+    Route::get('/',           [VendorController::class, 'index'])->name('index');
+    Route::get('/create',     [VendorController::class, 'create'])->name('create');
+    Route::post('/',          [VendorController::class, 'store'])->name('store');
+    Route::get('/{vendor}/edit', [VendorController::class, 'edit'])->name('edit');
+    Route::put('/{vendor}',   [VendorController::class, 'update'])->name('update');
+    Route::delete('/{vendor}', [VendorController::class, 'destroy'])->name('destroy');
+  });
 });

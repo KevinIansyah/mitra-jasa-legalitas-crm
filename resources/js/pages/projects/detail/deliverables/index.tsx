@@ -93,7 +93,7 @@ export default function Deliverables({ project }: DeliverablesProps) {
                 <div className="flex w-full justify-end gap-2">
                     {summary.total > 0 && (
                         <HasPermission permission="view-project-deliverables">
-                            <Button variant="secondary" className="flex-1 md:min-w-35 md:flex-none" asChild>
+                            <Button variant="secondary" className="flex-1 md:min-w-40 md:flex-none" asChild>
                                 <a href={projects.documents.downloadAll(project.id).url}>
                                     <Download className="size-3.5" />
                                     Unduh Semua
@@ -103,7 +103,7 @@ export default function Deliverables({ project }: DeliverablesProps) {
                     )}
 
                     <HasPermission permission="create-project-deliverables">
-                        <Button type="button" className="flex-1 md:min-w-35 md:flex-none" onClick={() => setShowAddForm(true)}>
+                        <Button type="button" className="flex-1 md:min-w-30 md:flex-none" onClick={() => setShowAddForm(true)}>
                             <Plus className="size-4" />
                             Tambah
                         </Button>
@@ -117,7 +117,10 @@ export default function Deliverables({ project }: DeliverablesProps) {
                     ? deliverables.map((deliverable) => <DeliverableCard key={deliverable.id} deliverable={deliverable} projectId={project.id} />)
                     : !showAddForm && (
                           <div className="min-h-40 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                              <div className="flex w-full flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
+                              <div className="flex w-full flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
+                                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                      <FileText className="size-5 text-primary" />
+                                  </div>
                                   <p className="text-sm">Belum ada hasil akhir untuk project ini</p>
                                   <HasPermission permission="create-project-deliverables">
                                       <Button type="button" size="sm" onClick={() => setShowAddForm(true)} className="gap-1.5">

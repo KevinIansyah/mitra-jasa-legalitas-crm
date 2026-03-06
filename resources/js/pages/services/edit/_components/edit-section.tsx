@@ -1,5 +1,5 @@
 import { router, useForm } from '@inertiajs/react';
-import { ImagePlus, Pencil, Plus, Sparkles, Trash } from 'lucide-react';
+import { ClipboardList, HelpCircle, ImagePlus, Package, Pencil, Plus, Scale, Sparkles, Trash } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 
 import { toast } from 'sonner';
@@ -721,7 +721,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                                       : 'border-border hover:border-primary hover:bg-muted/40',
                                             ].join(' ')}
                                         >
-                                            <div className="flex h-12 w-12 items-center justify-center rounded-md bg-primary/10">
+                                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                                                 <ImagePlus className="size-5 text-primary" />
                                             </div>
                                             <div>
@@ -813,8 +813,8 @@ export function EditSection({ service, categories }: EditSectionProps) {
                     </div>
 
                     {/* Submit Button */}
-                    <div className="mt-4 flex items-center gap-3">
-                        <Button type="submit" disabled={basicInfoForm.processing || !hasUnsavedChanges['basic-information']} className="gap-2">
+                    <div className="mt-4 flex items-center gap-2">
+                        <Button type="submit" disabled={basicInfoForm.processing || !hasUnsavedChanges['basic-information']} className="flex-1 md:w-45 md:flex-none">
                             {basicInfoForm.processing ? (
                                 <>
                                     <Spinner className="mr-2" />
@@ -824,7 +824,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                 'Simpan Perubahan'
                             )}
                         </Button>
-                        <Button type="button" variant="secondary" onClick={() => router.visit(services.index().url)}>
+                        <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
                             Kembali
                         </Button>
                     </div>
@@ -858,8 +858,8 @@ export function EditSection({ service, categories }: EditSectionProps) {
                     </div>
 
                     {/* Submit Button */}
-                    <div className="mt-4 flex items-center gap-3">
-                        <Button type="submit" disabled={contentForm.processing || !hasUnsavedChanges.content} className="gap-2">
+                    <div className="mt-4 flex items-center gap-2">
+                        <Button type="submit" disabled={contentForm.processing || !hasUnsavedChanges.content} className="flex-1 md:w-45 md:flex-none">
                             {contentForm.processing ? (
                                 <>
                                     <Spinner className="mr-2" />
@@ -869,7 +869,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                 'Simpan Perubahan'
                             )}
                         </Button>
-                        <Button type="button" variant="secondary" onClick={() => router.visit(services.index().url)}>
+                        <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
                             Kembali
                         </Button>
                     </div>
@@ -877,70 +877,73 @@ export function EditSection({ service, categories }: EditSectionProps) {
             </TabsContent>
 
             {/* TAB: PACKAGE */}
-            <TabsContent value="package">
-                <form onSubmit={handleSubmitPackages}>
-                    <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <div className="space-y-4">
-                            <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
-                                <div>
-                                    <h2 className="text-xl font-bold">Paket Harga</h2>
-                                    <p className="mt-0.5 text-sm text-muted-foreground">Buat paket harga dengan dokumen/fitur yang berbeda untuk setiap paket</p>
-                                </div>
-                                <div className="flex w-full flex-col items-center gap-2 md:flex-row lg:w-auto">
-                                    <Button variant="outline" size="sm" className="w-full md:flex-1 lg:w-auto lg:flex-0">
-                                        <Sparkles className="size-4" />
-                                        Generate AI
-                                    </Button>
-                                    {packageForm.data.packages.length > 0 && (
-                                        <Button type="button" onClick={addPackage} size="sm" className="w-full md:flex-1 lg:w-auto lg:flex-0">
-                                            <Plus className="size-4" />
-                                            Tambah Paket
-                                        </Button>
-                                    )}
-                                </div>
-                            </div>
-
-                            {packageForm.data.packages.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
-                                    <p className="text-sm">Belum ada paket harga</p>
-                                    <Button type="button" size="sm" onClick={addPackage} className="gap-2">
-                                        <Plus className="size-4" />
-                                        Tambah Paket Pertama
-                                    </Button>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-                                    {packageForm.data.packages.map((pkg, i) => (
-                                        <PackageCard
-                                            key={pkg._key}
-                                            pkg={pkg}
-                                            index={i}
-                                            onChange={(updated) => updatePackage(pkg._key, updated)}
-                                            onDelete={() => deletePackage(pkg._key)}
-                                            onMoveUp={() => packageHandlers.moveUp(i)}
-                                            onMoveDown={() => packageHandlers.moveDown(i)}
-                                            totalItems={packageForm.data.packages.length}
-                                            isEdit={true}
-                                            errors={packageForm.errors}
-                                        />
-                                    ))}
-                                </div>
-                            )}
-
+            <TabsContent value="package" className="space-y-4">
+                <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+                    <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
+                        <div>
+                            <h2 className="text-xl font-bold">Paket Harga</h2>
+                            <p className="mt-0.5 text-sm text-muted-foreground">Buat paket harga dengan dokumen/fitur yang berbeda untuk setiap paket</p>
+                        </div>
+                        <div className="flex w-full flex-col items-center gap-2 md:flex-row lg:w-auto">
+                            <Button variant="secondary" className="w-full md:flex-1 lg:min-w-30 lg:flex-0">
+                                <Sparkles className="size-4" />
+                                Generate AI
+                            </Button>
                             {packageForm.data.packages.length > 0 && (
-                                <div className="flex w-full justify-end">
-                                    <Button type="button" onClick={addPackage} size="sm" className="w-full gap-2 md:w-1/2 lg:w-auto">
-                                        <Plus className="size-4" />
-                                        Tambah Paket
-                                    </Button>
-                                </div>
+                                <Button type="button" onClick={addPackage} className="w-full md:flex-1 lg:min-w-30 lg:flex-0">
+                                    <Plus className="size-4" />
+                                    Tambah
+                                </Button>
                             )}
                         </div>
                     </div>
+                </div>
+
+                <form onSubmit={handleSubmitPackages}>
+                    {packageForm.data.packages.length === 0 ? (
+                        <div className="rounded-xl bg-sidebar p-6 shadow md:p-6 dark:shadow-none">
+                            <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                    <Package className="size-5 text-primary" />
+                                </div>
+                                <p className="text-sm">Belum ada paket harga</p>
+                                <Button type="button" size="sm" onClick={addPackage} className="gap-2">
+                                    <Plus className="size-4" />
+                                    Tambah Paket Pertama
+                                </Button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                            {packageForm.data.packages.map((pkg, i) => (
+                                <PackageCard
+                                    key={pkg._key}
+                                    pkg={pkg}
+                                    index={i}
+                                    onChange={(updated) => updatePackage(pkg._key, updated)}
+                                    onDelete={() => deletePackage(pkg._key)}
+                                    onMoveUp={() => packageHandlers.moveUp(i)}
+                                    onMoveDown={() => packageHandlers.moveDown(i)}
+                                    totalItems={packageForm.data.packages.length}
+                                    isEdit={true}
+                                    errors={packageForm.errors}
+                                />
+                            ))}
+                        </div>
+                    )}
+
+                    {/* {packageForm.data.packages.length > 0 && (
+                        <div className="flex w-full justify-end">
+                            <Button type="button" onClick={addPackage} className="w-full gap-2 md:w-1/2 lg:w-30">
+                                <Plus className="size-4" />
+                                Tambah
+                            </Button>
+                        </div>
+                    )} */}
 
                     {/* Submit Button */}
-                    <div className="mt-4 flex items-center gap-3">
-                        <Button type="submit" disabled={packageForm.processing || !hasUnsavedChanges.package} className="gap-2">
+                    <div className="mt-4 flex items-center gap-2">
+                        <Button type="submit" disabled={packageForm.processing || !hasUnsavedChanges.package} className="flex-1 md:w-45 md:flex-none">
                             {packageForm.processing ? (
                                 <>
                                     <Spinner className="mr-2" />
@@ -950,7 +953,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                 'Simpan Perubahan'
                             )}
                         </Button>
-                        <Button type="button" variant="secondary" onClick={() => router.visit(services.index().url)}>
+                        <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
                             Kembali
                         </Button>
                     </div>
@@ -958,70 +961,73 @@ export function EditSection({ service, categories }: EditSectionProps) {
             </TabsContent>
 
             {/* TAB: FAQ */}
-            <TabsContent value="faq">
-                <form onSubmit={handleSubmitFaq}>
-                    <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <div className="space-y-4">
-                            <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
-                                <div>
-                                    <h2 className="text-xl font-bold">FAQ (Frequently Asked Questions)</h2>
-                                    <p className="mt-0.5 text-sm text-muted-foreground">Kelola pertanyaan yang sering diajukan terkait layanan ini.</p>
-                                </div>
-                                <div className="flex w-full flex-col items-center gap-2 md:flex-row lg:w-auto">
-                                    <Button variant="outline" size="sm" className="w-full md:flex-1 lg:w-auto lg:flex-0">
-                                        <Sparkles className="size-4" />
-                                        Generate AI
-                                    </Button>
-                                    {faqForm.data.faqs.length > 0 && (
-                                        <Button type="button" onClick={addFaq} size="sm" className="w-full md:flex-1 lg:w-auto lg:flex-0">
-                                            <Plus className="size-4" />
-                                            Tambah Pertanyaan
-                                        </Button>
-                                    )}
-                                </div>
-                            </div>
-
-                            {faqForm.data.faqs.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
-                                    <p className="text-sm">Belum ada FAQ</p>
-                                    <Button type="button" size="sm" onClick={addFaq} className="gap-2">
-                                        <Plus className="size-4" />
-                                        Tambah FAQ Pertama
-                                    </Button>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 gap-4">
-                                    {faqForm.data.faqs.map((faq, i) => (
-                                        <FaqCard
-                                            key={faq._key}
-                                            faq={faq}
-                                            index={i}
-                                            onChange={(updated) => updateFaq(faq._key, updated)}
-                                            onDelete={() => deleteFaq(faq._key)}
-                                            onMoveUp={() => faqHandlers.moveUp(i)}
-                                            onMoveDown={() => faqHandlers.moveDown(i)}
-                                            totalItems={faqForm.data.faqs.length}
-                                            isEdit={true}
-                                            errors={faqForm.errors}
-                                        />
-                                    ))}
-                                </div>
-                            )}
-
+            <TabsContent value="faq" className="space-y-4">
+                <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+                    <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
+                        <div>
+                            <h2 className="text-xl font-bold">FAQ (Frequently Asked Questions)</h2>
+                            <p className="mt-0.5 text-sm text-muted-foreground">Kelola pertanyaan yang sering diajukan terkait layanan ini.</p>
+                        </div>
+                        <div className="flex w-full flex-col items-center gap-2 md:flex-row lg:w-auto">
+                            <Button variant="secondary" className="w-full md:flex-1 lg:min-w-30 lg:flex-0">
+                                <Sparkles className="size-4" />
+                                Generate AI
+                            </Button>
                             {faqForm.data.faqs.length > 0 && (
-                                <div className="flex w-full justify-end">
-                                    <Button type="button" onClick={addFaq} size="sm" className="w-full gap-2 md:w-1/2 lg:w-auto">
-                                        <Plus className="size-4" />
-                                        Tambah Pertanyaan
-                                    </Button>
-                                </div>
+                                <Button type="button" onClick={addFaq} className="w-full md:flex-1 lg:min-w-30 lg:flex-0">
+                                    <Plus className="size-4" />
+                                    Tambah
+                                </Button>
                             )}
                         </div>
                     </div>
+                </div>
+
+                <form onSubmit={handleSubmitFaq}>
+                    {faqForm.data.faqs.length === 0 ? (
+                        <div className="rounded-xl bg-sidebar p-6 shadow md:p-6 dark:shadow-none">
+                            <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                    <HelpCircle className="size-5 text-primary" />
+                                </div>
+                                <p className="text-sm">Belum ada FAQ</p>
+                                <Button type="button" size="sm" onClick={addFaq} className="gap-2">
+                                    <Plus className="size-4" />
+                                    Tambah FAQ Pertama
+                                </Button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 gap-4">
+                            {faqForm.data.faqs.map((faq, i) => (
+                                <FaqCard
+                                    key={faq._key}
+                                    faq={faq}
+                                    index={i}
+                                    onChange={(updated) => updateFaq(faq._key, updated)}
+                                    onDelete={() => deleteFaq(faq._key)}
+                                    onMoveUp={() => faqHandlers.moveUp(i)}
+                                    onMoveDown={() => faqHandlers.moveDown(i)}
+                                    totalItems={faqForm.data.faqs.length}
+                                    isEdit={true}
+                                    errors={faqForm.errors}
+                                />
+                            ))}
+                        </div>
+                    )}
+
+                    {/* {faqForm.data.faqs.length > 0 && (
+                        <div className="flex w-full justify-end">
+                            <Button type="button" onClick={addFaq} className="w-full gap-2 md:w-1/2 lg:w-30">
+                                <Plus className="size-4" />
+                                Tambah
+                            </Button>
+                        </div>
+                    )} */}
 
                     {/* Submit Button */}
-                    <div className="mt-4 flex items-center gap-3">
-                        <Button type="submit" disabled={faqForm.processing || !hasUnsavedChanges.faq} className="gap-2">
+                    <div className="mt-4 flex items-center gap-2">
+                        <Button type="submit" disabled={faqForm.processing || !hasUnsavedChanges.faq} className="flex-1 md:w-45 md:flex-none">
                             {faqForm.processing ? (
                                 <>
                                     <Spinner className="mr-2" />
@@ -1031,7 +1037,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                 'Simpan Perubahan'
                             )}
                         </Button>
-                        <Button type="button" variant="secondary" onClick={() => router.visit(services.index().url)}>
+                        <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
                             Kembali
                         </Button>
                     </div>
@@ -1039,70 +1045,73 @@ export function EditSection({ service, categories }: EditSectionProps) {
             </TabsContent>
 
             {/* TAB: LEGAL BASIS */}
-            <TabsContent value="legal-basis">
-                <form onSubmit={handleSubmitLegalBasis}>
-                    <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <div className="space-y-6">
-                            <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
-                                <div>
-                                    <h2 className="text-xl font-bold">Dasar Hukum</h2>
-                                    <p className="mt-0.5 text-sm text-muted-foreground">Kelola referensi peraturan dan undang-undang yang menjadi dasar layanan.</p>
-                                </div>
-                                <div className="flex w-full flex-col items-center gap-2 md:flex-row lg:w-auto">
-                                    <Button variant="outline" size="sm" className="w-full md:flex-1 lg:w-auto lg:flex-0">
-                                        <Sparkles className="size-4" />
-                                        Generate AI
-                                    </Button>
-                                    {legalBasisForm.data.legal_bases.length > 0 && (
-                                        <Button type="button" onClick={addLegalBasis} size="sm" className="w-full md:flex-1 lg:w-auto lg:flex-0">
-                                            <Plus className="size-4" />
-                                            Tambah Dasar Hukum
-                                        </Button>
-                                    )}
-                                </div>
-                            </div>
-
-                            {legalBasisForm.data.legal_bases.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
-                                    <p className="text-sm">Belum ada dasar hukum</p>
-                                    <Button type="button" size="sm" onClick={addLegalBasis} className="gap-2">
-                                        <Plus className="size-4" />
-                                        Tambah Dasar Hukum Pertama
-                                    </Button>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 gap-4">
-                                    {legalBasisForm.data.legal_bases.map((legal, i) => (
-                                        <LegalBasisCard
-                                            key={legal._key}
-                                            legalBasis={legal}
-                                            index={i}
-                                            onChange={(updated) => updateLegalBasis(legal._key, updated)}
-                                            onDelete={() => deleteLegalBasis(legal._key)}
-                                            onMoveUp={() => legalBasisHandlers.moveUp(i)}
-                                            onMoveDown={() => legalBasisHandlers.moveDown(i)}
-                                            totalItems={legalBasisForm.data.legal_bases.length}
-                                            isEdit={true}
-                                            errors={legalBasisForm.errors}
-                                        />
-                                    ))}
-                                </div>
-                            )}
-
+            <TabsContent value="legal-basis" className="space-y-4">
+                <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+                    <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
+                        <div>
+                            <h2 className="text-xl font-bold">Dasar Hukum</h2>
+                            <p className="mt-0.5 text-sm text-muted-foreground">Kelola referensi peraturan dan undang-undang yang menjadi dasar layanan.</p>
+                        </div>
+                        <div className="flex w-full flex-col items-center gap-2 md:flex-row lg:w-auto">
+                            <Button variant="secondary" className="w-full md:flex-1 lg:min-w-30 lg:flex-0">
+                                <Sparkles className="size-4" />
+                                Generate AI
+                            </Button>
                             {legalBasisForm.data.legal_bases.length > 0 && (
-                                <div className="flex w-full justify-end">
-                                    <Button type="button" onClick={addLegalBasis} size="sm" className="w-full gap-2 md:w-1/2 lg:w-auto">
-                                        <Plus className="size-4" />
-                                        Tambah Dasar Hukum
-                                    </Button>
-                                </div>
+                                <Button type="button" onClick={addLegalBasis} className="w-full md:flex-1 lg:min-w-30 lg:flex-0">
+                                    <Plus className="size-4" />
+                                    Tambah
+                                </Button>
                             )}
                         </div>
                     </div>
+                </div>
+
+                <form onSubmit={handleSubmitLegalBasis}>
+                    {legalBasisForm.data.legal_bases.length === 0 ? (
+                        <div className="rounded-xl bg-sidebar p-6 shadow md:p-6 dark:shadow-none">
+                            <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                    <Scale className="size-5 text-primary" />
+                                </div>
+                                <p className="text-sm">Belum ada dasar hukum</p>
+                                <Button type="button" size="sm" onClick={addLegalBasis} className="gap-2">
+                                    <Plus className="size-4" />
+                                    Tambah Dasar Hukum Pertama
+                                </Button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 gap-4">
+                            {legalBasisForm.data.legal_bases.map((legal, i) => (
+                                <LegalBasisCard
+                                    key={legal._key}
+                                    legalBasis={legal}
+                                    index={i}
+                                    onChange={(updated) => updateLegalBasis(legal._key, updated)}
+                                    onDelete={() => deleteLegalBasis(legal._key)}
+                                    onMoveUp={() => legalBasisHandlers.moveUp(i)}
+                                    onMoveDown={() => legalBasisHandlers.moveDown(i)}
+                                    totalItems={legalBasisForm.data.legal_bases.length}
+                                    isEdit={true}
+                                    errors={legalBasisForm.errors}
+                                />
+                            ))}
+                        </div>
+                    )}
+
+                    {/* {legalBasisForm.data.legal_bases.length > 0 && (
+                        <div className="flex w-full justify-end">
+                            <Button type="button" onClick={addLegalBasis} className="w-full gap-2 md:w-1/2 lg:w-30">
+                                <Plus className="size-4" />
+                                Tambah
+                            </Button>
+                        </div>
+                    )} */}
 
                     {/* Submit Button */}
-                    <div className="mt-4 flex items-center gap-3">
-                        <Button type="submit" disabled={legalBasisForm.processing || !hasUnsavedChanges['legal-basis']} className="gap-2">
+                    <div className="mt-4 flex items-center gap-2">
+                        <Button type="submit" disabled={legalBasisForm.processing || !hasUnsavedChanges['legal-basis']} className="flex-1 md:w-45 md:flex-none">
                             {legalBasisForm.processing ? (
                                 <>
                                     <Spinner className="mr-2" />
@@ -1112,7 +1121,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                 'Simpan Perubahan'
                             )}
                         </Button>
-                        <Button type="button" variant="secondary" onClick={() => router.visit(services.index().url)}>
+                        <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
                             Kembali
                         </Button>
                     </div>
@@ -1120,70 +1129,73 @@ export function EditSection({ service, categories }: EditSectionProps) {
             </TabsContent>
 
             {/* TAB: REQUIREMENT */}
-            <TabsContent value="requirement">
-                <form onSubmit={handleSubmitRequirement}>
-                    <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <div className="space-y-6">
-                            <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
-                                <div>
-                                    <h2 className="text-xl font-bold">Persyaratan</h2>
-                                    <p className="mt-0.5 text-sm text-muted-foreground">Kelola kategori dan daftar persyaratan dokumen yang dibutuhkan.</p>
-                                </div>
-                                <div className="flex w-full flex-col items-center gap-2 md:flex-row lg:w-auto">
-                                    <Button variant="outline" size="sm" className="w-full md:flex-1 lg:w-auto lg:flex-0">
-                                        <Sparkles className="size-4" />
-                                        Generate AI
-                                    </Button>
-                                    {requirementCategoriesForm.data.requirement_categories.length > 0 && (
-                                        <Button type="button" onClick={addRequirementCategory} size="sm" className="w-full md:flex-1 lg:w-auto lg:flex-0">
-                                            <Plus className="size-4" />
-                                            Tambah Kategori
-                                        </Button>
-                                    )}
-                                </div>
-                            </div>
-
-                            {requirementCategoriesForm.data.requirement_categories.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
-                                    <p className="text-sm">Belum ada kategori persyaratan</p>
-                                    <Button type="button" size="sm" onClick={addRequirementCategory} className="gap-2">
-                                        <Plus className="size-4" />
-                                        Tambah Kategori Pertama
-                                    </Button>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 gap-4">
-                                    {requirementCategoriesForm.data.requirement_categories.map((cat, i) => (
-                                        <RequirementCard
-                                            key={cat._key}
-                                            category={cat}
-                                            index={i}
-                                            onChange={(updated) => updateRequirementCategory(cat._key, updated)}
-                                            onDelete={() => deleteRequirementCategory(cat._key)}
-                                            onMoveUp={() => requirementCategoryHandlers.moveUp(i)}
-                                            onMoveDown={() => requirementCategoryHandlers.moveDown(i)}
-                                            totalItems={requirementCategoriesForm.data.requirement_categories.length}
-                                            isEdit={true}
-                                            errors={requirementCategoriesForm.errors}
-                                        />
-                                    ))}
-                                </div>
-                            )}
-
+            <TabsContent value="requirement" className="space-y-4">
+                <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+                    <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
+                        <div>
+                            <h2 className="text-xl font-bold">Persyaratan</h2>
+                            <p className="mt-0.5 text-sm text-muted-foreground">Kelola kategori dan daftar persyaratan dokumen yang dibutuhkan.</p>
+                        </div>
+                        <div className="flex w-full flex-col items-center gap-2 md:flex-row lg:w-auto">
+                            <Button variant="secondary" className="w-full md:flex-1 lg:min-w-30 lg:flex-0">
+                                <Sparkles className="size-4" />
+                                Generate AI
+                            </Button>
                             {requirementCategoriesForm.data.requirement_categories.length > 0 && (
-                                <div className="flex w-full justify-end">
-                                    <Button type="button" onClick={addRequirementCategory} size="sm" className="w-full gap-2 md:w-1/2 lg:w-auto">
-                                        <Plus className="size-4" />
-                                        Tambah Kategori
-                                    </Button>
-                                </div>
+                                <Button type="button" onClick={addRequirementCategory} className="w-full md:flex-1 lg:min-w-30 lg:flex-0">
+                                    <Plus className="size-4" />
+                                    Tambah
+                                </Button>
                             )}
                         </div>
                     </div>
+                </div>
+
+                <form onSubmit={handleSubmitRequirement}>
+                    {requirementCategoriesForm.data.requirement_categories.length === 0 ? (
+                        <div className="rounded-xl bg-sidebar p-6 shadow md:p-6 dark:shadow-none">
+                            <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                    <ClipboardList className="size-5 text-primary" />
+                                </div>
+                                <p className="text-sm">Belum ada kategori persyaratan</p>
+                                <Button type="button" size="sm" onClick={addRequirementCategory} className="gap-2">
+                                    <Plus className="size-4" />
+                                    Tambah Kategori Pertama
+                                </Button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 gap-4">
+                            {requirementCategoriesForm.data.requirement_categories.map((cat, i) => (
+                                <RequirementCard
+                                    key={cat._key}
+                                    category={cat}
+                                    index={i}
+                                    onChange={(updated) => updateRequirementCategory(cat._key, updated)}
+                                    onDelete={() => deleteRequirementCategory(cat._key)}
+                                    onMoveUp={() => requirementCategoryHandlers.moveUp(i)}
+                                    onMoveDown={() => requirementCategoryHandlers.moveDown(i)}
+                                    totalItems={requirementCategoriesForm.data.requirement_categories.length}
+                                    isEdit={true}
+                                    errors={requirementCategoriesForm.errors}
+                                />
+                            ))}
+                        </div>
+                    )}
+
+                    {/* {requirementCategoriesForm.data.requirement_categories.length > 0 && (
+                        <div className="flex w-full justify-end">
+                            <Button type="button" onClick={addRequirementCategory} className="w-full gap-2 md:w-1/2 lg:w-30">
+                                <Plus className="size-4" />
+                                Tambah
+                            </Button>
+                        </div>
+                    )} */}
 
                     {/* Submit Button */}
-                    <div className="mt-4 flex items-center gap-3">
-                        <Button type="submit" disabled={requirementCategoriesForm.processing || !hasUnsavedChanges.requirement} className="gap-2">
+                    <div className="mt-4 flex items-center gap-2">
+                        <Button type="submit" disabled={requirementCategoriesForm.processing || !hasUnsavedChanges.requirement} className="flex-1 md:w-45 md:flex-none">
                             {requirementCategoriesForm.processing ? (
                                 <>
                                     <Spinner className="mr-2" />
@@ -1193,7 +1205,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                 'Simpan Perubahan'
                             )}
                         </Button>
-                        <Button type="button" variant="secondary" onClick={() => router.visit(services.index().url)}>
+                        <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
                             Kembali
                         </Button>
                     </div>
@@ -1201,70 +1213,73 @@ export function EditSection({ service, categories }: EditSectionProps) {
             </TabsContent>
 
             {/* TAB: TIMELINE */}
-            <TabsContent value="timeline">
-                <form onSubmit={handleSubmitProcessStep}>
-                    <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <div className="space-y-6">
-                            <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
-                                <div>
-                                    <h2 className="text-xl font-bold">Tahapan Proses</h2>
-                                    <p className="mt-0.5 text-sm text-muted-foreground">Kelola langkah-langkah proses pengerjaan layanan secara berurutan.</p>
-                                </div>
-                                <div className="flex w-full flex-col items-center gap-2 md:flex-row lg:w-auto">
-                                    <Button variant="outline" size="sm" className="w-full md:flex-1 lg:w-auto lg:flex-0">
-                                        <Sparkles className="size-4" />
-                                        Generate AI
-                                    </Button>
-                                    {processStepsForm.data.process_steps.length > 0 && (
-                                        <Button type="button" onClick={addProcessStep} size="sm" className="w-full md:flex-1 lg:w-auto lg:flex-0">
-                                            <Plus className="size-4" />
-                                            Tambah Tahap
-                                        </Button>
-                                    )}
-                                </div>
-                            </div>
-
-                            {processStepsForm.data.process_steps.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
-                                    <p className="text-sm">Belum ada tahapan proses</p>
-                                    <Button type="button" size="sm" onClick={addProcessStep} className="gap-2">
-                                        <Plus className="size-4" />
-                                        Tambah Tahap Pertama
-                                    </Button>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 gap-4">
-                                    {processStepsForm.data.process_steps.map((step, i) => (
-                                        <ProcessStepCard
-                                            key={step._key}
-                                            step={step}
-                                            index={i}
-                                            onChange={(updated) => updateProcessStep(step._key, updated)}
-                                            onDelete={() => deleteProcessStep(step._key)}
-                                            onMoveUp={() => processStepHandlers.moveUp(i)}
-                                            onMoveDown={() => processStepHandlers.moveDown(i)}
-                                            totalItems={processStepsForm.data.process_steps.length}
-                                            isEdit={true}
-                                            errors={processStepsForm.errors}
-                                        />
-                                    ))}
-
-                                    {processStepsForm.data.process_steps.length > 0 && (
-                                        <div className="flex w-full justify-end">
-                                            <Button type="button" onClick={addProcessStep} size="sm" className="w-full gap-2 md:w-1/2 lg:w-auto">
-                                                <Plus className="size-4" />
-                                                Tambah Tahap
-                                            </Button>
-                                        </div>
-                                    )}
-                                </div>
+            <TabsContent value="timeline" className="space-y-4">
+                <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+                    <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
+                        <div>
+                            <h2 className="text-xl font-bold">Tahapan Proses</h2>
+                            <p className="mt-0.5 text-sm text-muted-foreground">Kelola langkah-langkah proses pengerjaan layanan secara berurutan.</p>
+                        </div>
+                        <div className="flex w-full flex-col items-center gap-2 md:flex-row lg:w-auto">
+                            <Button variant="secondary" className="w-full md:flex-1 lg:min-w-30 lg:flex-0">
+                                <Sparkles className="size-4" />
+                                Generate AI
+                            </Button>
+                            {processStepsForm.data.process_steps.length > 0 && (
+                                <Button type="button" onClick={addProcessStep} className="w-full md:flex-1 lg:min-w-30 lg:flex-0">
+                                    <Plus className="size-4" />
+                                    Tambah
+                                </Button>
                             )}
                         </div>
                     </div>
+                </div>
+
+                <form onSubmit={handleSubmitProcessStep}>
+                    {processStepsForm.data.process_steps.length === 0 ? (
+                        <div className="rounded-xl bg-sidebar p-6 shadow md:p-6 dark:shadow-none">
+                            <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
+                                <p className="text-sm">Belum ada tahapan proses</p>
+                                <Button type="button" size="sm" onClick={addProcessStep} className="gap-2">
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                        <ClipboardList className="size-5 text-primary" />
+                                    </div>
+                                    <Plus className="size-4" />
+                                    Tambah Tahap Pertama
+                                </Button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 gap-4">
+                            {processStepsForm.data.process_steps.map((step, i) => (
+                                <ProcessStepCard
+                                    key={step._key}
+                                    step={step}
+                                    index={i}
+                                    onChange={(updated) => updateProcessStep(step._key, updated)}
+                                    onDelete={() => deleteProcessStep(step._key)}
+                                    onMoveUp={() => processStepHandlers.moveUp(i)}
+                                    onMoveDown={() => processStepHandlers.moveDown(i)}
+                                    totalItems={processStepsForm.data.process_steps.length}
+                                    isEdit={true}
+                                    errors={processStepsForm.errors}
+                                />
+                            ))}
+                        </div>
+                    )}
+
+                    {/* {processStepsForm.data.process_steps.length > 0 && (
+                        <div className="flex w-full justify-end">
+                            <Button type="button" onClick={addProcessStep} className="w-full gap-2 md:w-1/2 lg:w-30">
+                                <Plus className="size-4" />
+                                Tambah
+                            </Button>
+                        </div>
+                    )} */}
 
                     {/* Submit Button */}
-                    <div className="mt-4 flex items-center gap-3">
-                        <Button type="submit" disabled={processStepsForm.processing || !hasUnsavedChanges.timeline} className="gap-2">
+                    <div className="mt-4 flex items-center gap-2">
+                        <Button type="submit" disabled={processStepsForm.processing || !hasUnsavedChanges.timeline} className="flex-1 md:w-45 md:flex-none">
                             {processStepsForm.processing ? (
                                 <>
                                     <Spinner className="mr-2" />
@@ -1274,7 +1289,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                 'Simpan Perubahan'
                             )}
                         </Button>
-                        <Button type="button" variant="secondary" onClick={() => router.visit(services.index().url)}>
+                        <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
                             Kembali
                         </Button>
                     </div>

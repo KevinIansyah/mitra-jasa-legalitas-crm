@@ -1,9 +1,11 @@
 /**
  * Expense Management - TypeScript Definitions
+ * Dipisahkan dari project.ts karena Expense bisa berdiri sendiri (tidak harus terkait project)
  */
 
 import type { User } from './auth';
 import type { Project, ProjectInvoice } from './project';
+import type { Vendor } from './vendors';
 
 // ============================================================
 // CORE TYPES
@@ -34,6 +36,8 @@ export interface Expense {
     id: number;
     project_id: number | null;
     invoice_id: number | null;
+    vendor_id: number | null;
+    vendor_name: string | null;
     user_id: number | null;
     category: ExpenseCategory;
     description: string;
@@ -52,6 +56,7 @@ export interface Expense {
     project?: Project;
     invoice?: ProjectInvoice;
     user?: User;
+    vendor?: Vendor;
 }
 
 // ============================================================
@@ -60,6 +65,8 @@ export interface Expense {
 
 export interface ExpenseFormData {
     project_id?: number | null;
+    vendor_id?: number | null;
+    vendor_name?: string | null;
     category: string;
     description: string;
     amount: number;
@@ -77,7 +84,7 @@ export interface ExpenseFilterParams {
     project_id?: number | null;
     category?: ExpenseCategory;
     is_billable?: boolean;
-    is_billed?: boolean;
+    is_billed?: boolean; // sudah ada invoice_id atau belum
     date_from?: string;
     date_to?: string;
     search?: string;

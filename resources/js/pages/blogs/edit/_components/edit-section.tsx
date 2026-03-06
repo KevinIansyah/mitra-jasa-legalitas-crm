@@ -641,6 +641,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
+                                                <SelectLabel>Status</SelectLabel>
                                                 <SelectItem value="active">Active</SelectItem>
                                                 <SelectItem value="inactive">Inactive</SelectItem>
                                             </SelectGroup>
@@ -923,7 +924,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                             </div>
 
                             {packageForm.data.packages.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
+                                <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
                                     <p className="text-sm">Belum ada paket harga</p>
                                     <Button type="button" variant="outline" size="sm" onClick={addPackage} className="gap-2">
                                         <Plus className="size-4" />
@@ -1004,7 +1005,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                             </div>
 
                             {faqForm.data.faqs.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
+                                <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
                                     <p className="text-sm">Belum ada FAQ</p>
                                     <Button type="button" variant="outline" size="sm" onClick={addFaq} className="gap-2">
                                         <Plus className="size-4" />
@@ -1085,7 +1086,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                             </div>
 
                             {legalBasisForm.data.legal_bases.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
+                                <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
                                     <p className="text-sm">Belum ada dasar hukum</p>
                                     <Button type="button" variant="outline" size="sm" onClick={addLegalBasis} className="gap-2">
                                         <Plus className="size-4" />
@@ -1166,7 +1167,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                             </div>
 
                             {requirementCategoriesForm.data.requirement_categories.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
+                                <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
                                     <p className="text-sm">Belum ada kategori persyaratan</p>
                                     <Button type="button" variant="outline" size="sm" onClick={addRequirementCategory} className="gap-2">
                                         <Plus className="size-4" />
@@ -1247,7 +1248,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                             </div>
 
                             {processStepsForm.data.process_steps.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
+                                <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
                                     <p className="text-sm">Belum ada tahapan proses</p>
                                     <Button type="button" variant="outline" size="sm" onClick={addProcessStep} className="gap-2">
                                         <Plus className="size-4" />

@@ -1,5 +1,5 @@
 import { useForm } from '@inertiajs/react';
-import { FilePlus, Pencil, Trash } from 'lucide-react';
+import { FilePlus, FileText, Pencil, Trash } from 'lucide-react';
 import * as React from 'react';
 import { toast } from 'sonner';
 
@@ -14,9 +14,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import { formatRupiah, formatSize, readImageAsDataURL, validateFile, validateImageFile } from '@/lib/service';
-import invoices from '@/routes/invoices';
 import type { ProjectInvoice, ProjectPaymentFormData } from '@/types/project';
 import { PAYMENT_METHODS } from '@/types/project';
+import finances from '@/routes/finances';
 
 type PaymentAddDrawerProps = {
     invoice: ProjectInvoice;
@@ -96,7 +96,7 @@ export function PaymentAddDrawer({ invoice, open, onOpenChange }: PaymentAddDraw
 
         const toastId = toast.loading('Memproses...', { description: 'Pembayaran sedang ditambahkan.' });
 
-        post(invoices.payments.store(invoice.id).url, {
+        post(finances.invoices.payments.store(invoice.id).url, {
             forceFormData: true,
             preserveScroll: true,
             onSuccess: () => {
@@ -129,14 +129,19 @@ export function PaymentAddDrawer({ invoice, open, onOpenChange }: PaymentAddDraw
                                     Invoice <span className="text-destructive">*</span>
                                 </FieldLabel>
 
-                                <div className="flex items-center justify-between rounded-md border border-primary bg-card p-3 dark:border-none">
-                                    <div className="flex-1">
-                                        <p className="text-sm font-medium text-muted-foreground">
-                                            Invoice <span className="font-medium text-foreground">{invoice.invoice_number}</span>
-                                        </p>
-                                        <p className="text-sm font-medium text-muted-foreground">
-                                            Total <span className="font-medium text-foreground">{formatRupiah(Number(invoice.total_amount))}</span>
-                                        </p>
+                                <div className="flex items-center justify-between rounded-md bg-primary/10 p-3 dark:bg-muted/40">
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10">
+                                            <FileText className="size-4 text-primary" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="text-sm font-medium text-muted-foreground">
+                                                Invoice <span className="font-medium text-foreground">{invoice.invoice_number}</span>
+                                            </p>
+                                            <p className="text-sm font-medium text-muted-foreground">
+                                                Total <span className="font-medium text-foreground">{formatRupiah(Number(invoice.total_amount))}</span>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </Field>
@@ -197,7 +202,7 @@ export function PaymentAddDrawer({ invoice, open, onOpenChange }: PaymentAddDraw
                             <Field className="col-span-2">
                                 <FieldLabel>Catatan</FieldLabel>
                                 <Textarea
-                                    className="min-h-20 resize-none"
+                                    className="min-h-24 resize-none"
                                     placeholder="Catatan tambahan..."
                                     value={data.notes ?? ''}
                                     onChange={(e) => setData('notes', e.target.value || null)}
@@ -236,7 +241,7 @@ export function PaymentAddDrawer({ invoice, open, onOpenChange }: PaymentAddDraw
                                                       : 'border-border hover:border-primary hover:bg-muted/40',
                                             ].join(' ')}
                                         >
-                                            <div className="flex h-12 w-12 items-center justify-center rounded-md bg-primary/10">
+                                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                                                 <FilePlus className="size-5 text-primary" />
                                             </div>
                                             <div>

@@ -40,7 +40,7 @@ class ProjectController extends Controller
         $companyId = $request->get('company_id');
         $serviceID = $request->get('service_id');
 
-        $query = Project::with('customer:id,name,tier', 'company:id,name', 'service:id,name', 'servicePackage:id,name', 'projectLeader:id,name');
+        $query = Project::with('customer:id,name,tier', 'company:id,name', 'service:id,name', 'servicePackage:id,name', 'projectLeaders:id,name');
 
         if ($search) {
             $query->search($search);
@@ -63,7 +63,7 @@ class ProjectController extends Controller
         }
 
         $projects = $query->latest()->paginate($perPage);
-        $projects->through(fn($project) => $project->append('progress_percentage'));
+        $projects->through(fn($project) => $project->append(['progress_percentage', 'project_leader']));
         $customers = Customer::select('id', 'name')->get();
         $companies = Company::select('id', 'name')->get();
         $services = Service::select('id', 'name')->get();
@@ -142,7 +142,7 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        $project->load(['customer.companies', 'customer.user', 'company', 'service.category',  'servicePackage', 'projectLeader']);
+        $project->load(['customer.companies', 'customer.user', 'company', 'service.category',  'servicePackage']);
 
         $services = Service::where('status', 'active')
             ->orderBy('name')
@@ -160,7 +160,7 @@ class ProjectController extends Controller
         $project->load([
             'invoices' => fn($q) => $q->latest(),
             'invoices.items',
-            'invoices.payments',
+            'invoices.payments.verifier',
             'expenses' => fn($q) => $q->latest(),
             'expenses.user',
             'customer',
@@ -173,17 +173,17 @@ class ProjectController extends Controller
             'total_contract_invoiced',
             'total_contract_invoiced_with_tax',
             'total_contract_paid',
-            'total_contract_paid_with_tax',    
+            'total_contract_paid_with_tax',
 
             'total_additional_invoiced',
             'total_additional_invoiced_with_tax',
             'total_additional_paid',
-            'total_additional_paid_with_tax',  
+            'total_additional_paid_with_tax',
 
             'total_invoiced',
-            'total_invoiced_with_tax',         
+            'total_invoiced_with_tax',
             'total_paid',
-            'total_paid_with_tax',             
+            'total_paid_with_tax',
 
             'outstanding_amount',
             'remaining_bill',
@@ -281,7 +281,7 @@ class ProjectController extends Controller
 
     public function documents(Project $project)
     {
-        $project->load(['documents']);
+        $project->load(['documents', 'documents.uploader', 'documents.verifier']);
 
         $canApproveDocuments = $project->members()
             ->where('user_id', Auth::id())

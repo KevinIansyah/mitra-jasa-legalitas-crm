@@ -1,5 +1,5 @@
 import { useForm } from '@inertiajs/react';
-import { ImagePlus, Pencil, Plus, TableOfContents, Trash } from 'lucide-react';
+import { ClipboardList, HelpCircle, ImagePlus, Package, Pencil, Plus, Scale, TableOfContents, Trash } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 
 import { toast } from 'sonner';
@@ -107,13 +107,11 @@ export function CreateSection({ categories }: CreateSectionProps) {
 
     const handleDragEnter = useCallback((e: React.DragEvent) => {
         e.preventDefault();
-
         setIsDragging(true);
     }, []);
 
     const handleDragLeave = useCallback((e: React.DragEvent) => {
         e.preventDefault();
-
         if (!e.currentTarget.contains(e.relatedTarget as Node)) setIsDragging(false);
     }, []);
 
@@ -121,7 +119,6 @@ export function CreateSection({ categories }: CreateSectionProps) {
 
     const handleDrop = (e: React.DragEvent) => {
         e.preventDefault();
-
         setIsDragging(false);
         handleFile(e.dataTransfer.files[0]);
     };
@@ -257,7 +254,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="space-y-4">
             <Tabs defaultValue="basic-information" className="w-full">
                 <TabsList>
                     <TabsTrigger value="basic-information">Informasi Dasar</TabsTrigger>
@@ -510,10 +507,6 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                     <h2 className="text-xl font-bold">Konten Layanan</h2>
                                     <p className="mt-0.5 text-sm text-muted-foreground">Kelola pengantar dan konten utama layanan untuk kebutuhan informasi dan optimasi SEO.</p>
                                 </div>
-                                {/* <Button type="button" variant="outline" size="sm" className="shrink-0 gap-1.5" disabled>
-                                    <Sparkles className="size-3.5" />
-                                    AI Generate
-                                </Button> */}
                             </div>
 
                             {/* Introduction */}
@@ -547,293 +540,309 @@ export function CreateSection({ categories }: CreateSectionProps) {
                 </TabsContent>
 
                 {/* TAB: PACKAGE */}
-                <TabsContent value="package">
+                <TabsContent value="package" className="space-y-4">
                     <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <div className="space-y-6">
-                            <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
-                                <div>
-                                    <h2 className="text-xl font-bold">Paket Harga</h2>
-                                    <p className="mt-0.5 text-sm text-muted-foreground">Kelola paket harga dengan dokumen/fitur yang berbeda untuk setiap paket</p>
-                                </div>
-                                <div className="flex w-full items-center gap-2 md:w-auto">
-                                    {/* <Button type="button" variant="outline" size="sm" className="flex-1 shrink-0 gap-1.5 md:flex-none" disabled>
+                        <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
+                            <div>
+                                <h2 className="text-xl font-bold">Paket Harga</h2>
+                                <p className="mt-0.5 text-sm text-muted-foreground">Kelola paket harga dengan dokumen/fitur yang berbeda untuk setiap paket</p>
+                            </div>
+                            <div className="flex w-full items-center gap-2 md:w-auto">
+                                {/* <Button type="button" variant="outline" size="sm" className="flex-1 shrink-0 gap-1.5 md:flex-none" disabled>
                                         <Sparkles className="size-3.5" />
                                         AI Generate
                                     </Button> */}
-                                    {data.packages.length > 0 && (
-                                        <Button type="button" onClick={addPackage} size="sm" className="flex-1 gap-1.5 md:flex-none">
-                                            <Plus className="size-4" />
-                                            Tambah Paket
-                                        </Button>
-                                    )}
-                                </div>
+                                {data.packages.length > 0 && (
+                                    <Button type="button" onClick={addPackage} size="sm" className="flex-1 md:w-30 lg:flex-none">
+                                        <Plus className="size-4" />
+                                        Tambah
+                                    </Button>
+                                )}
                             </div>
-
-                            {data.packages.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
-                                    <p className="text-sm">Belum ada paket harga</p>
-                                    <Button type="button" size="sm" onClick={addPackage} className="gap-1.5">
-                                        <Plus className="size-4" />
-                                        Tambah Paket Pertama
-                                    </Button>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-                                    {data.packages.map((pkg, i) => (
-                                        <PackageCard
-                                            key={pkg._key}
-                                            pkg={pkg}
-                                            index={i}
-                                            onChange={(updated) => updatePackage(pkg._key, updated)}
-                                            onDelete={() => deletePackage(pkg._key)}
-                                            onMoveUp={() => packageHandlers.moveUp(i)}
-                                            onMoveDown={() => packageHandlers.moveDown(i)}
-                                            totalItems={data.packages.length}
-                                            errors={errors}
-                                        />
-                                    ))}
-                                </div>
-                            )}
-
-                            {data.packages.length > 0 && (
-                                <div className="flex w-full justify-end">
-                                    <Button type="button" onClick={addPackage} size="sm" className="flex-1 gap-1.5 md:flex-none">
-                                        <Plus className="size-4" />
-                                        Tambah Paket
-                                    </Button>
-                                </div>
-                            )}
                         </div>
                     </div>
+
+                    {data.packages.length === 0 ? (
+                        <div className="rounded-xl bg-sidebar p-6 shadow md:p-6 dark:shadow-none">
+                            <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                    <Package className="size-5 text-primary" />
+                                </div>
+                                <p className="text-sm">Belum ada paket harga</p>
+                                <Button type="button" size="sm" onClick={addPackage} className="gap-1.5">
+                                    <Plus className="size-4" />
+                                    Tambah Paket Pertama
+                                </Button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                            {data.packages.map((pkg, i) => (
+                                <PackageCard
+                                    key={pkg._key}
+                                    pkg={pkg}
+                                    index={i}
+                                    onChange={(updated) => updatePackage(pkg._key, updated)}
+                                    onDelete={() => deletePackage(pkg._key)}
+                                    onMoveUp={() => packageHandlers.moveUp(i)}
+                                    onMoveDown={() => packageHandlers.moveDown(i)}
+                                    totalItems={data.packages.length}
+                                    errors={errors}
+                                />
+                            ))}
+                        </div>
+                    )}
+
+                    {/* {data.packages.length > 0 && (
+                        <div className="flex w-full justify-end">
+                            <Button type="button" onClick={addPackage} size="sm" className="flex-1 md:w-30 lg:flex-none">
+                                <Plus className="size-4" />
+                                Tambah
+                            </Button>
+                        </div>
+                    )} */}
                 </TabsContent>
 
                 {/* TAB: FAQ */}
-                <TabsContent value="faq">
+                <TabsContent value="faq" className="space-y-4">
                     <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <div className="space-y-6">
-                            <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
-                                <div>
-                                    <h2 className="text-xl font-bold">FAQ (Frequently Asked Questions)</h2>
-                                    <p className="mt-0.5 text-sm text-muted-foreground">Kelola pertanyaan yang sering diajukan terkait layanan ini.</p>
-                                </div>
-
-                                {data.faqs.length > 0 && (
-                                    <Button type="button" onClick={addFaq} size="sm" className="w-full gap-1.5 md:w-auto">
-                                        <Plus className="size-4" />
-                                        Tambah FAQ
-                                    </Button>
-                                )}
+                        <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
+                            <div>
+                                <h2 className="text-xl font-bold">FAQ (Frequently Asked Questions)</h2>
+                                <p className="mt-0.5 text-sm text-muted-foreground">Kelola pertanyaan yang sering diajukan terkait layanan ini.</p>
                             </div>
 
-                            {data.faqs.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
-                                    <p className="text-sm">Belum ada FAQ</p>
-                                    <Button type="button" size="sm" onClick={addFaq} className="gap-1.5">
-                                        <Plus className="size-4" />
-                                        Tambah FAQ Pertama
-                                    </Button>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 gap-4">
-                                    {data.faqs.map((faq, i) => (
-                                        <FaqCard
-                                            key={faq._key}
-                                            faq={faq}
-                                            index={i}
-                                            onChange={(updated) => updateFaq(faq._key, updated)}
-                                            onDelete={() => deleteFaq(faq._key)}
-                                            onMoveUp={() => faqHandlers.moveUp(i)}
-                                            onMoveDown={() => faqHandlers.moveDown(i)}
-                                            totalItems={data.faqs.length}
-                                            errors={errors}
-                                        />
-                                    ))}
-                                </div>
-                            )}
-
                             {data.faqs.length > 0 && (
-                                <div className="flex w-full justify-end">
-                                    <Button type="button" onClick={addFaq} size="sm" className="flex-1 gap-1.5 md:flex-none">
-                                        <Plus className="size-4" />
-                                        Tambah FAQ
-                                    </Button>
-                                </div>
+                                <Button type="button" onClick={addFaq} size="sm" className="flex-1 lg:w-30 lg:flex-none">
+                                    <Plus className="size-4" />
+                                    Tambah
+                                </Button>
                             )}
                         </div>
                     </div>
+
+                    {data.faqs.length === 0 ? (
+                        <div className="rounded-xl bg-sidebar p-6 shadow md:p-6 dark:shadow-none">
+                            <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                    <HelpCircle className="size-5 text-primary" />
+                                </div>
+                                <p className="text-sm">Belum ada FAQ</p>
+                                <Button type="button" size="sm" onClick={addFaq} className="gap-1.5">
+                                    <Plus className="size-4" />
+                                    Tambah FAQ Pertama
+                                </Button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 gap-4">
+                            {data.faqs.map((faq, i) => (
+                                <FaqCard
+                                    key={faq._key}
+                                    faq={faq}
+                                    index={i}
+                                    onChange={(updated) => updateFaq(faq._key, updated)}
+                                    onDelete={() => deleteFaq(faq._key)}
+                                    onMoveUp={() => faqHandlers.moveUp(i)}
+                                    onMoveDown={() => faqHandlers.moveDown(i)}
+                                    totalItems={data.faqs.length}
+                                    errors={errors}
+                                />
+                            ))}
+                        </div>
+                    )}
+
+                    {/* {data.faqs.length > 0 && (
+                        <div className="flex w-full justify-end">
+                            <Button type="button" onClick={addFaq} size="sm" className="flex-1 md:w-30 lg:flex-none">
+                                <Plus className="size-4" />
+                                Tambah
+                            </Button>
+                        </div>
+                    )} */}
                 </TabsContent>
 
                 {/* TAB: LEGAL BASIS */}
-                <TabsContent value="legal-basis">
+                <TabsContent value="legal-basis" className="space-y-4">
                     <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <div className="space-y-6">
-                            <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
-                                <div>
-                                    <h2 className="text-xl font-bold">Dasar Hukum</h2>
-                                    <p className="mt-0.5 text-sm text-muted-foreground">Kelola referensi peraturan dan undang-undang yang menjadi dasar layanan.</p>
-                                </div>
-
-                                {data.legal_bases.length > 0 && (
-                                    <Button type="button" onClick={addLegalBasis} size="sm" className="w-full gap-1.5 md:w-auto">
-                                        <Plus className="size-4" />
-                                        Tambah Dasar Hukum
-                                    </Button>
-                                )}
+                        <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
+                            <div>
+                                <h2 className="text-xl font-bold">Dasar Hukum</h2>
+                                <p className="mt-0.5 text-sm text-muted-foreground">Kelola referensi peraturan dan undang-undang yang menjadi dasar layanan.</p>
                             </div>
 
-                            {data.legal_bases.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
-                                    <p className="text-sm">Belum ada dasar hukum</p>
-                                    <Button type="button" size="sm" onClick={addLegalBasis} className="gap-1.5">
-                                        <Plus className="size-4" />
-                                        Tambah Dasar Hukum Pertama
-                                    </Button>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 gap-4">
-                                    {data.legal_bases.map((legal, i) => (
-                                        <LegalBasisCard
-                                            key={legal._key}
-                                            legalBasis={legal}
-                                            index={i}
-                                            onChange={(updated) => updateLegalBasis(legal._key, updated)}
-                                            onDelete={() => deleteLegalBasis(legal._key)}
-                                            onMoveUp={() => legalBasisHandlers.moveUp(i)}
-                                            onMoveDown={() => legalBasisHandlers.moveDown(i)}
-                                            totalItems={data.legal_bases.length}
-                                            errors={errors}
-                                        />
-                                    ))}
-                                </div>
-                            )}
-
                             {data.legal_bases.length > 0 && (
-                                <div className="flex w-full justify-end">
-                                    <Button type="button" onClick={addLegalBasis} size="sm" className="flex-1 gap-1.5 md:flex-none">
-                                        <Plus className="size-4" />
-                                        Tambah Dasar Hukum
-                                    </Button>
-                                </div>
+                                <Button type="button" onClick={addLegalBasis} size="sm" className="flex-1 lg:w-30 lg:flex-none">
+                                    <Plus className="size-4" />
+                                    Tambah
+                                </Button>
                             )}
                         </div>
                     </div>
+
+                    {data.legal_bases.length === 0 ? (
+                        <div className="rounded-xl bg-sidebar p-6 shadow md:p-6 dark:shadow-none">
+                            <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                    <Scale className="size-5 text-primary" />
+                                </div>
+                                <p className="text-sm">Belum ada dasar hukum</p>
+                                <Button type="button" size="sm" onClick={addLegalBasis} className="gap-1.5">
+                                    <Plus className="size-4" />
+                                    Tambah Dasar Hukum Pertama
+                                </Button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 gap-4">
+                            {data.legal_bases.map((legal, i) => (
+                                <LegalBasisCard
+                                    key={legal._key}
+                                    legalBasis={legal}
+                                    index={i}
+                                    onChange={(updated) => updateLegalBasis(legal._key, updated)}
+                                    onDelete={() => deleteLegalBasis(legal._key)}
+                                    onMoveUp={() => legalBasisHandlers.moveUp(i)}
+                                    onMoveDown={() => legalBasisHandlers.moveDown(i)}
+                                    totalItems={data.legal_bases.length}
+                                    errors={errors}
+                                />
+                            ))}
+                        </div>
+                    )}
+
+                    {/* {data.legal_bases.length > 0 && (
+                        <div className="flex w-full justify-end">
+                            <Button type="button" onClick={addLegalBasis} size="sm" className="flex-1 md:w-30 lg:flex-none">
+                                <Plus className="size-4" />
+                                Tambah
+                            </Button>
+                        </div>
+                    )} */}
                 </TabsContent>
 
                 {/* TAB: REQUIREMENT */}
-                <TabsContent value="requirement">
+                <TabsContent value="requirement" className="space-y-4">
                     <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <div className="space-y-6">
-                            <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
-                                <div>
-                                    <h2 className="text-xl font-bold">Persyaratan</h2>
-                                    <p className="mt-0.5 text-sm text-muted-foreground">Kelola kategori dan daftar persyaratan dokumen yang dibutuhkan.</p>
-                                </div>
-
-                                {data.requirement_categories.length > 0 && (
-                                    <Button type="button" onClick={addRequirementCategory} size="sm" className="w-full gap-1.5 md:w-auto">
-                                        <Plus className="size-4" />
-                                        Tambah Kategori
-                                    </Button>
-                                )}
+                        <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
+                            <div>
+                                <h2 className="text-xl font-bold">Persyaratan</h2>
+                                <p className="mt-0.5 text-sm text-muted-foreground">Kelola kategori dan daftar persyaratan dokumen yang dibutuhkan.</p>
                             </div>
 
-                            {data.requirement_categories.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
-                                    <p className="text-sm">Belum ada kategori persyaratan</p>
-                                    <Button type="button" size="sm" onClick={addRequirementCategory} className="gap-1.5">
-                                        <Plus className="size-4" />
-                                        Tambah Kategori Pertama
-                                    </Button>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 gap-4">
-                                    {data.requirement_categories.map((cat, i) => (
-                                        <RequirementCard
-                                            key={cat._key}
-                                            category={cat}
-                                            index={i}
-                                            onChange={(updated) => updateRequirementCategory(cat._key, updated)}
-                                            onDelete={() => deleteRequirementCategory(cat._key)}
-                                            onMoveUp={() => requirementCategoryHandlers.moveUp(i)}
-                                            onMoveDown={() => requirementCategoryHandlers.moveDown(i)}
-                                            totalItems={data.requirement_categories.length}
-                                            errors={errors}
-                                        />
-                                    ))}
-                                </div>
-                            )}
-
                             {data.requirement_categories.length > 0 && (
-                                <div className="flex w-full justify-end">
-                                    <Button type="button" onClick={addRequirementCategory} size="sm" className="flex-1 gap-1.5 md:flex-none">
-                                        <Plus className="size-4" />
-                                        Tambah Kategori
-                                    </Button>
-                                </div>
+                                <Button type="button" onClick={addRequirementCategory} size="sm" className="flex-1 lg:w-30 lg:flex-none">
+                                    <Plus className="size-4" />
+                                    Tambah
+                                </Button>
                             )}
                         </div>
                     </div>
+
+                    {data.requirement_categories.length === 0 ? (
+                        <div className="rounded-xl bg-sidebar p-6 shadow md:p-6 dark:shadow-none">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                <ClipboardList className="size-5 text-primary" />
+                            </div>
+                            <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
+                                <p className="text-sm">Belum ada kategori persyaratan</p>
+                                <Button type="button" size="sm" onClick={addRequirementCategory} className="gap-1.5">
+                                    <Plus className="size-4" />
+                                    Tambah Kategori Pertama
+                                </Button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 gap-4">
+                            {data.requirement_categories.map((cat, i) => (
+                                <RequirementCard
+                                    key={cat._key}
+                                    category={cat}
+                                    index={i}
+                                    onChange={(updated) => updateRequirementCategory(cat._key, updated)}
+                                    onDelete={() => deleteRequirementCategory(cat._key)}
+                                    onMoveUp={() => requirementCategoryHandlers.moveUp(i)}
+                                    onMoveDown={() => requirementCategoryHandlers.moveDown(i)}
+                                    totalItems={data.requirement_categories.length}
+                                    errors={errors}
+                                />
+                            ))}
+                        </div>
+                    )}
+
+                    {/* {data.requirement_categories.length > 0 && (
+                        <div className="flex w-full justify-end">
+                            <Button type="button" onClick={addRequirementCategory} size="sm" className="flex-1 md:w-30 lg:flex-none">
+                                <Plus className="size-4" />
+                                Tambah
+                            </Button>
+                        </div>
+                    )} */}
                 </TabsContent>
 
                 {/* TAB: TIMELINE */}
-                <TabsContent value="timeline">
+                <TabsContent value="timeline" className="space-y-4">
                     <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <div className="space-y-6">
-                            <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
-                                <div>
-                                    <h2 className="text-xl font-bold">Tahapan Proses</h2>
-                                    <p className="mt-0.5 text-sm text-muted-foreground">Kelola langkah-langkah proses pengerjaan layanan secara berurutan.</p>
-                                </div>
-
-                                {data.process_steps.length > 0 && (
-                                    <Button type="button" onClick={addProcessStep} size="sm" className="w-full gap-1.5 md:w-auto">
-                                        <Plus className="size-4" />
-                                        Tambah Tahap
-                                    </Button>
-                                )}
+                        <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
+                            <div>
+                                <h2 className="text-xl font-bold">Tahapan Proses</h2>
+                                <p className="mt-0.5 text-sm text-muted-foreground">Kelola langkah-langkah proses pengerjaan layanan secara berurutan.</p>
                             </div>
 
-                            {data.process_steps.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
-                                    <p className="text-sm">Belum ada tahapan proses</p>
-                                    <Button type="button" size="sm" onClick={addProcessStep} className="gap-1.5">
-                                        <Plus className="size-4" />
-                                        Tambah Tahap Pertama
-                                    </Button>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 gap-4">
-                                    {data.process_steps.map((step, i) => (
-                                        <ProcessStepCard
-                                            key={step._key}
-                                            step={step}
-                                            index={i}
-                                            onChange={(updated) => updateProcessStep(step._key, updated)}
-                                            onDelete={() => deleteProcessStep(step._key)}
-                                            onMoveUp={() => processStepHandlers.moveUp(i)}
-                                            onMoveDown={() => processStepHandlers.moveDown(i)}
-                                            totalItems={data.process_steps.length}
-                                            errors={errors}
-                                        />
-                                    ))}
-                                </div>
-                            )}
-
                             {data.process_steps.length > 0 && (
-                                <div className="flex w-full justify-end">
-                                    <Button type="button" onClick={addProcessStep} size="sm" className="flex-1 gap-1.5 md:flex-none">
-                                        <Plus className="size-4" />
-                                        Tambah Tahap
-                                    </Button>
-                                </div>
+                                <Button type="button" onClick={addProcessStep} size="sm" className="flex-1 lg:w-30 lg:flex-none">
+                                    <Plus className="size-4" />
+                                    Tambah
+                                </Button>
                             )}
                         </div>
                     </div>
+
+                    {data.process_steps.length === 0 ? (
+                        <div className="rounded-xl bg-sidebar p-6 shadow md:p-6 dark:shadow-none">
+                            <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                    <ClipboardList className="size-5 text-primary" />
+                                </div>
+                                <p className="text-sm">Belum ada tahapan proses</p>
+                                <Button type="button" size="sm" onClick={addProcessStep} className="gap-1.5">
+                                    <Plus className="size-4" />
+                                    Tambah Tahap Pertama
+                                </Button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 gap-4">
+                            {data.process_steps.map((step, i) => (
+                                <ProcessStepCard
+                                    key={step._key}
+                                    step={step}
+                                    index={i}
+                                    onChange={(updated) => updateProcessStep(step._key, updated)}
+                                    onDelete={() => deleteProcessStep(step._key)}
+                                    onMoveUp={() => processStepHandlers.moveUp(i)}
+                                    onMoveDown={() => processStepHandlers.moveDown(i)}
+                                    totalItems={data.process_steps.length}
+                                    errors={errors}
+                                />
+                            ))}
+                        </div>
+                    )}
+
+                    {/* {data.process_steps.length > 0 && (
+                        <div className="flex w-full justify-end">
+                            <Button type="button" onClick={addProcessStep} size="sm" className="flex-1 md:w-30 lg:flex-none">
+                                <Plus className="size-4" />
+                                Tambah
+                            </Button>
+                        </div>
+                    )} */}
                 </TabsContent>
             </Tabs>
 
-            <div className="mt-4 flex items-center gap-3">
-                <Button type="submit" disabled={processing}>
+            {/* ACTION */}
+            <div className="flex items-center justify-start gap-2">
+                <Button type="submit" className="flex-1 md:w-45 md:flex-none" disabled={processing}>
                     {processing ? (
                         <>
                             <Spinner className="mr-2" />
@@ -843,7 +852,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                         'Simpan'
                     )}
                 </Button>
-                <Button type="button" variant="secondary" onClick={handleCancel} disabled={processing}>
+                <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={handleCancel} disabled={processing}>
                     Batal
                 </Button>
             </div>

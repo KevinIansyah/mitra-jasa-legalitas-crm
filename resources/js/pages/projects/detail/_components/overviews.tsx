@@ -1,6 +1,6 @@
 import { router, useForm } from '@inertiajs/react';
 import axios from 'axios';
-import { Briefcase, Building2, CalendarDays, ChevronDown, Pencil, Search, User, X } from 'lucide-react';
+import { Briefcase, Building2, CalendarDays, ChevronDown, Pencil, Search, X } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -239,7 +239,7 @@ export default function Overviews({ project, services }: OverviewsProps) {
                                 </p>
                             </div>
                             <HasPermission permission="edit-projects">
-                                <Button className="w-35 gap-2" onClick={handleStartEdit}>
+                                <Button className="w-30 gap-2" onClick={handleStartEdit}>
                                     <Pencil className="size-3.5" />
                                     Edit
                                 </Button>
@@ -284,9 +284,10 @@ export default function Overviews({ project, services }: OverviewsProps) {
                 {/* Customer & Company */}
                 <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-2">
                     <div className="w-full space-y-3 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-md bg-primary/10">
-                            <User className="size-5 text-primary" />
-                        </div>
+                        <Avatar className="h-12 w-12 rounded-xl">
+                            <AvatarImage src={project.customer?.user?.avatar ?? undefined} />
+                            <AvatarFallback className="rounded-xl text-lg bg-primary/10 text-primary">{getInitials(project.customer?.name)}</AvatarFallback>
+                        </Avatar>
                         <FieldLabel>Pelanggan</FieldLabel>
                         <InfoRow label="Nama" value={project.customer?.name} />
                         <InfoRow label="Email" value={project.customer?.email} />
@@ -302,7 +303,7 @@ export default function Overviews({ project, services }: OverviewsProps) {
                     </div>
 
                     <div className="relative min-h-60 w-full space-y-3 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-md bg-primary/10">
+                        <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                             <Building2 className="size-5 text-primary" />
                         </div>
                         <FieldLabel>Perusahaan</FieldLabel>
@@ -331,7 +332,7 @@ export default function Overviews({ project, services }: OverviewsProps) {
                 {/* Service & Date */}
                 <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-2">
                     <div className="relative min-h-60 w-full space-y-3 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-md bg-primary/10">
+                        <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                             <Briefcase className="size-5 text-primary" />
                         </div>
                         <FieldLabel>Layanan</FieldLabel>
@@ -349,7 +350,7 @@ export default function Overviews({ project, services }: OverviewsProps) {
                     </div>
 
                     <div className="w-full space-y-3 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-md bg-primary/10">
+                        <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                             <CalendarDays className="size-5 text-primary" />
                         </div>
                         <FieldLabel>Tanggal</FieldLabel>
@@ -389,7 +390,7 @@ export default function Overviews({ project, services }: OverviewsProps) {
 
     return (
         <div className="space-y-4">
-            {/* CUSTOMER */}
+            {/* Customer */}
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div>
@@ -397,21 +398,21 @@ export default function Overviews({ project, services }: OverviewsProps) {
                         <p className="mt-0.5 text-sm text-muted-foreground">Cari dan pilih customer untuk project ini</p>
                     </div>
 
-                    <Field className="gap-0">
-                        <FieldLabel className="mb-3">
+                    <Field>
+                        <FieldLabel>
                             Customer <span className="text-destructive">*</span>
                         </FieldLabel>
 
                         {selectedCustomer ? (
-                            <div className="flex items-center justify-between rounded-lg border border-primary bg-card p-4 dark:border-none">
+                            <div className="flex items-center justify-between rounded-md bg-primary/10 p-3 dark:bg-muted/40">
                                 <div className="flex items-center gap-3">
                                     <Avatar className="rounded-full">
                                         <AvatarImage src={selectedCustomer.user?.avatar ?? undefined} />
-                                        <AvatarFallback className="bg-primary/10 text-primary">{getInitials(selectedCustomer.name)}</AvatarFallback>
+                                        <AvatarFallback className="bg-primary/10 text-xs text-primary">{getInitials(selectedCustomer.name)}</AvatarFallback>
                                     </Avatar>
                                     <div>
-                                        <p className="font-medium">{selectedCustomer.name}</p>
-                                        <p className="text-sm text-muted-foreground">{selectedCustomer.email || selectedCustomer.phone || 'Tidak ada info kontak'}</p>
+                                        <p className="text-sm font-medium">{selectedCustomer.name}</p>
+                                        <p className="text-xs text-muted-foreground">{selectedCustomer.email || selectedCustomer.phone || 'Tidak ada info kontak'}</p>
                                         {selectedCustomer.tier && (
                                             <Badge className={`mt-1 ${tierVariantMap[selectedCustomer.tier] ?? 'bg-muted text-muted-foreground'}`}>{selectedCustomer.tier}</Badge>
                                         )}
@@ -433,17 +434,17 @@ export default function Overviews({ project, services }: OverviewsProps) {
                                     <InputGroupAddon>{isSearchingCustomer ? <Spinner className="size-4" /> : <Search className="size-4" />}</InputGroupAddon>
                                 </InputGroup>
                                 {customerResults.length > 0 && (
-                                    <div className="mt-1 max-h-64 space-y-1 overflow-y-auto rounded-lg border border-primary bg-muted/30 p-2 dark:border-none">
+                                    <div className="-mt-2 max-h-64 space-y-1 overflow-y-auto">
                                         {customerResults.map((c) => (
                                             <button
                                                 key={c.id}
                                                 type="button"
                                                 onClick={() => handleSelectCustomer(c)}
-                                                className="flex w-full items-center gap-3 rounded-lg p-3 text-left hover:bg-muted"
+                                                className="flex w-full items-center gap-3 rounded-lg bg-primary/10 p-3 text-left hover:bg-primary/20 dark:bg-muted/40 dark:hover:bg-muted/50"
                                             >
                                                 <Avatar className="rounded-full">
                                                     <AvatarImage src={c.user?.avatar ?? undefined} />
-                                                    <AvatarFallback className="bg-primary/10 text-primary">{getInitials(c.name)}</AvatarFallback>
+                                                    <AvatarFallback className="bg-primary/10 text-sm text-primary">{getInitials(c.name)}</AvatarFallback>
                                                 </Avatar>
                                                 <div className="flex-1">
                                                     <p className="text-sm font-medium">{c.name}</p>
@@ -455,7 +456,7 @@ export default function Overviews({ project, services }: OverviewsProps) {
                                     </div>
                                 )}
                                 {customerSearch.length >= 2 && customerResults.length === 0 && !isSearchingCustomer && (
-                                    <p className="mt-2 text-sm text-muted-foreground">Tidak ada customer ditemukan</p>
+                                    <FieldDescription>Tidak ada customer ditemukan</FieldDescription>
                                 )}
                             </>
                         )}
@@ -492,7 +493,7 @@ export default function Overviews({ project, services }: OverviewsProps) {
                 </div>
             </div>
 
-            {/* LAYANAN & PAKET */}
+            {/* Services & Packages */}
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div>
@@ -556,7 +557,7 @@ export default function Overviews({ project, services }: OverviewsProps) {
                 </div>
             </div>
 
-            {/* DETAIL PROJECT */}
+            {/* Project Details */}
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div>
@@ -636,7 +637,7 @@ export default function Overviews({ project, services }: OverviewsProps) {
                 </div>
             </div>
 
-            {/* ACTIONS */}
+            {/* Actions */}
             <div className="flex items-center gap-2">
                 <Button type="button" disabled={processing || !data.name.trim()} onClick={handleSubmit} className="flex-1 md:w-45 md:flex-none">
                     {processing ? (

@@ -115,7 +115,7 @@ export function DocumentForm({ initial, submitUrl, method, onSuccess, onCancel }
                         value={data.description ?? ''}
                         onChange={(e) => set({ description: e.target.value })}
                         placeholder="Penjelasan tentang dokumen ini"
-                        className="min-h-16 resize-none"
+                        className="min-h-24 resize-none"
                         rows={2}
                     />
                 </Field>
@@ -127,7 +127,7 @@ export function DocumentForm({ initial, submitUrl, method, onSuccess, onCancel }
                         value={data.notes ?? ''}
                         onChange={(e) => set({ notes: e.target.value })}
                         placeholder="Catatan tambahan (opsional)"
-                        className="min-h-16 resize-none"
+                        className="min-h-24 resize-none"
                         rows={2}
                     />
                 </Field>

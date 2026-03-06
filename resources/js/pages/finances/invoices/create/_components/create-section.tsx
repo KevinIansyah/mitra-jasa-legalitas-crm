@@ -3,10 +3,10 @@ import { router } from '@inertiajs/react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import invoices from '@/routes/invoices';
 import type { Project, ProjectInvoiceFormData } from '@/types/project';
 import { InvoiceForm } from '../../_components/invoice-form';
 import { InvoiceSummary } from '../../_components/invoice-summary';
+import invoices from '@/routes/finances/invoices';
 
 export type InvoiceFormErrors = Partial<Record<string, string>>;
 

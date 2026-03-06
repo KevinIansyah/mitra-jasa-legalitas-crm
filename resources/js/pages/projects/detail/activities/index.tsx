@@ -1,5 +1,5 @@
 import { router } from '@inertiajs/react';
-import { ChevronLeftIcon, ChevronRightIcon, FilePlus, Pencil, Trash2 } from 'lucide-react';
+import { Activity, ChevronLeftIcon, ChevronRightIcon, FilePlus, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatDateTime } from '@/lib/utils';
 import type { ActivityLog } from '@/types/project';
@@ -78,7 +78,7 @@ export default function Activities({ activities }: ActivitiesProps) {
 
                                         {/* Detail perubahan */}
                                         {activity.event === 'updated' && activity.properties.old && (
-                                            <div className="mt-4 space-y-1 rounded-lg bg-primary/10 dark:bg-muted/40 p-4 text-xs">
+                                            <div className="mt-4 space-y-1 rounded-lg bg-primary/10 p-4 text-xs dark:bg-muted/40">
                                                 {Object.entries(activity.properties.old).map(([field, oldVal]) => (
                                                     <div key={field} className="flex items-center gap-2">
                                                         <span className="text-muted-foreground capitalize">{field.replaceAll('_', ' ')}:</span>
@@ -113,7 +113,10 @@ export default function Activities({ activities }: ActivitiesProps) {
                     )}
                 </>
             ) : (
-                <div className="flex min-h-40 items-center justify-center rounded-xl bg-sidebar shadow dark:shadow-none">
+                <div className="flex min-h-40 flex-col items-center justify-center gap-4 rounded-xl bg-sidebar shadow dark:shadow-none">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                        <Activity className="size-5 text-primary" />
+                    </div>
                     <p className="text-sm text-muted-foreground">Belum ada aktivitas pada project ini.</p>
                 </div>
             )}

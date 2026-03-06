@@ -157,7 +157,7 @@ class ProjectTemplate extends Model
             'estimated_duration_days' => $service->total_process_duration,
             'milestones' => $milestones,
             'documents' => $documents,
-            'is_active' => true,
+            'status' => 'active',
         ]);
     }
 }

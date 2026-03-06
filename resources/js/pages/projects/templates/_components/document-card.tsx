@@ -83,7 +83,7 @@ export function DocumentCard({ document, index, totalItems, onChange, onDelete, 
                     value={document.description ?? ''}
                     onChange={(e) => update({ description: e.target.value })}
                     placeholder="Penjelasan tentang dokumen ini"
-                    className="min-h-16 resize-none"
+                    className="min-h-24 resize-none"
                     rows={2}
                 />
             </Field>
@@ -117,7 +117,7 @@ export function DocumentCard({ document, index, totalItems, onChange, onDelete, 
                     value={document.notes ?? ''}
                     onChange={(e) => update({ notes: e.target.value })}
                     placeholder="Catatan tambahan (opsional)"
-                    className="min-h-16 resize-none"
+                    className="min-h-24 resize-none"
                     rows={2}
                 />
             </Field>

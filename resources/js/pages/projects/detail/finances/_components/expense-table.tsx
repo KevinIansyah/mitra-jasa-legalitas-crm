@@ -9,7 +9,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 import { formatRupiah } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
-import expensesRoute from '@/routes/expenses';
+import expensesRoute from '@/routes/finances/expenses';
 import { EXPENSE_CATEGORIES_MAP, type Expense } from '@/types/expenses';
 import type { Project } from '@/types/project';
 
@@ -41,7 +41,7 @@ export function ExpenseTable({ project, onEdit }: ExpenseTableProps) {
                         <TableRow key={expense.id}>
                             <TableCell className="whitespace-normal">{expense.description}</TableCell>
                             <TableCell>
-                                <Badge className={EXPENSE_CATEGORIES_MAP[expense.category].className}>{EXPENSE_CATEGORIES_MAP[expense.category].label}</Badge>
+                                <Badge className={EXPENSE_CATEGORIES_MAP[expense.category].classes}>{EXPENSE_CATEGORIES_MAP[expense.category].label}</Badge>
                             </TableCell>
                             <TableCell>{formatRupiah(Number(expense.amount))}</TableCell>
                             <TableCell>{formatDate(expense.expense_date)}</TableCell>

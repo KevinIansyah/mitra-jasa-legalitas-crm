@@ -13,7 +13,7 @@ type ActionsProps = {
 };
 
 export default function Actions({ category }: ActionsProps) {
-    const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null);
+    const [editingCategory, setEditingCategory] = useState<ServiceCategory | null>(null);
 
     return (
         <>
@@ -21,7 +21,7 @@ export default function Actions({ category }: ActionsProps) {
                 <HasPermission permission="edit-service-categories">
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="secondary" size="sm" className="h-8 w-8" onClick={() => setEditingCategoryId(category.id)}>
+                            <Button variant="secondary" size="sm" className="h-8 w-8" onClick={() => setEditingCategory(category)}>
                                 <Pencil className="size-3.5" />
                             </Button>
                         </TooltipTrigger>
@@ -40,12 +40,12 @@ export default function Actions({ category }: ActionsProps) {
                 </HasPermission>
             </div>
 
-            {editingCategoryId && (
+            {editingCategory && (
                 <DrawerEdit
-                    categoryId={editingCategoryId}
-                    open={!!editingCategoryId}
+                    category={editingCategory}
+                    open={!!editingCategory}
                     onOpenChange={(open) => {
-                        if (!open) setEditingCategoryId(null);
+                        if (!open) setEditingCategory(null);
                     }}
                 />
             )}

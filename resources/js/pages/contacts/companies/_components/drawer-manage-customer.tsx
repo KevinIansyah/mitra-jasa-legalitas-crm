@@ -1,18 +1,20 @@
 import { useForm } from '@inertiajs/react';
 import axios from 'axios';
-import { Search, UserRoundX, X } from 'lucide-react';
+import { Search, User, X } from 'lucide-react';
 import * as React from 'react';
 import { toast } from 'sonner';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
-import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { getInitials } from '@/lib/service';
 import companies from '@/routes/contacts/companies';
 import search from '@/routes/search';
 import type { AttachCustomerToCompanyFormData, CompanyWithCustomers, Customer } from '@/types/contact';
@@ -157,14 +159,15 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
                     <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'list' | 'add')} className="flex flex-1 flex-col gap-4 overflow-hidden">
                         <div className="px-4">
                             <TabsList className="w-full">
-                                <TabsTrigger value="list" className="flex-1">
+                                <TabsTrigger value="list" className="group flex-1">
                                     Daftar
                                     {customersCount > 0 && (
-                                        <Badge className="ml-2 flex h-4 w-4 items-center justify-center rounded-full bg-primary-foreground text-[10px] text-foreground">
+                                        <Badge className="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] group-data-[state=active]:bg-primary-foreground group-data-[state=active]:text-foreground">
                                             {customersCount}
                                         </Badge>
                                     )}
                                 </TabsTrigger>
+
                                 <TabsTrigger value="add" className="flex-1">
                                     Tambah
                                 </TabsTrigger>
@@ -172,17 +175,15 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
                         </div>
 
                         {/* Tab: List Customers */}
-                        <TabsContent value="list" className="flex-1 overflow-y-auto px-4 pb-8">
+                        <TabsContent value="list" className="flex-1 overflow-y-auto px-4 pb-4">
                             <div className="h-full space-y-2">
                                 {customersCount === 0 ? (
-                                    <div className="flex h-full flex-col items-center justify-center text-center">
+                                    <div className="flex h-full flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border text-center">
                                         <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                                            <UserRoundX className="size-5 text-primary" />
+                                            <User className="size-5 text-primary" />
                                         </div>
-                                        <p className="mt-4 text-sm">Belum ada pelanggan yang terhubung</p>
-                                        <Button className="mt-4" onClick={() => setActiveTab('add')}>
-                                            Tambah Pelanggan
-                                        </Button>
+                                        <p className="text-sm">Belum ada pelanggan yang terhubung</p>
+                                        <Button onClick={() => setActiveTab('add')}>Tambah Pelanggan Pertama</Button>
                                     </div>
                                 ) : (
                                     <div className="space-y-2 py-4">
@@ -198,21 +199,29 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
                         <TabsContent value="add" className="mt-4 flex-1 overflow-y-auto px-4">
                             <form onSubmit={handleSubmit} className="flex h-full flex-col">
                                 <div className="flex-1 space-y-4">
-                                    <Field className="gap-0">
-                                        <FieldLabel htmlFor="search-customer" className="mb-3">
+                                    <Field>
+                                        <FieldLabel htmlFor="search-customer">
                                             Cari Customer <span className="text-destructive">*</span>
                                         </FieldLabel>
 
                                         {selectedCustomer ? (
-                                            <div className="flex items-center justify-between rounded-md border border-primary bg-card p-3 dark:border-none">
-                                                <div className="flex-1">
-                                                    <p className="text-sm font-medium">{selectedCustomer.name}</p>
-                                                    <p className="mb-2 text-sm text-muted-foreground">
-                                                        {selectedCustomer.email || selectedCustomer.phone || 'Tidak ada info kontak'}
-                                                    </p>
-                                                    {selectedCustomer.tier && (
-                                                        <Badge className={tierVariantMap[selectedCustomer.tier] ?? 'bg-muted text-muted-foreground'}>{selectedCustomer.tier}</Badge>
-                                                    )}
+                                            <div className="flex items-center justify-between rounded-md bg-primary/10 p-3 dark:bg-muted/40">
+                                                <div className="flex items-center gap-3">
+                                                    <Avatar className="rounded-full">
+                                                        <AvatarImage src={selectedCustomer.user?.avatar ?? undefined} />
+                                                        <AvatarFallback className="bg-primary/10 text-xs text-primary">{getInitials(selectedCustomer.name)}</AvatarFallback>
+                                                    </Avatar>
+                                                    <div>
+                                                        <p className="text-sm font-medium">{selectedCustomer.name}</p>
+                                                        <p className="text-xs text-muted-foreground">
+                                                            {selectedCustomer.email || selectedCustomer.phone || 'Tidak ada info kontak'}
+                                                        </p>
+                                                        {selectedCustomer.tier && (
+                                                            <Badge className={`mt-1 ${tierVariantMap[selectedCustomer.tier] ?? 'bg-muted text-muted-foreground'}`}>
+                                                                {selectedCustomer.tier}
+                                                            </Badge>
+                                                        )}
+                                                    </div>
                                                 </div>
                                                 <Button type="button" variant="ghost" size="sm" className="h-8 w-8" onClick={handleRemoveCustomer}>
                                                     <X className="size-4" />
@@ -232,28 +241,30 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
                                                 </InputGroup>
 
                                                 {searchResults.length > 0 && (
-                                                    <div className="mt-1 max-h-64 space-y-1 overflow-y-auto rounded-md border border-primary bg-muted/30 p-2 dark:border-none">
-                                                        {searchResults.map((customer) => (
+                                                    <div className="-mt-2 max-h-64 space-y-1 overflow-y-auto">
+                                                        {searchResults.map((c) => (
                                                             <button
-                                                                key={customer.id}
+                                                                key={c.id}
                                                                 type="button"
-                                                                onClick={() => handleSelectCustomer(customer)}
-                                                                className="flex w-full items-center gap-2 rounded-md p-2 text-left hover:bg-muted"
+                                                                onClick={() => handleSelectCustomer(c)}
+                                                                className="flex w-full items-center gap-3 rounded-md bg-primary/10 p-3 text-left hover:bg-primary/20 dark:bg-muted/40 dark:hover:bg-muted/50"
                                                             >
+                                                                <Avatar className="rounded-full">
+                                                                    <AvatarImage src={c.user?.avatar ?? undefined} />
+                                                                    <AvatarFallback className="bg-primary/10 text-sm text-primary">{getInitials(c.name)}</AvatarFallback>
+                                                                </Avatar>
                                                                 <div className="flex-1">
-                                                                    <p className="text-sm font-medium">{customer.name}</p>
-                                                                    <p className="text-sm text-muted-foreground">{customer.email || customer.phone || 'Tidak ada info kontak'}</p>
+                                                                    <p className="text-sm font-medium">{c.name}</p>
+                                                                    <p className="text-sm text-muted-foreground">{c.email || c.phone || 'Tidak ada info kontak'}</p>
                                                                 </div>
-                                                                {customer.tier && (
-                                                                    <Badge className={tierVariantMap[customer.tier] ?? 'bg-muted text-muted-foreground'}>{customer.tier}</Badge>
-                                                                )}
+                                                                {c.tier && <Badge className={tierVariantMap[c.tier] ?? 'bg-muted text-muted-foreground'}>{c.tier}</Badge>}
                                                             </button>
                                                         ))}
                                                     </div>
                                                 )}
 
                                                 {searchQuery.length >= 2 && searchResults.length === 0 && !isSearching && (
-                                                    <p className="mt-2 text-sm text-muted-foreground">Tidak ada customer ditemukan</p>
+                                                    <FieldDescription className="mt-2 text-sm text-muted-foreground">Tidak ada customer ditemukan</FieldDescription>
                                                 )}
                                             </>
                                         )}

@@ -80,6 +80,21 @@ class RolePermissionSeeder extends Seeder
             'edit-project-discussions',
             'delete-project-discussions',
 
+            'view-finance-quotes',
+            'create-finance-quotes',
+            'edit-finance-quotes',
+            'delete-finance-quotes',
+
+            'view-finance-proposals',
+            'create-finance-proposals',
+            'edit-finance-proposals',
+            'delete-finance-proposals',
+
+            'view-finance-estimates',
+            'create-finance-estimates',
+            'edit-finance-estimates',
+            'delete-finance-estimates',
+
             'view-finance-invoices',
             'create-finance-invoices',
             'edit-finance-invoices',
@@ -94,6 +109,11 @@ class RolePermissionSeeder extends Seeder
             'create-finance-expenses',
             'edit-finance-expenses',
             'delete-finance-expenses',
+
+            'view-finance-vendors',
+            'create-finance-vendors',
+            'edit-finance-vendors',
+            'delete-finance-vendors',
         ];
 
         foreach ($permissions as $permission) {

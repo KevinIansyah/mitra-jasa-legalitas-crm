@@ -54,7 +54,8 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
         Route::get('/services/{service}/packages',    [SearchController::class, 'searchPackagesByServiceId'])->name('packages.by-service-id');
         Route::get('/services/{service}/templates',   [SearchController::class, 'searchTemplatesByServiceId'])->name('templates.by-service-id');
         Route::get('/users/staff',                    [SearchController::class, 'searchUserStaff'])->name('users.staff');
-        Route::get('/projects',                [SearchController::class, 'seachProject'])->name('projects');
+        Route::get('/projects',                       [SearchController::class, 'seachProject'])->name('projects');
+        Route::get('/vendors',                        [SearchController::class, 'searchVendor'])->name('vendors');
     });
 });
 

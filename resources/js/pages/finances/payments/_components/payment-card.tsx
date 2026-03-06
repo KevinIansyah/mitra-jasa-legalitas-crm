@@ -1,5 +1,5 @@
 import { router } from '@inertiajs/react';
-import { AlertTriangle, ChevronDown, FileCheck, Pencil, Plus } from 'lucide-react';
+import { AlertTriangle, ChevronDown, FileCheck, Pencil, Plus, Wallet } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -16,11 +16,11 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 import { formatRupiah } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
-import invoices from '@/routes/invoices';
 import type { PaymentStatus, ProjectInvoice, ProjectPayment } from '@/types/project';
 import { PAYMENT_METHODS_MAP, PAYMENT_STATUSES, PAYMENT_STATUSES_MAP } from '@/types/project';
 import { PaymentAddDrawer } from './payment-add-drawer';
 import { PaymentEditDrawer } from './payment-edit-drawer';
+import invoices from '@/routes/finances/invoices';
 
 type PaymentCardProps = {
     invoice: ProjectInvoice;
@@ -79,8 +79,13 @@ export function PaymentCard({ invoice }: PaymentCardProps) {
             <div className="space-y-4">
                 {payments.length === 0 ? (
                     <div className="space-y-4 pt-2 pb-4">
-                        <div className="flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-border py-10 text-muted-foreground">
-                            <p className="text-sm font-medium">Belum ada pembayaran di invoice ini</p>
+                        <p className="text-sm font-medium">Pembayaran</p>
+
+                        <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                <Wallet className="size-5 text-primary" />
+                            </div>
+                            <p className="text-sm">Belum ada pembayaran di invoice ini</p>
                             {invoice.status !== 'paid' && (
                                 <HasPermission permission="create-finance-expenses">
                                     <Button type="button" onClick={() => setAddingPayment(true)}>
@@ -97,7 +102,7 @@ export function PaymentCard({ invoice }: PaymentCardProps) {
                             <p className="text-sm font-medium">Pembayaran</p>
                             {invoice.status !== 'paid' && (
                                 <HasPermission permission="create-finance-expenses">
-                                    <Button type="button" className="min-w-35" onClick={() => setAddingPayment(true)}>
+                                    <Button type="button" className="min-w-30" onClick={() => setAddingPayment(true)}>
                                         <Plus className="size-4" />
                                         Tambah
                                     </Button>
@@ -142,6 +147,11 @@ export function PaymentCard({ invoice }: PaymentCardProps) {
                                                             Diverifikasi: <span className="text-foreground">{formatDate(payment.verified_at)}</span>
                                                         </span>
                                                     )}
+                                                    {payment.verifier && (
+                                                        <span>
+                                                            Oleh: <span className="text-foreground">{payment.verifier.name}</span>
+                                                        </span>
+                                                    )}
                                                 </div>
                                             </div>
 
@@ -169,36 +179,32 @@ export function PaymentCard({ invoice }: PaymentCardProps) {
                                                     </HasPermission>
                                                 )}
 
+                                                {/* Edit */}
                                                 <HasPermission permission="edit-finance-payments">
-                                                    {/* Edit */}
-                                                    {!isVerified && (
-                                                        <Tooltip>
-                                                            <TooltipTrigger asChild>
-                                                                <Button
-                                                                    variant="secondary"
-                                                                    size="sm"
-                                                                    className="h-8 w-8"
-                                                                    disabled={loading}
-                                                                    onClick={() => setEditingPayment(payment)}
-                                                                >
-                                                                    <Pencil className="size-3.5" />
-                                                                </Button>
-                                                            </TooltipTrigger>
-                                                            <TooltipContent>Edit</TooltipContent>
-                                                        </Tooltip>
-                                                    )}{' '}
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <Button
+                                                                variant="secondary"
+                                                                size="sm"
+                                                                className="h-8 w-8"
+                                                                disabled={loading || isVerified}
+                                                                onClick={() => setEditingPayment(payment)}
+                                                            >
+                                                                <Pencil className="size-3.5" />
+                                                            </Button>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>Edit</TooltipContent>
+                                                    </Tooltip>
                                                 </HasPermission>
 
+                                                {/* Delete */}
                                                 <HasPermission permission="delete-finance-payments">
-                                                    {/* Delete */}
-                                                    {!isVerified && (
-                                                        <DialogDelete
-                                                            description={`Pembayaran sebesar ${formatRupiah(Number(payment.amount))} akan dihapus secara permanen.`}
-                                                            deleteUrl={invoices.payments.destroy({ invoice: invoice.id, payment: payment.id }).url}
-                                                            tooltipText="Hapus Pembayaran"
-                                                            isDisabled={loading}
-                                                        />
-                                                    )}
+                                                    <DialogDelete
+                                                        description={`Pembayaran sebesar ${formatRupiah(Number(payment.amount))} akan dihapus secara permanen.`}
+                                                        deleteUrl={invoices.payments.destroy({ invoice: invoice.id, payment: payment.id }).url}
+                                                        tooltipText="Hapus Pembayaran"
+                                                        isDisabled={loading || isVerified}
+                                                    />
                                                 </HasPermission>
 
                                                 {/* Status */}
@@ -249,9 +255,9 @@ export function PaymentCard({ invoice }: PaymentCardProps) {
 
                                         {/* Notes */}
                                         {payment.notes && (
-                                            <div className="text-xs text-foreground">
-                                                <span className="text-muted-foreground">Catatan: </span>
-                                                {payment.notes}
+                                            <div className="space-y-1 text-sm text-foreground">
+                                                <p className="text-xs text-muted-foreground">Catatan</p>
+                                                <p>{payment.notes}</p>
                                             </div>
                                         )}
                                     </div>

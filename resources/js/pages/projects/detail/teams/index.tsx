@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react';
+import { Plus, User } from 'lucide-react';
 import { useState } from 'react';
 
 import { HasPermission } from '@/components/has-permission';
@@ -33,7 +33,7 @@ export default function Teams({ project }: TeamsProps) {
                                         e.currentTarget.blur();
                                         setAddingTeam(true);
                                     }}
-                                    className="w-35 flex-1 gap-1.5 md:flex-none"
+                                    className="w-30 flex-1 gap-1.5 md:flex-none"
                                 >
                                     <Plus className="size-4" />
                                     Tambah
@@ -43,7 +43,10 @@ export default function Teams({ project }: TeamsProps) {
                     </div>
 
                     {project.members && project.members.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
+                        <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                <User className="size-5 text-primary" />
+                            </div>
                             <p className="text-sm">Belum ada anggota tim di project ini</p>
                             <HasPermission permission="create-project-members">
                                 <Button

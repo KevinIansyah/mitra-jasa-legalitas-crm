@@ -1,9 +1,10 @@
 import { useForm } from '@inertiajs/react';
 import { Check, Pencil, X } from 'lucide-react';
-
 import { useState } from 'react';
 import { toast } from 'sonner';
+
 import { DialogDelete } from '@/components/dialog-delete';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Field, FieldLabel } from '@/components/ui/field';
@@ -11,6 +12,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { Switch } from '@/components/ui/switch';
+
+import { getInitials } from '@/lib/service';
 import companies from '@/routes/contacts/companies';
 import type { CompanyWithCustomers } from '@/types/contact';
 
@@ -70,7 +73,7 @@ export function CustomerItem({ customer, companyId }: CustomerItemProps) {
     };
 
     return (
-        <div className="space-y-2 rounded-lg border border-primary bg-muted/30 p-4 dark:border-none">
+        <div className="space-y-4 rounded-lg border border-primary bg-muted/30 p-4 dark:border-none">
             <div className="flex items-center justify-between">
                 <div>
                     {Boolean(isEditing ? data.is_primary : customer.pivot?.is_primary) && <Badge className="mr-1">Utama</Badge>}
@@ -102,14 +105,23 @@ export function CustomerItem({ customer, companyId }: CustomerItemProps) {
                 </div>
             </div>
 
-            <p className="text-sm font-medium">{customer.name}</p>
-            <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-                {customer.email && <span>{customer.email}</span>}
-                {customer.phone && <span>{customer.phone}</span>}
+            <div className="flex items-center gap-2">
+                <Avatar className="rounded-full">
+                    <AvatarImage src={customer.user?.avatar ?? undefined} />
+                    <AvatarFallback className="bg-primary/10 text-sm text-primary">{getInitials(customer.name)}</AvatarFallback>
+                </Avatar>
+
+                <div>
+                    <p className="text-sm font-medium">{customer.name}</p>
+                    <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                        {customer.email && <span>{customer.email}</span>}
+                        {customer.phone && <span>{customer.phone}</span>}
+                    </div>
+                </div>
             </div>
 
             {isEditing ? (
-                <div className="space-y-2">
+                <div className="space-y-4">
                     <Field>
                         <FieldLabel htmlFor={`position-${customer.id}`}>Jabatan di Perusahaan</FieldLabel>
                         <Input
@@ -132,7 +144,14 @@ export function CustomerItem({ customer, companyId }: CustomerItemProps) {
                     </div>
                 </div>
             ) : (
-                <>{customer.pivot?.position_at_company && <p className="text-sm text-muted-foreground">{customer.pivot.position_at_company}</p>}</>
+                <>
+                    {customer.pivot?.position_at_company && (
+                        <div className="text-sm text-foreground">
+                            <p className="text-xs text-muted-foreground">Jabatan</p>
+                            <p>{customer.pivot.position_at_company}</p>
+                        </div>
+                    )}
+                </>
             )}
         </div>
     );

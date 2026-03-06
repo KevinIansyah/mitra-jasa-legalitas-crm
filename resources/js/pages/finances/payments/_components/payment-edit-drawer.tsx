@@ -1,5 +1,5 @@
 import { useForm } from '@inertiajs/react';
-import { FilePlus, Pencil, Trash } from 'lucide-react';
+import { FilePlus, FileText, Pencil, Trash } from 'lucide-react';
 import * as React from 'react';
 import { toast } from 'sonner';
 
@@ -19,8 +19,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { formatRupiah, formatSize, readImageAsDataURL, validateFile, validateImageFile } from '@/lib/service';
 import type { ProjectInvoice, ProjectPayment, ProjectPaymentFormData } from '@/types/project';
 import { PAYMENT_METHODS } from '@/types/project';
-
-const paymentRoute = (invoiceId: number, paymentId: number) => `/invoices/${invoiceId}/payments/${paymentId}`;
+import finances from '@/routes/finances';
 
 type PaymentEditDrawerProps = {
     invoice: ProjectInvoice;
@@ -30,13 +29,12 @@ type PaymentEditDrawerProps = {
 };
 
 export function PaymentEditDrawer({ invoice, payment, open, onOpenChange }: PaymentEditDrawerProps) {
-    const isRejected = payment.status === 'rejected';
-
     const [imgLoading, setImgLoading] = React.useState(true);
     const [imageError, setImageError] = React.useState<string | null>(null);
     const [isDragging, setIsDragging] = React.useState(false);
     const [resubmit, setResubmit] = React.useState(false);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
+    const isRejected = payment.status === 'rejected';
 
     const [filePreview, setFilePreview] = React.useState<{ src?: string; name: string; size: number; isImage: boolean } | null>(
         payment.proof_file
@@ -61,7 +59,6 @@ export function PaymentEditDrawer({ invoice, payment, open, onOpenChange }: Paym
         resubmit: false,
     });
 
-    // Sync resubmit state ke form data
     function handleResubmitToggle(checked: boolean) {
         setResubmit(checked);
         setData('resubmit', checked);
@@ -88,7 +85,6 @@ export function PaymentEditDrawer({ invoice, payment, open, onOpenChange }: Paym
             setFilePreview({ name: file.name, size: file.size, isImage: false });
         }
     };
-
     const handleDragEnter = React.useCallback((e: React.DragEvent) => {
         e.preventDefault();
         setIsDragging(true);
@@ -103,7 +99,6 @@ export function PaymentEditDrawer({ invoice, payment, open, onOpenChange }: Paym
         setIsDragging(false);
         handleFile(e.dataTransfer.files[0]);
     };
-
     const handleRemoveFile = () => {
         setFilePreview(null);
         setImageError(null);
@@ -119,7 +114,7 @@ export function PaymentEditDrawer({ invoice, payment, open, onOpenChange }: Paym
         e.preventDefault();
         const toastId = toast.loading('Memproses...', { description: 'Pembayaran sedang diperbarui.' });
 
-        post(paymentRoute(payment.invoice_id, payment.id), {
+        post(finances.invoices.payments.update({ invoice: payment.invoice_id, payment: payment.id }).url, {
             forceFormData: true,
             preserveScroll: true,
             onSuccess: () => {
@@ -158,14 +153,19 @@ export function PaymentEditDrawer({ invoice, payment, open, onOpenChange }: Paym
                                     Invoice <span className="text-destructive">*</span>
                                 </FieldLabel>
 
-                                <div className="flex items-center justify-between rounded-md border border-primary bg-card p-3 dark:border-none">
-                                    <div className="flex-1">
-                                        <p className="text-sm font-medium text-muted-foreground">
-                                            Invoice <span className="font-medium text-foreground">{invoice.invoice_number}</span>
-                                        </p>
-                                        <p className="text-sm font-medium text-muted-foreground">
-                                            Total <span className="font-medium text-foreground">{formatRupiah(Number(invoice.total_amount))}</span>
-                                        </p>
+                                <div className="flex items-center justify-between rounded-md bg-primary/10 p-3 dark:bg-muted/40">
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10">
+                                            <FileText className="size-4 text-primary" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="text-sm font-medium text-muted-foreground">
+                                                Invoice <span className="font-medium text-foreground">{invoice.invoice_number}</span>
+                                            </p>
+                                            <p className="text-sm font-medium text-muted-foreground">
+                                                Total <span className="font-medium text-foreground">{formatRupiah(Number(invoice.total_amount))}</span>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </Field>
@@ -243,7 +243,7 @@ export function PaymentEditDrawer({ invoice, payment, open, onOpenChange }: Paym
                             <Field className="col-span-2">
                                 <FieldLabel>Catatan</FieldLabel>
                                 <Textarea
-                                    className="min-h-20 resize-none"
+                                    className="min-h-24 resize-none"
                                     placeholder="Catatan tambahan..."
                                     value={data.notes ?? ''}
                                     onChange={(e) => setData('notes', e.target.value || null)}
@@ -282,7 +282,7 @@ export function PaymentEditDrawer({ invoice, payment, open, onOpenChange }: Paym
                                                       : 'border-border hover:border-primary hover:bg-muted/40',
                                             ].join(' ')}
                                         >
-                                            <div className="flex h-12 w-12 items-center justify-center rounded-md bg-primary/10">
+                                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                                                 <FilePlus className="size-5 text-primary" />
                                             </div>
                                             <div>

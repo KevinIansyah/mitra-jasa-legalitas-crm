@@ -1,6 +1,6 @@
 import { useForm } from '@inertiajs/react';
 import axios from 'axios';
-import { FilePlus, Pencil, Search, Trash, X } from 'lucide-react';
+import { Building2, FilePlus, Pencil, Search, Table2, Trash, X } from 'lucide-react';
 import * as React from 'react';
 import { toast } from 'sonner';
 
@@ -8,7 +8,7 @@ import { DatePicker } from '@/components/date-picker';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
-import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Label } from '@/components/ui/label';
@@ -20,12 +20,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import { formatRupiah, formatSize, readImageAsDataURL, validateFile, validateImageFile } from '@/lib/service';
-import expenses from '@/routes/expenses';
+import expenses from '@/routes/finances/expenses';
 import search from '@/routes/search';
 import type { Expense, ExpenseFormData } from '@/types/expenses';
 import { EXPENSE_CATEGORIES } from '@/types/expenses';
 import type { Project } from '@/types/project';
 import { PROJECT_STATUSES_MAP } from '@/types/project';
+import type { Vendor } from '@/types/vendors';
 
 type ExpenseEditDrawerProps = {
     fromProject?: boolean;
@@ -40,12 +41,20 @@ export function ExpenseEditDrawer({ fromProject = false, expense, initialProject
 
     // Project search
     const [selectedProject, setSelectedProject] = React.useState<Project | null>(initialProject ?? expense.project ?? null);
-    const [searchQuery, setSearchQuery] = React.useState('');
-    const [searchResults, setSearchResults] = React.useState<Project[]>([]);
-    const [isSearching, setIsSearching] = React.useState(false);
-    const searchTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+    const [projectQuery, setProjectQuery] = React.useState('');
+    const [Results, setProjectResults] = React.useState<Project[]>([]);
+    const [isSearchingProject, setIsSearchingProject] = React.useState(false);
+    const projectSearchRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    // File
+    // Vendor search
+    const [selectedVendor, setSelectedVendor] = React.useState<Vendor | null>(expense.vendor ?? null);
+    const [vendorQuery, setVendorQuery] = React.useState('');
+    const [vendorResults, setVendorResults] = React.useState<Vendor[]>([]);
+    const [isSearchingVendor, setIsSearchingVendor] = React.useState(false);
+    const [useManualVendor, setUseManualVendor] = React.useState(!expense.vendor_id && !!expense.vendor_name);
+    const vendorSearchRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    // File state
     const [imgLoading, setImgLoading] = React.useState(true);
     const [imageError, setImageError] = React.useState<string | null>(null);
     const [isDragging, setIsDragging] = React.useState(false);
@@ -76,17 +85,17 @@ export function ExpenseEditDrawer({ fromProject = false, expense, initialProject
     // PROJECT SEARCH
     // ============================================================
     function handleSearch(query: string) {
-        setSearchQuery(query);
-        if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+        setProjectQuery(query);
+        if (projectSearchRef.current) clearTimeout(projectSearchRef.current);
         if (query.length < 2) {
-            setSearchResults([]);
+            setProjectResults([]);
             return;
         }
-        searchTimeoutRef.current = setTimeout(async () => {
-            setIsSearching(true);
+        projectSearchRef.current = setTimeout(async () => {
+            setIsSearchingProject(true);
             try {
                 const response = await axios.get(search.projects().url, { params: { search: query } });
-                setSearchResults(response.data.projects || []);
+                setProjectResults(response.data.projects || []);
             } catch (errors) {
                 let msg = 'Terjadi kesalahan saat mencari project, coba lagi.';
 
@@ -95,9 +104,9 @@ export function ExpenseEditDrawer({ fromProject = false, expense, initialProject
                 }
 
                 toast.error('Gagal', { description: String(msg) });
-                setSearchResults([]);
+                setProjectResults([]);
             } finally {
-                setIsSearching(false);
+                setIsSearchingProject(false);
             }
         }, 300);
     }
@@ -105,14 +114,63 @@ export function ExpenseEditDrawer({ fromProject = false, expense, initialProject
     function handleSelectProject(project: Project) {
         setSelectedProject(project);
         setData('project_id', project.id);
-        setSearchQuery('');
-        setSearchResults([]);
+        setProjectQuery('');
+        setProjectResults([]);
     }
 
     function handleRemoveProject() {
         setSelectedProject(null);
         setData('project_id', null);
         setData('is_billable', false);
+    }
+
+    // ============================================================
+    // VENDOR SEARCH
+    // ============================================================
+    function handleVendorSearch(query: string) {
+        setVendorQuery(query);
+        if (vendorSearchRef.current) clearTimeout(vendorSearchRef.current);
+        if (query.length < 2) {
+            setVendorResults([]);
+            return;
+        }
+
+        vendorSearchRef.current = setTimeout(async () => {
+            setIsSearchingVendor(true);
+            try {
+                const res = await axios.get(search.vendors().url, { params: { search: query } });
+                setVendorResults(res.data.vendors || []);
+            } catch {
+                toast.error('Gagal', { description: 'Terjadi kesalahan saat mencari vendor.' });
+                setVendorResults([]);
+            } finally {
+                setIsSearchingVendor(false);
+            }
+        }, 300);
+    }
+
+    function handleSelectVendor(vendor: Vendor) {
+        setSelectedVendor(vendor);
+        setData('vendor_id', vendor.id);
+        setData('vendor_name', null);
+        setVendorQuery('');
+        setVendorResults([]);
+        setUseManualVendor(false);
+    }
+
+    function handleRemoveVendor() {
+        setSelectedVendor(null);
+        setData('vendor_id', null);
+        setData('vendor_name', null);
+        setVendorQuery('');
+    }
+
+    function handleToggleManualVendor() {
+        setUseManualVendor(true);
+        setSelectedVendor(null);
+        setData('vendor_id', null);
+        setVendorQuery('');
+        setVendorResults([]);
     }
 
     // ============================================================
@@ -201,15 +259,23 @@ export function ExpenseEditDrawer({ fromProject = false, expense, initialProject
 
                     <form onSubmit={handleSubmit} className="flex flex-1 flex-col px-4">
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                            <Field className="col-span-2 gap-0">
-                                <FieldLabel className="mb-3">Project</FieldLabel>
+                            {/* Project */}
+                            <Field className="col-span-2">
+                                <FieldLabel>Project</FieldLabel>
 
                                 {selectedProject ? (
-                                    <div className="flex items-center justify-between rounded-md border border-primary bg-card p-3 dark:border-none">
-                                        <div className="flex-1">
-                                            <p className="text-sm font-medium">{selectedProject.name}</p>
-                                            {selectedProject.customer && <p className="mb-1 text-xs text-muted-foreground">{selectedProject.customer.name}</p>}
-                                            <Badge className={PROJECT_STATUSES_MAP[selectedProject.status]?.classes}>{PROJECT_STATUSES_MAP[selectedProject.status]?.label}</Badge>
+                                    <div className="flex items-center justify-between rounded-md bg-primary/10 p-3 dark:bg-muted/40">
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10">
+                                                <Table2 className="size-4 text-primary" />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-medium">{selectedProject.name}</p>
+                                                {selectedProject.customer && <p className="mb-1 text-xs text-muted-foreground">{selectedProject.customer.name}</p>}
+                                                <Badge className={PROJECT_STATUSES_MAP[selectedProject.status]?.classes}>
+                                                    {PROJECT_STATUSES_MAP[selectedProject.status]?.label}
+                                                </Badge>
+                                            </div>
                                         </div>
                                         {!fromProject && (
                                             <Button type="button" variant="ghost" size="sm" className="h-8 w-8" onClick={handleRemoveProject}>
@@ -222,22 +288,25 @@ export function ExpenseEditDrawer({ fromProject = false, expense, initialProject
                                         <InputGroup>
                                             <InputGroupInput
                                                 placeholder="Cari nama project..."
-                                                value={searchQuery}
+                                                value={projectQuery}
                                                 onChange={(e) => handleSearch(e.target.value)}
                                                 autoComplete="off"
                                             />
-                                            <InputGroupAddon>{isSearching ? <Spinner className="size-4" /> : <Search className="size-4" />}</InputGroupAddon>
+                                            <InputGroupAddon>{isSearchingProject ? <Spinner className="size-4" /> : <Search className="size-4" />}</InputGroupAddon>
                                         </InputGroup>
 
-                                        {searchResults.length > 0 && (
-                                            <div className="mt-1 max-h-48 space-y-1 overflow-y-auto rounded-md border border-primary bg-muted/30 p-2 dark:border-none">
-                                                {searchResults.map((project) => (
+                                        {Results.length > 0 && (
+                                            <div className="-mt-2 max-h-48 space-y-1 overflow-y-auto">
+                                                {Results.map((project) => (
                                                     <button
                                                         key={project.id}
                                                         type="button"
                                                         onClick={() => handleSelectProject(project)}
-                                                        className="flex w-full items-center gap-2 rounded-md p-2 text-left hover:bg-muted"
+                                                        className="flex w-full items-center gap-3 rounded-md bg-primary/10 p-3 text-left hover:bg-primary/20 dark:bg-muted/40 dark:hover:bg-muted/50"
                                                     >
+                                                        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10">
+                                                            <Table2 className="size-3.5 text-primary" />
+                                                        </div>
                                                         <div className="flex-1">
                                                             <p className="text-sm font-medium">{project.name}</p>
                                                             {project.customer && <p className="text-xs text-muted-foreground">{project.customer.name}</p>}
@@ -248,11 +317,97 @@ export function ExpenseEditDrawer({ fromProject = false, expense, initialProject
                                             </div>
                                         )}
 
-                                        {searchQuery.length >= 2 && searchResults.length === 0 && !isSearching && (
-                                            <p className="mt-2 text-sm text-muted-foreground">Tidak ada project ditemukan</p>
+                                        {projectQuery.length >= 2 && Results.length === 0 && !isSearchingProject && (
+                                            <FieldDescription>Tidak ada project ditemukan</FieldDescription>
                                         )}
                                     </>
                                 )}
+                            </Field>
+
+                            {/* Vendor */}
+                            <Field className="col-span-2">
+                                <FieldLabel>Vendor</FieldLabel>
+
+                                {selectedVendor ? (
+                                    <div className="flex items-center justify-between rounded-md bg-primary/10 p-3 dark:bg-muted/40">
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10">
+                                                <Building2 className="size-4 text-primary" />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-medium">{selectedVendor.name}</p>
+                                                {selectedVendor.category && <p className="text-xs text-muted-foreground capitalize">{selectedVendor.category}</p>}
+                                            </div>
+                                        </div>
+                                        <Button type="button" variant="ghost" size="sm" className="h-8 w-8" onClick={handleRemoveVendor}>
+                                            <X className="size-4" />
+                                        </Button>
+                                    </div>
+                                ) : useManualVendor ? (
+                                    <div className="space-y-2">
+                                        <Input placeholder="Nama vendor..." value={data.vendor_name ?? ''} onChange={(e) => setData('vendor_name', e.target.value || null)} />
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setUseManualVendor(false);
+                                                setData('vendor_name', null);
+                                            }}
+                                            className="text-sm text-primary underline hover:text-foreground"
+                                        >
+                                            Cari dari daftar vendor
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <InputGroup>
+                                            <InputGroupInput
+                                                placeholder="Cari nama vendor..."
+                                                value={vendorQuery}
+                                                onChange={(e) => handleVendorSearch(e.target.value)}
+                                                autoComplete="off"
+                                            />
+                                            <InputGroupAddon>{isSearchingVendor ? <Spinner className="size-4" /> : <Search className="size-4" />}</InputGroupAddon>
+                                        </InputGroup>
+                                        {vendorResults.length > 0 && (
+                                            <div className="-mt-2 max-h-48 space-y-1 overflow-y-auto">
+                                                {vendorResults.map((vendor) => (
+                                                    <button
+                                                        key={vendor.id}
+                                                        type="button"
+                                                        onClick={() => handleSelectVendor(vendor)}
+                                                        className="flex w-full items-center gap-3 rounded-md bg-primary/10 p-3 text-left hover:bg-primary/20 dark:bg-muted/40 dark:hover:bg-muted/50"
+                                                    >
+                                                        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10">
+                                                            <Building2 className="size-3.5 text-primary" />
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <p className="text-sm font-medium">{vendor.name}</p>
+                                                            {vendor.category && <p className="text-xs text-muted-foreground capitalize">{vendor.category}</p>}
+                                                        </div>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                        {vendorQuery.length >= 2 && vendorResults.length === 0 && !isSearchingVendor && (
+                                            <FieldDescription className="flex items-center justify-between">
+                                                <span className="text-sm text-muted-foreground">Tidak ada vendor ditemukan</span>
+                                                <button type="button" onClick={handleToggleManualVendor} className="text-xs text-primary underline">
+                                                    Input manual
+                                                </button>
+                                            </FieldDescription>
+                                        )}
+                                        {vendorQuery.length === 0 && (
+                                            <FieldDescription className="text-sm text-muted-foreground">
+                                                Vendor tidak terdaftar?{' '}
+                                                <button type="button" onClick={handleToggleManualVendor} className="text-primary underline">
+                                                    Input nama manual
+                                                </button>
+                                            </FieldDescription>
+                                        )}
+                                    </>
+                                )}
+                                {errors.vendor_id && <FieldError>{errors.vendor_id}</FieldError>}
+                                {errors.vendor_name && <FieldError>{errors.vendor_name}</FieldError>}
                             </Field>
 
                             {/* Category */}
@@ -295,7 +450,7 @@ export function ExpenseEditDrawer({ fromProject = false, expense, initialProject
                                     Deskripsi <span className="text-destructive">*</span>
                                 </FieldLabel>
                                 <Textarea
-                                    className="min-h-20 resize-none"
+                                    className="min-h-24 resize-none"
                                     placeholder="Contoh: Pembelian materai"
                                     value={data.description}
                                     onChange={(e) => setData('description', e.target.value)}
@@ -342,7 +497,7 @@ export function ExpenseEditDrawer({ fromProject = false, expense, initialProject
                                                       : 'border-border hover:border-primary hover:bg-muted/40',
                                             ].join(' ')}
                                         >
-                                            <div className="flex h-12 w-12 items-center justify-center rounded-md bg-primary/10">
+                                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                                                 <FilePlus className="size-5 text-primary" />
                                             </div>
                                             <div>
@@ -404,7 +559,7 @@ export function ExpenseEditDrawer({ fromProject = false, expense, initialProject
                             </Field>
 
                             {/* is_billable */}
-                            {hasProject && (
+                            {(hasProject || selectedProject) && (
                                 <div
                                     className={`col-span-2 flex items-center gap-4 rounded-lg border p-4 ${isBilled ? 'border-yellow-500/40 bg-yellow-500/5' : 'border-primary bg-transparent dark:bg-input/30'}`}
                                 >
@@ -419,7 +574,7 @@ export function ExpenseEditDrawer({ fromProject = false, expense, initialProject
                                             Ditagihkan ke Pelanggan
                                             {isBilled && <span className="ml-2 text-xs">(sudah ditagihkan)</span>}
                                         </Label>
-                                        <p className="text-xs text-muted-foreground">
+                                        <p className="text-sm text-muted-foreground">
                                             {isBilled
                                                 ? 'Pengeluaran ini sudah terhubung ke invoice. Tidak dapat diubah.'
                                                 : 'Pengeluaran ini akan muncul sebagai saran item pada invoice additional'}

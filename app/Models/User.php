@@ -11,6 +11,8 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use App\Models\Customer;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -21,6 +23,8 @@ class User extends Authenticatable
         'email',
         'role',
         'password',
+        'status',
+        'avatar',
     ];
 
     protected $hidden = [
@@ -39,21 +43,63 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Get the Customer profile for this user
-     */
-    public function customer()
+    // ============================================================
+    // RELATIONS
+    // ============================================================
+
+    public function customer(): HasOne
     {
         return $this->hasOne(Customer::class);
     }
 
-    /**
-     * Get all projects for this user
-     */
+    public function staffProfile(): HasOne
+    {
+        return $this->hasOne(StaffProfile::class);
+    }
+
     public function projects(): BelongsToMany
     {
         return $this->belongsToMany(Project::class, 'project_members', 'user_id', 'project_id')
             ->withPivot('role', 'can_approve_documents', 'assigned_at')
             ->withTimestamps();
+    }
+
+    // ============================================================
+    // SCOPES
+    // ============================================================
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
+
+    public function scopeStaff($query)
+    {
+        return $query->role(['staff', 'super_admin']);
+    }
+
+    // ============================================================
+    // COMPUTED
+    // ============================================================
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        if (!$this->avatar) return null;
+        return Storage::disk('r2')->temporaryUrl($this->avatar, now()->addMinutes(30));
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === 'active';
+    }
+
+    public function isSuspended(): bool
+    {
+        return $this->status === 'suspended';
+    }
+
+    public function isStaff(): bool
+    {
+        return $this->hasAnyRole(['staff', 'super_admin']);
     }
 }

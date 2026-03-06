@@ -86,8 +86,11 @@ export default function Discussions({ project }: DiscussionsProps) {
             {/* Comments list */}
             {comments.length === 0 ? (
                 <div className="min-h-40 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                    <div className="flex w-full flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
-                        <MessageSquare className="size-8 opacity-30" />
+                    <div className="flex w-full flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                            <MessageSquare className="size-5 text-primary" />
+                        </div>
+
                         <p className="text-sm">Belum ada diskusi. Mulai percakapan pertama!</p>
                     </div>
                 </div>

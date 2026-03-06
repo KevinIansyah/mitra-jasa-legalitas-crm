@@ -15,6 +15,7 @@ import { index as documentsIndex } from '@/routes/projects/documents';
 import roles from '@/routes/roles';
 import services from '@/routes/services';
 import type { NavItem, NavSection } from '@/types';
+import finances from '@/routes/finances';
 
 const allNavData: {
     navMain: NavSection;
@@ -90,11 +91,6 @@ const allNavData: {
                     },
                 ],
             },
-            // {
-            //     title: 'Dokumen',
-            //     url: '#',
-            //     icon: FileText,
-            // },
         ],
     },
 
@@ -108,6 +104,7 @@ const allNavData: {
                 items: [
                     { title: 'Daftar Staff', url: '#' },
                     { title: 'My Task', url: '#' },
+                    { title: 'My Project', url: '#' },
                 ],
             },
             {
@@ -115,9 +112,13 @@ const allNavData: {
                 url: '#',
                 icon: DollarSign,
                 items: [
-                    { title: 'Proposal & Quote', url: '#' },
-                    { title: 'Invoice & Kwitansi', url: '#' },
-                    { title: 'Ringkasan Keuangan', url: '#' },
+                    { title: 'Permintan Penawaran', url: '#' },
+                    { title: 'Proposal', url: '#' },
+                    { title: 'Estimasi', url: '#' },
+                    { title: 'Invoice', url: finances.invoices.index().url },
+                    { title: 'Pembayaran', url: finances.payments.index().url },
+                    { title: 'Pengeluaran', url: finances.expenses.index().url },
+                    { title: 'Vendor', url: finances.vendors.index().url },
                 ],
             },
             {

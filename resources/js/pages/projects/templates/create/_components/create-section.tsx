@@ -1,6 +1,6 @@
 import { useForm } from '@inertiajs/react';
 import axios from 'axios';
-import { Plus } from 'lucide-react';
+import { FileText, Plus, Target } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -11,12 +11,11 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
-import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 
 import { deleteItemAndReindex, moveItemDown, moveItemUp } from '@/lib/service';
 import templates from '@/routes/projects/templates';
-import type { GetTemplateFromServiceResponse } from '@/types/project-template';
+import type { GetTemplateFromServiceResponse, ProjectTemplateStatus } from '@/types/project-template';
 import type { Service } from '@/types/service';
 
 import type { LocalDocument } from '../../_components/document-card';
@@ -32,7 +31,7 @@ type FormData = {
     milestones: LocalMilestone[];
     documents: LocalDocument[];
     notes: string;
-    is_active: boolean;
+    status: ProjectTemplateStatus;
 };
 
 type CreateSectionProps = {
@@ -53,7 +52,7 @@ export function CreateSection({ services }: CreateSectionProps) {
         milestones: [],
         documents: [],
         notes: '',
-        is_active: true,
+        status: 'active',
     });
 
     // ============================================================
@@ -315,16 +314,6 @@ export function CreateSection({ services }: CreateSectionProps) {
                         <Textarea id="notes" className="min-h-24" placeholder="Catatan tambahan (opsional)" value={data.notes} onChange={(e) => setData('notes', e.target.value)} />
                         {errors.notes && <FieldError>{errors.notes}</FieldError>}
                     </Field>
-
-                    <div className="flex items-start gap-4 rounded-lg border border-primary bg-transparent p-4 dark:bg-input/30">
-                        <Switch id="is_active" checked={data.is_active} onCheckedChange={(val) => setData('is_active', val)} />
-                        <div className="flex-1">
-                            <Label htmlFor="is_active" className="cursor-pointer text-sm font-medium">
-                                Status Aktif
-                            </Label>
-                            <p className="text-sm text-muted-foreground">Template aktif dapat digunakan untuk membuat project baru</p>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -345,7 +334,10 @@ export function CreateSection({ services }: CreateSectionProps) {
                     </div>
 
                     {data.milestones.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
+                        <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                <Target className="size-5 text-primary" />
+                            </div>
                             <p className="text-sm">Belum ada milestone</p>
                             <Button type="button" size="sm" onClick={addMilestone} className="gap-1.5">
                                 <Plus className="size-4" />
@@ -397,7 +389,10 @@ export function CreateSection({ services }: CreateSectionProps) {
                     </div>
 
                     {data.documents.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
+                        <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                <FileText className="size-5 text-primary" />
+                            </div>
                             <p className="text-sm">Belum ada dokumen</p>
                             <Button type="button" size="sm" onClick={addDocument} className="gap-1.5">
                                 <Plus className="size-4" />

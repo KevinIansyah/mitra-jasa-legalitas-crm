@@ -73,7 +73,7 @@ export function MilestoneForm({ initial, submitUrl, method, onSuccess, onCancel 
                         value={data.description ?? ''}
                         onChange={(e) => set({ description: e.target.value })}
                         placeholder="Jelaskan detail milestone ini"
-                        className="min-h-20 resize-none"
+                        className="min-h-24 resize-none"
                         rows={3}
                     />
                 </Field>

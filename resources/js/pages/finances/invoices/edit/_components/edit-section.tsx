@@ -3,16 +3,17 @@ import { router } from '@inertiajs/react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import invoices from '@/routes/invoices';
 import type { Project, ProjectInvoice, ProjectInvoiceFormData } from '@/types/project';
 import { InvoiceForm } from '../../_components/invoice-form';
 import { InvoiceSummary } from '../../_components/invoice-summary';
 import type { InvoiceFormErrors } from '../../create/_components/create-section';
+import invoices from '@/routes/finances/invoices';
 
 type EditSectionProps = {
     invoice: ProjectInvoice;
     projects: Project[];
     fromProject: boolean;
+    isEdit: boolean;
 };
 
 function invoiceToFormData(invoice: ProjectInvoice): ProjectInvoiceFormData {
@@ -38,7 +39,7 @@ function invoiceToFormData(invoice: ProjectInvoice): ProjectInvoiceFormData {
     };
 }
 
-export default function EditSection({ invoice, projects, fromProject }: EditSectionProps) {
+export default function EditSection({ invoice, projects, fromProject, isEdit }: EditSectionProps) {
     const [data, setData] = useState<ProjectInvoiceFormData>(() => invoiceToFormData(invoice));
     const [errors, setErrors] = useState<InvoiceFormErrors>({});
     const [processing, setProcessing] = useState(false);
@@ -72,7 +73,7 @@ export default function EditSection({ invoice, projects, fromProject }: EditSect
     return (
         <div className="space-y-6">
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_280px]">
-                <InvoiceForm data={data} errors={errors} projects={projects} fromProject={fromProject} onChange={handleChange} />
+                <InvoiceForm data={data} errors={errors} projects={projects} fromProject={fromProject} isEdit={isEdit} onChange={handleChange} />
 
                 <InvoiceSummary
                     amount={data.amount}

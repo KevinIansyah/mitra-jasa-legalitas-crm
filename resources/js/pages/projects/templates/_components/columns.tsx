@@ -60,13 +60,9 @@ export default function getColumns(): ColumnDef<ProjectTemplate>[] {
             header: 'Status',
             cell: ({ row }) => {
                 const status = row.getValue<string>('status');
-                const isActive = status === 'active';
+                const label = status.charAt(0).toUpperCase() + status.slice(1);
 
-                return isActive ? (
-                    <Badge className="bg-emerald-500 text-white">{status.charAt(0).toUpperCase() + status.slice(1)}</Badge>
-                ) : (
-                    <Badge variant="destructive">{status.charAt(0).toUpperCase() + status.slice(1)}</Badge>
-                );
+                return <Badge className={status === 'active' ? 'bg-emerald-500 text-white' : 'bg-slate-500 text-white'}>{label}</Badge>;
             },
         },
         {

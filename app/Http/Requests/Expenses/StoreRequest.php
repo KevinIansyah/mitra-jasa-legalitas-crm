@@ -15,6 +15,8 @@ class StoreRequest extends FormRequest
     {
         return [
             'project_id'   => 'nullable|integer|exists:projects,id',
+            'vendor_id'   => 'nullable|integer|exists:vendors,id',
+            'vendor_name' => 'nullable|string|max:255',
             'category'     => 'required|string|max:100',
             'description'  => 'required|string',
             'amount'       => 'required|numeric|min:0',
@@ -29,6 +31,9 @@ class StoreRequest extends FormRequest
         return [
             'project_id.integer'   => 'ID proyek harus berupa angka.',
             'project_id.exists'    => 'ID proyek yang dipilih tidak valid.',
+            'vendor_id.integer' => 'ID vendor harus berupa angka.',
+            'vendor_id.exists'  => 'Vendor yang dipilih tidak valid.',
+            'vendor_name.max'   => 'Nama vendor maksimal 255 karakter.',
             'category.required'    => 'Kategori pengeluaran wajib diisi.',
             'category.max'         => 'Kategori pengeluaran maksimal 100 karakter.',
             'description.required' => 'Deskripsi pengeluaran wajib diisi.',

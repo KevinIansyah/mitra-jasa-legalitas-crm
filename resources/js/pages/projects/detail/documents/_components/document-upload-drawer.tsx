@@ -221,7 +221,7 @@ export function DocumentUploadDrawer({ projectId, document, open, onOpenChange }
                                                   : 'border-border hover:border-primary hover:bg-muted/40',
                                         ].join(' ')}
                                     >
-                                        <div className="flex h-12 w-12 items-center justify-center rounded-md bg-primary/10">
+                                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                                             <FilePlus className="size-5 text-primary" />
                                         </div>
                                         <div>

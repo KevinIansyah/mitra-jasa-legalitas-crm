@@ -3,7 +3,7 @@ import { GripVertical } from 'lucide-react';
 import { ServiceCardAction } from '@/components/service-card-action';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 
 import type { ServiceStatus } from '@/types/service';
@@ -33,7 +33,7 @@ export function FaqCard({ faq, index, totalItems, onChange, onDelete, onMoveUp, 
     const update = (patch: Partial<LocalFaq>) => onChange({ ...faq, ...patch });
 
     return (
-        <div className="space-y-4 rounded-xl border border-primary/30 bg-input/30 p-4 dark:border-none">
+        <div className="space-y-4 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-muted-foreground">
                     <GripVertical className="size-4 cursor-grab" />
@@ -55,6 +55,7 @@ export function FaqCard({ faq, index, totalItems, onChange, onDelete, onMoveUp, 
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectGroup>
+                                    <SelectLabel>Status</SelectLabel>
                                     <SelectItem value="active">Active</SelectItem>
                                     <SelectItem value="inactive">Inactive</SelectItem>
                                 </SelectGroup>

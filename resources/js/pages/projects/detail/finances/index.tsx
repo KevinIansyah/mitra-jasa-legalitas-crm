@@ -1,5 +1,5 @@
 import { router } from '@inertiajs/react';
-import { Plus, TrendingDown, TrendingUp } from 'lucide-react';
+import { FileText, Plus, TrendingDown, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
 
 import { HasPermission } from '@/components/has-permission';
@@ -10,11 +10,11 @@ import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } 
 import { formatRupiah } from '@/lib/service';
 import { ExpenseAddDrawer } from '@/pages/finances/expenses/_components/expense-add-drawer';
 import { ExpenseEditDrawer } from '@/pages/finances/expenses/_components/expense-edit-drawer';
-import invoices from '@/routes/invoices';
 import type { Expense } from '@/types/expenses';
 import type { Project } from '@/types/project';
 import { ExpenseCard } from './_components/expense-card';
 import { InvoiceCard } from './_components/invoice-card';
+import invoices from '@/routes/finances/invoices';
 
 type FinancesProps = {
     project: Project;
@@ -141,7 +141,7 @@ export default function Finances({ project }: FinancesProps) {
                         </div>
                         {project.invoices && project.invoices.length > 0 && (
                             <HasPermission permission="create-finance-invoices">
-                                <Button type="button" className="min-w-35" onClick={goToCreateInvoice}>
+                                <Button type="button" className="min-w-30" onClick={goToCreateInvoice}>
                                     <Plus className="size-4" />
                                     Tambah
                                 </Button>
@@ -150,9 +150,12 @@ export default function Finances({ project }: FinancesProps) {
                     </div>
 
                     {!project.invoices || project.invoices.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
+                        <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
                             <p className="text-sm">Belum ada invoice di project ini</p>
                             <HasPermission permission="create-finance-invoices">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                    <FileText className="size-5 text-primary" />
+                                </div>
                                 <Button type="button" onClick={goToCreateInvoice} className="gap-1.5">
                                     <Plus className="size-4" />
                                     Tambah Invoice Pertama
@@ -177,7 +180,7 @@ export default function Finances({ project }: FinancesProps) {
                             <HasPermission permission="create-finance-expenses">
                                 <Button
                                     type="button"
-                                    className="min-w-35"
+                                    className="min-w-30"
                                     onClick={(e) => {
                                         e.currentTarget.blur();
                                         setAddingExpense(true);
@@ -191,7 +194,10 @@ export default function Finances({ project }: FinancesProps) {
                     </div>
 
                     {!project.expenses || project.expenses.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
+                        <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                <FileText className="size-5 text-primary" />
+                            </div>
                             <p className="text-sm">Belum ada pengeluaran di project ini</p>
                             <HasPermission permission="create-finance-expenses">
                                 <Button

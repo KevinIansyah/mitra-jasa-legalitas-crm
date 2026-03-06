@@ -1,11 +1,11 @@
 import { Head, usePage } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
-import invoices from '@/routes/invoices';
 
 import type { BreadcrumbItem } from '@/types';
 import type { Project } from '@/types/project';
 import CreateSection from './_components/create-section';
+import invoices from '@/routes/finances/invoices';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {

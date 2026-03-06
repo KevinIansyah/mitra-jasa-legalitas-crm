@@ -55,7 +55,7 @@ class ProjectPayment extends Model
         return $this->belongsTo(ProjectInvoice::class, 'invoice_id');
     }
 
-    public function verifiedBy(): BelongsTo
+    public function verifier(): BelongsTo
     {
         return $this->belongsTo(User::class, 'verified_by');
     }

@@ -14,9 +14,9 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { formatRupiah } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
 import { PaymentCard } from '@/pages/finances/payments/_components/payment-card';
-import invoicesRoutes from '@/routes/invoices';
 import type { InvoiceStatus, ProjectInvoice } from '@/types/project';
 import { INVOICE_STATUSES, INVOICE_STATUSES_MAP, INVOICE_TYPES_MAP, type Project } from '@/types/project';
+import invoicesRoutes from '@/routes/finances/invoices';
 
 type InvoiceCardProps = {
     project: Project;
@@ -225,18 +225,25 @@ export function InvoiceCard({ project }: InvoiceCardProps) {
                                             className="flex items-center gap-2 text-start text-xs text-primary hover:underline"
                                         >
                                             {isItemsExpanded ? <ChevronUp className="mb-0.5 size-3" /> : <ChevronDown className="mb-0.5 size-3" />}
-                                            {isItemsExpanded ? 'Sembunyikan' : 'Lihat'} {invoice.items?.length} item
+                                            {isItemsExpanded ? 'Sembunyikan' : 'Lihat'} item{' '}
+                                            <Badge className="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] group-data-[state=active]:bg-primary-foreground group-data-[state=active]:text-foreground">
+                                                {invoice.items?.length}
+                                            </Badge>
                                         </button>
                                     )}
 
                                     <button
                                         type="button"
                                         onClick={() => toggle(invoice.id, 'payments')}
-                                        className="flex items-center justidy-start gap-2 text-start text-xs text-primary hover:underline"
+                                        className="justidy-start flex items-center gap-2 text-start text-xs text-primary hover:underline"
                                     >
                                         <Wallet className="mb-0.5 size-3" />
                                         {isPaymentsExpanded ? 'Sembunyikan' : 'Lihat'} Pembayaran
-                                        {paymentCount > 0 && <span className="mb-0.5 rounded-full bg-primary px-2 text-[10px] text-background">{paymentCount}</span>}
+                                        {paymentCount > 0 && (
+                                            <Badge className="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] group-data-[state=active]:bg-primary-foreground group-data-[state=active]:text-foreground">
+                                                {paymentCount}
+                                            </Badge>
+                                        )}
                                     </button>
                                 </div>
                             </div>

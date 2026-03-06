@@ -77,12 +77,10 @@ export default function PermissionSection({ role, allPermissions }: PermissionSe
                     const serviceType = resource.replace('contact-', '');
 
                     switch (serviceType) {
-                        // Companies Contact
                         case 'companies':
                             itemName = 'Perusahaan';
                             break;
 
-                        // Cutomers Contact
                         case 'customers':
                             itemName = 'Pelanggan (PIC)';
 
@@ -144,6 +142,22 @@ export default function PermissionSection({ role, allPermissions }: PermissionSe
 
                     if (resource === 'finance-expenses') {
                         itemName = 'Pengeluaran';
+                    }
+
+                    if (resource === 'finance-quotes') {
+                        itemName = 'Permintaan Penawaran';
+                    }
+
+                    if (resource === 'finance-proposals') {
+                        itemName = 'Proposal';
+                    }
+
+                    if (resource === 'finance-estimates') {
+                        itemName = 'Estimasi';
+                    }
+
+                    if (resource === 'finance-vendors') {
+                        itemName = 'Vendor';
                     }
 
                     break;

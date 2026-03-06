@@ -9,7 +9,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 import { formatRupiah } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
-import expenses from '@/routes/expenses';
+import expenses from '@/routes/finances/expenses';
 import type { Expense } from '@/types/expenses';
 import { EXPENSE_CATEGORIES_MAP } from '@/types/expenses';
 import type { Project } from '@/types/project';

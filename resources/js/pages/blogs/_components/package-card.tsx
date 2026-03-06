@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { formatRupiah, uid } from '@/lib/service';
@@ -110,6 +110,7 @@ export function PackageCard({ pkg, index, totalItems, onChange, onDelete, onMove
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
+                                <SelectLabel>Status</SelectLabel>
                                 <SelectItem value="active">Active</SelectItem>
                                 <SelectItem value="inactive">Inactive</SelectItem>
                             </SelectGroup>

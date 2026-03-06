@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import type { ServiceStatus } from '@/types/service';
 
@@ -84,6 +84,7 @@ export function ProcessStepCard({ step, index, totalItems, onChange, onDelete, o
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
+                                <SelectLabel>Status</SelectLabel>
                                 <SelectItem value="active">Active</SelectItem>
                                 <SelectItem value="inactive">Inactive</SelectItem>
                             </SelectGroup>

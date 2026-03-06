@@ -1,20 +1,22 @@
 import { useForm } from '@inertiajs/react';
 import axios from 'axios';
-import { Search, User, X } from 'lucide-react';
+import { Info, Search, X } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { DatePicker } from '@/components/date-picker';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 
-import { formatRupiah } from '@/lib/service';
+import { formatRupiah, getInitials } from '@/lib/service';
 import projects from '@/routes/projects';
 import search from '@/routes/search';
 import type { Customer, Company } from '@/types/contact';
@@ -232,7 +234,7 @@ export function CreateSection({ services }: CreateSectionProps) {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
-            {/* CUSTOMER SELECTION */}
+            {/* Customer Selection */}
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div>
@@ -240,20 +242,21 @@ export function CreateSection({ services }: CreateSectionProps) {
                         <p className="mt-0.5 text-sm text-muted-foreground">Cari dan pilih customer untuk project ini</p>
                     </div>
 
-                    <Field className="gap-0">
+                    <Field>
                         <FieldLabel htmlFor="search-customer" className="mb-3">
                             Customer <span className="text-destructive">*</span>
                         </FieldLabel>
 
                         {selectedCustomer ? (
-                            <div className="flex items-center justify-between rounded-lg border border-primary bg-card p-4 dark:border-none">
+                            <div className="flex items-center justify-between rounded-md bg-primary/10 p-3 dark:bg-muted/40">
                                 <div className="flex items-center gap-3">
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                                        <User className="size-5 text-primary" />
-                                    </div>
+                                    <Avatar className="rounded-full">
+                                        <AvatarImage src={selectedCustomer.user?.avatar ?? undefined} />
+                                        <AvatarFallback className="bg-primary/10 text-xs text-primary">{getInitials(selectedCustomer.name)}</AvatarFallback>
+                                    </Avatar>
                                     <div className="flex-1">
-                                        <p className="font-medium">{selectedCustomer.name}</p>
-                                        <p className="text-sm text-muted-foreground">{selectedCustomer.email || selectedCustomer.phone || 'Tidak ada info kontak'}</p>
+                                        <p className="text-sm font-medium">{selectedCustomer.name}</p>
+                                        <p className="text-xs text-muted-foreground">{selectedCustomer.email || selectedCustomer.phone || 'Tidak ada info kontak'}</p>
                                         {selectedCustomer.tier && (
                                             <Badge className={`mt-1 ${tierVariantMap[selectedCustomer.tier] ?? 'bg-muted text-muted-foreground'}`}>{selectedCustomer.tier}</Badge>
                                         )}
@@ -277,29 +280,30 @@ export function CreateSection({ services }: CreateSectionProps) {
                                 </InputGroup>
 
                                 {customerResults.length > 0 && (
-                                    <div className="mt-1 max-h-64 space-y-1 overflow-y-auto rounded-lg border border-primary bg-muted/30 p-2 dark:border-none">
-                                        {customerResults.map((customer) => (
+                                    <div className="-mt-2 max-h-64 space-y-1 overflow-y-auto">
+                                        {customerResults.map((c) => (
                                             <button
-                                                key={customer.id}
+                                                key={c.id}
                                                 type="button"
-                                                onClick={() => handleSelectCustomer(customer)}
-                                                className="flex w-full items-center gap-3 rounded-lg p-3 text-left hover:bg-muted"
+                                                onClick={() => handleSelectCustomer(c)}
+                                                className="flex w-full items-center gap-3 rounded-lg bg-primary/10 p-3 text-left hover:bg-primary/20 dark:bg-muted/40 dark:hover:bg-muted/50"
                                             >
-                                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
-                                                    <User className="size-4 text-primary" />
-                                                </div>
+                                                <Avatar className="rounded-full">
+                                                    <AvatarImage src={c.user?.avatar ?? undefined} />
+                                                    <AvatarFallback className="bg-primary/10 text-sm text-primary">{getInitials(c.name)}</AvatarFallback>
+                                                </Avatar>
                                                 <div className="flex-1">
-                                                    <p className="text-sm font-medium">{customer.name}</p>
-                                                    <p className="text-xs text-muted-foreground">{customer.email || customer.phone || 'Tidak ada info kontak'}</p>
+                                                    <p className="text-sm font-medium">{c.name}</p>
+                                                    <p className="text-xs text-muted-foreground">{c.email || c.phone || 'Tidak ada info kontak'}</p>
                                                 </div>
-                                                {customer.tier && <Badge className={tierVariantMap[customer.tier] ?? 'bg-muted text-muted-foreground'}>{customer.tier}</Badge>}
+                                                {c.tier && <Badge className={tierVariantMap[c.tier] ?? 'bg-muted text-muted-foreground'}>{c.tier}</Badge>}
                                             </button>
                                         ))}
                                     </div>
                                 )}
 
                                 {customerSearch.length >= 2 && customerResults.length === 0 && !isSearchingCustomer && (
-                                    <p className="mt-2 text-sm text-muted-foreground">Tidak ada customer ditemukan</p>
+                                    <FieldDescription>Tidak ada customer ditemukan</FieldDescription>
                                 )}
                             </>
                         )}
@@ -339,7 +343,7 @@ export function CreateSection({ services }: CreateSectionProps) {
                 </div>
             </div>
 
-            {/* SERVICE & PACKAGE SELECTION */}
+            {/* Services & Packages */}
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div>
@@ -416,7 +420,11 @@ export function CreateSection({ services }: CreateSectionProps) {
                                         </SelectGroup>
                                     </SelectContent>
                                 </Select>
-                                <p className="mt-1 text-xs text-muted-foreground">Template akan otomatis mengisi milestone dan dokumen</p>
+                                <Alert className="border-primary bg-primary/20">
+                                    <Info />
+                                    <AlertTitle>Informasi</AlertTitle>
+                                    <AlertDescription>Template akan otomatis mengisi milestone dan dokumen</AlertDescription>
+                                </Alert>
                                 {errors.project_template_id && <FieldError>{errors.project_template_id}</FieldError>}
                             </Field>
                         </>
@@ -424,7 +432,7 @@ export function CreateSection({ services }: CreateSectionProps) {
                 </div>
             </div>
 
-            {/* PROJECT DETAILS */}
+            {/* Detail */}
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div>
@@ -513,7 +521,7 @@ export function CreateSection({ services }: CreateSectionProps) {
                 </div>
             </div>
 
-            {/* ACTIONS */}
+            {/* Action */}
             <div className="flex items-center justify-start gap-2">
                 <Button type="submit" className="flex-1 md:w-45 md:flex-none" disabled={processing}>
                     {processing ? (

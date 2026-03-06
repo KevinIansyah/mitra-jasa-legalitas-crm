@@ -7,9 +7,65 @@ use App\Models\ProjectInvoice;
 use App\Models\ProjectPayment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class ProjectPaymentController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
+    {
+        $perPage = $request->get('per_page', 20);
+        $perPage = in_array($perPage, [20, 30, 40, 50]) ? $perPage : 20;
+
+        $search = $request->get('search');
+        $status = $request->get('status');
+        $method = $request->get('payment_method');
+
+        $query = ProjectPayment::with([
+            'invoice',
+            'invoice.project:id,name',
+            'invoice.project.customer:id,name',
+            'verifier:id,name',
+        ]);
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('reference_number', 'like', "%{$search}%")
+                    ->orWhereHas('invoice', fn($q) => $q->where('invoice_number', 'like', "%{$search}%"))
+                    ->orWhereHas('invoice.project', fn($q) => $q->where('name', 'like', "%{$search}%"));
+            });
+        }
+
+        if ($status) $query->where('status', $status);
+        if ($method) $query->where('payment_method', $method);
+
+        $payments = $query->latest()->paginate($perPage);
+
+        $summary = ProjectPayment::query()
+            ->selectRaw("
+            COUNT(*) as total,
+            SUM(CASE WHEN status = 'pending'  THEN 1 ELSE 0 END) as pending,
+            SUM(CASE WHEN status = 'verified' THEN 1 ELSE 0 END) as verified,
+            SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) as rejected,
+            SUM(amount) as total_amount,
+            SUM(CASE WHEN status = 'verified' THEN amount ELSE 0 END) as verified_amount
+        ")
+            ->first();
+
+        return Inertia::render('finances/payments/index', [
+            'payments' => $payments,
+            'summary'  => $summary,
+            'filters'  => [
+                'search'         => $search,
+                'per_page'       => $perPage,
+                'status'         => $status,
+                'payment_method' => $method,
+            ],
+        ]);
+    }
+
     /**
      * Store a newly created payment.
      */

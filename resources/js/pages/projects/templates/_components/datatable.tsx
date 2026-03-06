@@ -101,7 +101,7 @@ export function DataTable({ data, services, pageIndex, setPageIndex, totalPages,
                                     <SheetDescription>Atur filter untuk menyaring data perusahaan</SheetDescription>
                                 </SheetHeader>
 
-                                <div className="mt-6 space-y-4 px-4">
+                                <div className="space-y-4 px-4">
                                     <Field>
                                         <FieldLabel htmlFor="service_id">Layanan</FieldLabel>
                                         <Select value={filters.service_id || ''} onValueChange={(value) => updateFilter('service_id', value || undefined)}>

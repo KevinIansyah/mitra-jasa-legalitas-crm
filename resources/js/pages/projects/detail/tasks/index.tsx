@@ -1,9 +1,10 @@
 import { router } from '@inertiajs/react';
-import { Circle, CircleCheck, Clock, Info, Plus } from 'lucide-react';
+import { Circle, CircleCheck, ClipboardList, Clock, Info, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { HasPermission } from '@/components/has-permission';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardAction, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -140,7 +141,7 @@ export default function Tasks({ project }: TasksProps) {
             {!showAddForm && tasks.length > 0 && (
                 <HasPermission permission="create-project-tasks">
                     <div className="flex w-full justify-end">
-                        <Button type="button" className="w-full md:w-35" onClick={() => setShowAddForm(true)}>
+                        <Button type="button" className="w-full md:w-30" onClick={() => setShowAddForm(true)}>
                             <Plus className="size-4" />
                             Tambah
                         </Button>
@@ -170,7 +171,10 @@ export default function Tasks({ project }: TasksProps) {
             {/* Grouped list */}
             {tasks.length === 0 && !showAddForm ? (
                 <div className="min-h-40 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                    <div className="flex w-full flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-muted-foreground">
+                    <div className="flex w-full flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                            <ClipboardList className="size-5 text-primary" />
+                        </div>
                         <p className="text-sm">Belum ada tugas untuk project ini</p>
                         <HasPermission permission="create-project-tasks">
                             <Button type="button" size="sm" onClick={() => setShowAddForm(true)} className="gap-1.5">
@@ -186,10 +190,10 @@ export default function Tasks({ project }: TasksProps) {
                         if (group.tasks.length === 0) return null;
 
                         return (
-                            <div key={group.value} className="space-y-3">
+                            <div key={group.value} className="space-y-4">
                                 {/* Group header */}
-                                <div className="flex items-center gap-3">
-                                    <span className={`rounded-full px-3 py-0.5 text-xs font-semibold ${group.classes}`}>{group.label}</span>
+                                <div className="flex items-center gap-4">
+                                    <Badge className={group.classes}>{group.label}</Badge>
                                     <span className="text-xs text-muted-foreground">{group.tasks.length} tugas</span>
                                     <div className="flex-1 border-t border-border" />
                                 </div>

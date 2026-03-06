@@ -63,7 +63,7 @@ export function DeliverableEditForm({ id, data, loading, onChange, onSubmit, onC
                         value={data.description}
                         onChange={(e) => onChange({ description: e.target.value })}
                         placeholder="Jelaskan detail hasil akhir ini"
-                        className="min-h-16 resize-none"
+                        className="min-h-24 resize-none"
                         rows={2}
                     />
                 </Field>
@@ -74,7 +74,7 @@ export function DeliverableEditForm({ id, data, loading, onChange, onSubmit, onC
                         value={data.notes}
                         onChange={(e) => onChange({ notes: e.target.value })}
                         placeholder="Catatan tambahan (opsional)"
-                        className="min-h-16 resize-none"
+                        className="min-h-24 resize-none"
                         rows={2}
                     />
                 </Field>

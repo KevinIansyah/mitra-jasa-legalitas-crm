@@ -6,7 +6,9 @@ use App\Http\Requests\Customers\AttachCompanyRequest;
 use App\Http\Requests\Customers\StoreRequest;
 use App\Http\Requests\Customers\UpdateRequest;
 use App\Models\Customer;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class CustomerController extends Controller
@@ -163,5 +165,142 @@ class CustomerController extends Controller
         $customer->companies()->updateExistingPivot($companyId, $validated);
 
         return back()->with('success', 'Data perusahaan berhasil diperbarui.');
+    }
+
+    /**
+     * Check if email exists in users table
+     */
+    public function checkAccount(Customer $customer)
+    {
+        if (!$customer->email) {
+            return response()->json([
+                'status'  => 'no_email',
+                'message' => 'Customer ini belum memiliki email.',
+            ]);
+        }
+
+        $existingUser = User::where('email', $customer->email)->first();
+
+        if ($existingUser) {
+            $linkedCustomer = Customer::where('user_id', $existingUser->id)
+                ->where('id', '!=', $customer->id)
+                ->first();
+
+            if ($linkedCustomer) {
+                return response()->json([
+                    'status'  => 'linked_elsewhere',
+                    'message' => "Email ini sudah terhubung ke customer lain ({$linkedCustomer->name}).",
+                ]);
+            }
+
+            return response()->json([
+                'status' => 'exists',
+                'user'   => [
+                    'id'    => $existingUser->id,
+                    'name'  => $existingUser->name,
+                    'email' => $existingUser->email,
+                ],
+            ]);
+        }
+
+        return response()->json(['status' => 'not_found']);
+    }
+
+    /**
+     * Create new user account for customer
+     */
+    public function createAccount(Customer $customer)
+    {
+        if ($customer->user_id) {
+            return response()->json(['message' => 'Customer sudah memiliki akun.'], 422);
+        }
+
+        if (!$customer->email) {
+            return response()->json(['message' => 'Customer belum memiliki email.'], 422);
+        }
+
+        if (User::where('email', $customer->email)->exists()) {
+            return response()->json(['message' => 'Email sudah digunakan.'], 422);
+        }
+
+        $password = $this->generatePassword();
+
+        $user = DB::transaction(function () use ($customer, $password) {
+            $user = User::create([
+                'name'     => $customer->name,
+                'email'    => $customer->email,
+                'password' => bcrypt($password),
+            ]);
+
+            $user->assignRole('user');
+            $customer->update(['user_id' => $user->id]);
+
+            return $user;
+        });
+
+        return response()->json([
+            'message'  => 'Akun berhasil dibuat.',
+            'email'    => $user->email,
+            'password' => $password,
+        ]);
+    }
+
+    /**
+     * Link existing user to customer
+     */
+    public function linkAccount(Request $request, Customer $customer)
+    {
+        $validated = $request->validate([
+            'user_id' => 'required|integer|exists:users,id',
+        ]);
+
+        $user = User::findOrFail($validated['user_id']);
+
+        if (!$user->hasRole('user')) {
+            return response()->json([
+                'message' => 'Akun ini bukan role user dan tidak dapat dihubungkan ke customer.'
+            ], 422);
+        }
+
+
+        $customer->update(['user_id' => $user->id]);
+
+        return response()->json(['message' => 'Akun berhasil dihubungkan ke customer.']);
+    }
+
+    /**
+     * Revoke user account from customer (deactivate, not delete)
+     */
+    public function revokeAccount(Customer $customer)
+    {
+        if (!$customer->user_id) {
+            return response()->json([
+                'message' => 'Customer tidak memiliki akun.'
+            ], 422);
+        }
+
+        DB::transaction(function () use ($customer) {
+            $user = $customer->user;
+            $customer->update(['user_id' => null]);
+
+            if ($user) {
+                $user->update(['status' => 'inactive']);
+            }
+        });
+
+        return response()->json(['message' => 'Akun berhasil dicabut.']);
+    }
+
+    /**
+     * Generate readable random password
+     */
+    private function generatePassword(): string
+    {
+        $upper   = substr(str_shuffle('ABCDEFGHJKLMNPQRSTUVWXYZ'), 0, 2);
+        $lower   = substr(str_shuffle('abcdefghjkmnpqrstuvwxyz'), 0, 4);
+        $numbers = substr(str_shuffle('23456789'), 0, 3);
+        $special = substr(str_shuffle('!@#$%'), 0, 1);
+
+        return str_shuffle($upper . $lower . $numbers . $special);
     }
 }

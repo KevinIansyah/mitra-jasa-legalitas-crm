@@ -7,6 +7,7 @@ use App\Models\Project;
 use App\Models\ProjectTemplate;
 use App\Models\Service;
 use App\Models\User;
+use App\Models\Vendor;
 use Illuminate\Http\Request;
 
 class SearchController extends Controller
@@ -19,7 +20,7 @@ class SearchController extends Controller
         $search = $request->get('search', '');
         $companyId = $request->get('company_id');
 
-        $query = Customer::query();
+        $query = Customer::with('user');
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -139,6 +140,21 @@ class SearchController extends Controller
 
         return response()->json([
             'projects' => $projects,
+        ]);
+    }
+
+
+    public function searchVendor(Request $request)
+    {
+        $search = $request->get('search', '');
+
+        $vendors = Vendor::active()
+            ->search($search)
+            ->limit(10)
+            ->get();
+
+        return response()->json([
+            'vendors' => $vendors
         ]);
     }
 }

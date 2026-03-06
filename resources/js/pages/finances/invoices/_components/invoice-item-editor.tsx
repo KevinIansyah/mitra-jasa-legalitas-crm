@@ -1,4 +1,4 @@
-import { GripVertical, Plus, Trash2 } from 'lucide-react';
+import { GripVertical, Trash2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Field, FieldLabel } from '@/components/ui/field';
@@ -11,14 +11,7 @@ import type { ProjectInvoiceItemFormData } from '@/types/project';
 type Props = {
     items: ProjectInvoiceItemFormData[];
     onChange: (items: ProjectInvoiceItemFormData[]) => void;
-};
-
-const EMPTY_ITEM: ProjectInvoiceItemFormData = {
-    description: '',
-    quantity: 1,
-    unit_price: 0,
-    tax_percent: 11,
-    discount_percent: 0,
+    onAdd: () => void;
 };
 
 function calcItemTotal(item: ProjectInvoiceItemFormData) {
@@ -30,10 +23,6 @@ function calcItemTotal(item: ProjectInvoiceItemFormData) {
 }
 
 export function InvoiceItemsEditor({ items, onChange }: Props) {
-    function addItem() {
-        onChange([...items, { ...EMPTY_ITEM }]);
-    }
-
     function removeItem(index: number) {
         onChange(items.filter((_, i) => i !== index));
     }
@@ -48,9 +37,9 @@ export function InvoiceItemsEditor({ items, onChange }: Props) {
     }
 
     return (
-        <div className="space-y-3">
+        <div className="space-y-4">
             {items.map((item, index) => (
-                <div key={index} className="space-y-4 rounded-xl border border-border bg-muted/20 p-4">
+                <div key={index} className="space-y-4 rounded-lg bg-primary/10 p-4 md:p-6 dark:bg-muted/40">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2 text-muted-foreground">
                             <GripVertical className="size-4 cursor-grab" />
@@ -71,7 +60,7 @@ export function InvoiceItemsEditor({ items, onChange }: Props) {
                             value={item.description}
                             onChange={(e) => updateDescription(index, e.target.value)}
                             placeholder="Contoh: Jasa Pendirian PT, Biaya PNBP..."
-                            className="min-h-16 resize-none text-sm"
+                            className="min-h-24 resize-none text-sm"
                             rows={2}
                         />
                     </Field>
@@ -124,11 +113,6 @@ export function InvoiceItemsEditor({ items, onChange }: Props) {
                     </div>
                 </div>
             ))}
-
-            <Button type="button" className="w-full gap-1.5" onClick={addItem}>
-                <Plus className="size-4" />
-                Tambah Item
-            </Button>
         </div>
     );
 }

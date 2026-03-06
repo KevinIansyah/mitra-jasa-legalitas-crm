@@ -19,6 +19,8 @@ class Expense extends Model
     protected $fillable = [
         'project_id',
         'invoice_id',
+        'vendor_id',
+        'vendor_name',
         'user_id',
         'category',
         'description',
@@ -65,6 +67,11 @@ class Expense extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function vendor(): BelongsTo
+    {
+        return $this->belongsTo(Vendor::class);
     }
 
     // ============================================================
@@ -114,6 +121,11 @@ class Expense extends Model
     // ============================================================
     // COMPUTED
     // ============================================================
+
+    public function getVendorDisplayNameAttribute(): ?string
+    {
+        return $this->vendor?->name ?? $this->vendor_name;
+    }
 
     public function getReceiptUrlAttribute(): ?string
     {

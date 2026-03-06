@@ -301,13 +301,16 @@ export function DocumentCard({ document, index, projectId, isFirst, isLast, onRe
                                 </div>
                             </div>
 
-                            {document.description && <p className="text-sm text-muted-foreground">{document.description}</p>}
+                            {/* Description */}
+                            {document.description && <p className="text-sm whitespace-normal text-muted-foreground">{document.description}</p>}
+
+                            <hr />
 
                             {/* Details */}
-                            <div className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
+                            <div className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-6">
                                 <div className="space-y-1">
                                     <p className="text-xs text-muted-foreground">Format</p>
-                                    <p className="uppercase">{document.document_format ?? '-'}</p>
+                                    <p className="uppercase">{document.document_format ? document.document_format : '-'}</p>
                                 </div>
                                 <div className="space-y-1">
                                     <p className="text-xs text-muted-foreground">Ukuran File</p>
@@ -318,12 +321,18 @@ export function DocumentCard({ document, index, projectId, isFirst, isLast, onRe
                                     <p>{document.uploaded_at ? formatDate(document.uploaded_at) : '-'}</p>
                                 </div>
                                 <div className="space-y-1">
+                                    <p className="text-xs text-muted-foreground">Oleh</p>
+                                    <p>{document.uploader ? document.uploader.name : '-'}</p>
+                                </div>
+                                <div className="space-y-1">
                                     <p className="text-xs text-muted-foreground">Diverifikasi</p>
                                     <p>{document.verified_at ? formatDate(document.verified_at) : '-'}</p>
                                 </div>
+                                <div className="space-y-1">
+                                    <p className="text-xs text-muted-foreground">Oleh</p>
+                                    <p>{document.verifier ? document.verifier.name : '-'}</p>
+                                </div>
                             </div>
-
-                            {((document.status === 'rejected' && document.rejection_reason) || document.notes) && <hr className="my-4" />}
 
                             {/* Rejection reason */}
                             {document.status === 'rejected' && document.rejection_reason && (
@@ -336,9 +345,9 @@ export function DocumentCard({ document, index, projectId, isFirst, isLast, onRe
 
                             {/* Notes */}
                             {document.notes && (
-                                <div className="text-xs text-foreground">
-                                    <span className="text-muted-foreground">Catatan: </span>
-                                    {document.notes}
+                                <div className="space-y-1 text-sm whitespace-normal text-foreground">
+                                    <p className="text-xs text-muted-foreground">Catatan</p>
+                                    <p>{document.notes}</p>
                                 </div>
                             )}
                         </div>

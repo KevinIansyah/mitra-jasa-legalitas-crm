@@ -9,16 +9,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
-import { formatDate } from '@/lib/utils';
+import { formatDate, formatFileSize } from '@/lib/utils';
 import projects from '@/routes/projects';
 import type { ProjectDeliverable } from '@/types/project';
 import { DeliverableEditForm } from './deliverable-edit-form';
-
-function formatFileSize(bytes: number): string {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
 
 function FileIcon({ fileType }: { fileType: string }) {
     let icon = <FileText className="size-5 text-muted-foreground" />;
@@ -118,7 +112,8 @@ export function DeliverableCard({ deliverable, projectId }: DeliverableCardProps
             {mode === 'edit' ? (
                 <DeliverableEditForm id={deliverable.id} data={editData} loading={loading} onChange={set} onSubmit={handleEditSubmit} onCancel={() => setMode('view')} />
             ) : (
-                <>
+                <div className="space-y-4">
+                    {/* Header */}
                     <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-start">
                         <div className="order-2 flex items-start gap-3 lg:order-1">
                             <FileIcon fileType={deliverable.file_type} />
@@ -175,32 +170,39 @@ export function DeliverableCard({ deliverable, projectId }: DeliverableCardProps
                         </div>
                     </div>
 
-                    {deliverable.description && <p className="mt-4 text-sm text-muted-foreground">{deliverable.description}</p>}
+                    {/* Description */}
+                    {deliverable.description && <p className="text-sm whitespace-normal text-muted-foreground">{deliverable.description}</p>}
 
-                    <hr className="my-4" />
+                    <hr />
 
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
-                        <span>
-                            Format <span className="text-foreground uppercase">{deliverable.file_type.split('/').pop()}</span>
-                        </span>
-                        <span>
-                            Ukuran File <span className="text-foreground">{formatFileSize(deliverable.file_size)}</span>
-                        </span>
-                        <span>
-                            Diunggah <span className="text-foreground">{formatDate(deliverable.uploaded_at)}</span>
-                        </span>
-                        {deliverable.uploader && (
-                            <span>
-                                Oleh <span className="text-foreground">{deliverable.uploader.name}</span>
-                            </span>
-                        )}
-                        {deliverable.notes && (
-                            <span className="w-full">
-                                Catatan: <span className="text-foreground">{deliverable.notes}</span>
-                            </span>
-                        )}
+                    {/* Details */}
+                    <div className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
+                        <div className="space-y-1">
+                            <p className="text-xs text-muted-foreground">Format</p>
+                            <p className="uppercase">{deliverable.file_type ? deliverable.file_type.split('/').pop() : '-'}</p>
+                        </div>
+                        <div className="space-y-1">
+                            <p className="text-xs text-muted-foreground">Ukuran File</p>
+                            <p>{formatFileSize(deliverable.file_size) ? formatFileSize(deliverable.file_size) : '-'}</p>
+                        </div>
+                        <div className="space-y-1">
+                            <p className="text-xs text-muted-foreground">Diunggah</p>
+                            <p>{deliverable.uploaded_at ? formatDate(deliverable.uploaded_at) : '-'}</p>
+                        </div>
+                        <div className="space-y-1">
+                            <p className="text-xs text-muted-foreground">Oleh</p>
+                            <p>{deliverable.uploader ? deliverable.uploader.name : '-'}</p>
+                        </div>
                     </div>
-                </>
+
+                    {/* Notes */}
+                    {deliverable.notes && (
+                        <div className="space-y-1 text-sm whitespace-normal text-foreground">
+                            <p className="text-xs text-muted-foreground">Catatan</p>
+                            <p>{deliverable.notes}</p>
+                        </div>
+                    )}
+                </div>
             )}
         </div>
     );

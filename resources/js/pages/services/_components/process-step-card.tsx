@@ -5,7 +5,7 @@ import { ServiceCardAction } from '@/components/service-card-action';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -57,7 +57,7 @@ export function ProcessStepCard({ step, index, totalItems, onChange, onDelete, o
         });
 
     return (
-        <div className="space-y-4 rounded-xl border border-primary/30 bg-input/30 p-4 dark:border-none">
+        <div className="space-y-4 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-muted-foreground">
                     <GripVertical className="size-4 cursor-grab" />
@@ -79,6 +79,7 @@ export function ProcessStepCard({ step, index, totalItems, onChange, onDelete, o
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectGroup>
+                                    <SelectLabel>Status</SelectLabel>
                                     <SelectItem value="active">Active</SelectItem>
                                     <SelectItem value="inactive">Inactive</SelectItem>
                                 </SelectGroup>
@@ -139,9 +140,9 @@ export function ProcessStepCard({ step, index, totalItems, onChange, onDelete, o
             <Field>
                 <FieldLabel>Dokumen yang Diperlukan</FieldLabel>
                 {step.required_documents && step.required_documents.length > 0 && (
-                    <div className="mb-3 space-y-2">
+                    <div className="mb-2 space-y-2">
                         {step.required_documents.map((doc, docIndex) => (
-                            <div key={docIndex} className="flex items-center gap-3 rounded-lg border border-border bg-muted/30 px-3 py-2">
+                            <div key={docIndex} className="flex items-center gap-4 rounded-lg bg-primary/10 px-3 py-2 dark:bg-muted/40">
                                 <FileText className="size-4 shrink-0 text-muted-foreground" />
                                 <span className="flex-1 text-sm">{doc}</span>
                                 <Tooltip>
@@ -169,7 +170,7 @@ export function ProcessStepCard({ step, index, totalItems, onChange, onDelete, o
 
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button type="button" variant="secondary" size="icon" onClick={addDocument}>
+                            <Button type="button" size="icon" onClick={addDocument}>
                                 <Plus className="size-4" />
                             </Button>
                         </TooltipTrigger>

@@ -16,14 +16,56 @@ class ProjectInvoiceController extends Controller
     /**
      * List all invoices across all projects.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $invoices = ProjectInvoice::with(['project.customer'])
-            ->latest()
-            ->paginate(20);
+        $perPage = $request->get('per_page', 20);
+        $perPage = in_array($perPage, [20, 30, 40, 50]) ? $perPage : 20;
+
+        $search  = $request->get('search');
+        $status  = $request->get('status');
+        $type    = $request->get('type');
+
+        $query = ProjectInvoice::with([
+            'project:id,name,status',
+            'project.customer:id,name,tier',
+            'items',
+            'payments',
+        ]);
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('invoice_number', 'like', "%{$search}%")
+                    ->orWhereHas('project', fn($q) => $q->where('name', 'like', "%{$search}%"));
+            });
+        }
+
+        if ($status) $query->where('status', $status);
+        if ($type)   $query->where('type', $type);
+
+        $invoices = $query->orderByDesc('project_id')->orderByDesc('created_at')->paginate($perPage);
+
+        $summary = ProjectInvoice::query()
+            ->selectRaw("
+        COUNT(*) as total,
+        COALESCE(SUM(CASE WHEN status = 'draft'     THEN 1 ELSE 0 END), 0) as draft,
+        COALESCE(SUM(CASE WHEN status = 'sent'      THEN 1 ELSE 0 END), 0) as sent,
+        COALESCE(SUM(CASE WHEN status = 'paid'      THEN 1 ELSE 0 END), 0) as paid,
+        COALESCE(SUM(CASE WHEN status = 'overdue'   THEN 1 ELSE 0 END), 0) as overdue,
+        COALESCE(SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END), 0) as cancelled,
+        COALESCE(SUM(total_amount), 0) as total_amount,
+        COALESCE(SUM(CASE WHEN status = 'paid' THEN total_amount ELSE 0 END), 0) as paid_amount
+        ")
+            ->first();
 
         return Inertia::render('finances/invoices/index', [
             'invoices' => $invoices,
+            'summary'  => $summary,
+            'filters'  => [
+                'search'   => $search,
+                'per_page' => $perPage,
+                'status'   => $status,
+                'type'     => $type,
+            ],
         ]);
     }
 
@@ -69,6 +111,7 @@ class ProjectInvoiceController extends Controller
             'invoice'  => $invoice,
             'projects' => $projects,
             'fromProject' => $fromProject,
+            'isEdit'   => true,
         ]);
     }
 
@@ -119,7 +162,7 @@ class ProjectInvoiceController extends Controller
                 ->with('success', 'Invoice berhasil ditambahkan.');
         }
 
-        return redirect()->route('invoices.index')
+        return redirect()->route('finances.invoices.index')
             ->with('success', 'Invoice berhasil dibuat.');
     }
 
@@ -167,7 +210,7 @@ class ProjectInvoiceController extends Controller
                 ->with('success', 'Invoice berhasil ditambahkan.');
         }
 
-        return redirect()->route('invoices.index')
+        return redirect()->route('finances.invoices.index')
             ->with('success', 'Invoice berhasil diperbarui.');
     }
 

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -83,7 +83,7 @@ export function PackageCard({ pkg, index, totalItems, onChange, onDelete, onMove
         });
 
     return (
-        <div className="space-y-4 rounded-xl border border-primary/30 bg-input/30 p-4 dark:border-none">
+        <div className="space-y-4 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-muted-foreground">
                     <GripVertical className="size-4 cursor-grab" />
@@ -104,6 +104,7 @@ export function PackageCard({ pkg, index, totalItems, onChange, onDelete, onMove
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
+                                <SelectLabel>Status</SelectLabel>
                                 <SelectItem value="active">Active</SelectItem>
                                 <SelectItem value="inactive">Inactive</SelectItem>
                             </SelectGroup>
@@ -175,7 +176,7 @@ export function PackageCard({ pkg, index, totalItems, onChange, onDelete, onMove
                 {pkg.features.length > 0 && (
                     <div className="mb-3 space-y-2">
                         {pkg.features.map((feature) => (
-                            <div key={feature._key} className="flex items-center gap-3 rounded-lg border border-border bg-muted/30 px-3 py-2">
+                            <div key={feature._key} className="flex items-center gap-3 rounded-lg bg-primary/10 px-3 py-2 dark:bg-muted/40">
                                 <Switch id={`feat-${feature._key}`} checked={feature.is_included} onCheckedChange={(val) => updateFeature(feature._key, { is_included: val })} />
                                 <label
                                     htmlFor={`feat-${feature._key}`}
@@ -210,7 +211,7 @@ export function PackageCard({ pkg, index, totalItems, onChange, onDelete, onMove
                     />
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button type="button" variant="secondary" size="icon" onClick={addFeature}>
+                            <Button type="button" size="icon" onClick={addFeature}>
                                 <Plus className="size-4" />
                             </Button>
                         </TooltipTrigger>

@@ -19,8 +19,13 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
       Route::get('/create',            [CustomerController::class, 'create'])->name('create')->middleware('permission:create-contact-customers');
       Route::post('/',                 [CustomerController::class, 'store'])->name('store')->middleware('permission:create-contact-customers');
       Route::get('/{customer}/edit',   [CustomerController::class, 'edit'])->name('edit')->middleware('permission:edit-contact-customers');
-      Route::put('/{customer}',      [CustomerController::class, 'update'])->name('update')->middleware('permission:edit-contact-customers');
+      Route::put('/{customer}',        [CustomerController::class, 'update'])->name('update')->middleware('permission:edit-contact-customers');
       Route::delete('/{customer}',     [CustomerController::class, 'destroy'])->name('destroy')->middleware('permission:delete-contact-customers');
+
+      Route::post('/{customer}/check-account',  [CustomerController::class, 'checkAccount'])->name('check-account')->middleware('permission:edit-contact-customers');
+      Route::post('/{customer}/create-account', [CustomerController::class, 'createAccount'])->name('create-account')->middleware('permission:edit-contact-customers');
+      Route::post('/{customer}/link-account',   [CustomerController::class, 'linkAccount'])->name('link-account')->middleware('permission:edit-contact-customers');
+      Route::post('/{customer}/revoke-account', [CustomerController::class, 'revokeAccount'])->name('revoke-account')->middleware('permission:edit-contact-customers');
     });
 
     /*

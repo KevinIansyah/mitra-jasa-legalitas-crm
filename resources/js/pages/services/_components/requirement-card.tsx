@@ -82,7 +82,7 @@ export function RequirementCard({ category, index, totalItems, onChange, onDelet
         });
 
     return (
-        <div className="space-y-4 rounded-xl border border-primary/30 bg-input/30 p-4 dark:border-none">
+        <div className="space-y-4 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-muted-foreground">
                     <GripVertical className="size-4 cursor-grab" />
@@ -104,6 +104,7 @@ export function RequirementCard({ category, index, totalItems, onChange, onDelet
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectGroup>
+                                    <SelectLabel>Status</SelectLabel>
                                     <SelectItem value="active">Active</SelectItem>
                                     <SelectItem value="inactive">Inactive</SelectItem>
                                 </SelectGroup>
@@ -141,7 +142,7 @@ export function RequirementCard({ category, index, totalItems, onChange, onDelet
                 {category.requirements.length > 0 && (
                     <div className="mb-3 space-y-4">
                         {category.requirements.map((req, indexRequirement) => (
-                            <div key={req._key} className="space-y-4 rounded-lg border border-border bg-muted/30 p-4">
+                            <div key={req._key} className="space-y-4 rounded-lg bg-primary/10 p-4 md:p-6 dark:bg-muted/40">
                                 <div className="flex items-center gap-3">
                                     <Switch id={`req-${req._key}`} checked={req.is_required} onCheckedChange={(val) => updateRequirement(req._key, { is_required: val })} />
                                     <label
@@ -228,7 +229,7 @@ export function RequirementCard({ category, index, totalItems, onChange, onDelet
 
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button type="button" variant="secondary" size="icon" onClick={addRequirement}>
+                            <Button type="button" size="icon" onClick={addRequirement}>
                                 <Plus className="size-4" />
                             </Button>
                         </TooltipTrigger>

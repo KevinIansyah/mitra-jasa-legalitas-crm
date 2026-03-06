@@ -13,6 +13,10 @@ return new class extends Migration
             $table->foreignId('project_id')->nullable()->constrained('projects')->nullOnDelete();
             $table->foreignId('invoice_id')->nullable()->constrained('project_invoices')->nullOnDelete();
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('vendor_id')->nullable()->constrained('vendors')->nullOnDelete();
+
+            // Vendor
+            $table->string('vendor_name')->nullable();
 
             // Expense Info
             $table->string('category');
