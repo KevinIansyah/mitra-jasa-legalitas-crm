@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Services;
 
+use App\Http\Controllers\Controller;
 use App\Helpers\FileHelper;
 use App\Http\Requests\Services\StoreRequest;
 use App\Http\Requests\Services\UpdateBasicInformationRequest;

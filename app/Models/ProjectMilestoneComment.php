@@ -16,9 +16,12 @@ class ProjectMilestoneComment extends Model
         'comment',
     ];
 
-    // ============================================================
-    // RELATIONs
-    // ============================================================
+    /*
+    |--------------------------------------------------------------------------
+    | RELATIONS
+    |--------------------------------------------------------------------------
+    */
+
     public function milestone(): BelongsTo
     {
         return $this->belongsTo(ProjectMilestone::class, 'project_milestone_id');

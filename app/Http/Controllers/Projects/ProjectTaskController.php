@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Projects;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Projects\Tasks\StoreRequest;
 use App\Http\Requests\Projects\Tasks\UpdateRequest;
 use App\Models\Project;

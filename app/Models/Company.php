@@ -19,13 +19,14 @@ class Company extends Model
         'npwp',
         'status_legal',
         'category_business',
-        // 'type',
         'notes',
     ];
 
-    // ============================================================
-    // RELATIONS
-    // ============================================================
+    /*
+    |--------------------------------------------------------------------------
+    | RELATIONS
+    |--------------------------------------------------------------------------
+    */
 
     public function customers()
     {
@@ -34,9 +35,9 @@ class Company extends Model
             ->withTimestamps();
     }
 
-    // ============================================================
+    // -----------------------------------------------------------
     // SCOPES
-    // ============================================================
+    // -----------------------------------------------------------
 
     public function primaryCustomer()
     {
@@ -45,7 +46,7 @@ class Company extends Model
             ->withPivot('is_primary', 'position_at_company')
             ->withTimestamps();
     }
-    
+
     public function scopeSearch($query, $search)
     {
         return $query->where(function ($query) use ($search) {

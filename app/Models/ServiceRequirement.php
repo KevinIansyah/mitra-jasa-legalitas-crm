@@ -26,9 +26,12 @@ class ServiceRequirement extends Model
         'sort_order' => 'integer',
     ];
 
-    // ============================================================
-    // RELATIONS
-    // ============================================================
+    /*
+    |--------------------------------------------------------------------------
+    | RELATIONS
+    |--------------------------------------------------------------------------
+    */
+
 
     public function category(): BelongsTo
     {
@@ -40,16 +43,18 @@ class ServiceRequirement extends Model
         return $this->hasOneThrough(
             Service::class,
             ServiceRequirementCategory::class,
-            'id', // Foreign key on requirement_categories table
-            'id', // Foreign key on services table
-            'service_requirement_category_id', // Local key on requirements table
-            'service_id' // Local key on requirement_categories table
+            'id',
+            'id',
+            'service_requirement_category_id',
+            'service_id'
         );
     }
 
-    // ============================================================
-    // SCOPES
-    // ============================================================
+    /*
+    |--------------------------------------------------------------------------
+    | SCOPES
+    |--------------------------------------------------------------------------
+    */
 
     public function scopeActive($query)
     {

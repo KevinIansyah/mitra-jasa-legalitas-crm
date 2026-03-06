@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Projects;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Projects\Templates\StoreRequest;
 use App\Http\Requests\Projects\Templates\UpdateRequest;
 use App\Models\ProjectTemplate;

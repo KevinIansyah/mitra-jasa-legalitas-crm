@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Projects;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Projects\Invoices\StoreRequest;
 use App\Http\Requests\Projects\Invoices\UpdateRequest;
 use App\Models\Expense;

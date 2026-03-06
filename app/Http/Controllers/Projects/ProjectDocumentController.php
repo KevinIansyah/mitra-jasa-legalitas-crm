@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Projects;
 
+use App\Http\Controllers\Controller;
 use App\Helpers\FileHelper;
 use App\Http\Requests\Projects\Documents\StoreRequest;
 use App\Http\Requests\Projects\Documents\UpdateRequest;

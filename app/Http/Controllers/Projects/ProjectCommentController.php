@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Projects;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Projects\Comments\StoreRequest;
 use App\Http\Requests\Projects\Comments\UpdateRequest;
 use App\Models\Project;
 use App\Models\ProjectComment;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ProjectCommentController extends Controller
@@ -54,7 +54,6 @@ class ProjectCommentController extends Controller
 
     /**
      * Soft-delete own comment (or hard delete if admin).
-     * Soft-deleted comments show as "Pesan dihapus" on the frontend.
      */
     public function destroy(Project $project, ProjectComment $comment)
     {

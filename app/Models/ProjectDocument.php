@@ -51,9 +51,12 @@ class ProjectDocument extends Model
             ->useLogName('document');
     }
 
-    // ============================================================
-    // RELATIONS
-    // ============================================================
+    /*
+    |--------------------------------------------------------------------------
+    | RELATIONS
+    |--------------------------------------------------------------------------
+    */
+
 
     public function project(): BelongsTo
     {
@@ -70,9 +73,11 @@ class ProjectDocument extends Model
         return $this->belongsTo(User::class, 'verified_by');
     }
 
-    // ============================================================
-    // SCOPES
-    // ============================================================
+    /*
+    |--------------------------------------------------------------------------
+    | SCOPES
+    |--------------------------------------------------------------------------
+    */
 
     public function scopeSearch($query, $search)
     {
@@ -96,9 +101,6 @@ class ProjectDocument extends Model
         return $query->where('status', 'pending_review');
     }
 
-    /**
-     * Get file URL from R2.
-     */
     public function getFileUrlAttribute(): ?string
     {
         if (!$this->file_path) {
@@ -108,9 +110,6 @@ class ProjectDocument extends Model
         return Storage::disk('r2')->url($this->file_path);
     }
 
-    /**
-     * Get formatted file size.
-     */
     public function getFormattedFileSizeAttribute(): ?string
     {
         if (!$this->file_size) {
