@@ -50,8 +50,16 @@ class CustomerController extends Controller
 
         $customers = $query->latest()->paginate($perPage);
 
+        $summary = [
+            'total'        => Customer::count(),
+            'with_account' => Customer::whereNotNull('user_id')->count(),
+            'with_company' => Customer::has('companies')->count(),
+            'active'       => Customer::where('status', 'active')->count(),
+        ];
+
         return Inertia::render('contacts/customers/index', [
             'customers' => $customers,
+            'summary'   => $summary,
             'filters' => [
                 'search' => $search,
                 'per_page' => $perPage,

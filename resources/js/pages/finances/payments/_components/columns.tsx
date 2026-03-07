@@ -12,14 +12,16 @@ export default function getColumns(expandedRow: string | null, setExpandedRow: (
             header: 'Pembayaran',
             cell: ({ row }) => {
                 const { invoice, payment_method, reference_number } = row.original;
+
                 const method = payment_method ? PAYMENT_METHODS_MAP[payment_method as keyof typeof PAYMENT_METHODS_MAP] : null;
                 const typeInfo = invoice?.type ? INVOICE_TYPES_MAP[invoice.type] : null;
 
                 return (
-                    <div className="grid w-full min-w-100 grid-cols-[100px_1fr] items-center gap-x-2 gap-y-2 text-sm">
+                    <div className="grid w-100 grid-cols-[110px_1fr] items-center gap-x-2 gap-y-2 text-sm">
                         <span className="col-span-2 text-xs font-bold text-muted-foreground">Invoice</span>
                         <span className="text-xs font-medium text-muted-foreground">Nomor</span>
                         <span className="font-medium whitespace-normal">{invoice?.invoice_number ?? '-'}</span>
+
                         {typeInfo && (
                             <>
                                 <span className="text-xs font-medium text-muted-foreground">Tipe</span>
@@ -27,13 +29,17 @@ export default function getColumns(expandedRow: string | null, setExpandedRow: (
                             </>
                         )}
 
-                        <span className="col-span-2 mt-4 text-xs font-bold text-muted-foreground">Project</span>
-                        <span className="text-xs font-medium text-muted-foreground">Nama</span>
-                        <span className="whitespace-normal">{invoice?.project?.name ?? '-'}</span>
-                        {invoice?.project?.customer && (
+                        {invoice?.project && (
                             <>
-                                <span className="text-xs font-medium text-muted-foreground">Pelanggan</span>
-                                <span className="whitespace-normal">{invoice.project.customer.name}</span>
+                                <span className="col-span-2 mt-4 text-xs font-bold text-muted-foreground">Project</span>
+                                <span className="text-xs font-medium text-muted-foreground">Nama</span>
+                                <span className="whitespace-normal">{invoice.project.name ?? '-'}</span>
+                                {invoice.project.customer && (
+                                    <>
+                                        <span className="text-xs font-medium text-muted-foreground">Pelanggan (PIC)</span>
+                                        <span className="whitespace-normal">{invoice.project.customer.name}</span>
+                                    </>
+                                )}
                             </>
                         )}
 
@@ -49,7 +55,7 @@ export default function getColumns(expandedRow: string | null, setExpandedRow: (
                                 {reference_number && (
                                     <>
                                         <span className="text-xs font-medium text-muted-foreground">Referensi</span>
-                                        <span className="text-sm">{reference_number}</span>
+                                        <span>{reference_number}</span>
                                     </>
                                 )}
                             </>
@@ -63,21 +69,24 @@ export default function getColumns(expandedRow: string | null, setExpandedRow: (
             header: 'Jumlah',
             cell: ({ row }) => {
                 const { amount, payment_date, verified_at, verifier } = row.original;
+
                 return (
-                    <div className="grid w-full min-w-52 grid-cols-[100px_1fr] items-center gap-x-2 gap-y-2 text-sm">
+                    <div className="grid w-60 grid-cols-[110px_1fr] items-center gap-x-2 gap-y-2 text-sm">
                         <span className="col-span-2 text-xs font-bold text-muted-foreground">Jumlah</span>
                         <span className="text-xs font-medium text-muted-foreground">Total</span>
-                        <span className="font-semibold tabular-nums">{formatRupiah(Number(amount))}</span>
+                        <span className="tabular-nums">{formatRupiah(Number(amount))}</span>
 
                         <span className="col-span-2 mt-4 text-xs font-bold text-muted-foreground">Tanggal</span>
                         <span className="text-xs font-medium text-muted-foreground">Pembayaran</span>
                         <span>{formatDate(payment_date)}</span>
+
                         {verified_at && (
                             <>
                                 <span className="text-xs font-medium text-muted-foreground">Diverifikasi</span>
                                 <span>{formatDate(verified_at)}</span>
                             </>
                         )}
+
                         {verifier && (
                             <>
                                 <span className="text-xs font-medium text-muted-foreground">Oleh</span>

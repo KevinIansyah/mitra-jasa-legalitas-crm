@@ -4,7 +4,7 @@ import AppLayout from '@/layouts/app-layout';
 import projects from '@/routes/projects';
 import type { BreadcrumbItem } from '@/types';
 import type { Paginator } from '@/types/paginator';
-import type { ProjectTemplate } from '@/types/project-template';
+import type { ProjectTemplate, ProjectTemplateSummary } from '@/types/project-template';
 import type { Service } from '@/types/service';
 import { TemplateSection } from './_components/template-section';
 
@@ -20,8 +20,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Page() {
-    const { templates, services, filters } = usePage<{
+    const { templates, summary, services, filters } = usePage<{
         templates: Paginator<ProjectTemplate>;
+        summary: ProjectTemplateSummary;
         services: Service[];
         filters: { search?: string };
     }>().props;
@@ -32,7 +33,7 @@ export default function Page() {
             <div className="p-4 md:p-6">
                 <Heading title="Manajemen Template Project" description="Kelola daftar template project yang dapat digunakan sebagai dasar pembuatan project baru" />
 
-                <TemplateSection templates={templates} services={services} filters={filters} />
+                <TemplateSection templates={templates} summary={summary} services={services} filters={filters} />
             </div>
         </AppLayout>
     );

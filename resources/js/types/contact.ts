@@ -35,8 +35,8 @@ export interface Customer {
     name: string;
     phone: string | null;
     email: string | null;
-    status: string | null;
-    tier: string | null;
+    status: string;
+    tier: string;
     notes: string | null;
     created_at: string;
     updated_at: string;
@@ -65,6 +65,24 @@ export interface CompanyWithCustomers extends Company {
 
 export interface CustomersWithCompanies extends Customer {
     companies: Array<Company & { pivot: CustomerCompanyPivot }>;
+}
+
+// ============================================================
+// SUMMARY DATA
+// ============================================================
+
+export interface CompanySummary {
+    total: number;
+    with_customers: number;
+    with_npwp: number;
+    with_legal_status: number;
+}
+
+export interface CustomerSummary {
+    total: number;
+    with_account: number;
+    with_company: number;
+    active: number;
 }
 
 // ============================================================

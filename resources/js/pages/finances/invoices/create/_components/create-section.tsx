@@ -22,7 +22,7 @@ const EMPTY_FORM: ProjectInvoiceFormData = {
     invoice_date: '',
     due_date: '',
     percentage: 0,
-    amount: 0,
+    subtotal: 0,
     tax_percent: 11,
     discount_percent: 0,
     notes: '',
@@ -70,7 +70,7 @@ export default function CreateSection({ projects, selectedProject, fromProject }
                 <InvoiceForm data={data} errors={errors} projects={projects} fromProject={fromProject} onChange={handleChange} />
 
                 <InvoiceSummary
-                    amount={data.amount}
+                    subtotal={data.subtotal}
                     taxPercent={data.tax_percent ?? 0}
                     discountPercent={data.discount_percent ?? 0}
                     items={data.items ?? []}

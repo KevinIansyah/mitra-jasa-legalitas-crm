@@ -3,7 +3,7 @@ import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
 import companies from '@/routes/contacts/companies';
 import type { BreadcrumbItem } from '@/types';
-import type { CompanyWithCustomers } from '@/types/contact';
+import type { CompanySummary, CompanyWithCustomers } from '@/types/contact';
 import type { Paginator } from '@/types/paginator';
 import { CompanySection } from './_components/company-section';
 
@@ -19,8 +19,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Page() {
-    const { companies, filters } = usePage<{
+    const { companies, summary, filters } = usePage<{
         companies: Paginator<CompanyWithCustomers>;
+        summary: CompanySummary;
         filters: { search?: string };
     }>().props;
 
@@ -30,7 +31,7 @@ export default function Page() {
             <div className="p-4 md:p-6">
                 <Heading title="Manajemen Perusahaan" description="Kelola data dan informasi perusahaan secara terpusat" />
 
-                <CompanySection companies={companies} filters={filters} />
+                <CompanySection companies={companies} summary={summary} filters={filters} />
             </div>
         </AppLayout>
     );

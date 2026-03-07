@@ -113,7 +113,7 @@ export function InvoiceTable({ project, onEdit }: InvoiceTableProps) {
                                             </HasPermission>
                                         </DropdownMenu>
                                     </TableCell>
-                                    <TableCell>{formatRupiah(Number(invoice.amount))}</TableCell>
+                                    <TableCell>{formatRupiah(Number(invoice.subtotal))}</TableCell>
                                     <TableCell>
                                         <div className="grid w-full grid-cols-[110px_1fr] items-start gap-x-2 gap-y-2 text-sm">
                                             <span className="text-xs font-medium text-muted-foreground">Jatuh Tempo</span>

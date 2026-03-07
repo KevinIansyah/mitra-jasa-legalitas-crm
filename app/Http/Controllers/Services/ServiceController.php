@@ -66,8 +66,16 @@ class ServiceController extends Controller
         $categories = ServiceCategory::orderBy('sort_order')
             ->get(['id', 'name']);
 
+        $summary = [
+            'total'     => Service::count(),
+            'published' => Service::where('is_published', true)->count(),
+            'featured'  => Service::where('is_featured', true)->count(),
+            'popular'   => Service::where('is_popular', true)->count(),
+        ];
+
         return Inertia::render('services/index', [
-            'services' => $services,
+            'services'   => $services,
+            'summary'    => $summary,
             'categories' => $categories,
             'filters' => [
                 'search' => $search,

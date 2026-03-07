@@ -26,7 +26,7 @@ class StoreRequest extends FormRequest
             'status'               => 'nullable|in:draft,sent',
 
             'percentage'           => 'nullable|numeric|min:0|max:100',
-            'amount'               => $isAdditional ? 'nullable|numeric|min:0' : 'required|numeric|min:0',
+            'subtotal'               => $isAdditional ? 'nullable|numeric|min:0' : 'required|numeric|min:0',
             'tax_percent'          => 'nullable|numeric|min:0|max:100',
             'discount_percent'     => 'nullable|numeric|min:0|max:100',
 
@@ -55,9 +55,9 @@ class StoreRequest extends FormRequest
             'due_date.date'            => 'Format tanggal tidak valid.',
             'due_date.after_or_equal'  => 'Jatuh tempo harus setelah atau sama dengan tanggal invoice.',
 
-            'amount.required'          => 'Nominal wajib diisi.',
-            'amount.numeric'           => 'Nominal harus berupa angka.',
-            'amount.min'               => 'Nominal tidak boleh kurang dari 0.',
+            'subtotal.required'          => 'Nominal wajib diisi.',
+            'subtotal.numeric'           => 'Nominal harus berupa angka.',
+            'subtotal.min'               => 'Nominal tidak boleh kurang dari 0.',
 
             'items.required'           => 'Item wajib diisi untuk invoice tambahan.',
             'items.min'                => 'Minimal 1 item diperlukan.',

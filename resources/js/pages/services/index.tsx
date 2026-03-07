@@ -4,7 +4,7 @@ import AppLayout from '@/layouts/app-layout';
 import services from '@/routes/services';
 import type { BreadcrumbItem } from '@/types';
 import type { Paginator } from '@/types/paginator';
-import type { Service, ServiceCategory } from '@/types/service';
+import type { Service, ServiceCategory, ServiceSummary } from '@/types/service';
 import { ServiceSection } from './_components/service-section';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -15,9 +15,10 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Page() {
-    const { services, categories, filters } = usePage<{
+    const { services, categories, summary, filters } = usePage<{
         services: Paginator<Service>;
         categories: ServiceCategory[];
+        summary: ServiceSummary;
         filters: { search?: string };
     }>().props;
 
@@ -27,8 +28,9 @@ export default function Page() {
             <div className="p-4 md:p-6">
                 <Heading title="Manajemen Layanan" description="Kelola data dan informasi layanan secara terpusat" />
 
-                <ServiceSection services={services} categories={categories} filters={filters} />
+                <ServiceSection services={services} categories={categories} summary={summary} filters={filters} />
             </div>
         </AppLayout>
+
     );
 }

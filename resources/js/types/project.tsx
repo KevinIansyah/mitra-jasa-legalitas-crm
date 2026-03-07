@@ -191,7 +191,7 @@ export type ProjectInvoice = {
     type: InvoiceType;
     invoice_date: string;
     percentage: string | null;
-    amount: string;
+    subtotal: string;
     tax_percent: string;
     tax_amount: string;
     discount_percent: string;
@@ -419,7 +419,7 @@ export interface ProjectInvoiceFormData {
     type: InvoiceType;
     invoice_date: string;
     percentage?: number | null;
-    amount: number;
+    subtotal: number;
     tax_percent?: number;
     discount_percent?: number;
     due_date: string;
@@ -539,6 +539,26 @@ export interface ProjectDeliverableSummary {
     final: number;
     draft: number;
     encrypted: number;
+}
+
+export type ProjectInvoiceSummary = {
+    total: number;
+    draft: number;
+    sent: number;
+    paid: number;
+    overdue: number;
+    cancelled: number;
+    total_amount: string;
+    paid_amount: string;
+};
+
+export interface ProjectSummary {
+    total: number;
+    planning: number;
+    in_progress: number;
+    on_hold: number;
+    completed: number;
+    cancelled: number;
 }
 
 // ============================================================

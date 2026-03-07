@@ -61,6 +61,17 @@ export interface Service {
 }
 
 // ============================================================
+// SERVICE SUMMARY
+// ============================================================
+
+export interface ServiceSummary {
+    total: number;
+    published: number;
+    featured: number;
+    popular: number;
+}
+
+// ============================================================
 // PACKAGE MODELS
 // ============================================================
 

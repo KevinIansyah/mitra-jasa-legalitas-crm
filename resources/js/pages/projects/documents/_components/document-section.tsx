@@ -15,57 +15,70 @@ export function DocumentSection({ documents, summary, filters }: DocumentSection
     const { data, current_page, last_page, per_page, total } = documents;
     const [pageIndex, setPageIndex] = useState(current_page - 1);
 
-    const STATS_BADGE = [
+    const STATS = [
         {
-            label: 'Total',
+            label: 'Total Dokumen',
             value: summary.total,
-            color: 'text-foreground',
             badge: 'bg-slate-500 text-white',
             icon: <File className="size-3.5" />,
+            footer: (
+                <>
+                    <p className="font-medium">Semua dokumen project</p>
+                    <p className="text-muted-foreground">Dari seluruh project aktif</p>
+                </>
+            ),
         },
         {
             label: 'Terverifikasi',
             value: summary.verified,
-            color: 'text-foreground',
             badge: 'bg-emerald-500 text-white',
             icon: <FileCheck className="size-3.5" />,
+            footer: (
+                <>
+                    <p className="font-medium">Dokumen telah diverifikasi</p>
+                    <p className="text-muted-foreground">{summary.pending_review} menunggu review</p>
+                </>
+            ),
         },
         {
             label: 'Menunggu Review',
             value: summary.pending_review,
-            color: 'text-foreground',
             badge: 'bg-yellow-500 text-white',
             icon: <FileClock className="size-3.5" />,
+            footer: (
+                <>
+                    <p className="font-medium">Dokumen sudah diunggah</p>
+                    <p className="text-muted-foreground">Belum dikonfirmasi verifikator</p>
+                </>
+            ),
         },
         {
-            label: 'Ditolak',
-            value: summary.rejected,
-            color: 'text-foreground',
+            label: 'Ditolak / Belum Upload',
+            value: Number(summary.rejected) + Number(summary.not_uploaded),
             badge: 'bg-red-500 text-white',
             icon: <FileX className="size-3.5" />,
+            footer: (
+                <>
+                    <p className="font-medium">{summary.rejected} ditolak · {summary.not_uploaded} belum diunggah</p>
+                    <p className="text-muted-foreground">Perlu tindak lanjut</p>
+                </>
+            ),
         },
     ];
 
     return (
         <div className="space-y-4">
             <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:border-none *:data-[slot=card]:bg-sidebar *:data-[slot=card]:shadow md:grid-cols-2 lg:grid-cols-4 *:data-[slot=card]:dark:shadow-none">
-                {STATS_BADGE.map(({ label, value, color, badge, icon }) => (
+                {STATS.map(({ label, value, badge, icon, footer }) => (
                     <Card key={label}>
                         <CardHeader>
                             <CardDescription>{label}</CardDescription>
-                            <CardTitle className={`text-3xl font-semibold tabular-nums ${color}`}>{value}</CardTitle>
-
-                            {label !== 'Total' && (
-                                <CardAction>
-                                    <div className={`rounded-full px-3 py-1 ${badge}`}>{icon}</div>
-                                </CardAction>
-                            )}
+                            <CardTitle className="text-3xl font-semibold tabular-nums">{value}</CardTitle>
+                            <CardAction>
+                                <div className={`rounded-full px-3 py-1 ${badge}`}>{icon}</div>
+                            </CardAction>
                         </CardHeader>
-
-                        <CardFooter className="flex-col items-start text-sm">
-                            <div className="font-medium">Jumlah dokumen {label.toLowerCase()}</div>
-                            <div className="text-muted-foreground">Berdasarkan seluruh project</div>
-                        </CardFooter>
+                        <CardFooter className="flex-col items-start text-sm">{footer}</CardFooter>
                     </Card>
                 ))}
             </div>

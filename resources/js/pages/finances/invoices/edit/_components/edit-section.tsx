@@ -23,7 +23,7 @@ function invoiceToFormData(invoice: ProjectInvoice): ProjectInvoiceFormData {
         invoice_date: invoice.invoice_date,
         due_date: invoice.due_date,
         percentage: invoice.percentage ? Number(invoice.percentage) : 0,
-        amount: Number(invoice.amount),
+        subtotal: Number(invoice.subtotal),
         tax_percent: Number(invoice.tax_percent),
         discount_percent: Number(invoice.discount_percent),
         notes: invoice.notes ?? '',
@@ -76,7 +76,7 @@ export default function EditSection({ invoice, projects, fromProject, isEdit }: 
                 <InvoiceForm data={data} errors={errors} projects={projects} fromProject={fromProject} isEdit={isEdit} onChange={handleChange} />
 
                 <InvoiceSummary
-                    amount={data.amount}
+                    subtotal={data.subtotal}
                     taxPercent={data.tax_percent ?? 0}
                     discountPercent={data.discount_percent ?? 0}
                     items={data.items ?? []}

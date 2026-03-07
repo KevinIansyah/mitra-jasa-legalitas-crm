@@ -3,7 +3,7 @@ import { formatRupiah } from '@/lib/service';
 import type { ProjectInvoiceItemFormData } from '@/types/project';
 
 type InvoiceSummaryProps = {
-    amount?: number;
+    subtotal?: number;
     taxPercent?: number;
     discountPercent?: number;
     items?: ProjectInvoiceItemFormData[];
@@ -13,8 +13,7 @@ type InvoiceSummaryProps = {
     onSubmitSend: () => void;
 };
 
-function calcSimple(amount: number, taxPercent: number, discountPercent: number) {
-    const subtotal = amount;
+function calcSimple(subtotal: number, taxPercent: number, discountPercent: number) {
     const discountAmount = subtotal * (discountPercent / 100);
     const afterDiscount = subtotal - discountAmount;
     const taxAmount = afterDiscount * (taxPercent / 100);
@@ -43,8 +42,8 @@ function calcItems(items: ProjectInvoiceItemFormData[]) {
     return { subtotal, discountAmount, taxAmount, total };
 }
 
-export function InvoiceSummary({ amount = 0, taxPercent = 0, discountPercent = 0, items = [], isAdditional, processing, onSubmitDraft, onSubmitSend }: InvoiceSummaryProps) {
-    const calc = isAdditional ? calcItems(items) : calcSimple(amount, taxPercent, discountPercent);
+export function InvoiceSummary({ subtotal = 0, taxPercent = 0, discountPercent = 0, items = [], isAdditional, processing, onSubmitDraft, onSubmitSend }: InvoiceSummaryProps) {
+    const calc = isAdditional ? calcItems(items) : calcSimple(subtotal, taxPercent, discountPercent);
 
     return (
         <div className="space-y-4">

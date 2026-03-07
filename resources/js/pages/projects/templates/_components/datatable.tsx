@@ -20,6 +20,7 @@ import templates from '@/routes/projects/templates';
 import type { ProjectTemplate } from '@/types/project-template';
 import type { Service } from '@/types/service';
 import getColumns from './columns';
+import TemplateDetail from './template-detail';
 
 interface DataTableProps {
     data: ProjectTemplate[];
@@ -39,6 +40,7 @@ interface DataTableProps {
 
 export function DataTable({ data, services, pageIndex, setPageIndex, totalPages, totalItems, perPage, initialFilters = {} }: DataTableProps) {
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+    const [expandedRow, setExpandedRow] = React.useState<string | null>(null);
     const [isFilterOpen, setIsFilterOpen] = React.useState(false);
     const { searchValue, clearSearch, handleSearchChange, filters, updateFilter, goToPage, changePageSize, canPreviousPage, canNextPage, resetFilters, activeFiltersCount } =
         useDataTableWithFilters({
@@ -51,8 +53,7 @@ export function DataTable({ data, services, pageIndex, setPageIndex, totalPages,
             routeUrl: templates.index().url,
         });
 
-    const columns = getColumns();
-
+    const columns = getColumns(expandedRow, setExpandedRow);
     const selectedService = services.find((cat) => String(cat.id) === filters.service_id);
 
     const table = useReactTable({
@@ -241,11 +242,7 @@ export function DataTable({ data, services, pageIndex, setPageIndex, totalPages,
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id} className="border-none">
                                 {headerGroup.headers.map((header) => {
-                                    return (
-                                        <TableHead key={header.id}>
-                                            {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                                        </TableHead>
-                                    );
+                                    return <TableHead key={header.id}>{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}</TableHead>;
                                 })}
                             </TableRow>
                         ))}
@@ -253,11 +250,23 @@ export function DataTable({ data, services, pageIndex, setPageIndex, totalPages,
                     <TableBody>
                         {table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
-                                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-                                    ))}
-                                </TableRow>
+                                <React.Fragment key={row.id}>
+                                    <TableRow data-state={row.getIsSelected() && 'selected'} className={expandedRow === row.id ? 'border-none' : ''}>
+                                        {row.getVisibleCells().map((cell) => (
+                                            <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                                        ))}
+                                    </TableRow>
+
+                                    {expandedRow === row.id && (
+                                        <TableRow className="hover:bg-transparent">
+                                            <TableCell colSpan={columns.length} className="pb-4">
+                                                <div className="rounded-lg bg-primary/10 dark:bg-muted/40">
+                                                    <TemplateDetail template={row.original} />
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                                </React.Fragment>
                             ))
                         ) : (
                             <TableRow>

@@ -56,8 +56,27 @@ class ProjectTemplateController extends Controller
             ->orderBy('name')
             ->get(['id', 'name']);
 
+        $statusCounts = ProjectTemplate::selectRaw('status, count(*) as count')
+            ->groupBy('status')
+            ->pluck('count', 'status');
+
+        $summary = [
+            'total'        => ProjectTemplate::count(),
+            'active'       => (int) ($statusCounts['active'] ?? 0),
+            'inactive'     => (int) ($statusCounts['inactive'] ?? 0),
+            'with_content' => ProjectTemplate::where(function ($q) {
+                $q->whereNotNull('milestones')->where('milestones', '!=', '[]')
+                  ->orWhere(function ($q2) {
+                      $q2->whereNotNull('documents')->where('documents', '!=', '[]');
+                  });
+            })->count(),
+            'service_based' => ProjectTemplate::whereNotNull('service_id')->count(),
+            'custom'        => ProjectTemplate::whereNull('service_id')->count(),
+        ];
+
         return Inertia::render('projects/templates/index', [
             'templates' => $templates,
+            'summary'   => $summary,
             'services' => $services,
             'filters' => [
                 'search' => $search,

@@ -1,4 +1,4 @@
-import { Eye, Pencil, UserRoundCog } from 'lucide-react';
+import { ChevronDown, ChevronUp, Eye, Pencil, UserRoundCog } from 'lucide-react';
 import { useState } from 'react';
 import { DialogDelete } from '@/components/dialog-delete';
 import { HasPermission } from '@/components/has-permission';
@@ -11,15 +11,26 @@ import { DrawerManageCustomers } from './drawer-manage-customer';
 
 type ActionsProps = {
     company: CompanyWithCustomers;
+    isExpanded?: boolean;
+    onToggleExpand?: () => void;
 };
 
-export default function Actions({ company }: ActionsProps) {
+export default function Actions({ company, isExpanded, onToggleExpand }: ActionsProps) {
     const [editingCompany, setEditingCompany] = useState<Company | null>(null);
     const [isManagingCustomers, setIsManagingCustomers] = useState(false);
 
     return (
         <>
             <div className="flex items-center gap-1">
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button variant="secondary" className="h-8 w-8" onClick={onToggleExpand}>
+                            {isExpanded ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{isExpanded ? 'Tutup Detail' : 'Lihat Detail'}</TooltipContent>
+                </Tooltip>
+
                 <HasPermission permission="edit-contact-companies">
                     <Tooltip>
                         <TooltipTrigger asChild>
@@ -46,7 +57,6 @@ export default function Actions({ company }: ActionsProps) {
                     </Tooltip>
                 </HasPermission>
 
-                {/* Edit */}
                 <HasPermission permission="edit-contact-companies">
                     <Tooltip>
                         <TooltipTrigger asChild>
@@ -60,7 +70,6 @@ export default function Actions({ company }: ActionsProps) {
                     </Tooltip>
                 </HasPermission>
 
-                {/* Delete */}
                 <HasPermission permission="delete-contact-companies">
                     <DialogDelete
                         description={`Tindakan ini tidak dapat dibatalkan. Data perusahaan "${company.name}" akan dihapus secara permanen dari sistem.`}
@@ -70,7 +79,6 @@ export default function Actions({ company }: ActionsProps) {
                 </HasPermission>
             </div>
 
-            {/* Edit Drawer */}
             {editingCompany && (
                 <DrawerEdit
                     company={editingCompany}
@@ -81,7 +89,6 @@ export default function Actions({ company }: ActionsProps) {
                 />
             )}
 
-            {/* Manage Customers Drawer */}
             {isManagingCustomers && <DrawerManageCustomers company={company} open={isManagingCustomers} onOpenChange={setIsManagingCustomers} />}
         </>
     );

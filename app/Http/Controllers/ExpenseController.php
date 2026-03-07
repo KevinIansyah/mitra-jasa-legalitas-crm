@@ -27,10 +27,10 @@ class ExpenseController extends Controller
         $billed   = $request->get('is_billed');
 
         $query = Expense::with([
-            'project',
-            'project.customer',
+            'project:id,name,customer_id,status',
+            'project.customer:id,name',
             'invoice:id,invoice_number',
-            'user',
+            'user:id,name,avatar',
             'vendor:id,name,category',
         ]);
 

@@ -26,7 +26,7 @@ class ProjectPaymentController extends Controller
 
         $query = ProjectPayment::with([
             'invoice',
-            'invoice.project:id,name',
+            'invoice.project:id,name,customer_id',
             'invoice.project.customer:id,name',
             'verifier:id,name',
         ]);

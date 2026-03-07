@@ -18,6 +18,7 @@ import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
 import companies from '@/routes/contacts/companies';
 import { CATEGORY_BUSINESS, STATUS_LEGAL, type CompanyWithCustomers } from '@/types/contact';
 import getColumns from './columns';
+import CompanyDetail from './company-detail';
 import { DrawerAdd } from './drawer-add';
 
 interface DataTableProps {
@@ -36,6 +37,7 @@ interface DataTableProps {
 
 export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItems, perPage, initialFilters = {} }: DataTableProps) {
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+    const [expandedRow, setExpandedRow] = React.useState<string | null>(null);
     const [isFilterOpen, setIsFilterOpen] = React.useState(false);
     const { searchValue, clearSearch, handleSearchChange, filters, updateFilter, goToPage, changePageSize, canPreviousPage, canNextPage, resetFilters, activeFiltersCount } =
         useDataTableWithFilters({
@@ -48,8 +50,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
             routeUrl: companies.index().url,
         });
 
-    const columns = getColumns();
-
+    const columns = getColumns(expandedRow, setExpandedRow);
     const selectedCategoryBusiness = CATEGORY_BUSINESS.find((category) => category.value === filters.category_business);
     const selectedStatusLegal = STATUS_LEGAL.find((status) => status.value === filters.status_legal);
 
@@ -212,11 +213,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id} className="border-none">
                                 {headerGroup.headers.map((header) => {
-                                    return (
-                                        <TableHead key={header.id}>
-                                            {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                                        </TableHead>
-                                    );
+                                    return <TableHead key={header.id}>{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}</TableHead>;
                                 })}
                             </TableRow>
                         ))}
@@ -224,11 +221,22 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                     <TableBody>
                         {table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
-                                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-                                    ))}
-                                </TableRow>
+                                <React.Fragment key={row.id}>
+                                    <TableRow data-state={row.getIsSelected() && 'selected'} className={expandedRow === row.id ? 'border-none' : ''}>
+                                        {row.getVisibleCells().map((cell) => (
+                                            <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                                        ))}
+                                    </TableRow>
+                                    {expandedRow === row.id && (
+                                        <TableRow className="hover:bg-transparent">
+                                            <TableCell colSpan={columns.length} className="pb-4">
+                                                <div className="rounded-lg bg-primary/10 dark:bg-muted/40">
+                                                    <CompanyDetail company={row.original} />
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                                </React.Fragment>
                             ))
                         ) : (
                             <TableRow>

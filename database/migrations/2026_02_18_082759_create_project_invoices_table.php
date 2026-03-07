@@ -24,7 +24,7 @@ return new class extends Migration
             // dp/progress/final: percentage × budget project
             // additional: calculated from sum items
             $table->decimal('percentage', 5, 2)->nullable()->comment('% dari budget project, hanya untuk dp/progress/final');
-            $table->decimal('amount', 15, 2);
+            $table->decimal('subtotal', 15, 2);
             $table->decimal('tax_percent', 5, 2)->default(0);
             $table->decimal('tax_amount', 15, 2)->default(0);
             $table->decimal('discount_percent', 5, 2)->default(0);

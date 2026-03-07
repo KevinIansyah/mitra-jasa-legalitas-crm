@@ -224,7 +224,6 @@ export default function Finances({ project }: FinancesProps) {
             {/* Edit Drawer */}
             {editingExpense && (
                 <ExpenseEditDrawer
-                    fromProject={true}
                     expense={editingExpense}
                     initialProject={project}
                     open={!!editingExpense}

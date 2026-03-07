@@ -44,8 +44,18 @@ class CompanyController extends Controller
 
         $companies = $query->latest()->paginate($perPage);
 
+        $summary = [
+            'total'             => Company::count(),
+            'with_customers'    => Company::has('customers')->count(),
+            'with_npwp'         => Company::whereNotNull('npwp')->count(),
+            'with_legal_status' => Company::whereNotNull('status_legal')
+                                          ->where('status_legal', '!=', 'belum_ada')
+                                          ->count(),
+        ];
+
         return Inertia::render('contacts/companies/index', [
             'companies' => $companies,
+            'summary'   => $summary,
             'filters' => [
                 'search' => $search,
                 'per_page' => $perPage,

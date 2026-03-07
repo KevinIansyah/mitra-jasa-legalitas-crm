@@ -14,16 +14,19 @@ export default function getColumns(): ColumnDef<Expense>[] {
             header: 'Pengeluaran',
             cell: ({ row }) => {
                 const { category, description, project, invoice, user } = row.original;
-                const categoryInfo = EXPENSE_CATEGORIES_MAP[category];
+
+                const categoryInfo = category ? EXPENSE_CATEGORIES_MAP[category] : null;
                 const isBilled = !!invoice;
 
                 return (
-                    <div className="grid w-full min-w-100 grid-cols-[100px_1fr] items-center gap-x-2 gap-y-2 text-sm">
+                    <div className="grid w-100 grid-cols-[110px_1fr] items-center gap-x-2 gap-y-2 text-sm">
                         <span className="col-span-2 text-xs font-bold text-muted-foreground">Pengeluaran</span>
                         <span className="text-xs font-medium text-muted-foreground">Kategori</span>
-                        <Badge className={categoryInfo?.classes}>{categoryInfo?.label}</Badge>
+                        {categoryInfo ? <Badge className={categoryInfo.classes}>{categoryInfo.label}</Badge> : <span>-</span>}
+
                         <span className="text-xs font-medium text-muted-foreground">Deskripsi</span>
-                        <span className="whitespace-normal">{description}</span>
+                        <span className="min-w-0 break-words whitespace-normal">{description || '-'}</span>
+
                         {user && (
                             <>
                                 <span className="text-xs font-medium text-muted-foreground">Dicatat</span>
@@ -35,10 +38,10 @@ export default function getColumns(): ColumnDef<Expense>[] {
                             <>
                                 <span className="col-span-2 mt-4 text-xs font-bold text-muted-foreground">Project</span>
                                 <span className="text-xs font-medium text-muted-foreground">Nama</span>
-                                <span className="whitespace-normal">{project.name}</span>
+                                <span className="min-w-0 break-words whitespace-normal">{project.name}</span>
                                 {project.customer && (
                                     <>
-                                        <span className="text-xs font-medium text-muted-foreground">Pelanggan</span>
+                                        <span className="text-xs font-medium text-muted-foreground">Pelanggan (PIC)</span>
                                         <span>{project.customer.name}</span>
                                     </>
                                 )}
@@ -61,46 +64,46 @@ export default function getColumns(): ColumnDef<Expense>[] {
             header: 'Jumlah',
             cell: ({ row }) => {
                 const { amount, expense_date, is_billable, invoice, vendor, vendor_id, vendor_name } = row.original;
+
                 const isBilled = !!invoice;
-                const vendorInfo = VENDOR_CATEGORIES_MAP[vendor?.category ?? ''];
+                const vendorInfo = vendor?.category ? VENDOR_CATEGORIES_MAP[vendor.category] : null;
 
                 return (
-                    <div className="grid w-full min-w-52 grid-cols-[100px_1fr] items-center gap-x-2 gap-y-2 text-sm">
+                    <div className="grid w-60 grid-cols-[110px_1fr] items-center gap-x-2 gap-y-2 text-sm">
                         <span className="col-span-2 text-xs font-bold text-muted-foreground">Jumlah</span>
                         <span className="text-xs font-medium text-muted-foreground">Total</span>
-                        <span className="font-semibold tabular-nums">{formatRupiah(Number(amount))}</span>
+                        <span className="tabular-nums">{formatRupiah(Number(amount))}</span>
 
-                        <span className="col-span-2 mt-4 text-xs font-bold text-muted-foreground">Info</span>
+                        <span className="col-span-2 mt-4 text-xs font-bold text-muted-foreground">Informasi</span>
                         <span className="text-xs font-medium text-muted-foreground">Tanggal</span>
                         <span>{formatDate(expense_date)}</span>
+
                         <span className="text-xs font-medium text-muted-foreground">Billable</span>
-                        <span>
-                            {is_billable ? (
-                                isBilled ? (
-                                    <Badge className="bg-emerald-500 text-white">Sudah Ditagihkan</Badge>
-                                ) : (
-                                    <Badge className="bg-yellow-500 text-white">Belum Ditagihkan</Badge>
-                                )
+                        {is_billable ? (
+                            isBilled ? (
+                                <Badge className="bg-emerald-500 text-white">Sudah Ditagihkan</Badge>
                             ) : (
-                                <Badge variant="secondary">Non-billable</Badge>
-                            )}
-                        </span>
+                                <Badge className="bg-yellow-500 text-white">Belum Ditagihkan</Badge>
+                            )
+                        ) : (
+                            <Badge variant="secondary">Non-billable</Badge>
+                        )}
 
                         {vendor && vendor_id && (
                             <>
                                 <span className="col-span-2 mt-4 text-xs font-bold text-muted-foreground">Vendor</span>
                                 <span className="text-xs font-medium text-muted-foreground">Nama</span>
                                 <span>{vendor.name}</span>
-                                {vendor.category && (
+                                {vendorInfo && (
                                     <>
                                         <span className="text-xs font-medium text-muted-foreground">Kategori</span>
-                                        <Badge className={vendorInfo?.classes}>{vendorInfo?.label}</Badge>
+                                        <Badge className={vendorInfo.classes}>{vendorInfo.label}</Badge>
                                     </>
                                 )}
                             </>
                         )}
 
-                        {vendor_name && (
+                        {!vendor_id && vendor_name && (
                             <>
                                 <span className="col-span-2 mt-4 text-xs font-bold text-muted-foreground">Vendor</span>
                                 <span className="text-xs font-medium text-muted-foreground">Nama</span>

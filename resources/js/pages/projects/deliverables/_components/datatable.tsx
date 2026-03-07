@@ -33,7 +33,6 @@ interface DataTableProps {
 export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItems, perPage, initialFilters = {} }: DataTableProps) {
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
     const [expandedRow, setExpandedRow] = React.useState<string | null>(null);
-    // const [isFilterOpen, setIsFilterOpen] = React.useState(false);
     const { searchValue, clearSearch, handleSearchChange, goToPage, changePageSize, canPreviousPage, canNextPage, resetFilters, activeFiltersCount } = useDataTableWithFilters({
         pageIndex,
         setPageIndex,
@@ -45,8 +44,6 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
     });
 
     const columns = getColumns(expandedRow, setExpandedRow);
-
-    // const selectedStatus = DOCUMENT_STATUSES.find((status) => status.value === filters.status);
 
     const table = useReactTable({
         data,
@@ -75,53 +72,6 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                                 <Search />
                             </InputGroupAddon>
                         </InputGroup>
-
-                        {/* <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-                            <SheetTrigger asChild>
-                                <Button variant="secondary" className="relative gap-1.5 lg:w-30">
-                                    <Filter className="size-3.75" />
-                                    <span className="hidden lg:inline">Filter</span>
-                                    {activeFiltersCount > 0 && (
-                                        <Badge className="ml-2 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-background">
-                                            {activeFiltersCount}
-                                        </Badge>
-                                    )}
-                                </Button>
-                            </SheetTrigger>
-                            <SheetContent>
-                                <SheetHeader>
-                                    <SheetTitle>Filter Data</SheetTitle>
-                                    <SheetDescription>Atur filter untuk menyaring data perusahaan</SheetDescription>
-                                </SheetHeader>
-
-                                <div className="space-y-4 px-4">
-                                    <Field>
-                                        <FieldLabel htmlFor="status">Status</FieldLabel>
-                                        <Select value={filters.status || ''} onValueChange={(value) => updateFilter('status', value || undefined)}>
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Pilih status" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    <SelectLabel>Status</SelectLabel>
-                                                    {DOCUMENT_STATUSES.map((status) => (
-                                                        <SelectItem key={status.value} value={status.value}>
-                                                            {status.label}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                    </Field>
-
-                                    {activeFiltersCount > 0 && (
-                                        <Button className="w-full" onClick={resetFilters}>
-                                            Reset Filter
-                                        </Button>
-                                    )}
-                                </div>
-                            </SheetContent>
-                        </Sheet> */}
                     </div>
 
                     <div className="flex w-full gap-2 md:w-auto">
@@ -156,14 +106,6 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                                 </Button>
                             </Badge>
                         )}
-                        {/* {filters.status && (
-                            <Badge variant="secondary" className="gap-2 capitalize">
-                                Status: {selectedStatus?.label}
-                                <Button variant="ghost" size="sm" className="h-6 w-6 text-xs" onClick={() => updateFilter('status', undefined)}>
-                                    <X className="size-3" />
-                                </Button>
-                            </Badge>
-                        )} */}
                         <Button variant="ghost" size="sm" className="h-7.5 text-xs" onClick={resetFilters}>
                             Reset semua
                         </Button>

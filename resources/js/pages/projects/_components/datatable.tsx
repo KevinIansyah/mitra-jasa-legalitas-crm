@@ -22,6 +22,7 @@ import type { Company, Customer } from '@/types/contact';
 import { PROJECT_STATUSES, type Project } from '@/types/project';
 import type { Service } from '@/types/service';
 import getColumns from './columns';
+import ProjectDetail from './project-detail';
 
 interface DataTableProps {
     data: Project[];
@@ -44,6 +45,7 @@ interface DataTableProps {
 
 export function DataTable({ data, customers, companies, services, pageIndex, setPageIndex, totalPages, totalItems, perPage, initialFilters = {} }: DataTableProps) {
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+    const [expandedRow, setExpandedRow] = React.useState<string | null>(null);
     const [isFilterOpen, setIsFilterOpen] = React.useState(false);
     const { searchValue, clearSearch, handleSearchChange, filters, updateFilter, goToPage, changePageSize, canPreviousPage, canNextPage, resetFilters, activeFiltersCount } =
         useDataTableWithFilters({
@@ -56,8 +58,7 @@ export function DataTable({ data, customers, companies, services, pageIndex, set
             routeUrl: projects.index().url,
         });
 
-    const columns = getColumns();
-
+    const columns = getColumns(expandedRow, setExpandedRow);
     const selectedCustomers = customers.find((customer) => filters.customer_id === customer.id.toString());
     const selectedCompanies = companies.find((company) => filters.company_id === company.id.toString());
     const selectedServices = services.find((service) => filters.service_id === service.id.toString());
@@ -297,31 +298,30 @@ export function DataTable({ data, customers, companies, services, pageIndex, set
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id} className="border-none">
                                 {headerGroup.headers.map((header) => {
-                                    return (
-                                        <TableHead key={header.id}>
-                                            {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                                        </TableHead>
-                                    );
+                                    return <TableHead key={header.id}>{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}</TableHead>;
                                 })}
                             </TableRow>
                         ))}
                     </TableHeader>
                     <TableBody>
-                        {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
-                                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                        {table.getRowModel().rows.map((row) => (
+                            <React.Fragment key={row.id}>
+                                <TableRow data-state={row.getIsSelected() && 'selected'} className={expandedRow === row.id ? 'border-none' : ''}>
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                                     ))}
                                 </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    {searchValue ? 'Tidak ada hasil yang ditemukan' : 'Tidak ada data'}
-                                </TableCell>
-                            </TableRow>
-                        )}
+                                {expandedRow === row.id && (
+                                    <TableRow className="hover:bg-transparent">
+                                        <TableCell colSpan={columns.length} className="pb-4">
+                                            <div className="rounded-lg bg-primary/10 dark:bg-muted/40">
+                                                <ProjectDetail project={row.original} />
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </React.Fragment>
+                        ))}
                     </TableBody>
                 </Table>
             </div>

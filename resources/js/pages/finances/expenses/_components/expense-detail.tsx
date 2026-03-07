@@ -2,7 +2,7 @@ import type { Expense } from '@/types/expenses';
 
 export default function ExpenseDetail({ expense }: { expense: Expense }) {
     if (!expense.project?.description) {
-        return <div className="p-4 text-sm text-muted-foreground">Tidak ada informasi tambahan</div>;
+        return <div className="p-4 text-center text-sm text-muted-foreground">Tidak ada informasi tambahan</div>;
     }
 
     return (

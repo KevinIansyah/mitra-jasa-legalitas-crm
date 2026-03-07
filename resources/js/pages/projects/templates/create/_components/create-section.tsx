@@ -182,12 +182,9 @@ export function CreateSection({ services }: CreateSectionProps) {
                 });
                 reset();
             },
-            onError: (e) => {
-                toast.error('Gagal', {
-                    description: 'Template gagal ditambahkan. Silakan periksa kembali data yang diisi.',
-                });
-
-                console.error(e);
+            onError: (errors) => {
+                const msg = Object.values(errors)[0] ?? 'Terjadi kesalahan saat menambahkan template, coba lagi.';
+                toast.error('Gagal', { description: String(msg) });
             },
             onFinish: () => {
                 toast.dismiss(id);
@@ -326,9 +323,9 @@ export function CreateSection({ services }: CreateSectionProps) {
                             <p className="mt-0.5 text-sm text-muted-foreground">Kelola tahapan-tahapan dalam project template</p>
                         </div>
                         {data.milestones.length > 0 && (
-                            <Button type="button" onClick={addMilestone} size="sm" className="w-full gap-1.5 md:w-auto">
+                            <Button type="button" onClick={addMilestone} className="ml-auto w-[50%] md:ml-0 md:w-30">
                                 <Plus className="size-4" />
-                                Tambah Milestone
+                                Tambah
                             </Button>
                         )}
                     </div>
@@ -339,7 +336,7 @@ export function CreateSection({ services }: CreateSectionProps) {
                                 <Target className="size-5 text-primary" />
                             </div>
                             <p className="text-sm">Belum ada milestone</p>
-                            <Button type="button" size="sm" onClick={addMilestone} className="gap-1.5">
+                            <Button type="button" onClick={addMilestone}>
                                 <Plus className="size-4" />
                                 Tambah Milestone Pertama
                             </Button>
@@ -360,15 +357,6 @@ export function CreateSection({ services }: CreateSectionProps) {
                             ))}
                         </div>
                     )}
-
-                    {data.milestones.length > 0 && (
-                        <div className="flex w-full justify-end">
-                            <Button type="button" onClick={addMilestone} size="sm" className="w-full gap-1.5 md:w-auto">
-                                <Plus className="size-4" />
-                                Tambah Milestone
-                            </Button>
-                        </div>
-                    )}
                 </div>
             </div>
 
@@ -381,9 +369,9 @@ export function CreateSection({ services }: CreateSectionProps) {
                             <p className="mt-0.5 text-sm text-muted-foreground">Kelola daftar dokumen yang diperlukan dalam project</p>
                         </div>
                         {data.documents.length > 0 && (
-                            <Button type="button" onClick={addDocument} size="sm" className="w-full gap-1.5 md:w-auto">
+                            <Button type="button" onClick={addDocument} className="w-[50%] md:w-30">
                                 <Plus className="size-4" />
-                                Tambah Dokumen
+                                Tambah
                             </Button>
                         )}
                     </div>
@@ -394,7 +382,7 @@ export function CreateSection({ services }: CreateSectionProps) {
                                 <FileText className="size-5 text-primary" />
                             </div>
                             <p className="text-sm">Belum ada dokumen</p>
-                            <Button type="button" size="sm" onClick={addDocument} className="gap-1.5">
+                            <Button type="button" onClick={addDocument}>
                                 <Plus className="size-4" />
                                 Tambah Dokumen Pertama
                             </Button>
@@ -413,15 +401,6 @@ export function CreateSection({ services }: CreateSectionProps) {
                                     totalItems={data.documents.length}
                                 />
                             ))}
-                        </div>
-                    )}
-
-                    {data.documents.length > 0 && (
-                        <div className="flex w-full justify-end">
-                            <Button type="button" onClick={addDocument} size="sm" className="w-full gap-1.5 md:w-auto">
-                                <Plus className="size-4" />
-                                Tambah Dokumen
-                            </Button>
                         </div>
                     )}
                 </div>

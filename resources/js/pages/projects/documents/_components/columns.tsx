@@ -12,7 +12,7 @@ export default function getColumns(expandedRow: string | null, setExpandedRow: (
                 const { name, is_required, is_encrypted, project, uploader, verifier } = row.original;
 
                 return (
-                    <div className="grid w-full min-w-100 grid-cols-[90px_1fr] items-center gap-x-2 gap-y-2 text-sm">
+                    <div className="grid w-170 grid-cols-[110px_1fr] items-center gap-x-2 gap-y-2 text-sm">
                         <span className="col-span-2 text-xs font-bold text-muted-foreground">Dokumen</span>
                         <span className="text-xs font-medium text-muted-foreground">Nama</span>
                         <span className="whitespace-normal">{name || '-'}</span>
@@ -41,12 +41,13 @@ export default function getColumns(expandedRow: string | null, setExpandedRow: (
                             </>
                         )}
 
-                        <span className="col-span-2 mt-4 text-xs font-bold text-muted-foreground">Project</span>
-                        <span className="text-xs font-medium text-muted-foreground">Nama</span>
-                        <span className="whitespace-normal">{project?.name || '-'}</span>
-
-                        {/* <span className="text-xs font-medium text-muted-foreground">Progres</span>
-                        <Badge className={statusConfig?.classes ?? 'bg-muted text-muted-foreground'}>{statusConfig?.label ?? status}</Badge> */}
+                        {project && (
+                            <>
+                                <span className="col-span-2 mt-4 text-xs font-bold text-muted-foreground">Project</span>
+                                <span className="text-xs font-medium text-muted-foreground">Nama</span>
+                                <span className="whitespace-normal">{project.name || '-'}</span>
+                            </>
+                        )}
                     </div>
                 );
             },
@@ -54,9 +55,9 @@ export default function getColumns(expandedRow: string | null, setExpandedRow: (
         {
             accessorKey: 'action',
             header: 'Aksi',
-            cell: ({ row }) => {
-                return <Actions document={row.original} isExpanded={expandedRow === row.id} onToggleExpand={() => setExpandedRow(expandedRow === row.id ? null : row.id)} />;
-            },
+            cell: ({ row }) => (
+                <Actions document={row.original} isExpanded={expandedRow === row.id} onToggleExpand={() => setExpandedRow(expandedRow === row.id ? null : row.id)} />
+            ),
         },
     ];
 }

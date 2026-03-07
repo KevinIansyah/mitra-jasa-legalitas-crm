@@ -95,7 +95,7 @@ export function InvoiceForm({ data, errors, projects, fromProject, isEdit, onCha
         const pct = parseFloat(raw) || 0;
         const budget = Number(selectedProject?.budget ?? 0);
         const computed = budget * (pct / 100);
-        onChange({ percentage: pct, amount: isNaN(computed) ? 0 : computed });
+        onChange({ percentage: pct, subtotal: isNaN(computed) ? 0 : computed });
     }
 
     return (
@@ -254,13 +254,13 @@ export function InvoiceForm({ data, errors, projects, fromProject, isEdit, onCha
                                 <Input
                                     type="number"
                                     min="0"
-                                    value={data.amount || ''}
-                                    onChange={(e) => onChange({ amount: parseFloat(e.target.value) || 0, percentage: 0 })}
+                                    value={data.subtotal || ''}
+                                    onChange={(e) => onChange({ subtotal: parseFloat(e.target.value) || 0, percentage: 0 })}
                                     placeholder="0"
-                                    className={errors.amount ? 'border-destructive' : ''}
+                                    className={errors.subtotal ? 'border-destructive' : ''}
                                 />
-                                {data.amount > 0 && <p className="text-xs text-muted-foreground">{formatRupiah(data.amount)}</p>}
-                                {errors.amount && <FieldError>{errors.amount}</FieldError>}
+                                {data.subtotal > 0 && <p className="text-xs text-muted-foreground">{formatRupiah(data.subtotal)}</p>}
+                                {errors.subtotal && <FieldError>{errors.subtotal}</FieldError>}
                             </Field>
 
                             <Field>

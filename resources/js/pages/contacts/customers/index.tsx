@@ -4,7 +4,7 @@ import AppLayout from '@/layouts/app-layout';
 
 import customers from '@/routes/contacts/customers';
 import type { BreadcrumbItem } from '@/types';
-import type { Customer } from '@/types/contact';
+import type { Customer, CustomerSummary } from '@/types/contact';
 import type { Paginator } from '@/types/paginator';
 import { CustomerSection } from './_components/customer-section';
 
@@ -20,8 +20,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Page() {
-    const { customers, filters } = usePage<{
+    const { customers, summary, filters } = usePage<{
         customers: Paginator<Customer>;
+        summary: CustomerSummary;
         filters: { search?: string };
     }>().props;
 
@@ -31,7 +32,7 @@ export default function Page() {
             <div className="p-4 md:p-6">
                 <Heading title="Manajemen Pelanggan" description="Kelola data dan informasi pelanggan secara terpusat" />
 
-                <CustomerSection customers={customers} filters={filters} />
+                <CustomerSection customers={customers} summary={summary} filters={filters} />
             </div>
         </AppLayout>
     );

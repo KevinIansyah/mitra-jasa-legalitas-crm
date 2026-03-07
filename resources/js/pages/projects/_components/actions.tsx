@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { Eye } from 'lucide-react';
+import { ChevronDown, ChevronUp, Eye } from 'lucide-react';
 
 import { DialogDelete } from '@/components/dialog-delete';
 import { HasPermission } from '@/components/has-permission';
@@ -11,12 +11,23 @@ import type { Project } from '@/types/project';
 
 type ActionsProps = {
     project: Project;
+    isExpanded?: boolean;
+    onToggleExpand?: () => void;
 };
 
-export default function Actions({ project }: ActionsProps) {
+export default function Actions({ project, isExpanded, onToggleExpand }: ActionsProps) {
     return (
         <>
             <div className="flex items-center gap-1">
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button variant="secondary" className="h-8 w-8" onClick={onToggleExpand}>
+                            {isExpanded ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{isExpanded ? 'Tutup Detail' : 'Lihat Detail'}</TooltipContent>
+                </Tooltip>
+
                 <HasPermission permission="view-projects">
                     <Tooltip>
                         <TooltipTrigger asChild>

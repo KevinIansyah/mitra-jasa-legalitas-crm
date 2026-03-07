@@ -3,13 +3,13 @@ import { useState } from 'react';
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatRupiah } from '@/lib/service';
 import type { Paginator } from '@/types/paginator';
-import type { ProjectInvoice } from '@/types/project';
-import type { InvoiceSummary } from '../index';
+import type { ProjectInvoice, ProjectInvoiceSummary } from '@/types/project';
+
 import { DataTable } from './datatable';
 
 interface InvoiceSectionProps {
     invoices: Paginator<ProjectInvoice>;
-    summary: InvoiceSummary;
+    summary: ProjectInvoiceSummary;
     filters: { search?: string; status?: string; type?: string };
 }
 

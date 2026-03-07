@@ -1,5 +1,5 @@
 import { Link, useForm } from '@inertiajs/react';
-import { Copy, Pencil } from 'lucide-react';
+import { ChevronDown, ChevronUp, Copy, Pencil } from 'lucide-react';
 
 import { toast } from 'sonner';
 import { DialogDelete } from '@/components/dialog-delete';
@@ -13,9 +13,11 @@ import type { ProjectTemplate } from '@/types/project-template';
 
 type ActionsProps = {
     template: ProjectTemplate;
+    isExpanded?: boolean;
+    onToggleExpand?: () => void;
 };
 
-export default function Actions({ template }: ActionsProps) {
+export default function Actions({ template, isExpanded, onToggleExpand }: ActionsProps) {
     const { post, processing } = useForm();
 
     const handleDuplicate = () => {
@@ -30,10 +32,9 @@ export default function Actions({ template }: ActionsProps) {
                     description: 'Template berhasil diduplikasi.',
                 });
             },
-            onError: () => {
-                toast.error('Gagal', {
-                    description: 'Template gagal diduplikasi.',
-                });
+            onError: (errors) => {
+                const msg = Object.values(errors)[0] ?? 'Terjadi kesalahan saat duplikasi template, coba lagi.';
+                toast.error('Gagal', { description: String(msg) });
             },
             onFinish: () => {
                 toast.dismiss(id);
@@ -44,6 +45,15 @@ export default function Actions({ template }: ActionsProps) {
     return (
         <>
             <div className="flex items-center gap-1">
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button variant="secondary" className="h-8 w-8" onClick={onToggleExpand}>
+                            {isExpanded ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{isExpanded ? 'Tutup Detail' : 'Lihat Detail'}</TooltipContent>
+                </Tooltip>
+
                 <HasPermission permission="create-project-templates">
                     <Tooltip>
                         <TooltipTrigger asChild>

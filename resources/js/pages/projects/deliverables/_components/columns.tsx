@@ -12,12 +12,12 @@ export default function getColumns(expandedRow: string | null, setExpandedRow: (
                 const { name, version, is_encrypted, is_final, project } = row.original;
 
                 return (
-                    <div className="grid w-full min-w-100 grid-cols-[90px_1fr] items-center gap-x-2 gap-y-2 text-sm">
-                        <span className="col-span-2 text-xs font-bold text-muted-foreground">Dokumen</span>
+                    <div className="grid w-170 grid-cols-[110px_1fr] items-center gap-x-2 gap-y-2 text-sm">
+                        <span className="col-span-2 text-xs font-bold text-muted-foreground">Hasil Akhir</span>
                         <span className="text-xs font-medium text-muted-foreground">Nama</span>
                         <span className="whitespace-normal">{name || '-'}</span>
 
-                        {(is_final || is_encrypted) && (
+                        {(version || is_final || is_encrypted) && (
                             <>
                                 <span className="text-xs font-medium text-muted-foreground">Keterangan</span>
                                 <div className="flex items-center gap-2">
@@ -28,9 +28,13 @@ export default function getColumns(expandedRow: string | null, setExpandedRow: (
                             </>
                         )}
 
-                        <span className="col-span-2 mt-4 text-xs font-bold text-muted-foreground">Project</span>
-                        <span className="text-xs font-medium text-muted-foreground">Nama</span>
-                        <span className="whitespace-normal">{project?.name || '-'}</span>
+                        {project && (
+                            <>
+                                <span className="col-span-2 mt-4 text-xs font-bold text-muted-foreground">Project</span>
+                                <span className="text-xs font-medium text-muted-foreground">Nama</span>
+                                <span className="whitespace-normal">{project.name || '-'}</span>
+                            </>
+                        )}
                     </div>
                 );
             },
@@ -38,9 +42,9 @@ export default function getColumns(expandedRow: string | null, setExpandedRow: (
         {
             accessorKey: 'action',
             header: 'Aksi',
-            cell: ({ row }) => {
-                return <Actions deliverable={row.original} isExpanded={expandedRow === row.id} onToggleExpand={() => setExpandedRow(expandedRow === row.id ? null : row.id)} />;
-            },
+            cell: ({ row }) => (
+                <Actions deliverable={row.original} isExpanded={expandedRow === row.id} onToggleExpand={() => setExpandedRow(expandedRow === row.id ? null : row.id)} />
+            ),
         },
     ];
 }

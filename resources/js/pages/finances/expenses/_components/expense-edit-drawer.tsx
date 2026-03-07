@@ -29,14 +29,13 @@ import { PROJECT_STATUSES_MAP } from '@/types/project';
 import type { Vendor } from '@/types/vendors';
 
 type ExpenseEditDrawerProps = {
-    fromProject?: boolean;
     expense: Expense;
     initialProject?: Project | null;
     open: boolean;
     onOpenChange: (open: boolean) => void;
 };
 
-export function ExpenseEditDrawer({ fromProject = false, expense, initialProject, open, onOpenChange }: ExpenseEditDrawerProps) {
+export function ExpenseEditDrawer({ expense, initialProject, open, onOpenChange }: ExpenseEditDrawerProps) {
     const isBilled = !!expense.invoice_id;
 
     // Project search
@@ -116,12 +115,6 @@ export function ExpenseEditDrawer({ fromProject = false, expense, initialProject
         setData('project_id', project.id);
         setProjectQuery('');
         setProjectResults([]);
-    }
-
-    function handleRemoveProject() {
-        setSelectedProject(null);
-        setData('project_id', null);
-        setData('is_billable', false);
     }
 
     // ============================================================
@@ -277,11 +270,6 @@ export function ExpenseEditDrawer({ fromProject = false, expense, initialProject
                                                 </Badge>
                                             </div>
                                         </div>
-                                        {!fromProject && (
-                                            <Button type="button" variant="ghost" size="sm" className="h-8 w-8" onClick={handleRemoveProject}>
-                                                <X className="size-4" />
-                                            </Button>
-                                        )}
                                     </div>
                                 ) : (
                                     <>

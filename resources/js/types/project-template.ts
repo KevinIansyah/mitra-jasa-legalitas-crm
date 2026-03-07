@@ -45,7 +45,7 @@ export interface ProjectTemplate {
     created_at: string;
     updated_at: string;
 
-    // Computed attributes
+    // Computed
     milestones_count?: number;
     documents_count?: number;
     required_documents_count?: number;
@@ -61,6 +61,19 @@ export interface ProjectTemplate {
 
 export interface ProjectTemplateWithService extends ProjectTemplate {
     service: Service;
+}
+
+// ============================================================
+// SUMMARY DATA
+// ============================================================
+
+export interface ProjectTemplateSummary {
+    total: number;
+    active: number;
+    inactive: number;
+    with_content: number;
+    service_based: number;
+    custom: number;
 }
 
 // ============================================================
@@ -101,41 +114,6 @@ export interface CreateTemplateFromServiceFormData {
     description?: string | null;
     notes?: string | null;
 }
-
-// ============================================================
-// API RESPONSE TYPES
-// ============================================================
-
-export interface GetTemplateFromServiceResponse {
-    milestones: ProjectTemplateMilestone[];
-    documents: ProjectTemplateDocument[];
-    estimated_duration_days: number | null;
-}
-
-// ============================================================
-// TEMPLATE CREATION MODE
-// ============================================================
-
-export type TemplateCreationMode = 'custom' | 'from_service';
-
-export interface TemplateCreationModeOption {
-    value: TemplateCreationMode;
-    label: string;
-    description: string;
-}
-
-export const TEMPLATE_CREATION_MODES: TemplateCreationModeOption[] = [
-    {
-        value: 'custom',
-        label: 'Custom Template',
-        description: 'Create a blank template from scratch',
-    },
-    {
-        value: 'from_service',
-        label: 'From Service',
-        description: 'Generate template from existing service',
-    },
-];
 
 // ============================================================
 // CONSTANTS

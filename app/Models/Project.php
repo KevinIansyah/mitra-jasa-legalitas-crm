@@ -200,7 +200,7 @@ class Project extends Model
         return (float) $this->invoices()
             ->whereIn('type', ['dp', 'progress', 'final'])
             ->whereIn('status', ['sent', 'paid', 'overdue'])
-            ->sum('amount');
+            ->sum('subtotal');
     }
 
     /**
@@ -222,7 +222,7 @@ class Project extends Model
         return (float) $this->invoices()
             ->whereIn('type', ['dp', 'progress', 'final'])
             ->where('status', 'paid')
-            ->sum('amount');
+            ->sum('subtotal');
     }
 
     /**
@@ -250,7 +250,7 @@ class Project extends Model
         return (float) $this->invoices()
             ->where('type', 'additional')
             ->whereIn('status', ['sent', 'paid', 'overdue'])
-            ->sum('amount');
+            ->sum('subtotal');
     }
 
     /**
@@ -272,7 +272,7 @@ class Project extends Model
         return (float) $this->invoices()
             ->where('type', 'additional')
             ->where('status', 'paid')
-            ->sum('amount');
+            ->sum('subtotal');
     }
 
     /**

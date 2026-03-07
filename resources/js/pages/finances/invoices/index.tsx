@@ -3,7 +3,7 @@ import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
 import type { Paginator } from '@/types/paginator';
-import type { ProjectInvoice } from '@/types/project';
+import type { ProjectInvoice, ProjectInvoiceSummary } from '@/types/project';
 import { InvoiceSection } from './_components/invoice-section';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -11,21 +11,10 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Invoice', href: '#' },
 ];
 
-export type InvoiceSummary = {
-    total: number;
-    draft: number;
-    sent: number;
-    paid: number;
-    overdue: number;
-    cancelled: number;
-    total_amount: string;
-    paid_amount: string;
-};
-
 export default function Page() {
     const { invoices, summary, filters } = usePage<{
         invoices: Paginator<ProjectInvoice>;
-        summary: InvoiceSummary;
+        summary: ProjectInvoiceSummary;
         filters: { search?: string; status?: string; type?: string };
     }>().props;
 

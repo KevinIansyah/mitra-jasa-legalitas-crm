@@ -57,7 +57,6 @@ export default function Actions({ expense }: ActionsProps) {
 
             {editingExpense && (
                 <ExpenseEditDrawer
-                    fromProject={false}
                     expense={editingExpense}
                     open={!!editingExpense}
                     onOpenChange={(open) => {

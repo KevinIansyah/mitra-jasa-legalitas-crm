@@ -27,7 +27,7 @@ class ProjectInvoiceController extends Controller
         $type    = $request->get('type');
 
         $query = ProjectInvoice::with([
-            'project:id,name,status',
+            'project:id,name,status,customer_id',
             'project.customer:id,name,tier',
             'items',
             'payments',
@@ -136,7 +136,7 @@ class ProjectInvoiceController extends Controller
             'notes'                => $validated['notes'] ?? null,
             'payment_instructions' => $validated['payment_instructions'] ?? null,
             'percentage'           => $validated['percentage'] ?? null,
-            'amount'               => $validated['type'] !== 'additional' ? $validated['amount'] : 0,
+            'subtotal'               => $validated['type'] !== 'additional' ? $validated['subtotal'] : 0,
             'tax_percent'          => $validated['tax_percent'] ?? 0,
             'discount_percent'     => $validated['discount_percent'] ?? 0,
             'tax_amount'           => 0,
@@ -184,7 +184,7 @@ class ProjectInvoiceController extends Controller
             'notes'                => $validated['notes'] ?? null,
             'payment_instructions' => $validated['payment_instructions'] ?? null,
             'percentage'           => $validated['percentage'] ?? null,
-            'amount'               => $validated['type'] !== 'additional' ? $validated['amount'] : 0,
+            'subtotal'               => $validated['type'] !== 'additional' ? $validated['subtotal'] : 0,
             'tax_percent'          => $validated['tax_percent'] ?? 0,
             'discount_percent'     => $validated['discount_percent'] ?? 0,
             'status'               => $validated['status'] ?? $invoice->status,

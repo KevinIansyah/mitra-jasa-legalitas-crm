@@ -4,7 +4,7 @@ import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
 import type { Company, Customer } from '@/types/contact';
 import type { Paginator } from '@/types/paginator';
-import type { Project } from '@/types/project';
+import type { Project, ProjectSummary } from '@/types/project';
 import type { Service } from '@/types/service';
 import { ProjectSection } from './_components/project-section';
 
@@ -16,8 +16,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Page() {
-    const { projects, customers, companies, services, filters } = usePage<{
+    const { projects, summary, customers, companies, services, filters } = usePage<{
         projects: Paginator<Project>;
+        summary: ProjectSummary;
         customers: Customer[];
         companies: Company[];
         services: Service[];
@@ -30,7 +31,7 @@ export default function Page() {
             <div className="p-4 md:p-6">
                 <Heading title="Manajemen Project" description="Kelola data dan informasi project secara terpusat" />
 
-                <ProjectSection projects={projects} customers={customers} companies={companies} services={services} filters={filters} />
+                <ProjectSection projects={projects} summary={summary} customers={customers} companies={companies} services={services} filters={filters} />
             </div>
         </AppLayout>
     );

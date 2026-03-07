@@ -9,23 +9,18 @@ export default function getColumns(expandedRow: string | null, setExpandedRow: (
             accessorKey: 'vendor',
             header: 'Vendor',
             cell: ({ row }) => {
-                const { name, phone, email, category } = row.original;
+                const { name, phone, email, category, npwp, address } = row.original;
 
                 const categoryData = category ? VENDOR_CATEGORIES_MAP[category] : null;
 
                 return (
-                    <div className="grid w-full grid-cols-[100px_1fr] items-center gap-x-2 gap-y-2 text-sm">
+                    <div className="grid w-100 grid-cols-[110px_1fr] items-center gap-x-2 gap-y-2 text-sm">
                         <span className="col-span-2 text-xs font-bold text-muted-foreground">Vendor</span>
-
                         <span className="text-xs font-medium text-muted-foreground">Nama</span>
-                        <span className="font-medium whitespace-normal">{name}</span>
+                        <span className="font-medium whitespace-normal">{name || '-'}</span>
 
-                        {categoryData && (
-                            <>
-                                <span className="text-xs font-medium text-muted-foreground">Kategori</span>
-                                <Badge className={categoryData.classes}>{categoryData.label}</Badge>
-                            </>
-                        )}
+                        <span className="text-xs font-medium text-muted-foreground">Kategori</span>
+                        {categoryData ? <Badge className={categoryData.classes}>{categoryData.label}</Badge> : <span>-</span>}
 
                         {phone && (
                             <>
@@ -40,20 +35,39 @@ export default function getColumns(expandedRow: string | null, setExpandedRow: (
                                 <span>{email}</span>
                             </>
                         )}
+
+                        {npwp && (
+                            <>
+                                <span className="text-xs font-medium text-muted-foreground">NPWP</span>
+                                <span>{npwp}</span>
+                            </>
+                        )}
+
+                        {address && (
+                            <>
+                                <span className="text-xs font-medium text-muted-foreground">Alamat</span>
+                                <span className="min-w-0 break-words whitespace-normal">{address}</span>
+                            </>
+                        )}
                     </div>
                 );
             },
         },
         {
-            accessorKey: 'bank_account',
-            header: 'Rekening',
+            id: 'information',
+            header: 'Informasi',
             cell: ({ row }) => {
-                const { primary_bank_account } = row.original;
+                const { primary_bank_account, status } = row.original;
+                const label = status.charAt(0).toUpperCase() + status.slice(1);
 
                 return (
-                    <>
-                        {primary_bank_account ? (
-                            <div className="grid w-full grid-cols-[100px_1fr] items-center gap-x-2 gap-y-2 text-sm">
+                    <div className="grid w-60 grid-cols-[110px_1fr] items-center gap-x-2 gap-y-2 text-sm">
+                        <span className="col-span-2 text-xs font-bold text-muted-foreground">Informasi</span>
+                        <span className="text-xs font-medium text-muted-foreground">Status</span>
+                        <Badge className={status === 'active' ? 'bg-emerald-500 text-white' : 'bg-slate-500 text-white'}>{label}</Badge>
+
+                        {primary_bank_account && (
+                            <>
                                 <span className="col-span-2 mt-4 text-xs font-bold text-muted-foreground">Rekening Utama</span>
                                 <span className="text-xs font-medium text-muted-foreground">Bank</span>
                                 <span>{primary_bank_account.bank_name}</span>
@@ -61,22 +75,10 @@ export default function getColumns(expandedRow: string | null, setExpandedRow: (
                                 <span>
                                     {primary_bank_account.account_number} a/n {primary_bank_account.account_holder}
                                 </span>
-                            </div>
-                        ) : (
-                            <span>-</span>
+                            </>
                         )}
-                    </>
+                    </div>
                 );
-            },
-        },
-        {
-            accessorKey: 'status',
-            header: 'Status',
-            cell: ({ row }) => {
-                const status = row.getValue<string>('status');
-                const label = status.charAt(0).toUpperCase() + status.slice(1);
-
-                return <Badge className={status === 'active' ? 'bg-emerald-500 text-white' : 'bg-slate-500 text-white'}>{label}</Badge>;
             },
         },
         {

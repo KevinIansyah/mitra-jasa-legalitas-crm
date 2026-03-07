@@ -69,8 +69,22 @@ class ProjectController extends Controller
         $companies = Company::select('id', 'name')->get();
         $services = Service::select('id', 'name')->get();
 
+        $statusCounts = Project::selectRaw('status, count(*) as count')
+            ->groupBy('status')
+            ->pluck('count', 'status');
+
+        $summary = [
+            'total'       => Project::count(),
+            'planning'    => (int) ($statusCounts['planning'] ?? 0),
+            'in_progress' => (int) ($statusCounts['in_progress'] ?? 0),
+            'on_hold'     => (int) ($statusCounts['on_hold'] ?? 0),
+            'completed'   => (int) ($statusCounts['completed'] ?? 0),
+            'cancelled'   => (int) ($statusCounts['cancelled'] ?? 0),
+        ];
+
         return Inertia::render('projects/index', [
             'projects' => $projects,
+            'summary'  => $summary,
             'customers' => $customers,
             'companies' => $companies,
             'services' => $services,

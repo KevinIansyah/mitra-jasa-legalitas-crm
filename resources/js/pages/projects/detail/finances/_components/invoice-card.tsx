@@ -109,7 +109,7 @@ export function InvoiceCard({ project }: InvoiceCardProps) {
                                         <div className="flex items-baseline gap-2">
                                             <p className="text-base font-semibold tabular-nums">{formatRupiah(Number(invoice.total_amount))}</p>
                                             {(Number(invoice.discount_amount) > 0 || Number(invoice.tax_amount) > 0) && (
-                                                <p className="text-xs text-muted-foreground tabular-nums">dari {formatRupiah(Number(invoice.amount))}</p>
+                                                <p className="text-xs text-muted-foreground tabular-nums">dari {formatRupiah(Number(invoice.subtotal))}</p>
                                             )}
                                         </div>
                                     </div>
