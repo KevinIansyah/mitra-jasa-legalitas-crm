@@ -12,7 +12,7 @@ export default function PaymentDetail({ payment }: { payment: ProjectPayment }) 
             {payment.status === 'rejected' && payment.rejection_reason && (
                 <Alert className="border-destructive bg-destructive/10 text-destructive">
                     <AlertTriangle />
-                    <AlertTitle>Alasan Penolakan:</AlertTitle>
+                    <AlertTitle>Alasan Penolakan</AlertTitle>
                     <AlertDescription>{payment.rejection_reason}</AlertDescription>
                 </Alert>
             )}

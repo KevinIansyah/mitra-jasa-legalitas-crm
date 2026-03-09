@@ -11,7 +11,6 @@ import invoices from '@/routes/finances/invoices';
 export type InvoiceFormErrors = Partial<Record<string, string>>;
 
 type CreateSectionProps = {
-    projects: Project[];
     selectedProject: Project | null;
     fromProject: boolean;
 };
@@ -30,7 +29,7 @@ const EMPTY_FORM: ProjectInvoiceFormData = {
     items: [{ description: '', quantity: 1, unit_price: 0, tax_percent: 11, discount_percent: 0 }],
 };
 
-export default function CreateSection({ projects, selectedProject, fromProject }: CreateSectionProps) {
+export default function CreateSection({ selectedProject, fromProject }: CreateSectionProps) {
     const [data, setData] = useState<ProjectInvoiceFormData>({
         ...EMPTY_FORM,
         project_id: selectedProject ? Number(selectedProject.id) : 0,
@@ -67,7 +66,7 @@ export default function CreateSection({ projects, selectedProject, fromProject }
     return (
         <div className="space-y-6">
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_280px]">
-                <InvoiceForm data={data} errors={errors} projects={projects} fromProject={fromProject} onChange={handleChange} />
+                <InvoiceForm data={data} errors={errors} initialProject={selectedProject} fromProject={fromProject} onChange={handleChange} />
 
                 <InvoiceSummary
                     subtotal={data.subtotal}

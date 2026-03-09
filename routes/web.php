@@ -117,6 +117,9 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
 
         Route::get('/vendors', [SearchController::class, 'searchVendor'])
             ->name('vendors');
+
+        Route::get('/quotes', [SearchController::class, 'searchQuote'])
+            ->name('quotes');
     });
 });
 

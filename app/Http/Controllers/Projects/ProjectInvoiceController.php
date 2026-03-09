@@ -10,6 +10,7 @@ use App\Models\Project;
 use App\Models\ProjectInvoice;
 use App\Models\ProjectInvoiceItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class ProjectInvoiceController extends Controller
@@ -76,10 +77,6 @@ class ProjectInvoiceController extends Controller
      */
     public function create(Request $request)
     {
-        $projects = Project::with('customer')
-            ->orderBy('name')
-            ->get(['id', 'name', 'customer_id', 'budget', 'status']);
-
         $selectedProject = null;
         if ($request->filled('project_id')) {
             $selectedProject = Project::with('customer')
@@ -89,7 +86,6 @@ class ProjectInvoiceController extends Controller
         $fromProject = $request->filled('project_id');
 
         return Inertia::render('finances/invoices/create/index', [
-            'projects'        => $projects,
             'selectedProject' => $selectedProject,
             'fromProject'     => $fromProject,
         ]);
@@ -102,15 +98,11 @@ class ProjectInvoiceController extends Controller
     {
         $invoice->load(['project.customer', 'items']);
 
-        $projects = Project::with('customer')
-            ->orderBy('name')
-            ->get(['id', 'name', 'customer_id', 'budget', 'status']);
-
         $fromProject = $request->filled('project_id');
 
         return Inertia::render('finances/invoices/edit/index', [
             'invoice'  => $invoice,
-            'projects' => $projects,
+            'selectedProject' => $invoice->project,
             'fromProject' => $fromProject,
             'isEdit'   => true,
         ]);
@@ -128,35 +120,39 @@ class ProjectInvoiceController extends Controller
             return back()->withErrors(['project_id' => 'Project tidak ditemukan.']);
         }
 
-        $invoice = $project->invoices()->create([
-            'invoice_number'       => ProjectInvoice::generateInvoiceNumber(),
-            'type'                 => $validated['type'],
-            'invoice_date'         => $validated['invoice_date'],
-            'due_date'             => $validated['due_date'],
-            'notes'                => $validated['notes'] ?? null,
-            'payment_instructions' => $validated['payment_instructions'] ?? null,
-            'percentage'           => $validated['percentage'] ?? null,
-            'subtotal'               => $validated['type'] !== 'additional' ? $validated['subtotal'] : 0,
-            'tax_percent'          => $validated['tax_percent'] ?? 0,
-            'discount_percent'     => $validated['discount_percent'] ?? 0,
-            'tax_amount'           => 0,
-            'discount_amount'      => 0,
-            'total_amount'         => 0,
-            'status'               => $validated['status'] ?? 'draft',
-        ]);
+        $invoice = DB::transaction(function () use ($project, $request, $validated) {
+            $invoice = $project->invoices()->create([
+                'invoice_number'       => ProjectInvoice::generateInvoiceNumber(),
+                'type'                 => $validated['type'],
+                'invoice_date'         => $validated['invoice_date'],
+                'due_date'             => $validated['due_date'],
+                'notes'                => $validated['notes'] ?? null,
+                'payment_instructions' => $validated['payment_instructions'] ?? null,
+                'percentage'           => $validated['percentage'] ?? null,
+                'subtotal'             => $validated['type'] !== 'additional' ? $validated['subtotal'] : 0,
+                'tax_percent'          => $validated['tax_percent'] ?? 0,
+                'discount_percent'     => $validated['discount_percent'] ?? 0,
+                'tax_amount'           => 0,
+                'discount_amount'      => 0,
+                'total_amount'         => 0,
+                'status'               => $validated['status'] ?? 'draft',
+            ]);
 
-        $this->syncItems($invoice, $validated);
-        $invoice->calculateTotals();
+            $this->syncItems($invoice, $validated);
+            $invoice->calculateTotals();
 
-        if ($invoice->type === 'additional' && !empty($validated['items'])) {
-            $itemDescriptions = collect($validated['items'])->pluck('description');
+            if ($invoice->type === 'additional' && !empty($validated['items'])) {
+                $itemDescriptions = collect($validated['items'])->pluck('description');
 
-            Expense::where('project_id', $invoice->project_id)
-                ->where('is_billable', true)
-                ->whereNull('invoice_id')
-                ->whereIn('description', $itemDescriptions)
-                ->update(['invoice_id' => $invoice->id]);
-        }
+                Expense::where('project_id', $invoice->project_id)
+                    ->where('is_billable', true)
+                    ->whereNull('invoice_id')
+                    ->whereIn('description', $itemDescriptions)
+                    ->update(['invoice_id' => $invoice->id]);
+            }
+
+            return $invoice;
+        });
 
         if ($request->boolean('from_project')) {
             return redirect()->route('projects.finance', $invoice->project_id)
@@ -176,35 +172,37 @@ class ProjectInvoiceController extends Controller
 
         $validated = $request->validated();
 
-        $invoice->update([
-            'invoice_number'       => $validated['invoice_number'] ?? $invoice->invoice_number,
-            'type'                 => $validated['type'],
-            'invoice_date'         => $validated['invoice_date'],
-            'due_date'             => $validated['due_date'],
-            'notes'                => $validated['notes'] ?? null,
-            'payment_instructions' => $validated['payment_instructions'] ?? null,
-            'percentage'           => $validated['percentage'] ?? null,
-            'subtotal'               => $validated['type'] !== 'additional' ? $validated['subtotal'] : 0,
-            'tax_percent'          => $validated['tax_percent'] ?? 0,
-            'discount_percent'     => $validated['discount_percent'] ?? 0,
-            'status'               => $validated['status'] ?? $invoice->status,
-        ]);
+        DB::transaction(function () use ($invoice, $request, $validated) {
+            $invoice->update([
+                'invoice_number'       => $validated['invoice_number'] ?? $invoice->invoice_number,
+                'type'                 => $validated['type'],
+                'invoice_date'         => $validated['invoice_date'],
+                'due_date'             => $validated['due_date'],
+                'notes'                => $validated['notes'] ?? null,
+                'payment_instructions' => $validated['payment_instructions'] ?? null,
+                'percentage'           => $validated['percentage'] ?? null,
+                'subtotal'             => $validated['type'] !== 'additional' ? $validated['subtotal'] : 0,
+                'tax_percent'          => $validated['tax_percent'] ?? 0,
+                'discount_percent'     => $validated['discount_percent'] ?? 0,
+                'status'               => $validated['status'] ?? $invoice->status,
+            ]);
 
-        $this->syncItems($invoice, $validated);
-        $invoice->refresh()->calculateTotals();
+            $this->syncItems($invoice, $validated);
+            $invoice->refresh()->calculateTotals();
 
-        if ($invoice->type === 'additional' && !empty($validated['items'])) {
-            Expense::where('invoice_id', $invoice->id)
-                ->update(['invoice_id' => null]);
+            if ($invoice->type === 'additional' && !empty($validated['items'])) {
+                Expense::where('invoice_id', $invoice->id)
+                    ->update(['invoice_id' => null]);
 
-            $itemDescriptions = collect($validated['items'])->pluck('description');
+                $itemDescriptions = collect($validated['items'])->pluck('description');
 
-            Expense::where('project_id', $invoice->project_id)
-                ->where('is_billable', true)
-                ->whereNull('invoice_id')
-                ->whereIn('description', $itemDescriptions)
-                ->update(['invoice_id' => $invoice->id]);
-        }
+                Expense::where('project_id', $invoice->project_id)
+                    ->where('is_billable', true)
+                    ->whereNull('invoice_id')
+                    ->whereIn('description', $itemDescriptions)
+                    ->update(['invoice_id' => $invoice->id]);
+            }
+        });
 
         if ($request->boolean('from_project')) {
             return redirect()->route('projects.finance', $invoice->project_id)

@@ -19,9 +19,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Page() {
-    const { invoice, projects, fromProject, isEdit } = usePage<{
+    const { invoice, selectedProject, fromProject } = usePage<{
         invoice: ProjectInvoice;
-        projects: Project[];
+        selectedProject: Project | null;
         fromProject: boolean;
         isEdit: boolean;
     }>().props;
@@ -32,7 +32,7 @@ export default function Page() {
             <div className="p-4 md:p-6">
                 <Heading title={`Edit Invoice ${invoice.invoice_number}`} description="Perbarui detail invoice" />
 
-                <EditSection invoice={invoice} projects={projects} fromProject={fromProject} isEdit={isEdit} />
+                <EditSection invoice={invoice} selectedProject={selectedProject} fromProject={fromProject} isEdit />
             </div>
         </AppLayout>
     );

@@ -31,7 +31,7 @@ export default function Page() {
             <div className="p-4 md:p-6">
                 <Heading
                     title="Manajemen Dokumen"
-                    description="Kelola dokumen yang terkait dengan project, termasuk menambah, melihat, dan mengunduh file yang dibutuhkan."
+                    description="Kelola dokumen yang terkait dengan project, termasuk menambah, melihat, dan mengunduh file yang dibutuhkan"
                 />
 
                 <DocumentSection documents={documents} summary={summary} filters={filters} />

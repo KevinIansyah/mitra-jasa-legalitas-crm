@@ -118,12 +118,12 @@ export function PaymentCard({ invoice }: PaymentCardProps) {
                                 const isRejected = payment.status === 'rejected';
 
                                 return (
-                                    <div key={payment.id} className={`space-y-4 rounded-lg bg-primary/5 p-4 text-sm dark:bg-input/50 ${index !== payments.length - 1 ? '' : ''}`}>
+                                    <div key={payment.id} className={`space-y-4 rounded-lg bg-primary/10 p-4 text-sm dark:bg-muted/40 ${index !== payments.length - 1 ? '' : ''}`}>
                                         <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
                                             <div className="order-2 space-y-2 lg:order-1">
                                                 {/* Amount & Status */}
                                                 <div className="flex items-center gap-2">
-                                                    <p className="text-base font-semibold tabular-nums">{formatRupiah(Number(payment.amount))}</p>
+                                                    <p className="text-sm font-medium tabular-nums">{formatRupiah(Number(payment.amount))}</p>
                                                     <Badge className={status.classes}>{status.label}</Badge>
                                                 </div>
 
@@ -248,7 +248,7 @@ export function PaymentCard({ invoice }: PaymentCardProps) {
                                         {payment.status === 'rejected' && payment.rejection_reason && (
                                             <Alert className="border-destructive bg-destructive/10 text-destructive">
                                                 <AlertTriangle />
-                                                <AlertTitle>Alasan Penolakan:</AlertTitle>
+                                                <AlertTitle>Alasan Penolakan</AlertTitle>
                                                 <AlertDescription>{payment.rejection_reason}</AlertDescription>
                                             </Alert>
                                         )}

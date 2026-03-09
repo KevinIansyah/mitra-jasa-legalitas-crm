@@ -29,7 +29,7 @@ export default function Page() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Vendor" />
             <div className="p-4 md:p-6">
-                <Heading title="Manajemen Vendor" description="Kelola daftar vendor dan supplier yang digunakan dalam project." />
+                <Heading title="Manajemen Vendor" description="Kelola daftar vendor dan supplier yang digunakan dalam project" />
                 <VendorSection vendors={vendors} summary={summary} filters={filters} />
             </div>
         </AppLayout>

@@ -25,7 +25,7 @@ export default function getColumns(): ColumnDef<Expense>[] {
                         {categoryInfo ? <Badge className={categoryInfo.classes}>{categoryInfo.label}</Badge> : <span>-</span>}
 
                         <span className="text-xs font-medium text-muted-foreground">Deskripsi</span>
-                        <span className="min-w-0 break-words whitespace-normal">{description || '-'}</span>
+                        <span className="min-w-0 wrap-break-word whitespace-normal">{description || '-'}</span>
 
                         {user && (
                             <>
@@ -38,7 +38,7 @@ export default function getColumns(): ColumnDef<Expense>[] {
                             <>
                                 <span className="col-span-2 mt-4 text-xs font-bold text-muted-foreground">Project</span>
                                 <span className="text-xs font-medium text-muted-foreground">Nama</span>
-                                <span className="min-w-0 break-words whitespace-normal">{project.name}</span>
+                                <span className="min-w-0 wrap-break-word whitespace-normal">{project.name}</span>
                                 {project.customer && (
                                     <>
                                         <span className="text-xs font-medium text-muted-foreground">Pelanggan (PIC)</span>

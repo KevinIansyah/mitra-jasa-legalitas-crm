@@ -1,6 +1,5 @@
 /**
  * Expense Management - TypeScript Definitions
- * Dipisahkan dari project.ts karena Expense bisa berdiri sendiri (tidak harus terkait project)
  */
 
 import type { User } from './auth';

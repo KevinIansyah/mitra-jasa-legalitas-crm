@@ -40,6 +40,7 @@ export default function Finances({ project }: FinancesProps) {
     const outstandingAmount = Number(project.outstanding_amount ?? 0);
     const totalExpenses = Number(project.total_expenses ?? 0);
     const billableExp = Number(project.total_billable_expenses ?? 0);
+    const nonBillableExp = Number(project.total_expenses || 0) - Number(project.total_billable_expenses || 0);
     const contractProfit = Number(project.contract_profit ?? 0);
     const actualProfit = Number(project.actual_profit ?? 0);
 
@@ -88,7 +89,7 @@ export default function Finances({ project }: FinancesProps) {
         {
             label: 'Profit Aktual',
             value: formatRupiah(actualProfit),
-            description: 'Pembayaran masuk (excl. pajak) dikurangi semua pengeluaran',
+            description: `Pembayaran masuk (excl. pajak) dikurangi semua pengeluaran non-billable ${formatRupiah(nonBillableExp)}`,
             trend: actualProfit >= 0 ? 'up' : 'down',
         },
         {

@@ -29,7 +29,7 @@ export default function Page() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title=" Hasil Akhir Project" />
             <div className="p-4 md:p-6">
-                <Heading title="Manajemen Hasil Akhir" description="Daftar dokumen hasil akhir project beserta status final dan pengaturan keamanannya." />
+                <Heading title="Manajemen Hasil Akhir" description="Daftar dokumen hasil akhir project beserta status final dan pengaturan keamanannya" />
 
                 <DeliverableSection deliverables={deliverables} summary={summary} filters={filters} />
             </div>

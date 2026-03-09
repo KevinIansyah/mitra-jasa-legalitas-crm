@@ -31,7 +31,7 @@ export default function VendorDetail({ vendor }: { vendor: Vendor }) {
 
             {bank_accounts && bank_accounts.length > 0 && (
                 <div className="space-y-2">
-                    <p className="text-xs font-bold text-muted-foreground">Rekening Bank</p>
+                    <p className="text-xs text-muted-foreground">Rekening Bank</p>
                     <div className="">
                         {bank_accounts.map((acc, i) => (
                             <div key={i} className="flex items-center justify-between border-t border-primary/20 p-3 last:border-b dark:border-border">

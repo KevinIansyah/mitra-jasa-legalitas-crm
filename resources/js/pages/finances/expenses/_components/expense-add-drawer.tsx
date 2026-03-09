@@ -291,7 +291,7 @@ export function ExpenseAddDrawer({ fromProject = false, initialProject, open, on
                                             </div>
                                         )}
                                         {projectQuery.length >= 2 && projectResults.length === 0 && !isSearchingProject && (
-                                            <FieldDescription>Tidak ada project ditemukan</FieldDescription>
+                                            <FieldDescription >Tidak ada project ditemukan</FieldDescription>
                                         )}
                                     </>
                                 )}

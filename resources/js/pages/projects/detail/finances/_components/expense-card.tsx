@@ -38,11 +38,15 @@ export function ExpenseCard({ project, onEdit }: ExpenseCardProps) {
                                 {/* Category & billable badge */}
                                 <div className="flex flex-wrap items-center gap-2">
                                     {categoryInfo && <Badge className={categoryInfo.classes}>{categoryInfo.label}</Badge>}
-                                    {isBilled ? (
-                                        <Badge className="bg-emerald-500 text-white">Sudah Ditagihkan</Badge>
-                                    ) : isBillable ? (
-                                        <Badge className="bg-yellow-500 text-white">Belum Ditagihkan</Badge>
-                                    ) : null}
+                                    {isBillable ? (
+                                        isBilled ? (
+                                            <Badge className="bg-emerald-500 text-white">Sudah Ditagihkan</Badge>
+                                        ) : (
+                                            <Badge className="bg-yellow-500 text-white">Belum Ditagihkan</Badge>
+                                        )
+                                    ) : (
+                                        <Badge variant="secondary">Non-billable</Badge>
+                                    )}
                                 </div>
 
                                 {/* Description */}

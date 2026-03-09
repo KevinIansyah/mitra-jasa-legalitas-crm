@@ -19,8 +19,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Page() {
-    const { projects, selectedProject, fromProject } = usePage<{
-        projects: Project[];
+    const { selectedProject, fromProject } = usePage<{
         selectedProject: Project | null;
         fromProject: boolean;
     }>().props;
@@ -30,7 +29,7 @@ export default function Page() {
             <div className="p-4 md:p-6">
                 <Heading title="Tambah Invoice" description="Tambah invoice baru untuk penagihan project" />
 
-                <CreateSection projects={projects} selectedProject={selectedProject} fromProject={fromProject} />
+                <CreateSection selectedProject={selectedProject} fromProject={fromProject} />
             </div>
         </AppLayout>
     );

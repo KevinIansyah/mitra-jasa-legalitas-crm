@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { DatePicker } from '@/components/date-picker';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -24,19 +24,19 @@ import { InvoiceItemsEditor } from './invoice-item-editor';
 type InvoiceFormProps = {
     data: ProjectInvoiceFormData;
     errors: InvoiceFormErrors;
-    projects: Project[];
+    initialProject?: Project | null;
     fromProject: boolean;
     isEdit?: boolean;
     onChange: (val: Partial<ProjectInvoiceFormData>) => void;
 };
 
-export function InvoiceForm({ data, errors, projects, fromProject, isEdit, onChange }: InvoiceFormProps) {
+export function InvoiceForm({ data, errors, initialProject, fromProject, isEdit, onChange }: InvoiceFormProps) {
     const [searchQuery, setSearchQuery] = React.useState('');
     const [searchResults, setSearchResults] = React.useState<Project[]>([]);
     const [isSearching, setIsSearching] = React.useState(false);
     const [showBillablePicker, setShowBillablePicker] = React.useState(false);
 
-    const [selectedProject, setSelectedProject] = React.useState<Project | null>(() => projects.find((project) => project.id === data.project_id) ?? null);
+    const [selectedProject, setSelectedProject] = React.useState<Project | null>(initialProject ?? null);
 
     const isAdditional = data.type === 'additional';
     const searchTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -168,7 +168,7 @@ export function InvoiceForm({ data, errors, projects, fromProject, isEdit, onCha
                                     )}
 
                                     {searchQuery.length >= 2 && searchResults.length === 0 && !isSearching && (
-                                        <p className="mt-2 text-sm text-muted-foreground">Tidak ada project ditemukan</p>
+                                        <FieldDescription>Tidak ada project ditemukan</FieldDescription>
                                     )}
                                 </>
                             )}

@@ -32,7 +32,7 @@ export default function Page() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Pembayaran" />
             <div className="p-4 md:p-6">
-                <Heading title="Manajemen Pembayaran" description="Pantau dan verifikasi pembayaran dari seluruh invoice project." />
+                <Heading title="Manajemen Pembayaran" description="Pantau dan verifikasi pembayaran dari seluruh invoice project" />
                 <PaymentSection payments={payments} summary={summary} filters={filters} />
             </div>
         </AppLayout>

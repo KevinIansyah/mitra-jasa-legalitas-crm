@@ -13,7 +13,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 import type { InvoiceStatus, ProjectInvoice } from '@/types/project';
 import { INVOICE_STATUSES, INVOICE_STATUSES_MAP } from '@/types/project';
-import invoicesRoute from '@/routes/finances/invoices';
+import finances from '@/routes/finances';
 
 type ActionsProps = {
     invoice: ProjectInvoice;
@@ -29,8 +29,8 @@ export default function Actions({ invoice, isExpanded, onToggleExpand }: Actions
     const isPaid = invoice.status === 'paid';
     const targetStatus = confirmStatus ? INVOICE_STATUSES_MAP[confirmStatus] : null;
 
-    function goToEditInvoice(invoiceId: number) {
-        router.visit(invoicesRoute.edit(invoiceId).url);
+    function goToEditInvoice(invoice: ProjectInvoice) {
+        router.visit(finances.invoices.edit(invoice.id).url);
     }
 
     function handleUpdateStatus() {
@@ -41,7 +41,7 @@ export default function Actions({ invoice, isExpanded, onToggleExpand }: Actions
         const toastId = toast.loading('Memproses...', { description: 'Status invoice sedang diperbarui.' });
 
         router.patch(
-            invoicesRoute.updateStatus(invoice.id).url,
+            finances.invoices.updateStatus(invoice.id).url,
             { status: confirmStatus },
             {
                 preserveScroll: true,
@@ -73,7 +73,7 @@ export default function Actions({ invoice, isExpanded, onToggleExpand }: Actions
                 <HasPermission permission="edit-finance-invoices">
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="secondary" className="h-8 w-8" disabled={loading || isPaid} onClick={() => goToEditInvoice(invoice.id)}>
+                            <Button variant="secondary" className="h-8 w-8" disabled={loading || isPaid} onClick={() => goToEditInvoice(invoice)}>
                                 <Pencil className="size-3.5" />
                             </Button>
                         </TooltipTrigger>
@@ -84,7 +84,7 @@ export default function Actions({ invoice, isExpanded, onToggleExpand }: Actions
                 <HasPermission permission="delete-finance-invoices">
                     <DialogDelete
                         description={`Invoice "${invoice.invoice_number}" akan dihapus secara permanen.`}
-                        deleteUrl={invoicesRoute.destroy(invoice.id).url}
+                        deleteUrl={finances.invoices.destroy(invoice.id).url}
                         tooltipText="Hapus Invoice"
                         isDisabled={loading || isPaid}
                     />

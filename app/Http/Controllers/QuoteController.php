@@ -1,0 +1,194 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Project;
+use App\Models\Quote;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
+
+class QuoteController extends Controller
+{
+    /**
+     * Display a listing of quotes.
+     */
+    public function index(Request $request)
+    {
+        $perPage  = $request->get('per_page', 20);
+        $perPage  = in_array($perPage, [20, 30, 40, 50]) ? $perPage : 20;
+        $search   = $request->get('search');
+        $status   = $request->get('status');
+        $timeline = $request->get('timeline');
+        $source   = $request->get('source');
+
+        $query = Quote::with([
+            'user:id,name,email',
+            'customer:id,name',
+            'service:id,name',
+            'servicePackage:id,name',
+            'activeEstimate',
+        ]);
+
+        if ($search)   $query->search($search);
+        if ($status)   $query->byStatus($status);
+        if ($timeline) $query->where('timeline', $timeline);
+        if ($source)   $query->where('source', $source);
+
+        $quotes = $query->latest()->paginate($perPage);
+
+        $summary = Quote::query()
+            ->selectRaw("
+        COUNT(*) as total,
+        COALESCE(SUM(CASE WHEN status = 'pending'   THEN 1 ELSE 0 END), 0) as pending,
+        COALESCE(SUM(CASE WHEN status = 'contacted' THEN 1 ELSE 0 END), 0) as contacted,
+        COALESCE(SUM(CASE WHEN status = 'estimated' THEN 1 ELSE 0 END), 0) as estimated,
+        COALESCE(SUM(CASE WHEN status = 'accepted'  THEN 1 ELSE 0 END), 0) as accepted,
+        COALESCE(SUM(CASE WHEN status = 'rejected'  THEN 1 ELSE 0 END), 0) as rejected,
+        COALESCE(SUM(CASE WHEN status = 'converted' THEN 1 ELSE 0 END), 0) as converted
+    ")
+            ->first();
+
+        return Inertia::render('finances/quotes/index', [
+            'quotes'  => $quotes,
+            'summary' => $summary,
+            'filters' => [
+                'search'   => $search,
+                'per_page' => $perPage,
+                'status'   => $status,
+                'timeline' => $timeline,
+                'source'   => $source,
+            ],
+        ]);
+    }
+
+    /**
+     * Display the specified quote.
+     */
+    public function show(Quote $quote)
+    {
+        $quote->load([
+            'user:id,name,email',
+            'customer:id,name,phone,email',
+            'service:id,name',
+            'servicePackage:id,name',
+            'project:id,name,status',
+            'estimates' => fn($q) => $q->with('items')->orderBy('version', 'desc'),
+        ]);
+
+        return Inertia::render('finances/quotes/detail/index', [
+            'quote' => $quote,
+        ]);
+    }
+
+    /**
+     * Update quote status.
+     */
+    public function updateStatus(Request $request, Quote $quote)
+    {
+        if ($quote->status === 'converted') {
+            return back()->withErrors(['error' => 'Quote yang sudah dikonversi tidak dapat diubah.']);
+        }
+
+        $request->validate([
+            'status'          => 'required|in:pending,contacted,estimated,accepted,rejected',
+            'rejected_reason' => 'required_if:status,rejected|nullable|string|max:500',
+        ], [
+            'status.required'          => 'Status wajib dipilih.',
+            'status.in'                => 'Status tidak valid.',
+            'rejected_reason.required_if' => 'Alasan penolakan wajib diisi.',
+        ]);
+
+        match ($request->status) {
+            'contacted' => $quote->markAsContacted(),
+            'rejected'  => $quote->reject($request->rejected_reason),
+            default     => $quote->update([
+                'status' => $request->status,
+                'rejected_reason' => null,
+            ]),
+        };
+
+        $messages = [
+            'pending'   => 'Status permintaan penawaran diubah ke menunggu.',
+            'contacted' => 'permintaan penawaran ditandai sudah dihubungi.',
+            'estimated' => 'Status permintaan penawaran diubah ke diestimasi.',
+            'accepted'  => 'permintaan penawaran berhasil diterima.',
+            'rejected'  => 'permintaan penawaran berhasil ditolak.',
+        ];
+
+        return back()->with('success', $messages[$request->status]);
+    }
+
+    /**
+     * Convert quote to project.
+     */
+    public function convert(Request $request, Quote $quote)
+    {
+        if (!$quote->is_convertible) {
+            return back()->with('error', 'Quote ini belum dapat dikonversi menjadi project.');
+        }
+
+        // Validasi — nanti anda minta untuk diubah saat integrasi create project
+        $validated = $request->validate([
+            'start_date'      => 'required|date',
+            'planned_end_date' => 'required|date|after:start_date',
+            'budget'          => 'required|numeric|min:0',
+        ], [
+            'start_date.required'       => 'Tanggal mulai wajib diisi.',
+            'planned_end_date.required' => 'Tanggal rencana selesai wajib diisi.',
+            'planned_end_date.after'    => 'Tanggal selesai harus setelah tanggal mulai.',
+            'budget.required'           => 'Budget wajib diisi.',
+            'budget.numeric'            => 'Budget harus berupa angka.',
+        ]);
+
+        $project = DB::transaction(function () use ($quote, $validated) {
+            if (!$quote->customer_id) {
+                $customer = \App\Models\Customer::firstOrCreate(
+                    ['email' => $quote->user->email],
+                    [
+                        'user_id' => $quote->user_id,
+                        'name'    => $quote->user->name,
+                        'email'   => $quote->user->email,
+                        'status'  => 'active',
+                    ]
+                );
+
+                $quote->update(['customer_id' => $customer->id]);
+            }
+
+            $project = Project::create([
+                'customer_id'       => $quote->customer_id,
+                'service_id'        => $quote->service_id,
+                'service_package_id' => $quote->service_package_id,
+                'name'              => $quote->project_name,
+                'description'       => $quote->description,
+                'budget'            => $validated['budget'],
+                'start_date'        => $validated['start_date'],
+                'planned_end_date'  => $validated['planned_end_date'],
+                'status'            => 'planning',
+            ]);
+
+            $quote->markAsConverted($project->id);
+
+            return $project;
+        });
+
+        return redirect()
+            ->route('projects.show', $project)
+            ->with('success', 'Quote berhasil dikonversi menjadi project.');
+    }
+
+    /**
+     * Destroy a quote.
+     */
+    public function destroy(Quote $quote)
+    {
+        if ($quote->status === 'converted') {
+            return back()->withErrors('error', 'Quote yang sudah dikonversi tidak dapat dihapus.');
+        }
+
+        $quote->delete();
+
+        return back()->with('success', 'Quote berhasil dihapus.');
+    }
+}

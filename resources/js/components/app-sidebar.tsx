@@ -112,13 +112,41 @@ const allNavData: {
                 url: '#',
                 icon: DollarSign,
                 items: [
-                    { title: 'Permintan Penawaran', url: '#' },
-                    { title: 'Proposal', url: '#' },
-                    { title: 'Estimasi', url: '#' },
-                    { title: 'Invoice', url: finances.invoices.index().url },
-                    { title: 'Pembayaran', url: finances.payments.index().url },
-                    { title: 'Pengeluaran', url: finances.expenses.index().url },
-                    { title: 'Vendor', url: finances.vendors.index().url },
+                    {
+                        title: 'Permintan Penawaran',
+                        url: finances.quotes.index().url,
+                        permission: 'view-finance-quotes',
+                    },
+                    {
+                        title: 'Proposal',
+                        url: '#',
+                        permission: 'view-finance-proposals',
+                    },
+                    {
+                        title: 'Estimasi',
+                        url: finances.estimates.index().url,
+                        permission: 'view-finance-estimates',
+                    },
+                    {
+                        title: 'Invoice',
+                        url: finances.invoices.index().url,
+                        permission: 'view-finance-invoices',
+                    },
+                    {
+                        title: 'Pembayaran',
+                        url: finances.payments.index().url,
+                        permission: 'view-finance-payments',
+                    },
+                    {
+                        title: 'Pengeluaran',
+                        url: finances.expenses.index().url,
+                        permission: 'view-finance-expenses',
+                    },
+                    {
+                        title: 'Vendor',
+                        url: finances.vendors.index().url,
+                        permission: 'view-finance-vendors',
+                    },
                 ],
             },
             {

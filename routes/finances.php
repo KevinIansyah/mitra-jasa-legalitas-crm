@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\EstimateController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\Projects\ProjectInvoiceController;
 use App\Http\Controllers\Projects\ProjectPaymentController;
+use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\VendorController;
 use Illuminate\Support\Facades\Route;
 
@@ -146,7 +148,7 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
     |--------------------------------------------------------------------------
     | GET    /finances/vendors                -> List vendors
     | GET    /finances/vendors/create         -> Show create form
-    | POST   /finances/vendors               -> Store vendor
+    | POST   /finances/vendors                -> Store vendor
     | GET    /finances/vendors/{vendor}/edit  -> Show edit form
     | PUT    /finances/vendors/{vendor}       -> Update vendor
     | DELETE /finances/vendors/{vendor}       -> Delete vendor
@@ -171,6 +173,91 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
       ->name('update');
 
     Route::delete('/{vendor}', [VendorController::class, 'destroy'])
+      ->name('destroy');
+  });
+
+  /*
+    |--------------------------------------------------------------------------
+    | QUOTES
+    |--------------------------------------------------------------------------
+    | GET    /finances/quotes                 -> List quotes
+    | GET    /finances/quotes/{quote}         -> Show quote
+    | POST   /finances/quotes/{quote}/convert -> Convert quote
+    | DELETE /finances/quotes/{quote}         -> Delete quote
+    | PATCH  /finances/quotes/{quote}/status  -> Update quote status
+    |--------------------------------------------------------------------------
+    */
+
+  Route::prefix('finances/quotes')->name('finances.quotes.')->group(function () {
+    Route::get('/', [QuoteController::class, 'index'])
+      ->middleware('permission:view-finance-quotes')
+      ->name('index');
+
+    Route::get('/{quote}', [QuoteController::class, 'show'])
+      ->middleware('permission:view-finance-quotes')
+      ->name('show');
+
+    Route::post('/{quote}/convert', [QuoteController::class, 'convert'])
+      ->middleware('permission:edit-finance-quotes')
+      ->name('convert');
+
+    Route::delete('/{quote}', [QuoteController::class, 'destroy'])
+      ->middleware('permission:delete-finance-quotes')
+      ->name('destroy');
+
+    Route::patch('/{quote}/status', [QuoteController::class, 'updateStatus'])
+      ->middleware('permission:edit-finance-quotes')
+      ->name('update-status');
+  });
+
+  /*
+    |--------------------------------------------------------------------------
+    | ESTIMATES
+    |--------------------------------------------------------------------------
+    |
+    | GET    /finances/estimates                    -> List estimates
+    | GET    /finances/estimates/{estimate}         -> Show estimate
+    | POST   /finances/estimates                    -> Create estimate
+    | GET    /finances/estimates/{estimate}/edit    -> Show edit form
+    | PUT    /finances/estimates/{estimate}         -> Update estimate
+    | PATCH  /finances/estimates/{estimate}/status  -> Update estimate status
+    | POST   /finances/estimates/{estimate}/revise  -> Revise estimate
+    | DELETE /finances/estimates/{estimate}         -> Delete estimate
+    |
+    |--------------------------------------------------------------------------
+    */
+
+  Route::prefix('finances/estimates')->name('finances.estimates.')->group(function () {
+    Route::get('/', [EstimateController::class, 'index'])
+      ->middleware('permission:view-finance-estimates')
+      ->name('index');
+
+    Route::get('/create', [EstimateController::class, 'create'])
+      ->middleware('permission:create-finance-estimates')
+      ->name('create');
+
+    Route::post('/', [EstimateController::class, 'store'])
+      ->middleware('permission:create-finance-estimates')
+      ->name('store');
+
+    Route::get('/{estimate}/edit', [EstimateController::class, 'edit'])
+      ->middleware('permission:edit-finance-estimates')
+      ->name('edit');
+
+    Route::put('/{estimate}', [EstimateController::class, 'update'])
+      ->middleware('permission:edit-finance-estimates')
+      ->name('update');
+
+    Route::patch('/{estimate}/status', [EstimateController::class, 'updateStatus'])
+      ->middleware('permission:edit-finance-estimates')
+      ->name('update-status');
+
+    Route::post('/{estimate}/revise', [EstimateController::class, 'revise'])
+      ->middleware('permission:edit-finance-estimates')
+      ->name('revise');
+
+    Route::delete('/{estimate}', [EstimateController::class, 'destroy'])
+      ->middleware('permission:delete-finance-estimates')
       ->name('destroy');
   });
 });

@@ -13,6 +13,8 @@ class RolePermissionSeeder extends Seeder
     {
         app(PermissionRegistrar::class)->forgetCachedPermissions();
 
+        Permission::query()->delete();
+
         $permissions = [
             'view-roles',
             'create-roles',
@@ -81,7 +83,6 @@ class RolePermissionSeeder extends Seeder
             'delete-project-discussions',
 
             'view-finance-quotes',
-            'create-finance-quotes',
             'edit-finance-quotes',
             'delete-finance-quotes',
 

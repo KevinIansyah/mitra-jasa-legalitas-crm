@@ -46,7 +46,7 @@ export default function getColumns(expandedRow: string | null, setExpandedRow: (
                         {address && (
                             <>
                                 <span className="text-xs font-medium text-muted-foreground">Alamat</span>
-                                <span className="min-w-0 break-words whitespace-normal">{address}</span>
+                                <span className="min-w-0 wrap-break-word whitespace-normal">{address}</span>
                             </>
                         )}
                     </div>

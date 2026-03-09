@@ -254,7 +254,7 @@ export function InvoiceCard({ project }: InvoiceCardProps) {
                                     <p className="mb-4 text-sm font-medium text-foreground">Item Invoice</p>
                                     <div className="space-y-4">
                                         {invoice.items?.map((item, i) => (
-                                            <div key={i} className="flex items-start justify-between gap-4 rounded-lg bg-primary/5 p-4 text-sm dark:bg-input/50">
+                                            <div key={i} className="flex items-start justify-between gap-4 rounded-lg bg-primary/10 p-4 text-sm dark:bg-muted/40">
                                                 <div className="space-y-0.5">
                                                     <p className="font-medium">{item.description}</p>
                                                     <p className="text-xs text-muted-foreground">

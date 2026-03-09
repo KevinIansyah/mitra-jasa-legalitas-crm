@@ -43,7 +43,7 @@ export default function Page() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Detail Project" />
             <div className="p-4 md:p-6">
-                <Heading title={`Detail Project  -  ${project.name}`} description="Kelola seluruh kebutuhan project seperti keuangan, tim, milestone, dan dokumen." />
+                <Heading title={`Detail Project`} description="Kelola seluruh kebutuhan project seperti keuangan, tim, milestone, dan dokumen." />
 
                 <DetailSection project={project} tab={tab} services={services} activities={activities} canApproveDocuments={can_approve_documents} />
             </div>

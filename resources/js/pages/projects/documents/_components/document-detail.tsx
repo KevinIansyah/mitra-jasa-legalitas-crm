@@ -36,7 +36,7 @@ export default function DocumentDetail({ document }: { document: ProjectDocument
             {document.status === 'rejected' && document.rejection_reason && (
                 <Alert className="border-destructive bg-destructive/10 text-destructive">
                     <AlertTriangle />
-                    <AlertTitle>Alasan Penolakan:</AlertTitle>
+                    <AlertTitle>Alasan Penolakan</AlertTitle>
                     <AlertDescription>{document.rejection_reason}</AlertDescription>
                 </Alert>
             )}

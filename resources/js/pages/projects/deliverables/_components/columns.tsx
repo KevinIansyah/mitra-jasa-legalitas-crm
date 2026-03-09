@@ -20,7 +20,7 @@ export default function getColumns(expandedRow: string | null, setExpandedRow: (
                         {(version || is_final || is_encrypted) && (
                             <>
                                 <span className="text-xs font-medium text-muted-foreground">Keterangan</span>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-1">
                                     {version && <Badge className="bg-blue-600 text-white">{version}</Badge>}
                                     {is_final && <Badge className="bg-emerald-500 text-white">Final</Badge>}
                                     {is_encrypted && <Badge variant="secondary">Terenkripsi</Badge>}

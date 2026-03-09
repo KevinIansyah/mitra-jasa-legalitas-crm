@@ -30,7 +30,7 @@ export default function Page() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Pengeluaran" />
             <div className="p-4 md:p-6">
-                <Heading title="Manajemen Pengeluaran" description="Kelola dan pantau seluruh pengeluaran yang terkait dengan project." />
+                <Heading title="Manajemen Pengeluaran" description="Kelola dan pantau seluruh pengeluaran yang terkait dengan project" />
                 <ExpenseSection expenses={expenses} summary={summary} filters={filters} />
             </div>
         </AppLayout>

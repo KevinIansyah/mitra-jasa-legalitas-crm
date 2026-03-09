@@ -31,14 +31,14 @@ export function InvoiceSection({ invoices, summary, filters }: InvoiceSectionPro
             ),
         },
         {
-            label: 'Menunggu',
+            label: 'Dikirim',
             value: summary.sent,
             badge: 'bg-blue-600 text-white',
             icon: <FileClock className="size-3.5" />,
             footer: (
                 <>
                     <p className="font-medium">Invoice dikirim</p>
-                    <p className="text-muted-foreground">Belum dikonfirmasi lunas</p>
+                    <p className="text-muted-foreground">{summary.draft} draft</p>
                 </>
             ),
         },

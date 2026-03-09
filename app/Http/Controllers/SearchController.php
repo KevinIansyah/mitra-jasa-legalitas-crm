@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\Project;
 use App\Models\ProjectTemplate;
+use App\Models\Quote;
 use App\Models\Service;
 use App\Models\User;
 use App\Models\Vendor;
@@ -143,7 +144,9 @@ class SearchController extends Controller
         ]);
     }
 
-
+    /**
+     * Search vendor
+     */
     public function searchVendor(Request $request)
     {
         $search = $request->get('search', '');
@@ -156,5 +159,24 @@ class SearchController extends Controller
         return response()->json([
             'vendors' => $vendors
         ]);
+    }
+
+
+    /**
+     * Search quote
+     */
+    public function searchQuote(Request $request)
+    {
+        $search = $request->get('search', '');
+
+        $quotes = Quote::with(['user:id,name', 'service:id,name'])
+            ->when($search, fn($q) => $q->where(function ($q) use ($search) {
+                $q->where('reference_number', 'like', "%{$search}%")
+                    ->orWhere('project_name', 'like', "%{$search}%");
+            }))
+            ->limit(10)
+            ->get(['id', 'reference_number', 'project_name', 'status', 'user_id', 'service_id']);
+
+        return response()->json(['quotes' => $quotes]);
     }
 }

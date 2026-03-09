@@ -106,6 +106,7 @@ class ProjectPayment extends Model
             'status'      => 'verified',
             'verified_by' => $verifier->id,
             'verified_at' => now(),
+            'rejection_reason' => null,
         ]);
 
         $invoice   = $this->invoice;
@@ -120,6 +121,8 @@ class ProjectPayment extends Model
     {
         $this->update([
             'status'           => 'rejected',
+            'verified_by'      => null,
+            'verified_at'      => null,
             'rejection_reason' => $reason,
         ]);
     }

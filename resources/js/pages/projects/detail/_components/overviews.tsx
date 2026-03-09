@@ -18,6 +18,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/in
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import { formatRupiah, getInitials } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
@@ -204,7 +205,10 @@ export default function Overviews({ project, services }: OverviewsProps) {
                 toast.success('Berhasil', { description: 'Project berhasil diperbarui.' });
                 setMode('view');
             },
-            onError: () => toast.error('Gagal', { description: 'Periksa kembali data yang diisi.' }),
+            onError: (errors) => {
+                const msg = Object.values(errors)[0] ?? 'Terjadi kesalahan saat memperbarui project, coba lagi.';
+                toast.error('Gagal', { description: String(msg) });
+            },
             onFinish: () => toast.dismiss(toastId),
         });
     }
@@ -218,9 +222,16 @@ export default function Overviews({ project, services }: OverviewsProps) {
             { status: confirmStatus },
             {
                 preserveScroll: true,
-                onSuccess: () => toast.success('Berhasil', { description: 'Status project berhasil diperbarui.' }),
-                onError: () => toast.error('Gagal', { description: 'Terjadi kesalahan saat memperbarui status, coba lagi.' }),
-                onFinish: () => toast.dismiss(toastId),
+                onSuccess: () => {
+                    toast.success('Berhasil', { description: 'Status project berhasil diperbarui.' });
+                },
+                onError: (errors) => {
+                    const msg = Object.values(errors)[0] ?? 'Terjadi kesalahan saat memperbarui status, coba lagi.';
+                    toast.error('Gagal', { description: String(msg) });
+                },
+                onFinish: () => {
+                    toast.dismiss(toastId);
+                },
             },
         );
     }
@@ -235,14 +246,21 @@ export default function Overviews({ project, services }: OverviewsProps) {
                             <div>
                                 <h2 className="text-xl font-bold">Ringkasan Project</h2>
                                 <p className="mt-0.5 text-sm text-muted-foreground">
-                                    Informasi umum project mencakup status, deskripsi, pelanggan, perusahaan, layanan, dan jadwal pengerjaan.
+                                    Informasi umum project mencakup status, deskripsi, pelanggan, perusahaan, layanan, dan jadwal pengerjaan
                                 </p>
                             </div>
+
                             <HasPermission permission="edit-projects">
-                                <Button className="w-30 gap-2" onClick={handleStartEdit}>
-                                    <Pencil className="size-3.5" />
-                                    Edit
-                                </Button>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button variant="secondary" className="h-8 w-8" onClick={handleStartEdit}>
+                                            <Pencil className="size-3.5" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>Edit Project</p>
+                                    </TooltipContent>
+                                </Tooltip>
                             </HasPermission>
                         </div>
 
@@ -273,9 +291,14 @@ export default function Overviews({ project, services }: OverviewsProps) {
                                 </DropdownMenu>
                             </Field>
 
-                            <Field>
+                            <Field className="gap-2">
+                                <FieldLabel>Nama</FieldLabel>
+                                <span className="text-sm text-muted-foreground">{project.name}</span>
+                            </Field>
+
+                            <Field className="gap-2">
                                 <FieldLabel>Deskripsi</FieldLabel>
-                                <span className="text-sm leading-relaxed text-muted-foreground">{project.description}</span>
+                                <span className="text-sm text-muted-foreground">{project.description}</span>
                             </Field>
                         </div>
                     </div>
@@ -286,7 +309,7 @@ export default function Overviews({ project, services }: OverviewsProps) {
                     <div className="w-full space-y-3 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                         <Avatar className="h-12 w-12 rounded-xl">
                             <AvatarImage src={project.customer?.user?.avatar ?? undefined} />
-                            <AvatarFallback className="rounded-xl text-lg bg-primary/10 text-primary">{getInitials(project.customer?.name)}</AvatarFallback>
+                            <AvatarFallback className="rounded-xl bg-primary/10 text-lg text-primary">{getInitials(project.customer?.name)}</AvatarFallback>
                         </Avatar>
                         <FieldLabel>Pelanggan</FieldLabel>
                         <InfoRow label="Nama" value={project.customer?.name} />

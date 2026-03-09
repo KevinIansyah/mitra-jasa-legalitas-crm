@@ -132,18 +132,6 @@ export default function PermissionSection({ role, allPermissions }: PermissionSe
                 case resource.startsWith('finance'): {
                     groupName = 'Manajemen Keuangan';
 
-                    if (resource === 'finance-invoices') {
-                        itemName = 'Invoice';
-                    }
-
-                    if (resource === 'finance-payments') {
-                        itemName = 'Pembayaran';
-                    }
-
-                    if (resource === 'finance-expenses') {
-                        itemName = 'Pengeluaran';
-                    }
-
                     if (resource === 'finance-quotes') {
                         itemName = 'Permintaan Penawaran';
                     }
@@ -154,6 +142,18 @@ export default function PermissionSection({ role, allPermissions }: PermissionSe
 
                     if (resource === 'finance-estimates') {
                         itemName = 'Estimasi';
+                    }
+
+                    if (resource === 'finance-invoices') {
+                        itemName = 'Invoice';
+                    }
+
+                    if (resource === 'finance-payments') {
+                        itemName = 'Pembayaran';
+                    }
+
+                    if (resource === 'finance-expenses') {
+                        itemName = 'Pengeluaran';
                     }
 
                     if (resource === 'finance-vendors') {
