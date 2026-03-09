@@ -9,11 +9,9 @@ import { Button } from '@/components/ui/button';
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 
-import { Switch } from '@/components/ui/switch';
 import projects from '@/routes/projects';
 import search from '@/routes/search';
 import type { User } from '@/types';
@@ -161,13 +159,13 @@ export function TeamAddDrawer({ projectId, open, onOpenChange }: TeamAddDrawerPr
                                         </InputGroup>
 
                                         {searchResults.length > 0 && (
-                                            <div className="mt-1 max-h-64 space-y-1 overflow-y-auto rounded-md border border-primary bg-muted/30 p-2 dark:border-none">
+                                            <div className="mt-1 max-h-64 space-y-1 overflow-y-auto">
                                                 {searchResults.map((user) => (
                                                     <button
                                                         key={user.id}
                                                         type="button"
                                                         onClick={() => handleSelectUser(user)}
-                                                        className="flex w-full items-center gap-2 rounded-md p-2 text-left hover:bg-muted"
+                                                        className="flex w-full items-center gap-2 rounded-md p-2 text-left bg-primary/10 dark:bg-muted/40 hover:bg-primary/20 dark:hover:bg-muted/50"
                                                     >
                                                         <div className="flex-1">
                                                             <p className="text-sm font-medium">{user.name}</p>
@@ -213,7 +211,7 @@ export function TeamAddDrawer({ projectId, open, onOpenChange }: TeamAddDrawerPr
                             </Field>
 
                             {/* Can Approve Documents */}
-                            <div className="col-span-2 flex items-center gap-4 rounded-lg border border-primary bg-transparent p-4 dark:bg-input/30">
+                            {/* <div className="col-span-2 flex items-center gap-4 rounded-lg border border-primary bg-transparent p-4 dark:bg-input/30">
                                 <Switch id="is_primary" checked={data.can_approve_documents} onCheckedChange={(checked) => setData('can_approve_documents', checked as boolean)} />
                                 <div className="flex-1">
                                     <Label htmlFor="can_approve_documents" className="cursor-pointer text-sm font-medium">
@@ -222,7 +220,7 @@ export function TeamAddDrawer({ projectId, open, onOpenChange }: TeamAddDrawerPr
                                     <p className="text-sm text-muted-foreground">Tandai user ini agar dapat menyetujui dokumen dalam proyek</p>
                                 </div>
                             </div>
-                            {errors.can_approve_documents && <FieldError>{errors.can_approve_documents}</FieldError>}
+                            {errors.can_approve_documents && <FieldError>{errors.can_approve_documents}</FieldError>} */}
                         </div>
 
                         <DrawerFooter className="mt-auto px-0">

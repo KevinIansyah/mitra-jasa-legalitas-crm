@@ -506,7 +506,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                     <h2 className="text-xl font-bold">Konten Layanan</h2>
                                     <p className="mt-0.5 text-sm text-muted-foreground">Kelola pengantar dan konten utama layanan untuk kebutuhan informasi dan optimasi SEO.</p>
                                 </div>
-                                {/* <Button type="button" variant="outline" size="sm" className="shrink-0 gap-1.5" disabled>
+                                {/* <Button type="button" variant="outline" className="shrink-0 gap-1.5" disabled>
                                     <Sparkles className="size-3.5" />
                                     AI Generate
                                 </Button> */}
@@ -552,11 +552,11 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                     <p className="mt-0.5 text-sm text-muted-foreground">Kelola paket harga dengan dokumen/fitur yang berbeda untuk setiap paket</p>
                                 </div>
                                 <div className="flex w-full items-center gap-2 md:w-auto">
-                                    {/* <Button type="button" variant="outline" size="sm" className="flex-1 shrink-0 gap-1.5 md:flex-none" disabled>
+                                    {/* <Button type="button" variant="outline" className="flex-1 shrink-0 gap-1.5 md:flex-none" disabled>
                                         <Sparkles className="size-3.5" />
                                         AI Generate
                                     </Button> */}
-                                    <Button type="button" onClick={addPackage} size="sm" className="flex-1 gap-1.5 md:flex-none">
+                                    <Button type="button" onClick={addPackage} className="flex-1 gap-1.5 md:flex-none">
                                         <Plus className="size-4" />
                                         Tambah Paket
                                     </Button>
@@ -566,7 +566,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                             {data.packages.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
                                     <p className="text-sm">Belum ada paket harga</p>
-                                    <Button type="button" variant="outline" size="sm" onClick={addPackage} className="gap-1.5">
+                                    <Button type="button" variant="outline" onClick={addPackage} className="gap-1.5">
                                         <Plus className="size-4" />
                                         Tambah Paket Pertama
                                     </Button>
@@ -601,7 +601,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                     <h2 className="text-xl font-bold">FAQ (Frequently Asked Questions)</h2>
                                     <p className="mt-0.5 text-sm text-muted-foreground">Kelola pertanyaan yang sering diajukan terkait layanan ini.</p>
                                 </div>
-                                <Button type="button" onClick={addFaq} size="sm" className="w-full gap-1.5 md:w-auto">
+                                <Button type="button" onClick={addFaq} className="w-full gap-1.5 md:w-auto">
                                     <Plus className="size-4" />
                                     Tambah FAQ
                                 </Button>
@@ -610,7 +610,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                             {data.faqs.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
                                     <p className="text-sm">Belum ada FAQ</p>
-                                    <Button type="button" variant="outline" size="sm" onClick={addFaq} className="gap-1.5">
+                                    <Button type="button" variant="outline" onClick={addFaq} className="gap-1.5">
                                         <Plus className="size-4" />
                                         Tambah FAQ Pertama
                                     </Button>
@@ -645,7 +645,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                     <h2 className="text-xl font-bold">Dasar Hukum</h2>
                                     <p className="mt-0.5 text-sm text-muted-foreground">Kelola referensi peraturan dan undang-undang yang menjadi dasar layanan.</p>
                                 </div>
-                                <Button type="button" onClick={addLegalBasis} size="sm" className="w-full gap-1.5 md:w-auto">
+                                <Button type="button" onClick={addLegalBasis} className="w-full gap-1.5 md:w-auto">
                                     <Plus className="size-4" />
                                     Tambah Dasar Hukum
                                 </Button>
@@ -654,7 +654,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                             {data.legal_bases.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
                                     <p className="text-sm">Belum ada dasar hukum</p>
-                                    <Button type="button" variant="outline" size="sm" onClick={addLegalBasis} className="gap-1.5">
+                                    <Button type="button" variant="outline" onClick={addLegalBasis} className="gap-1.5">
                                         <Plus className="size-4" />
                                         Tambah Dasar Hukum Pertama
                                     </Button>
@@ -689,7 +689,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                     <h2 className="text-xl font-bold">Persyaratan</h2>
                                     <p className="mt-0.5 text-sm text-muted-foreground">Kelola kategori dan daftar persyaratan dokumen yang dibutuhkan.</p>
                                 </div>
-                                <Button type="button" onClick={addRequirementCategory} size="sm" className="w-full gap-1.5 md:w-auto">
+                                <Button type="button" onClick={addRequirementCategory} className="w-full gap-1.5 md:w-auto">
                                     <Plus className="size-4" />
                                     Tambah Kategori
                                 </Button>
@@ -698,7 +698,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                             {data.requirement_categories.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
                                     <p className="text-sm">Belum ada kategori persyaratan</p>
-                                    <Button type="button" variant="outline" size="sm" onClick={addRequirementCategory} className="gap-1.5">
+                                    <Button type="button" variant="outline" onClick={addRequirementCategory} className="gap-1.5">
                                         <Plus className="size-4" />
                                         Tambah Kategori Pertama
                                     </Button>
@@ -733,7 +733,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                     <h2 className="text-xl font-bold">Tahapan Proses</h2>
                                     <p className="mt-0.5 text-sm text-muted-foreground">Kelola langkah-langkah proses pengerjaan layanan secara berurutan.</p>
                                 </div>
-                                <Button type="button" onClick={addProcessStep} size="sm" className="w-full gap-1.5 md:w-auto">
+                                <Button type="button" onClick={addProcessStep} className="w-full gap-1.5 md:w-auto">
                                     <Plus className="size-4" />
                                     Tambah Tahap
                                 </Button>
@@ -742,7 +742,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                             {data.process_steps.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
                                     <p className="text-sm">Belum ada tahapan proses</p>
-                                    <Button type="button" variant="outline" size="sm" onClick={addProcessStep} className="gap-1.5">
+                                    <Button type="button" variant="outline" onClick={addProcessStep} className="gap-1.5">
                                         <Plus className="size-4" />
                                         Tambah Tahap Pertama
                                     </Button>

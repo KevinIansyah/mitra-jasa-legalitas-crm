@@ -83,7 +83,7 @@ export function TeamCard({ project }: TeamCardProps) {
                                 index !== teams.length - 1 ? 'border-b border-border' : ''
                             }`}
                         >
-                            <div className="flex items-center gap-3">
+                            <div className="order-2 flex items-center gap-3 md:order-1">
                                 <Avatar className="h-8 w-8 rounded-full">
                                     <AvatarImage src={member.user?.avatar} alt={member.user?.name} />
                                     <AvatarFallback className="bg-primary/10 text-primary">{getInitials(member.user?.name)}</AvatarFallback>
@@ -94,7 +94,7 @@ export function TeamCard({ project }: TeamCardProps) {
                                 </div>
                             </div>
 
-                            <div className="flex flex-wrap items-center gap-1">
+                            <div className="order-1 flex flex-wrap items-center gap-1 md:order-2">
                                 {/* Can approve documents */}
                                 {/* <DropdownMenu>
                                     <DropdownMenuTrigger asChild>

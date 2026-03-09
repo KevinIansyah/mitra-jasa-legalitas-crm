@@ -15,7 +15,7 @@ import { Switch } from '@/components/ui/switch';
 
 import { getInitials } from '@/lib/service';
 import companies from '@/routes/contacts/companies';
-import type { CompanyWithCustomers } from '@/types/contact';
+import { TIER_MAP, type CompanyWithCustomers } from '@/types/contact';
 
 type CustomerItemProps = {
     customer: CompanyWithCustomers['customers'][number];
@@ -23,13 +23,6 @@ type CustomerItemProps = {
 };
 
 export function CustomerItem({ customer, companyId }: CustomerItemProps) {
-    const tierVariantMap: Record<string, string> = {
-        bronze: 'bg-amber-700 text-white',
-        silver: 'bg-slate-400 text-slate-900',
-        gold: 'bg-yellow-500 text-white',
-        platinum: 'bg-indigo-600 text-white',
-    };
-
     const [isEditing, setIsEditing] = useState(false);
 
     const { data, setData, patch, processing } = useForm({
@@ -77,7 +70,9 @@ export function CustomerItem({ customer, companyId }: CustomerItemProps) {
             <div className="flex items-center justify-between">
                 <div>
                     {Boolean(isEditing ? data.is_primary : customer.pivot?.is_primary) && <Badge className="mr-1">Utama</Badge>}
-                    {customer.tier && <Badge className={tierVariantMap[customer.tier] ?? 'bg-muted text-muted-foreground'}>{customer.tier}</Badge>}
+                    {customer.tier && (
+                        <Badge className={TIER_MAP[customer.tier]?.classes ?? 'bg-muted text-muted-foreground'}>{TIER_MAP[customer.tier]?.label ?? customer.tier}</Badge>
+                    )}
                 </div>
 
                 <div className="flex items-center gap-1">

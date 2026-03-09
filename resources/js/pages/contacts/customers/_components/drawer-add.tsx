@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 import customers from '@/routes/contacts/customers';
-import type { CustomerFormData } from '@/types/contact';
+import { TIER, type CustomerFormData } from '@/types/contact';
 
 export function DrawerAdd() {
     const [open, setOpen] = React.useState(false);
@@ -132,10 +132,12 @@ export function DrawerAdd() {
                                         <SelectContent>
                                             <SelectGroup>
                                                 <SelectLabel>Tier</SelectLabel>
-                                                <SelectItem value="bronze">Bronze</SelectItem>
-                                                <SelectItem value="silver">Silver</SelectItem>
-                                                <SelectItem value="gold">Gold</SelectItem>
-                                                <SelectItem value="platinum">Platinum</SelectItem>
+                                                {TIER.map((item) => (
+                                                    <SelectItem key={item.value} value={item.value}>
+                                                        <span className={`mr-2 inline-block h-2 w-2 rounded-full ${item.classes.replace('text-white', '')}`} />
+                                                        {item.label}
+                                                    </SelectItem>
+                                                ))}
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>

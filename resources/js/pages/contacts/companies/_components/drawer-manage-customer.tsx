@@ -17,7 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getInitials } from '@/lib/service';
 import companies from '@/routes/contacts/companies';
 import search from '@/routes/search';
-import type { AttachCustomerToCompanyFormData, CompanyWithCustomers, Customer } from '@/types/contact';
+import { TIER_MAP, type AttachCustomerToCompanyFormData, type CompanyWithCustomers, type Customer } from '@/types/contact';
 import { CustomerItem } from './customer-item';
 
 interface DrawerManageCustomersProps {
@@ -33,13 +33,6 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
     const [searchResults, setSearchResults] = React.useState<Customer[]>([]);
     const [isSearching, setIsSearching] = React.useState(false);
     const [selectedCustomer, setSelectedCustomer] = React.useState<Customer | null>(null);
-
-    const tierVariantMap: Record<string, string> = {
-        bronze: 'bg-amber-700 text-white',
-        silver: 'bg-slate-400 text-slate-900',
-        gold: 'bg-yellow-500 text-white',
-        platinum: 'bg-indigo-600 text-white',
-    };
 
     const { data, setData, post, processing, errors, reset } = useForm<AttachCustomerToCompanyFormData>({
         customer_id: 0,
@@ -217,8 +210,8 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
                                                             {selectedCustomer.email || selectedCustomer.phone || 'Tidak ada info kontak'}
                                                         </p>
                                                         {selectedCustomer.tier && (
-                                                            <Badge className={`mt-1 ${tierVariantMap[selectedCustomer.tier] ?? 'bg-muted text-muted-foreground'}`}>
-                                                                {selectedCustomer.tier}
+                                                            <Badge className={`mt-1 ${TIER_MAP[selectedCustomer.tier]?.classes ?? 'bg-muted text-muted-foreground'}`}>
+                                                                {TIER_MAP[selectedCustomer.tier]?.label ?? selectedCustomer.tier}
                                                             </Badge>
                                                         )}
                                                     </div>
@@ -257,7 +250,11 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
                                                                     <p className="text-sm font-medium">{c.name}</p>
                                                                     <p className="text-sm text-muted-foreground">{c.email || c.phone || 'Tidak ada info kontak'}</p>
                                                                 </div>
-                                                                {c.tier && <Badge className={tierVariantMap[c.tier] ?? 'bg-muted text-muted-foreground'}>{c.tier}</Badge>}
+                                                                {c.tier && (
+                                                                    <Badge className={TIER_MAP[c.tier]?.classes ?? 'bg-muted text-muted-foreground'}>
+                                                                        {TIER_MAP[c.tier]?.label ?? c.tier}
+                                                                    </Badge>
+                                                                )}
                                                             </button>
                                                         ))}
                                                     </div>

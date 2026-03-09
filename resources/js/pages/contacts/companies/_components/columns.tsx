@@ -23,10 +23,10 @@ export default function getColumns(expandedRow: string | null, setExpandedRow: (
                         <span className="col-span-2 mt-4 text-xs font-bold text-muted-foreground">Legal Bisnis</span>
 
                         <span className="text-xs font-medium text-muted-foreground">Legal</span>
-                        {status ? <Badge className={status.className}>{status.label}</Badge> : <span>-</span>}
+                        {status ? <Badge className={status.classes}>{status.label}</Badge> : <span>-</span>}
 
                         <span className="text-xs font-medium text-muted-foreground">Bisnis</span>
-                        {category ? <Badge className={category.className}>{category.label}</Badge> : <span>-</span>}
+                        {category ? <Badge className={category.classes}>{category.label}</Badge> : <span>-</span>}
 
                         <span className="col-span-2 mt-4 text-xs font-bold text-muted-foreground">Pelanggan (PIC)</span>
                         <span className="text-xs font-medium text-muted-foreground">Jumlah</span>

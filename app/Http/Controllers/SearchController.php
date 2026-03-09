@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Company;
 use App\Models\Customer;
 use App\Models\Project;
 use App\Models\ProjectTemplate;
@@ -16,7 +17,7 @@ class SearchController extends Controller
     /**
      * Search customer
      */
-    public function searchCustomer(Request $request)
+    public function searchCustomers(Request $request)
     {
         $search = $request->get('search', '');
         $companyId = $request->get('company_id');
@@ -47,9 +48,33 @@ class SearchController extends Controller
     }
 
     /**
+     * Search company
+     */
+    public function searchCompanies(Request $request)
+    {
+        $search = $request->get('search', '');
+
+        $query = Company::query();
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%");
+            });
+        }
+
+        $companies = $query->select('id', 'name', 'email', 'phone')
+            ->limit(10)
+            ->get();
+
+        return response()->json([
+            'companies' => $companies,
+        ]);
+    }
+
+    /**
      * Search company by customer id
      */
-    public function searchCompanyByCustomerId(Customer $customer)
+    public function searchCompaniesByCustomerId(Customer $customer)
     {
         $companies = $customer->companies()
             ->select('companies.id', 'companies.name', 'companies.email', 'companies.phone')
@@ -98,12 +123,12 @@ class SearchController extends Controller
     /**
      * Search user staff
      */
-    public function searchUserStaff(Request $request)
+    public function searchUsersStaff(Request $request)
     {
         $search = $request->get('search', '');
         $projectId = $request->get('project_id');
 
-        $query = User::query();
+        $query = User::where('role', '!=', 'user');
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -128,7 +153,7 @@ class SearchController extends Controller
     /**
      * Search project
      */
-    public function seachProject(Request $request)
+    public function seachProjects(Request $request)
     {
         $search = $request->get('search', '');
 
@@ -147,7 +172,7 @@ class SearchController extends Controller
     /**
      * Search vendor
      */
-    public function searchVendor(Request $request)
+    public function searchVendors(Request $request)
     {
         $search = $request->get('search', '');
 
@@ -165,7 +190,7 @@ class SearchController extends Controller
     /**
      * Search quote
      */
-    public function searchQuote(Request $request)
+    public function searchQuotes(Request $request)
     {
         $search = $request->get('search', '');
 

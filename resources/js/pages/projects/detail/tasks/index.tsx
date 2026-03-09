@@ -120,7 +120,7 @@ export default function Tasks({ project }: TasksProps) {
                 <p className="mt-0.5 text-sm text-muted-foreground">Kelola dan pantau tugas-tugas dalam project ini.</p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 *:data-[slot=card]:border-none *:data-[slot=card]:bg-sidebar *:data-[slot=card]:shadow md:grid-cols-4 *:data-[slot=card]:dark:shadow-none">
+            <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:border-none *:data-[slot=card]:bg-sidebar *:data-[slot=card]:shadow md:grid-cols-4 *:data-[slot=card]:dark:shadow-none">
                 {STATS_BADGE.map(({ label, value, color, badge, icon }) => (
                     <Card key={label}>
                         <CardHeader>

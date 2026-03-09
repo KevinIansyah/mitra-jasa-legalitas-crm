@@ -25,7 +25,7 @@ import { formatDate } from '@/lib/utils';
 import projects from '@/routes/projects';
 import search from '@/routes/search';
 import type { Customer, Company } from '@/types/contact';
-import { CATEGORY_BUSINESS_MAP, STATUS_LEGAL_MAP, TIER_VARIANT_MAP } from '@/types/contact';
+import { CATEGORY_BUSINESS_MAP, STATUS_LEGAL_MAP, TIER_MAP } from '@/types/contact';
 import type { ProjectStatus } from '@/types/project';
 import { PROJECT_STATUSES, PROJECT_STATUSES_MAP, type Project } from '@/types/project';
 import type { Service, ServicePackage } from '@/types/service';
@@ -67,13 +67,6 @@ export default function Overviews({ project, services }: OverviewsProps) {
         actual_start_date: project.actual_start_date ?? '',
         actual_end_date: project.actual_end_date ?? '',
     });
-
-    const tierVariantMap: Record<string, string> = {
-        bronze: 'bg-amber-700 text-white',
-        silver: 'bg-slate-400 text-slate-900',
-        gold: 'bg-yellow-500 text-white',
-        platinum: 'bg-indigo-600 text-white',
-    };
 
     // Customer search
     const [customerSearch, setCustomerSearch] = useState('');
@@ -319,8 +312,8 @@ export default function Overviews({ project, services }: OverviewsProps) {
                             {project.customer?.user_id ? <Badge className="bg-emerald-500 text-white">Terdaftar</Badge> : <Badge variant="secondary">Belum Terdaftar</Badge>}
                         </InfoRow>
                         <InfoRow label="Tier">
-                            <Badge className={tier ? (TIER_VARIANT_MAP[tier] ?? 'bg-muted text-muted-foreground') : 'bg-muted text-muted-foreground'}>
-                                {tier ? tier.charAt(0).toUpperCase() + tier.slice(1) : '-'}
+                            <Badge className={tier ? (TIER_MAP[tier]?.classes ?? 'bg-muted text-muted-foreground') : 'bg-muted text-muted-foreground'}>
+                                {tier ? (TIER_MAP[tier]?.label ?? tier) : '-'}
                             </Badge>
                         </InfoRow>
                     </div>
@@ -339,15 +332,13 @@ export default function Overviews({ project, services }: OverviewsProps) {
                                 <InfoRow label="Kabupaten/Kota" value={project.company.city} />
                                 <InfoRow label="Provinsi" value={project.company.province} />
                                 <InfoRow label="Kode Pos" value={project.company.postal_code} />
-                                <InfoRow label="Status Legal">{statusLegal ? <Badge className={statusLegal.className}>{statusLegal.label}</Badge> : undefined}</InfoRow>
+                                <InfoRow label="Status Legal">{statusLegal ? <Badge className={statusLegal.classes}>{statusLegal.label}</Badge> : undefined}</InfoRow>
                                 <InfoRow label="Kategori Bisnis">
-                                    {categoryBusiness ? <Badge className={categoryBusiness.className}>{categoryBusiness.label}</Badge> : undefined}
+                                    {categoryBusiness ? <Badge className={categoryBusiness.classes}>{categoryBusiness.label}</Badge> : undefined}
                                 </InfoRow>
                             </>
                         ) : (
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <span className="text-center text-sm text-muted-foreground">Tidak ada perusahaan yang terhubung pada project ini.</span>
-                            </div>
+                            <FieldDescription>Tidak ada perusahaan yang terhubung pada project ini</FieldDescription>
                         )}
                     </div>
                 </div>
@@ -366,9 +357,7 @@ export default function Overviews({ project, services }: OverviewsProps) {
                                 <InfoRow label="Paket Layanan" value={project.service_package?.name} />
                             </>
                         ) : (
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <span className="text-center text-sm text-muted-foreground">Tidak ada layanan yang terhubung pada project ini.</span>
-                            </div>
+                            <FieldDescription>Tidak ada layanan yang terhubung pada project ini</FieldDescription>
                         )}
                     </div>
 
@@ -437,7 +426,9 @@ export default function Overviews({ project, services }: OverviewsProps) {
                                         <p className="text-sm font-medium">{selectedCustomer.name}</p>
                                         <p className="text-xs text-muted-foreground">{selectedCustomer.email || selectedCustomer.phone || 'Tidak ada info kontak'}</p>
                                         {selectedCustomer.tier && (
-                                            <Badge className={`mt-1 ${tierVariantMap[selectedCustomer.tier] ?? 'bg-muted text-muted-foreground'}`}>{selectedCustomer.tier}</Badge>
+                                            <Badge className={`mt-1 ${TIER_MAP[selectedCustomer.tier]?.classes ?? 'bg-muted text-muted-foreground'}`}>
+                                                {TIER_MAP[selectedCustomer.tier]?.label ?? selectedCustomer.tier}
+                                            </Badge>
                                         )}
                                     </div>
                                 </div>
@@ -473,7 +464,9 @@ export default function Overviews({ project, services }: OverviewsProps) {
                                                     <p className="text-sm font-medium">{c.name}</p>
                                                     <p className="text-xs text-muted-foreground">{c.email || c.phone || 'Tidak ada info kontak'}</p>
                                                 </div>
-                                                {c.tier && <Badge className={tierVariantMap[c.tier] ?? 'bg-muted text-muted-foreground'}>{c.tier}</Badge>}
+                                                {c.tier && (
+                                                    <Badge className={TIER_MAP[c.tier]?.classes ?? 'bg-muted text-muted-foreground'}>{TIER_MAP[c.tier]?.label ?? c.tier}</Badge>
+                                                )}
                                             </button>
                                         ))}
                                     </div>

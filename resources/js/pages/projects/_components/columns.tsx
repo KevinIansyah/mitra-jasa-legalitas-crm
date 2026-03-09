@@ -2,7 +2,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
 import { formatRupiah } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
-import { TIER_VARIANT_MAP } from '@/types/contact';
+import { TIER_MAP } from '@/types/contact';
 import { PROJECT_STATUSES, type Project } from '@/types/project';
 import Actions from './actions';
 
@@ -28,8 +28,8 @@ export default function getColumns(expandedRow: string | null, setExpandedRow: (
                                 <span className="whitespace-normal">
                                     {customer.name || '-'}
                                     {customer.tier && (
-                                        <Badge className={`ml-2 ${TIER_VARIANT_MAP[customer.tier] ?? 'bg-muted text-muted-foreground'}`}>
-                                            {customer.tier.charAt(0).toUpperCase() + customer.tier.slice(1)}
+                                        <Badge className={`ml-2 ${TIER_MAP[customer.tier]?.classes ?? 'bg-muted text-muted-foreground'}`}>
+                                            {TIER_MAP[customer.tier]?.label ?? customer.tier}
                                         </Badge>
                                     )}
                                 </span>

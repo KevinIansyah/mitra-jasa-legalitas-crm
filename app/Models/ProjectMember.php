@@ -17,19 +17,19 @@ class ProjectMember extends Model
         'project_id',
         'user_id',
         'role',
-        'can_approve_documents',
+        // 'can_approve_documents',
         'assigned_at',
     ];
 
     protected $casts = [
-        'can_approve_documents' => 'boolean',
+        // 'can_approve_documents' => 'boolean',
         'assigned_at' => 'datetime',
     ];
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['role', 'can_approve_documents'])
+            ->logOnly(['role'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
             ->useLogName('member');

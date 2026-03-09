@@ -2,6 +2,8 @@
  * Authentication & User Types - TypeScript Definitions
  */
 
+import type { Customer } from "./contact";
+
 // ============================================================
 // CORE MODELS
 // ============================================================
@@ -10,6 +12,7 @@ export interface User {
     id: number;
     name: string;
     email: string;
+    phone: string | null;
     role: string;
     avatar?: string;
     email_verified_at: string | null;
@@ -18,6 +21,7 @@ export interface User {
 
     roles?: string[];
     permissions?: string[];
+    customer?: Customer;
 }
 
 // ============================================================

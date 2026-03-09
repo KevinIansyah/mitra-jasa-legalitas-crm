@@ -194,6 +194,7 @@ export function DrawerEdit({ company, open, onOpenChange }: DrawerEditProps) {
                                                 <SelectLabel>Status Legal</SelectLabel>
                                                 {STATUS_LEGAL.map((item) => (
                                                     <SelectItem key={item.value} value={item.value}>
+                                                        <span className={`mr-2 inline-block h-2 w-2 rounded-full ${item.classes.replace('text-white', '')}`} />
                                                         {item.label}
                                                     </SelectItem>
                                                 ))}
@@ -216,6 +217,7 @@ export function DrawerEdit({ company, open, onOpenChange }: DrawerEditProps) {
                                                 <SelectLabel>Kategori Bisnis</SelectLabel>
                                                 {CATEGORY_BUSINESS.map((item) => (
                                                     <SelectItem key={item.value} value={item.value}>
+                                                        <span className={`mr-2 inline-block h-2 w-2 rounded-full ${item.classes.replace('text-white', '')}`} />
                                                         {item.label}
                                                     </SelectItem>
                                                 ))}

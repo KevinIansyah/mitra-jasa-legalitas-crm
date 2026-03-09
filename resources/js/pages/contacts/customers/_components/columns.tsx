@@ -1,6 +1,6 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
-import { TIER_VARIANT_MAP, type Customer } from '@/types/contact';
+import { TIER_MAP, type Customer } from '@/types/contact';
 import Actions from './actions';
 
 export default function getColumns(): ColumnDef<Customer>[] {
@@ -38,7 +38,7 @@ export default function getColumns(): ColumnDef<Customer>[] {
                     <div className="grid w-60 grid-cols-[110px_1fr] items-center gap-x-2 gap-y-2 text-sm">
                         <span className="col-span-2 text-xs font-bold text-muted-foreground">Informasi</span>
                         <span className="text-xs font-medium text-muted-foreground">Tier</span>
-                        <Badge className={TIER_VARIANT_MAP[tier] ?? 'bg-muted text-muted-foreground'}>{tierLabel}</Badge>
+                        <Badge className={TIER_MAP[tier]?.classes ?? 'bg-muted text-muted-foreground'}>{tierLabel}</Badge>
 
                         <span className="text-xs font-medium text-muted-foreground">Status</span>
                         <Badge className={status === 'active' ? 'bg-emerald-500 text-white' : 'bg-slate-500 text-white'}>{statusLabel}</Badge>

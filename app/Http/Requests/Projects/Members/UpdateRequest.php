@@ -15,7 +15,7 @@ class UpdateRequest extends FormRequest
     {
         return [
             'role' => 'required|in:project_leader,team_member,observer',
-            'can_approve_documents' => 'nullable|boolean',
+            // 'can_approve_documents' => 'nullable|boolean',
         ];
     }
 
@@ -25,14 +25,14 @@ class UpdateRequest extends FormRequest
             'role.required' => 'Role wajib dipilih.',
             'role.in' => 'Role yang dipilih tidak valid.',
 
-            'can_approve_documents.boolean' => 'Izin persetujuan dokumen harus berupa true atau false.',
+            // 'can_approve_documents.boolean' => 'Izin persetujuan dokumen harus berupa true atau false.',
         ];
     }
 
-    protected function prepareForValidation(): void
-    {
-        $this->merge([
-            'can_approve_documents' => $this->boolean('can_approve_documents'),
-        ]);
-    }
+    // protected function prepareForValidation(): void
+    // {
+    //     $this->merge([
+    //         'can_approve_documents' => $this->boolean('can_approve_documents'),
+    //     ]);
+    // }
 }

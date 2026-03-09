@@ -215,7 +215,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
     const processStepHandlers = createMoveHandlers(data.process_steps, (process_steps) => setData('process_steps', process_steps));
 
     // ============================================================
-    // FORM SUBMISSION HANDLERS
+    // SUBMIT HANDLERS
     // ============================================================
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -244,9 +244,6 @@ export function CreateSection({ categories }: CreateSectionProps) {
         });
     };
 
-    // ============================================================
-    // FORM RESET HANDLERS
-    // ============================================================
     const handleCancel = () => {
         reset();
         setImagePreview(null);
@@ -267,7 +264,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                     <TabsTrigger value="seo">SEO</TabsTrigger>
                 </TabsList>
 
-                {/* TAB: BASIC INFORMATION */}
+                {/* ───────────────── Basic Information Section ───────────────── */}
                 <TabsContent value="basic-information">
                     <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                         <div className="space-y-6">
@@ -295,8 +292,8 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                     {errors.name && <FieldError>{errors.name}</FieldError>}
                                 </Field>
 
+                                {/* Slug */}
                                 <Field>
-                                    {/* Slug */}
                                     <FieldLabel htmlFor="slug">Slug</FieldLabel>
                                     <Input
                                         id="slug"
@@ -309,8 +306,8 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                     {errors.slug && <FieldError>{errors.slug}</FieldError>}
                                 </Field>
 
+                                {/* Category */}
                                 <Field>
-                                    {/* Category */}
                                     <FieldLabel htmlFor="category">
                                         Kategori <span className="text-destructive">*</span>
                                     </FieldLabel>
@@ -497,11 +494,10 @@ export function CreateSection({ categories }: CreateSectionProps) {
                     </div>
                 </TabsContent>
 
-                {/* TAB: CONTENT */}
+                {/* ───────────────── Content Section ───────────────── */}
                 <TabsContent value="content">
                     <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                         <div className="space-y-6">
-                            {/* Header */}
                             <div className="flex items-start justify-between">
                                 <div>
                                     <h2 className="text-xl font-bold">Konten Layanan</h2>
@@ -539,7 +535,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                     </div>
                 </TabsContent>
 
-                {/* TAB: PACKAGE */}
+                {/* ───────────────── Package Pricing Section ───────────────── */}
                 <TabsContent value="package" className="space-y-4">
                     <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                         <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
@@ -548,12 +544,12 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                 <p className="mt-0.5 text-sm text-muted-foreground">Kelola paket harga dengan dokumen/fitur yang berbeda untuk setiap paket</p>
                             </div>
                             <div className="flex w-full items-center gap-2 md:w-auto">
-                                {/* <Button type="button" variant="outline" size="sm" className="flex-1 shrink-0 gap-1.5 md:flex-none" disabled>
+                                {/* <Button type="button" variant="outline" className="flex-1 shrink-0 gap-1.5 md:flex-none" disabled>
                                         <Sparkles className="size-3.5" />
                                         AI Generate
                                     </Button> */}
                                 {data.packages.length > 0 && (
-                                    <Button type="button" onClick={addPackage} size="sm" className="flex-1 md:w-30 lg:flex-none">
+                                    <Button type="button" onClick={addPackage} className="flex-1 md:w-30 lg:flex-none">
                                         <Plus className="size-4" />
                                         Tambah
                                     </Button>
@@ -569,7 +565,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                     <Package className="size-5 text-primary" />
                                 </div>
                                 <p className="text-sm">Belum ada paket harga</p>
-                                <Button type="button" size="sm" onClick={addPackage} className="gap-1.5">
+                                <Button type="button" onClick={addPackage} className="gap-1.5">
                                     <Plus className="size-4" />
                                     Tambah Paket Pertama
                                 </Button>
@@ -595,7 +591,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
 
                     {/* {data.packages.length > 0 && (
                         <div className="flex w-full justify-end">
-                            <Button type="button" onClick={addPackage} size="sm" className="flex-1 md:w-30 lg:flex-none">
+                            <Button type="button" onClick={addPackage} className="flex-1 md:w-30 lg:flex-none">
                                 <Plus className="size-4" />
                                 Tambah
                             </Button>
@@ -603,7 +599,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                     )} */}
                 </TabsContent>
 
-                {/* TAB: FAQ */}
+                {/* ───────────────── FAQ Section ───────────────── */}
                 <TabsContent value="faq" className="space-y-4">
                     <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                         <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
@@ -613,7 +609,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                             </div>
 
                             {data.faqs.length > 0 && (
-                                <Button type="button" onClick={addFaq} size="sm" className="flex-1 lg:w-30 lg:flex-none">
+                                <Button type="button" onClick={addFaq} className="flex-1 lg:w-30 lg:flex-none">
                                     <Plus className="size-4" />
                                     Tambah
                                 </Button>
@@ -628,7 +624,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                     <HelpCircle className="size-5 text-primary" />
                                 </div>
                                 <p className="text-sm">Belum ada FAQ</p>
-                                <Button type="button" size="sm" onClick={addFaq} className="gap-1.5">
+                                <Button type="button" onClick={addFaq} className="gap-1.5">
                                     <Plus className="size-4" />
                                     Tambah FAQ Pertama
                                 </Button>
@@ -654,7 +650,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
 
                     {/* {data.faqs.length > 0 && (
                         <div className="flex w-full justify-end">
-                            <Button type="button" onClick={addFaq} size="sm" className="flex-1 md:w-30 lg:flex-none">
+                            <Button type="button" onClick={addFaq} className="flex-1 md:w-30 lg:flex-none">
                                 <Plus className="size-4" />
                                 Tambah
                             </Button>
@@ -662,7 +658,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                     )} */}
                 </TabsContent>
 
-                {/* TAB: LEGAL BASIS */}
+                {/* ───────────────── Legal Basis Section ───────────────── */}
                 <TabsContent value="legal-basis" className="space-y-4">
                     <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                         <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
@@ -672,7 +668,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                             </div>
 
                             {data.legal_bases.length > 0 && (
-                                <Button type="button" onClick={addLegalBasis} size="sm" className="flex-1 lg:w-30 lg:flex-none">
+                                <Button type="button" onClick={addLegalBasis} className="flex-1 lg:w-30 lg:flex-none">
                                     <Plus className="size-4" />
                                     Tambah
                                 </Button>
@@ -687,7 +683,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                     <Scale className="size-5 text-primary" />
                                 </div>
                                 <p className="text-sm">Belum ada dasar hukum</p>
-                                <Button type="button" size="sm" onClick={addLegalBasis} className="gap-1.5">
+                                <Button type="button" onClick={addLegalBasis} className="gap-1.5">
                                     <Plus className="size-4" />
                                     Tambah Dasar Hukum Pertama
                                 </Button>
@@ -713,7 +709,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
 
                     {/* {data.legal_bases.length > 0 && (
                         <div className="flex w-full justify-end">
-                            <Button type="button" onClick={addLegalBasis} size="sm" className="flex-1 md:w-30 lg:flex-none">
+                            <Button type="button" onClick={addLegalBasis} className="flex-1 md:w-30 lg:flex-none">
                                 <Plus className="size-4" />
                                 Tambah
                             </Button>
@@ -721,7 +717,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                     )} */}
                 </TabsContent>
 
-                {/* TAB: REQUIREMENT */}
+               {/* ───────────────── Requirement Section ───────────────── */}
                 <TabsContent value="requirement" className="space-y-4">
                     <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                         <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
@@ -731,7 +727,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                             </div>
 
                             {data.requirement_categories.length > 0 && (
-                                <Button type="button" onClick={addRequirementCategory} size="sm" className="flex-1 lg:w-30 lg:flex-none">
+                                <Button type="button" onClick={addRequirementCategory} className="flex-1 lg:w-30 lg:flex-none">
                                     <Plus className="size-4" />
                                     Tambah
                                 </Button>
@@ -746,7 +742,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                             </div>
                             <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
                                 <p className="text-sm">Belum ada kategori persyaratan</p>
-                                <Button type="button" size="sm" onClick={addRequirementCategory} className="gap-1.5">
+                                <Button type="button" onClick={addRequirementCategory} className="gap-1.5">
                                     <Plus className="size-4" />
                                     Tambah Kategori Pertama
                                 </Button>
@@ -772,7 +768,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
 
                     {/* {data.requirement_categories.length > 0 && (
                         <div className="flex w-full justify-end">
-                            <Button type="button" onClick={addRequirementCategory} size="sm" className="flex-1 md:w-30 lg:flex-none">
+                            <Button type="button" onClick={addRequirementCategory} className="flex-1 md:w-30 lg:flex-none">
                                 <Plus className="size-4" />
                                 Tambah
                             </Button>
@@ -780,7 +776,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                     )} */}
                 </TabsContent>
 
-                {/* TAB: TIMELINE */}
+                {/* ───────────────── Timeline Section ───────────────── */}
                 <TabsContent value="timeline" className="space-y-4">
                     <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                         <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
@@ -790,7 +786,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                             </div>
 
                             {data.process_steps.length > 0 && (
-                                <Button type="button" onClick={addProcessStep} size="sm" className="flex-1 lg:w-30 lg:flex-none">
+                                <Button type="button" onClick={addProcessStep} className="flex-1 lg:w-30 lg:flex-none">
                                     <Plus className="size-4" />
                                     Tambah
                                 </Button>
@@ -805,7 +801,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                     <ClipboardList className="size-5 text-primary" />
                                 </div>
                                 <p className="text-sm">Belum ada tahapan proses</p>
-                                <Button type="button" size="sm" onClick={addProcessStep} className="gap-1.5">
+                                <Button type="button" onClick={addProcessStep} className="gap-1.5">
                                     <Plus className="size-4" />
                                     Tambah Tahap Pertama
                                 </Button>
@@ -831,7 +827,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
 
                     {/* {data.process_steps.length > 0 && (
                         <div className="flex w-full justify-end">
-                            <Button type="button" onClick={addProcessStep} size="sm" className="flex-1 md:w-30 lg:flex-none">
+                            <Button type="button" onClick={addProcessStep} className="flex-1 md:w-30 lg:flex-none">
                                 <Plus className="size-4" />
                                 Tambah
                             </Button>
@@ -840,7 +836,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                 </TabsContent>
             </Tabs>
 
-            {/* ACTION */}
+            {/* ───────────────── Action Section ───────────────── */}
             <div className="flex items-center justify-start gap-2">
                 <Button type="submit" className="flex-1 md:w-45 md:flex-none" disabled={processing}>
                     {processing ? (

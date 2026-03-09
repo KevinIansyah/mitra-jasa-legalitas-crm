@@ -321,9 +321,6 @@ export function DetailSection({ quote }: { quote: Quote }) {
                                 </InfoRow>
                                 <InfoRow label="Dikonversi" value={quote.converted_at ? formatDate(quote.converted_at) : '-'} />
                             </div>
-                            <Button variant="secondary" size="sm" asChild>
-                                <Link href={`/projects/${quote.project.id}`}>Lihat Project</Link>
-                            </Button>
                         </div>
                     ) : (
                         <FieldDescription>Belum ada project terhubung</FieldDescription>

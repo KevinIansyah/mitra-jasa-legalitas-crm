@@ -81,7 +81,7 @@ class EstimateController extends Controller
                 'customer:id,name',
                 'service:id,name',
                 'servicePackage:id,name',
-            )->find($request->quote_id, ['id', 'name', 'customer_id', 'service_id', 'service_package_id', 'budget', 'status']);
+            )->find($request->quote_id, ['id', 'project_name', 'customer_id', 'service_id', 'service_package_id', 'status']);
         }
 
         $fromQuote = $request->filled('quote_id');

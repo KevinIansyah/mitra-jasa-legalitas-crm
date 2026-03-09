@@ -910,12 +910,12 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                     <p className="mt-0.5 text-sm text-muted-foreground">Buat paket harga dengan dokumen/fitur yang berbeda untuk setiap paket</p>
                                 </div>
                                 <div className="flex w-full flex-col items-center gap-2 md:flex-row lg:w-auto">
-                                    <Button variant="outline" size="sm" className="w-full md:flex-1 lg:w-auto lg:flex-0">
+                                    <Button variant="outline" className="w-full md:flex-1 lg:w-auto lg:flex-0">
                                         <Sparkles className="size-4" />
                                         Generate AI
                                     </Button>
                                     {packageForm.data.packages.length > 0 && (
-                                        <Button type="button" onClick={addPackage} size="sm" className="w-full md:flex-1 lg:w-auto lg:flex-0">
+                                        <Button type="button" onClick={addPackage} className="w-full md:flex-1 lg:w-auto lg:flex-0">
                                             <Plus className="size-4" />
                                             Tambah Paket
                                         </Button>
@@ -926,7 +926,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                             {packageForm.data.packages.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
                                     <p className="text-sm">Belum ada paket harga</p>
-                                    <Button type="button" variant="outline" size="sm" onClick={addPackage} className="gap-2">
+                                    <Button type="button" variant="outline" onClick={addPackage} className="gap-2">
                                         <Plus className="size-4" />
                                         Tambah Paket Pertama
                                     </Button>
@@ -952,7 +952,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
 
                             {packageForm.data.packages.length > 0 && (
                                 <div className="flex w-full justify-end">
-                                    <Button type="button" onClick={addPackage} size="sm" className="w-full gap-2 md:w-1/2 lg:w-auto">
+                                    <Button type="button" onClick={addPackage} className="w-full gap-2 md:w-1/2 lg:w-auto">
                                         <Plus className="size-4" />
                                         Tambah Paket
                                     </Button>
@@ -991,12 +991,12 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                     <p className="mt-0.5 text-sm text-muted-foreground">Kelola pertanyaan yang sering diajukan terkait layanan ini.</p>
                                 </div>
                                 <div className="flex w-full flex-col items-center gap-2 md:flex-row lg:w-auto">
-                                    <Button variant="outline" size="sm" className="w-full md:flex-1 lg:w-auto lg:flex-0">
+                                    <Button variant="outline" className="w-full md:flex-1 lg:w-auto lg:flex-0">
                                         <Sparkles className="size-4" />
                                         Generate AI
                                     </Button>
                                     {faqForm.data.faqs.length > 0 && (
-                                        <Button type="button" onClick={addFaq} size="sm" className="w-full md:flex-1 lg:w-auto lg:flex-0">
+                                        <Button type="button" onClick={addFaq} className="w-full md:flex-1 lg:w-auto lg:flex-0">
                                             <Plus className="size-4" />
                                             Tambah Pertanyaan
                                         </Button>
@@ -1007,7 +1007,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                             {faqForm.data.faqs.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
                                     <p className="text-sm">Belum ada FAQ</p>
-                                    <Button type="button" variant="outline" size="sm" onClick={addFaq} className="gap-2">
+                                    <Button type="button" variant="outline" onClick={addFaq} className="gap-2">
                                         <Plus className="size-4" />
                                         Tambah FAQ Pertama
                                     </Button>
@@ -1033,7 +1033,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
 
                             {faqForm.data.faqs.length > 0 && (
                                 <div className="flex w-full justify-end">
-                                    <Button type="button" onClick={addPackage} size="sm" className="w-full gap-2 md:w-1/2 lg:w-auto">
+                                    <Button type="button" onClick={addPackage} className="w-full gap-2 md:w-1/2 lg:w-auto">
                                         <Plus className="size-4" />
                                         Tambah Pertanyaan
                                     </Button>
@@ -1072,12 +1072,12 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                     <p className="mt-0.5 text-sm text-muted-foreground">Kelola referensi peraturan dan undang-undang yang menjadi dasar layanan.</p>
                                 </div>
                                 <div className="flex w-full flex-col items-center gap-2 md:flex-row lg:w-auto">
-                                    <Button variant="outline" size="sm" className="w-full md:flex-1 lg:w-auto lg:flex-0">
+                                    <Button variant="outline" className="w-full md:flex-1 lg:w-auto lg:flex-0">
                                         <Sparkles className="size-4" />
                                         Generate AI
                                     </Button>
                                     {legalBasisForm.data.legal_bases.length > 0 && (
-                                        <Button type="button" onClick={addLegalBasis} size="sm" className="w-full md:flex-1 lg:w-auto lg:flex-0">
+                                        <Button type="button" onClick={addLegalBasis} className="w-full md:flex-1 lg:w-auto lg:flex-0">
                                             <Plus className="size-4" />
                                             Tambah Dasar Hukum
                                         </Button>
@@ -1088,7 +1088,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                             {legalBasisForm.data.legal_bases.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
                                     <p className="text-sm">Belum ada dasar hukum</p>
-                                    <Button type="button" variant="outline" size="sm" onClick={addLegalBasis} className="gap-2">
+                                    <Button type="button" variant="outline" onClick={addLegalBasis} className="gap-2">
                                         <Plus className="size-4" />
                                         Tambah Dasar Hukum Pertama
                                     </Button>
@@ -1114,7 +1114,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
 
                             {legalBasisForm.data.legal_bases.length > 0 && (
                                 <div className="flex w-full justify-end">
-                                    <Button type="button" onClick={addLegalBasis} size="sm" className="w-full gap-2 md:w-1/2 lg:w-auto">
+                                    <Button type="button" onClick={addLegalBasis} className="w-full gap-2 md:w-1/2 lg:w-auto">
                                         <Plus className="size-4" />
                                         Tambah Dasar Hukum
                                     </Button>
@@ -1153,12 +1153,12 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                     <p className="mt-0.5 text-sm text-muted-foreground">Kelola kategori dan daftar persyaratan dokumen yang dibutuhkan.</p>
                                 </div>
                                 <div className="flex w-full flex-col items-center gap-2 md:flex-row lg:w-auto">
-                                    <Button variant="outline" size="sm" className="w-full md:flex-1 lg:w-auto lg:flex-0">
+                                    <Button variant="outline" className="w-full md:flex-1 lg:w-auto lg:flex-0">
                                         <Sparkles className="size-4" />
                                         Generate AI
                                     </Button>
                                     {requirementCategoriesForm.data.requirement_categories.length > 0 && (
-                                        <Button type="button" onClick={addLegalBasis} size="sm" className="w-full md:flex-1 lg:w-auto lg:flex-0">
+                                        <Button type="button" onClick={addLegalBasis} className="w-full md:flex-1 lg:w-auto lg:flex-0">
                                             <Plus className="size-4" />
                                             Tambah Kategori
                                         </Button>
@@ -1169,7 +1169,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                             {requirementCategoriesForm.data.requirement_categories.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
                                     <p className="text-sm">Belum ada kategori persyaratan</p>
-                                    <Button type="button" variant="outline" size="sm" onClick={addRequirementCategory} className="gap-2">
+                                    <Button type="button" variant="outline" onClick={addRequirementCategory} className="gap-2">
                                         <Plus className="size-4" />
                                         Tambah Kategori Pertama
                                     </Button>
@@ -1195,7 +1195,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
 
                             {requirementCategoriesForm.data.requirement_categories.length > 0 && (
                                 <div className="flex w-full justify-end">
-                                    <Button type="button" onClick={addLegalBasis} size="sm" className="w-full gap-2 md:w-1/2 lg:w-auto">
+                                    <Button type="button" onClick={addLegalBasis} className="w-full gap-2 md:w-1/2 lg:w-auto">
                                         <Plus className="size-4" />
                                         Tambah Kategori
                                     </Button>
@@ -1234,12 +1234,12 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                     <p className="mt-0.5 text-sm text-muted-foreground">Kelola langkah-langkah proses pengerjaan layanan secara berurutan.</p>
                                 </div>
                                 <div className="flex w-full flex-col items-center gap-2 md:flex-row lg:w-auto">
-                                    <Button variant="outline" size="sm" className="w-full md:flex-1 lg:w-auto lg:flex-0">
+                                    <Button variant="outline" className="w-full md:flex-1 lg:w-auto lg:flex-0">
                                         <Sparkles className="size-4" />
                                         Generate AI
                                     </Button>
                                     {processStepsForm.data.process_steps.length > 0 && (
-                                        <Button type="button" onClick={addLegalBasis} size="sm" className="w-full md:flex-1 lg:w-auto lg:flex-0">
+                                        <Button type="button" onClick={addLegalBasis} className="w-full md:flex-1 lg:w-auto lg:flex-0">
                                             <Plus className="size-4" />
                                             Tambah Tahap
                                         </Button>
@@ -1250,7 +1250,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                             {processStepsForm.data.process_steps.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
                                     <p className="text-sm">Belum ada tahapan proses</p>
-                                    <Button type="button" variant="outline" size="sm" onClick={addProcessStep} className="gap-2">
+                                    <Button type="button" variant="outline" onClick={addProcessStep} className="gap-2">
                                         <Plus className="size-4" />
                                         Tambah Tahap Pertama
                                     </Button>
@@ -1274,7 +1274,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
 
                                     {processStepsForm.data.process_steps.length > 0 && (
                                         <div className="flex w-full justify-end">
-                                            <Button type="button" onClick={addLegalBasis} size="sm" className="w-full gap-2 md:w-1/2 lg:w-auto">
+                                            <Button type="button" onClick={addLegalBasis} className="w-full gap-2 md:w-1/2 lg:w-auto">
                                                 <Plus className="size-4" />
                                                 Tambah Tahap
                                             </Button>

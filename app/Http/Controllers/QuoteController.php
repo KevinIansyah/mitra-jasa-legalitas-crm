@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\Quote;
+use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -122,60 +123,27 @@ class QuoteController extends Controller
     /**
      * Convert quote to project.
      */
-    public function convert(Request $request, Quote $quote)
+    public function convert(Quote $quote)
     {
         if (!$quote->is_convertible) {
             return back()->with('error', 'Quote ini belum dapat dikonversi menjadi project.');
         }
 
-        // Validasi — nanti anda minta untuk diubah saat integrasi create project
-        $validated = $request->validate([
-            'start_date'      => 'required|date',
-            'planned_end_date' => 'required|date|after:start_date',
-            'budget'          => 'required|numeric|min:0',
-        ], [
-            'start_date.required'       => 'Tanggal mulai wajib diisi.',
-            'planned_end_date.required' => 'Tanggal rencana selesai wajib diisi.',
-            'planned_end_date.after'    => 'Tanggal selesai harus setelah tanggal mulai.',
-            'budget.required'           => 'Budget wajib diisi.',
-            'budget.numeric'            => 'Budget harus berupa angka.',
+        $quote->load([
+            'customer',
+            'service',
+            'servicePackage',
+            'estimates.items',
+            'user:id,name,email,phone',
+            'user.customer',
         ]);
 
-        $project = DB::transaction(function () use ($quote, $validated) {
-            if (!$quote->customer_id) {
-                $customer = \App\Models\Customer::firstOrCreate(
-                    ['email' => $quote->user->email],
-                    [
-                        'user_id' => $quote->user_id,
-                        'name'    => $quote->user->name,
-                        'email'   => $quote->user->email,
-                        'status'  => 'active',
-                    ]
-                );
+        $services = Service::orderBy('name')->get(['id', 'name']);
 
-                $quote->update(['customer_id' => $customer->id]);
-            }
-
-            $project = Project::create([
-                'customer_id'       => $quote->customer_id,
-                'service_id'        => $quote->service_id,
-                'service_package_id' => $quote->service_package_id,
-                'name'              => $quote->project_name,
-                'description'       => $quote->description,
-                'budget'            => $validated['budget'],
-                'start_date'        => $validated['start_date'],
-                'planned_end_date'  => $validated['planned_end_date'],
-                'status'            => 'planning',
-            ]);
-
-            $quote->markAsConverted($project->id);
-
-            return $project;
-        });
-
-        return redirect()
-            ->route('projects.show', $project)
-            ->with('success', 'Quote berhasil dikonversi menjadi project.');
+        return Inertia::render('projects/create/index', [
+            'quote'    => $quote,
+            'services' => $services,
+        ]);
     }
 
     /**

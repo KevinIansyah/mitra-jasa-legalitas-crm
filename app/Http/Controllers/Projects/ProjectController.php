@@ -17,6 +17,7 @@ use App\Models\ProjectMember;
 use App\Models\ProjectMilestone;
 use App\Models\ProjectTask;
 use App\Models\ProjectTemplate;
+use App\Models\Quote;
 use App\Models\Service;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -113,40 +114,128 @@ class ProjectController extends Controller
     /**
      * Store a newly created project.
      *
-     * Uses StoreRequest for validation.
-     * Wraps creation process in a database transaction.
+     * Uses StoreRequest for validation and wraps the entire
+     * creation process in a database transaction to ensure data consistency.
      *
-     * If a project_template_id is provided:
-     * - Copies milestones from template
-     * - Copies required documents from template
-     * - Automatically calculates milestone start & end dates
+     * Workflow:
+     * 1. If no customer_id is provided (usually from the quote conversion flow),
+     *    a new customer will be created inline using the provided customer data.
+     *    The related quote will also be updated with the new customer.
+     *
+     * 2. Resolves the company based on the selected company_mode:
+     *    - 'search' : attaches an existing company
+     *    - 'create' : creates a new company record
+     *    - 'none'   : no company will be attached
+     *
+     * 3. If a company exists, the customer will be attached to the company
+     *    (if not already attached) and marked as the primary customer.
+     *
+     * 4. Creates the project record using the validated data.
+     *
+     * 5. If a project_template_id is provided:
+     *    - Copies milestones from the template
+     *    - Copies required documents from the template
+     *    - Automatically calculates milestone start and end dates
+     *
+     * 6. If the project is created from a quote conversion flow,
+     *    the quote will be marked as converted.
      */
     public function store(StoreRequest $request)
     {
         $validated = $request->validated();
 
-        DB::transaction(function () use ($validated) {
+        $project = DB::transaction(function () use ($validated) {
+
+            $quote = !empty($validated['quote_id'])
+                ? Quote::find($validated['quote_id'])
+                : null;
+
+            // 1. Create customer if not exists
+            if (empty($validated['customer_id'])) {
+
+                $customer = Customer::create([
+                    'user_id' => $quote?->user_id,
+                    'name'    => $validated['customer_name'],
+                    'email'   => $validated['customer_email'],
+                    'phone'   => $validated['customer_phone'],
+                    'tier'    => $validated['customer_tier'] ?? 'bronze',
+                    'status'  => 'active',
+                    'notes'   => $validated['customer_notes'] ?? null,
+                ]);
+
+                $validated['customer_id'] = $customer->id;
+
+                if ($quote) {
+                    $quote->update([
+                        'customer_id' => $customer->id
+                    ]);
+                }
+            }
+
+            // 2. Resolve company
+            $company = null;
+            $companyMode = $validated['company_mode'] ?? 'none';
+
+            if (!empty($validated['company_id'])) {
+                $company = Company::find($validated['company_id']);
+            }
+
+            if ($companyMode === 'create') {
+                $company = Company::create([
+                    'name'              => $validated['company_name'],
+                    'phone'             => $validated['company_phone'] ?? null,
+                    'email'             => $validated['company_email'] ?? null,
+                    'website'           => $validated['company_website'] ?? null,
+                    'address'           => $validated['company_address'] ?? null,
+                    'city'              => $validated['company_city'] ?? null,
+                    'province'          => $validated['company_province'] ?? null,
+                    'postal_code'       => $validated['company_postal_code'] ?? null,
+                    'npwp'              => $validated['company_npwp'] ?? null,
+                    'status_legal'      => $validated['company_status_legal'],
+                    'category_business' => $validated['company_category_business'],
+                    'notes'             => $validated['company_notes'] ?? null,
+                ]);
+            }
+
+            // 3. Attach customer to company
+            if ($company && !$company->customers()->where('customer_id', $validated['customer_id'])->exists()) {
+                $company->customers()->attach($validated['customer_id'], ['is_primary' => true]);
+            }
+
+            // 4. Create project
             $project = Project::create([
-                'customer_id' => $validated['customer_id'],
-                'company_id' => $validated['company_id'] ?? null,
-                'service_id' => $validated['service_id'] ?? null,
+                'customer_id'        => $validated['customer_id'],
+                'company_id'         => $company?->id,
+                'service_id'         => $validated['service_id'] ?? null,
                 'service_package_id' => $validated['service_package_id'] ?? null,
-                'name' => $validated['name'],
-                'description' => $validated['description'] ?? null,
-                'budget' => $validated['budget'],
-                'start_date' => $validated['start_date'],
-                'planned_end_date' => $validated['planned_end_date'],
-                'status' => $validated['status'] ?? 'planning',
+                'name'               => $validated['name'],
+                'description'        => $validated['description'] ?? null,
+                'budget'             => $validated['budget'],
+                'start_date'         => $validated['start_date'],
+                'planned_end_date'   => $validated['planned_end_date'],
+                'status'             => $validated['status'] ?? 'planning',
             ]);
 
+            // 5. Copy template
             if (!empty($validated['project_template_id'])) {
                 $template = ProjectTemplate::find($validated['project_template_id']);
-
                 if ($template) {
                     $this->copyTemplateToProject($project, $template);
                 }
             }
+
+            // 6. Mark quote converted
+            if ($quote && $quote->is_convertible) {
+                $quote->markAsConverted($project->id);
+            }
+
+            return $project;
         });
+
+        if (!empty($validated['quote_id'])) {
+            return to_route('projects.show', $project)
+                ->with('success', 'Quote berhasil dikonversi menjadi project.');
+        }
 
         return to_route('projects.index')
             ->with('success', 'Project berhasil ditambahkan.');

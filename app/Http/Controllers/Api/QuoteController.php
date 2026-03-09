@@ -28,8 +28,8 @@ class QuoteController extends Controller
 
         $quote = Quote::create([
             ...$validated,
-            'user_id'          => Auth::id(),
-            // 'user_id'          => $request['user_id'] ?? 8,
+            // 'user_id'          => Auth::id(),
+            'user_id'          => $request['user_id'] ?? 9,
             'reference_number' => Quote::generateReferenceNumber(),
             'source'           => 'portal',
             'status'           => 'pending',

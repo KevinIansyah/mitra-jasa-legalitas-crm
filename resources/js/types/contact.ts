@@ -132,55 +132,57 @@ export interface SyncCustomerToCompanyFormData {
 // CONSTANTS
 // ============================================================
 
-export const TIER_VARIANT_MAP: Record<string, string> = {
-    bronze: 'bg-amber-700 text-white',
-    silver: 'bg-slate-400 text-slate-900',
-    gold: 'bg-yellow-500 text-white',
-    platinum: 'bg-indigo-600 text-white',
-} as const;
+export const TIER = [
+    { value: 'bronze', label: 'Bronze', classes: 'bg-amber-700 text-white' },
+    { value: 'silver', label: 'Silver', classes: 'bg-slate-400 text-slate-900' },
+    { value: 'gold', label: 'Gold', classes: 'bg-yellow-500 text-white' },
+    { value: 'platinum', label: 'Platinum', classes: 'bg-indigo-600 text-white' },
+] as const;
+
+export const TIER_MAP = Object.fromEntries(TIER.map((item) => [item.value, item]));
 
 export const CATEGORY_BUSINESS = [
-    { value: 'perdagangan', label: 'Perdagangan', className: 'bg-blue-500 text-white' },
-    { value: 'retail', label: 'Retail', className: 'bg-blue-600 text-white' },
-    { value: 'fnb', label: 'Food & Beverage', className: 'bg-rose-500 text-white' },
-    { value: 'jasa', label: 'Jasa', className: 'bg-emerald-500 text-white' },
-    { value: 'manufaktur', label: 'Manufaktur', className: 'bg-slate-700 text-white' },
-    { value: 'konstruksi', label: 'Konstruksi', className: 'bg-orange-500 text-white' },
-    { value: 'properti', label: 'Properti & Real Estate', className: 'bg-indigo-500 text-white' },
-    { value: 'teknologi', label: 'Teknologi Informasi', className: 'bg-sky-500 text-white' },
-    { value: 'telekomunikasi', label: 'Telekomunikasi', className: 'bg-sky-700 text-white' },
-    { value: 'keuangan', label: 'Keuangan', className: 'bg-amber-500 text-slate-900' },
-    { value: 'transportasi', label: 'Transportasi & Logistik', className: 'bg-cyan-600 text-white' },
-    { value: 'pariwisata', label: 'Pariwisata', className: 'bg-teal-500 text-white' },
-    { value: 'perhotelan', label: 'Perhotelan', className: 'bg-teal-700 text-white' },
-    { value: 'kesehatan', label: 'Kesehatan', className: 'bg-red-500 text-white' },
-    { value: 'pendidikan', label: 'Pendidikan', className: 'bg-violet-500 text-white' },
-    { value: 'pertanian', label: 'Pertanian & Perkebunan', className: 'bg-lime-600 text-white' },
-    { value: 'perikanan', label: 'Perikanan', className: 'bg-blue-400 text-white' },
-    { value: 'peternakan', label: 'Peternakan', className: 'bg-green-700 text-white' },
-    { value: 'pertambangan', label: 'Pertambangan', className: 'bg-stone-700 text-white' },
-    { value: 'energi', label: 'Energi', className: 'bg-yellow-500 text-black' },
-    { value: 'industri_kreatif', label: 'Industri Kreatif', className: 'bg-pink-500 text-white' },
-    { value: 'lingkungan', label: 'Lingkungan & Pengolahan Limbah', className: 'bg-green-600 text-white' },
-    { value: 'lainnya', label: 'Lainnya', className: 'bg-muted text-muted-foreground' },
+    { value: 'perdagangan', label: 'Perdagangan', classes: 'bg-blue-500 text-white' },
+    { value: 'retail', label: 'Retail', classes: 'bg-blue-600 text-white' },
+    { value: 'fnb', label: 'Food & Beverage', classes: 'bg-rose-500 text-white' },
+    { value: 'jasa', label: 'Jasa', classes: 'bg-emerald-500 text-white' },
+    { value: 'manufaktur', label: 'Manufaktur', classes: 'bg-slate-700 text-white' },
+    { value: 'konstruksi', label: 'Konstruksi', classes: 'bg-orange-500 text-white' },
+    { value: 'properti', label: 'Properti & Real Estate', classes: 'bg-indigo-500 text-white' },
+    { value: 'teknologi', label: 'Teknologi Informasi', classes: 'bg-sky-500 text-white' },
+    { value: 'telekomunikasi', label: 'Telekomunikasi', classes: 'bg-sky-700 text-white' },
+    { value: 'keuangan', label: 'Keuangan', classes: 'bg-amber-500 text-slate-900' },
+    { value: 'transportasi', label: 'Transportasi & Logistik', classes: 'bg-cyan-600 text-white' },
+    { value: 'pariwisata', label: 'Pariwisata', classes: 'bg-teal-500 text-white' },
+    { value: 'perhotelan', label: 'Perhotelan', classes: 'bg-teal-700 text-white' },
+    { value: 'kesehatan', label: 'Kesehatan', classes: 'bg-red-500 text-white' },
+    { value: 'pendidikan', label: 'Pendidikan', classes: 'bg-violet-500 text-white' },
+    { value: 'pertanian', label: 'Pertanian & Perkebunan', classes: 'bg-lime-600 text-white' },
+    { value: 'perikanan', label: 'Perikanan', classes: 'bg-blue-400 text-white' },
+    { value: 'peternakan', label: 'Peternakan', classes: 'bg-green-700 text-white' },
+    { value: 'pertambangan', label: 'Pertambangan', classes: 'bg-stone-700 text-white' },
+    { value: 'energi', label: 'Energi', classes: 'bg-yellow-500 text-black' },
+    { value: 'industri_kreatif', label: 'Industri Kreatif', classes: 'bg-pink-500 text-white' },
+    { value: 'lingkungan', label: 'Lingkungan & Pengolahan Limbah', classes: 'bg-green-600 text-white' },
+    { value: 'lainnya', label: 'Lainnya', classes: 'bg-muted text-muted-foreground' },
 ] as const;
 
 export const CATEGORY_BUSINESS_MAP = Object.fromEntries(CATEGORY_BUSINESS.map((item) => [item.value, item]));
 
 export const STATUS_LEGAL = [
-    { value: 'belum_ada', label: 'Belum Ada Legalitas', className: 'bg-gray-400 text-white' },
-    { value: 'pt', label: 'Perseroan Terbatas (PT)', className: 'bg-indigo-500 text-white' },
-    { value: 'pt_perorangan', label: 'PT Perorangan', className: 'bg-indigo-400 text-white' },
-    { value: 'pt_pma', label: 'PT PMA (Penanaman Modal Asing)', className: 'bg-indigo-700 text-white' },
-    { value: 'cv', label: 'Commanditaire Vennootschap (CV)', className: 'bg-sky-500 text-white' },
-    { value: 'firma', label: 'Firma', className: 'bg-emerald-500 text-white' },
-    { value: 'persekutuan_perdata', label: 'Persekutuan Perdata', className: 'bg-emerald-400 text-white' },
-    { value: 'ud', label: 'Usaha Dagang (UD)', className: 'bg-amber-600 text-white' },
-    { value: 'perorangan', label: 'Usaha Perorangan', className: 'bg-amber-500 text-slate-900' },
-    { value: 'koperasi', label: 'Koperasi', className: 'bg-lime-500 text-slate-900' },
-    { value: 'yayasan', label: 'Yayasan', className: 'bg-violet-500 text-white' },
-    { value: 'bumdes', label: 'BUMDes', className: 'bg-green-600 text-white' },
-    { value: 'lainnya', label: 'Lainnya', className: 'bg-muted text-muted-foreground' },
+    { value: 'belum_ada', label: 'Belum Ada Legalitas', classes: 'bg-gray-400 text-white' },
+    { value: 'pt', label: 'Perseroan Terbatas (PT)', classes: 'bg-indigo-500 text-white' },
+    { value: 'pt_perorangan', label: 'PT Perorangan', classes: 'bg-indigo-400 text-white' },
+    { value: 'pt_pma', label: 'PT PMA (Penanaman Modal Asing)', classes: 'bg-indigo-700 text-white' },
+    { value: 'cv', label: 'Commanditaire Vennootschap (CV)', classes: 'bg-sky-500 text-white' },
+    { value: 'firma', label: 'Firma', classes: 'bg-emerald-500 text-white' },
+    { value: 'persekutuan_perdata', label: 'Persekutuan Perdata', classes: 'bg-emerald-400 text-white' },
+    { value: 'ud', label: 'Usaha Dagang (UD)', classes: 'bg-amber-600 text-white' },
+    { value: 'perorangan', label: 'Usaha Perorangan', classes: 'bg-amber-500 text-slate-900' },
+    { value: 'koperasi', label: 'Koperasi', classes: 'bg-lime-500 text-slate-900' },
+    { value: 'yayasan', label: 'Yayasan', classes: 'bg-violet-500 text-white' },
+    { value: 'bumdes', label: 'BUMDes', classes: 'bg-green-600 text-white' },
+    { value: 'lainnya', label: 'Lainnya', classes: 'bg-muted text-muted-foreground' },
 ] as const;
 
 export const STATUS_LEGAL_MAP = Object.fromEntries(STATUS_LEGAL.map((item) => [item.value, item]));

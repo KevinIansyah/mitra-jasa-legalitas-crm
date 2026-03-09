@@ -182,7 +182,7 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
     |--------------------------------------------------------------------------
     | GET    /finances/quotes                 -> List quotes
     | GET    /finances/quotes/{quote}         -> Show quote
-    | POST   /finances/quotes/{quote}/convert -> Convert quote
+    | GET    /finances/quotes/{quote}/convert -> Convert quote
     | DELETE /finances/quotes/{quote}         -> Delete quote
     | PATCH  /finances/quotes/{quote}/status  -> Update quote status
     |--------------------------------------------------------------------------
@@ -197,8 +197,8 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
       ->middleware('permission:view-finance-quotes')
       ->name('show');
 
-    Route::post('/{quote}/convert', [QuoteController::class, 'convert'])
-      ->middleware('permission:edit-finance-quotes')
+    Route::get('/{quote}/convert', [QuoteController::class, 'convert'])
+      ->middleware('permission:create-projects')
       ->name('convert');
 
     Route::delete('/{quote}', [QuoteController::class, 'destroy'])

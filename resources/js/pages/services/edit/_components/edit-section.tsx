@@ -613,7 +613,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                 <TabsTrigger value="seo">SEO</TabsTrigger>
             </TabsList>
 
-            {/* TAB: BASIC INFORMATION */}
+            {/* ───────────────── Basic Information Section ───────────────── */}
             <TabsContent value="basic-information">
                 <form onSubmit={handleSubmitBasicInfo}>
                     <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
@@ -812,7 +812,6 @@ export function EditSection({ service, categories }: EditSectionProps) {
                         </div>
                     </div>
 
-                    {/* Submit Button */}
                     <div className="mt-4 flex items-center gap-2">
                         <Button type="submit" disabled={basicInfoForm.processing || !hasUnsavedChanges['basic-information']} className="flex-1 md:w-45 md:flex-none">
                             {basicInfoForm.processing ? (
@@ -831,7 +830,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                 </form>
             </TabsContent>
 
-            {/* TAB: CONTENT */}
+            {/* ───────────────── Content Section ───────────────── */}
             <TabsContent value="content">
                 <form onSubmit={handleSubmitContent}>
                     <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
@@ -857,7 +856,6 @@ export function EditSection({ service, categories }: EditSectionProps) {
                         </div>
                     </div>
 
-                    {/* Submit Button */}
                     <div className="mt-4 flex items-center gap-2">
                         <Button type="submit" disabled={contentForm.processing || !hasUnsavedChanges.content} className="flex-1 md:w-45 md:flex-none">
                             {contentForm.processing ? (
@@ -876,7 +874,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                 </form>
             </TabsContent>
 
-            {/* TAB: PACKAGE */}
+            {/* ───────────────── Package Section ───────────────── */}
             <TabsContent value="package" className="space-y-4">
                 <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                     <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
@@ -907,7 +905,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                     <Package className="size-5 text-primary" />
                                 </div>
                                 <p className="text-sm">Belum ada paket harga</p>
-                                <Button type="button" size="sm" onClick={addPackage} className="gap-2">
+                                <Button type="button" onClick={addPackage} className="gap-2">
                                     <Plus className="size-4" />
                                     Tambah Paket Pertama
                                 </Button>
@@ -941,7 +939,6 @@ export function EditSection({ service, categories }: EditSectionProps) {
                         </div>
                     )} */}
 
-                    {/* Submit Button */}
                     <div className="mt-4 flex items-center gap-2">
                         <Button type="submit" disabled={packageForm.processing || !hasUnsavedChanges.package} className="flex-1 md:w-45 md:flex-none">
                             {packageForm.processing ? (
@@ -960,7 +957,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                 </form>
             </TabsContent>
 
-            {/* TAB: FAQ */}
+            {/* ───────────────── FAQ Section ───────────────── */}
             <TabsContent value="faq" className="space-y-4">
                 <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                     <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
@@ -991,7 +988,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                     <HelpCircle className="size-5 text-primary" />
                                 </div>
                                 <p className="text-sm">Belum ada FAQ</p>
-                                <Button type="button" size="sm" onClick={addFaq} className="gap-2">
+                                <Button type="button" onClick={addFaq} className="gap-2">
                                     <Plus className="size-4" />
                                     Tambah FAQ Pertama
                                 </Button>
@@ -1025,7 +1022,6 @@ export function EditSection({ service, categories }: EditSectionProps) {
                         </div>
                     )} */}
 
-                    {/* Submit Button */}
                     <div className="mt-4 flex items-center gap-2">
                         <Button type="submit" disabled={faqForm.processing || !hasUnsavedChanges.faq} className="flex-1 md:w-45 md:flex-none">
                             {faqForm.processing ? (
@@ -1044,7 +1040,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                 </form>
             </TabsContent>
 
-            {/* TAB: LEGAL BASIS */}
+            {/* ───────────────── Legal Basis Section ───────────────── */}
             <TabsContent value="legal-basis" className="space-y-4">
                 <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                     <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
@@ -1075,7 +1071,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                     <Scale className="size-5 text-primary" />
                                 </div>
                                 <p className="text-sm">Belum ada dasar hukum</p>
-                                <Button type="button" size="sm" onClick={addLegalBasis} className="gap-2">
+                                <Button type="button" onClick={addLegalBasis} className="gap-2">
                                     <Plus className="size-4" />
                                     Tambah Dasar Hukum Pertama
                                 </Button>
@@ -1109,7 +1105,6 @@ export function EditSection({ service, categories }: EditSectionProps) {
                         </div>
                     )} */}
 
-                    {/* Submit Button */}
                     <div className="mt-4 flex items-center gap-2">
                         <Button type="submit" disabled={legalBasisForm.processing || !hasUnsavedChanges['legal-basis']} className="flex-1 md:w-45 md:flex-none">
                             {legalBasisForm.processing ? (
@@ -1128,7 +1123,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                 </form>
             </TabsContent>
 
-            {/* TAB: REQUIREMENT */}
+            {/* ───────────────── Requirement Section ───────────────── */}
             <TabsContent value="requirement" className="space-y-4">
                 <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                     <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
@@ -1159,7 +1154,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                     <ClipboardList className="size-5 text-primary" />
                                 </div>
                                 <p className="text-sm">Belum ada kategori persyaratan</p>
-                                <Button type="button" size="sm" onClick={addRequirementCategory} className="gap-2">
+                                <Button type="button" onClick={addRequirementCategory} className="gap-2">
                                     <Plus className="size-4" />
                                     Tambah Kategori Pertama
                                 </Button>
@@ -1193,7 +1188,6 @@ export function EditSection({ service, categories }: EditSectionProps) {
                         </div>
                     )} */}
 
-                    {/* Submit Button */}
                     <div className="mt-4 flex items-center gap-2">
                         <Button type="submit" disabled={requirementCategoriesForm.processing || !hasUnsavedChanges.requirement} className="flex-1 md:w-45 md:flex-none">
                             {requirementCategoriesForm.processing ? (
@@ -1212,7 +1206,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                 </form>
             </TabsContent>
 
-            {/* TAB: TIMELINE */}
+          {/* ───────────────── Timeline Section ───────────────── */}
             <TabsContent value="timeline" className="space-y-4">
                 <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                     <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
@@ -1240,7 +1234,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                         <div className="rounded-xl bg-sidebar p-6 shadow md:p-6 dark:shadow-none">
                             <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
                                 <p className="text-sm">Belum ada tahapan proses</p>
-                                <Button type="button" size="sm" onClick={addProcessStep} className="gap-2">
+                                <Button type="button" onClick={addProcessStep} className="gap-2">
                                     <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                                         <ClipboardList className="size-5 text-primary" />
                                     </div>
@@ -1277,7 +1271,6 @@ export function EditSection({ service, categories }: EditSectionProps) {
                         </div>
                     )} */}
 
-                    {/* Submit Button */}
                     <div className="mt-4 flex items-center gap-2">
                         <Button type="submit" disabled={processStepsForm.processing || !hasUnsavedChanges.timeline} className="flex-1 md:w-45 md:flex-none">
                             {processStepsForm.processing ? (

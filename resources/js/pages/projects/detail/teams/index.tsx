@@ -3,10 +3,9 @@ import { useState } from 'react';
 
 import { HasPermission } from '@/components/has-permission';
 import { Button } from '@/components/ui/button';
-import type { Project, ProjectMember } from '@/types/project';
+import type { Project } from '@/types/project';
 import { TeamAddDrawer } from './_components/team-add-drawer';
 import { TeamCard } from './_components/team-card';
-import { TeamEditDrawer } from './_components/team-edit-drawer';
 
 type TeamsProps = {
     project: Project;
@@ -14,7 +13,6 @@ type TeamsProps = {
 
 export default function Teams({ project }: TeamsProps) {
     const [addingTeam, setAddingTeam] = useState(false);
-    const [editingTeam, setEditingTeam] = useState<ProjectMember | null>(null);
 
     return (
         <>
@@ -72,17 +70,6 @@ export default function Teams({ project }: TeamsProps) {
             </div>
 
             {addingTeam && <TeamAddDrawer projectId={project.id} open={addingTeam} onOpenChange={setAddingTeam} />}
-
-            {editingTeam && (
-                <TeamEditDrawer
-                    projectId={project.id}
-                    team={editingTeam}
-                    open={!!editingTeam}
-                    onOpenChange={(open) => {
-                        if (!open) setEditingTeam(null);
-                    }}
-                />
-            )}
         </>
     );
 }

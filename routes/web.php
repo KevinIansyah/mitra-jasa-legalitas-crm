@@ -86,6 +86,7 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
     | SEARCH
     |--------------------------------------------------------------------------
     | GET /search/customers                             -> Search customers
+    | GET /search/companies                             -> Search companies
     | GET /search/customers/{customer}/companies        -> Search companies by customer
     | GET /search/services/{service}/packages           -> Search packages by service
     | GET /search/services/{service}/templates          -> Search templates by service
@@ -97,10 +98,13 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
 
     Route::prefix('search')->name('search.')->group(function () {
 
-        Route::get('/customers', [SearchController::class, 'searchCustomer'])
+        Route::get('/customers', [SearchController::class, 'searchCustomers'])
             ->name('customers');
 
-        Route::get('/customers/{customer}/companies', [SearchController::class, 'searchCompanyByCustomerId'])
+        Route::get('/companies', [SearchController::class, 'searchCompanies'])
+            ->name('companies');
+
+        Route::get('/customers/{customer}/companies', [SearchController::class, 'searchCompaniesByCustomerId'])
             ->name('companies.by-customer-id');
 
         Route::get('/services/{service}/packages', [SearchController::class, 'searchPackagesByServiceId'])
@@ -109,16 +113,16 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
         Route::get('/services/{service}/templates', [SearchController::class, 'searchTemplatesByServiceId'])
             ->name('templates.by-service-id');
 
-        Route::get('/users/staff', [SearchController::class, 'searchUserStaff'])
+        Route::get('/users/staff', [SearchController::class, 'searchUsersStaff'])
             ->name('users.staff');
 
-        Route::get('/projects', [SearchController::class, 'seachProject'])
+        Route::get('/projects', [SearchController::class, 'seachProjects'])
             ->name('projects');
 
-        Route::get('/vendors', [SearchController::class, 'searchVendor'])
+        Route::get('/vendors', [SearchController::class, 'searchVendors'])
             ->name('vendors');
 
-        Route::get('/quotes', [SearchController::class, 'searchQuote'])
+        Route::get('/quotes', [SearchController::class, 'searchQuotes'])
             ->name('quotes');
     });
 });
