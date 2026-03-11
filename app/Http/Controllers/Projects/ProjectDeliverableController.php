@@ -15,9 +15,6 @@ use ZipArchive;
 
 class ProjectDeliverableController extends Controller
 {
-    /**
-     * Display paginated listing of project templates with filters.
-     */
     public function index(Request $request)
     {
         $perPage = $request->get('per_page', 20);
@@ -26,44 +23,37 @@ class ProjectDeliverableController extends Controller
         $search = $request->get('search');
         $status = $request->get('status');
 
-        $query = ProjectDeliverable::with('project:id,name,status', 'uploader:id,name');
-
-        if ($search) {
-            $query->search($search);
-        }
-
-        if ($status) {
-            $query->where('status', $status);
-        }
-
-        $deliverables = $query
+        $deliverables = ProjectDeliverable::query()
+            ->with([
+                'project:id,name,status',
+                'uploader:id,name',
+            ])
+            ->when($search, fn($q) => $q->search($search))
+            ->when($status, fn($q) => $q->where('status', $status))
             ->orderByDesc('project_id')
             ->orderByDesc('created_at')
             ->paginate($perPage);
 
         $summary = ProjectDeliverable::query()
             ->selectRaw("
-        COUNT(*) as total,
-        SUM(CASE WHEN is_final = 1 THEN 1 ELSE 0 END) as final,
-        SUM(CASE WHEN is_final = 0 THEN 1 ELSE 0 END) as draft,
-        SUM(CASE WHEN is_encrypted = 1 THEN 1 ELSE 0 END) as encrypted
-         ")
+            COUNT(*) as total,
+            SUM(CASE WHEN is_final = 1 THEN 1 ELSE 0 END) as final,
+            SUM(CASE WHEN is_final = 0 THEN 1 ELSE 0 END) as draft,
+            SUM(CASE WHEN is_encrypted = 1 THEN 1 ELSE 0 END) as encrypted
+        ")
             ->first();
 
         return Inertia::render('projects/deliverables/index', [
             'deliverables' => $deliverables,
-            'summary'   => $summary,
+            'summary'      => $summary,
             'filters' => [
-                'search' => $search,
+                'search'   => $search,
                 'per_page' => $perPage,
-                'status' => $status,
+                'status'   => $status,
             ],
         ]);
     }
 
-    /**
-     * Store a new deliverable with file upload.
-     */
     public function store(StoreRequest $request, Project $project)
     {
         $validated = $request->validated();
@@ -93,9 +83,6 @@ class ProjectDeliverableController extends Controller
         return back()->with('success', 'Hasil akhir berhasil ditambahkan.');
     }
 
-    /**
-     * Update deliverable metadata only (no file replacement).
-     */
     public function update(UpdateRequest $request, Project $project, ProjectDeliverable $deliverable)
     {
         if ($error = $this->validateDeliverable($project, $deliverable)) return $error;
@@ -107,9 +94,6 @@ class ProjectDeliverableController extends Controller
         return back()->with('success', 'Hasil akhir berhasil diperbarui.');
     }
 
-    /**
-     * Delete deliverable and its file from R2.
-     */
     public function destroy(Project $project, ProjectDeliverable $deliverable)
     {
         if ($error = $this->validateDeliverable($project, $deliverable)) return $error;
@@ -121,9 +105,6 @@ class ProjectDeliverableController extends Controller
         return back()->with('success', 'Hasil akhir berhasil dihapus.');
     }
 
-    /**
-     * View/preview a deliverable file (handles encrypted files).
-     */
     public function view(Project $project, ProjectDeliverable $deliverable, string $filename)
     {
         if ($error = $this->validateDeliverable($project, $deliverable)) return $error;
@@ -145,9 +126,6 @@ class ProjectDeliverableController extends Controller
             ->header('Content-Disposition', 'inline; filename="' . $filename . '"');
     }
 
-    /**
-     * Force-download a project deliverable file.
-     */
     public function download(Project $project, ProjectDeliverable $deliverable)
     {
         if ($error = $this->validateDeliverable($project, $deliverable)) return $error;
@@ -169,9 +147,6 @@ class ProjectDeliverableController extends Controller
         ]);
     }
 
-    /**
-     * Download all uploaded documents for a project as a single ZIP file.
-     */
     public function downloadAll(Project $project)
     {
         $documents = $project->documents()
@@ -208,9 +183,6 @@ class ProjectDeliverableController extends Controller
         ])->deleteFileAfterSend(true);
     }
 
-    /**
-     * Validate deliverable belongs to project.
-     */
     private function validateDeliverable(Project $project, ProjectDeliverable $deliverable)
     {
         if ($deliverable->project_id !== $project->id) {

@@ -1,4 +1,4 @@
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Toolbox } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { formatRupiah } from '@/lib/service';
 import type { Estimate } from '@/types/quote';
@@ -14,19 +14,40 @@ export default function EstimateDetail({ estimate }: { estimate: Estimate }) {
                 <div className="space-y-2">
                     <p className="text-xs text-muted-foreground">Rincian Item</p>
                     <div>
-                        {estimate.items.map((item, i) => (
-                            <div key={i} className="flex items-start justify-between border-t border-primary/20 p-3 last:border-b dark:border-border">
-                                <div className="space-y-0.5">
-                                    <p className="font-medium">{item.description}</p>
-                                    <p className="text-xs text-muted-foreground">
-                                        {item.quantity} × {formatRupiah(Number(item.unit_price))}
-                                        {Number(item.discount_percent) > 0 && <span className="ml-2 text-destructive">diskon {item.discount_percent}%</span>}
-                                        {Number(item.tax_percent) > 0 && <span className="ml-2">pajak {item.tax_percent}%</span>}
-                                    </p>
+                        <div className="border-b border-primary/20 dark:border-border">
+                            {estimate.items.map((item, i) => (
+                                <div key={i} className="mb-0 flex items-start justify-between gap-4 border-t border-primary/20 px-3 py-2 text-sm dark:border-border">
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10">
+                                            <Toolbox className="size-4 text-primary" />
+                                        </div>
+                                        <div className="space-y-0.5">
+                                            <p>{item.description}</p>
+
+                                            <p className="text-xs text-muted-foreground">
+                                                {item.quantity} × {formatRupiah(Number(item.unit_price))}
+                                                {Number(item.discount_percent) > 0 && <span className="ml-2 text-destructive">diskon {item.discount_percent}%</span>}
+                                                {Number(item.tax_percent) > 0 && <span className="ml-2">pajak {item.tax_percent}%</span>}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <p className="shrink-0 tabular-nums">{formatRupiah(Number(item.total_amount))}</p>
                                 </div>
-                                <p className="shrink-0 font-semibold tabular-nums">{formatRupiah(Number(item.total_amount))}</p>
+                            ))}
+                        </div>
+
+                        <div className="mt-1 border-t border-primary/20 px-3 py-2 text-sm dark:border-border">
+                            <div className="flex justify-between font-medium">
+                                <span>Total</span>
+                                <span className="tabular-nums">{formatRupiah(Number(estimate.total_amount))}</span>
                             </div>
-                        ))}
+
+                            <div className="flex justify-between font-medium">
+                                <span className="text-xs text-muted-foreground">Subtotal</span>
+                                <span className="text-xs text-muted-foreground">{formatRupiah(Number(estimate.subtotal))}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}

@@ -2,7 +2,13 @@
 
 namespace App\Providers;
 
+use App\Models\Expense;
 use App\Models\ProjectDocument;
+use App\Models\ProjectInvoice;
+use App\Models\ProjectPayment;
+use App\Observers\ExpenseObserver;
+use App\Observers\ProjectInvoiceObserver;
+use App\Observers\ProjectPaymentObserver;
 use App\Policies\ProjectDocumentPolicy;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
@@ -27,6 +33,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+
+        ProjectInvoice::observe(ProjectInvoiceObserver::class);
+        ProjectPayment::observe(ProjectPaymentObserver::class);
+        Expense::observe(ExpenseObserver::class);
     }
 
     protected function configureDefaults(): void

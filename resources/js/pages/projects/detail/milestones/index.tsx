@@ -86,7 +86,7 @@ export default function Milestones({ project }: MilestonesProps) {
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-6">
                     <div>
-                        <h2 className="text-xl font-bold">Milestone</h2>
+                        <h2 className="text-xl font-semibold">Milestone</h2>
                         <p className="mt-0.5 text-sm text-muted-foreground">Pantau progres project berdasarkan pencapaian milestone yang telah ditetapkan.</p>
                     </div>
 

@@ -6,6 +6,14 @@ import type { ProjectDocument } from '@/types/project';
 export default function DocumentDetail({ document }: { document: ProjectDocument }) {
     return (
         <div className="space-y-4 p-4 whitespace-normal">
+            {document.status === 'rejected' && document.rejection_reason && (
+                <Alert className="border-destructive bg-destructive/10 text-destructive">
+                    <AlertTriangle />
+                    <AlertTitle>Alasan Penolakan</AlertTitle>
+                    <AlertDescription>{document.rejection_reason}</AlertDescription>
+                </Alert>
+            )}
+
             {document.description && (
                 <div className="space-y-1 text-sm text-foreground">
                     <p className="text-xs font-medium text-muted-foreground">Deskripsi</p>
@@ -32,14 +40,6 @@ export default function DocumentDetail({ document }: { document: ProjectDocument
                     <p>{document.verified_at ? formatDate(document.verified_at) : '-'}</p>
                 </div>
             </div>
-
-            {document.status === 'rejected' && document.rejection_reason && (
-                <Alert className="border-destructive bg-destructive/10 text-destructive">
-                    <AlertTriangle />
-                    <AlertTitle>Alasan Penolakan</AlertTitle>
-                    <AlertDescription>{document.rejection_reason}</AlertDescription>
-                </Alert>
-            )}
 
             {document.notes && (
                 <div className="space-y-1 text-sm text-foreground">

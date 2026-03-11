@@ -28,40 +28,25 @@ use Inertia\Inertia;
 
 class ServiceController extends Controller
 {
-    /**
-     * Display paginated listing of services with filters.
-     */
     public function index(Request $request)
     {
         $perPage = $request->get('per_page', 20);
         $perPage = in_array($perPage, [20, 30, 40, 50]) ? $perPage : 20;
 
-        $search = $request->get('search');
-        $status = $request->get('status');
-        $category = $request->get('category');
+        $search      = $request->get('search');
+        $status      = $request->get('status');
+        $category    = $request->get('category');
         $isPublished = $request->get('is_published');
 
-        $query = Service::with('category');
-
-        if ($search) {
-            $query->search($search);
-        }
-
-        if ($status) {
-            $query->where('status', $status);
-        }
-
-        if ($category) {
-            $query->where('service_category_id', $category);
-        }
-
-        if ($isPublished === 'published') {
-            $query->where('is_published', true);
-        } elseif ($isPublished === 'unpublished') {
-            $query->where('is_published', false);
-        }
-
-        $services = $query->latest()->paginate($perPage);
+        $services = Service::query()
+            ->with('category')
+            ->when($search, fn($q) => $q->search($search))
+            ->when($status, fn($q) => $q->where('status', $status))
+            ->when($category, fn($q) => $q->where('service_category_id', $category))
+            ->when($isPublished === 'published', fn($q) => $q->where('is_published', true))
+            ->when($isPublished === 'unpublished', fn($q) => $q->where('is_published', false))
+            ->latest()
+            ->paginate($perPage);
 
         $categories = ServiceCategory::orderBy('sort_order')
             ->get(['id', 'name']);
@@ -78,17 +63,15 @@ class ServiceController extends Controller
             'summary'    => $summary,
             'categories' => $categories,
             'filters' => [
-                'search' => $search,
-                'per_page' => $perPage,
-                'status' => $status,
-                'category' => $category,
+                'search'      => $search,
+                'per_page'    => $perPage,
+                'status'      => $status,
+                'category'    => $category,
+                'is_published' => $isPublished,
             ],
         ]);
     }
 
-    /**
-     * Show the form for creating a new service.
-     */
     public function create()
     {
         $categories = ServiceCategory::where('status', 'active')
@@ -123,7 +106,6 @@ class ServiceController extends Controller
         $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $request) {
-            // Generate unique slug
             $slug = $validated['slug']
                 ? Str::slug($validated['slug'])
                 : Str::slug($validated['name']);
@@ -135,7 +117,6 @@ class ServiceController extends Controller
                 $counter++;
             }
 
-            // Handle featured image upload
             $featuredImagePath = null;
             if ($request->hasFile('featured_image')) {
                 $fileData = FileHelper::uploadToR2Public(
@@ -258,9 +239,6 @@ class ServiceController extends Controller
         return to_route('services.index')->with('success', 'Layanan berhasil ditambahkan.');
     }
 
-    /**
-     * Show the form for editing the specified service.
-     */
     public function edit(Service $service)
     {
         $service->load([
@@ -311,7 +289,6 @@ class ServiceController extends Controller
         $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $request, $service) {
-            // Generate and ensure unique slug
             $slug = $validated['slug']
                 ? Str::slug($validated['slug'])
                 : Str::slug($validated['name']);
@@ -325,7 +302,6 @@ class ServiceController extends Controller
                 }
             }
 
-            // Handle featured image
             $featuredImagePath = $service->featured_image;
 
             if ($request->boolean('remove_image') && $service->featured_image) {
@@ -346,7 +322,6 @@ class ServiceController extends Controller
                 $featuredImagePath = $fileData['path'];
             }
 
-            // Manage publication state
             $isPublished = $validated['is_published'] ?? $service->is_published;
             $publishedAt = $service->published_at;
             $status = $service->status;
@@ -376,9 +351,6 @@ class ServiceController extends Controller
         return back()->with('success', 'Informasi dasar berhasil diperbarui.');
     }
 
-    /**
-     * Update content tab (introduction and main content).
-     */
     public function updateContent(UpdateContentRequest $request, Service $service)
     {
         $validated = $request->validated();
@@ -407,7 +379,6 @@ class ServiceController extends Controller
         $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $service) {
-            // Identify packages to delete
             $existingPackageIds = $service->packages()->pluck('id')->toArray();
             $submittedPackageIds = collect($validated['packages'])
                 ->pluck('id')
@@ -419,7 +390,6 @@ class ServiceController extends Controller
                 ServicePackage::whereIn('id', $packagesToDelete)->delete();
             }
 
-            // Create or update packages
             foreach ($validated['packages'] as $pkgIndex => $pkgData) {
                 if (!empty($pkgData['id'])) {
                     $package = ServicePackage::findOrFail($pkgData['id']);
@@ -451,7 +421,6 @@ class ServiceController extends Controller
                     ]);
                 }
 
-                // Handle features synchronization
                 if (isset($pkgData['features'])) {
                     $existingFeatureIds = $package->features()->pluck('id')->toArray();
                     $submittedFeatureIds = collect($pkgData['features'])
@@ -503,7 +472,6 @@ class ServiceController extends Controller
         $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $service) {
-            // Identify FAQs to delete
             $existingFaqIds = $service->faqs()->pluck('id')->toArray();
             $submittedFaqIds = collect($validated['faqs'] ?? [])
                 ->pluck('id')
@@ -515,7 +483,6 @@ class ServiceController extends Controller
                 ServiceFaq::whereIn('id', $faqsToDelete)->delete();
             }
 
-            // Create or update FAQs
             foreach (($validated['faqs'] ?? []) as $faqIndex => $faqData) {
                 if (!empty($faqData['id'])) {
                     $faq = ServiceFaq::findOrFail($faqData['id']);
@@ -553,7 +520,6 @@ class ServiceController extends Controller
         $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $service) {
-            // Identify legal bases to delete
             $existingLegalIds = $service->legalBases()->pluck('id')->toArray();
             $submittedLegalIds = collect($validated['legal_bases'] ?? [])
                 ->pluck('id')
@@ -565,7 +531,6 @@ class ServiceController extends Controller
                 ServiceLegalBasis::whereIn('id', $legalToDelete)->delete();
             }
 
-            // Create or update legal bases
             foreach (($validated['legal_bases'] ?? []) as $legalIndex => $legalData) {
                 if (!empty($legalData['id'])) {
                     $legal = ServiceLegalBasis::findOrFail($legalData['id']);
@@ -612,7 +577,6 @@ class ServiceController extends Controller
         $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $service) {
-            // Identify requirement categories to delete
             $existingCategoryIds = $service->requirementCategories()->pluck('id')->toArray();
             $submittedCategoryIds = collect($validated['requirement_categories'] ?? [])
                 ->pluck('id')
@@ -624,7 +588,6 @@ class ServiceController extends Controller
                 ServiceRequirementCategory::whereIn('id', $categoriesToDelete)->delete();
             }
 
-            // Create or update requirement categories
             foreach (($validated['requirement_categories'] ?? []) as $catIndex => $catData) {
                 if (!empty($catData['id'])) {
                     $category = ServiceRequirementCategory::findOrFail($catData['id']);
@@ -644,7 +607,6 @@ class ServiceController extends Controller
                     ]);
                 }
 
-                // Handle requirements synchronization
                 if (isset($catData['requirements'])) {
                     $existingRequirementIds = $category->requirements()->pluck('id')->toArray();
                     $submittedRequirementIds = collect($catData['requirements'])
@@ -701,7 +663,6 @@ class ServiceController extends Controller
         $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $service) {
-            // Identify process steps to delete
             $existingStepIds = $service->processSteps()->pluck('id')->toArray();
             $submittedStepIds = collect($validated['process_steps'] ?? [])
                 ->pluck('id')
@@ -713,7 +674,6 @@ class ServiceController extends Controller
                 ServiceProcessStep::whereIn('id', $stepsToDelete)->delete();
             }
 
-            // Create or update process steps
             foreach (($validated['process_steps'] ?? []) as $stepIndex => $stepData) {
                 if (!empty($stepData['id'])) {
                     $step = ServiceProcessStep::findOrFail($stepData['id']);

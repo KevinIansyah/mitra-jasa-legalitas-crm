@@ -9,8 +9,7 @@ type InvoiceSummaryProps = {
     items?: ProjectInvoiceItemFormData[];
     isAdditional: boolean;
     processing: boolean;
-    onSubmitDraft: () => void;
-    onSubmitSend: () => void;
+    onSubmit: () => void;
 };
 
 function calcSimple(subtotal: number, taxPercent: number, discountPercent: number) {
@@ -42,7 +41,7 @@ function calcItems(items: ProjectInvoiceItemFormData[]) {
     return { subtotal, discountAmount, taxAmount, total };
 }
 
-export function InvoiceSummary({ subtotal = 0, taxPercent = 0, discountPercent = 0, items = [], isAdditional, processing, onSubmitDraft, onSubmitSend }: InvoiceSummaryProps) {
+export function InvoiceSummary({ subtotal = 0, taxPercent = 0, discountPercent = 0, items = [], isAdditional, processing, onSubmit }: InvoiceSummaryProps) {
     const calc = isAdditional ? calcItems(items) : calcSimple(subtotal, taxPercent, discountPercent);
 
     return (
@@ -85,12 +84,8 @@ export function InvoiceSummary({ subtotal = 0, taxPercent = 0, discountPercent =
             </div>
 
             <div className="space-y-2">
-                <Button type="button" className="w-full" disabled={processing} onClick={onSubmitSend}>
-                    Simpan & Kirim
-                </Button>
-
-                <Button type="button" variant="secondary" className="w-full" disabled={processing} onClick={onSubmitDraft}>
-                    Simpan sebagai Draft
+                <Button type="button" className="w-full" disabled={processing} onClick={onSubmit}>
+                    Simpan
                 </Button>
             </div>
         </div>

@@ -160,6 +160,22 @@ export default function PermissionSection({ role, allPermissions }: PermissionSe
                         itemName = 'Vendor';
                     }
 
+                    if (resource === 'finance-accounts') {
+                        itemName = 'Akun';
+                    }
+
+                    if (resource === 'finance-journals') {
+                        itemName = 'Jurnal';
+                    }
+
+                    if (resource === 'finance-opening-balances') {
+                        itemName = 'Saldo Awal';
+                    }
+
+                    if (resource === 'finance-reports') {
+                        itemName = 'Laporan';
+                    }
+
                     break;
                 }
 

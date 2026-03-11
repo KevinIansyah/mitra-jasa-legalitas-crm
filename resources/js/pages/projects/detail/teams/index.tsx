@@ -18,10 +18,10 @@ export default function Teams({ project }: TeamsProps) {
         <>
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-6">
-                    <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
+                    <div className="flex flex-col items-start gap-4 justify-between md:flex-row">
                         <div>
-                            <h2 className="text-xl font-bold">Anggota Tim</h2>
-                            <p className="mt-0.5 text-sm text-muted-foreground">Daftar anggota tim pada project ini.</p>
+                            <h2 className="text-xl font-semibold">Anggota Tim</h2>
+                            <p className="mt-0.5 text-sm text-muted-foreground">Daftar anggota tim pada project ini</p>
                         </div>
                         {project.members && project.members.length > 0 && (
                             <HasPermission permission="create-project-members">
@@ -61,10 +61,9 @@ export default function Teams({ project }: TeamsProps) {
                             </HasPermission>
                         </div>
                     ) : (
-                        <>
+                        <div>
                             <TeamCard project={project} />
-                            {/* <TeamTable project={project} /> */}
-                        </>
+                        </div>
                     )}
                 </div>
             </div>

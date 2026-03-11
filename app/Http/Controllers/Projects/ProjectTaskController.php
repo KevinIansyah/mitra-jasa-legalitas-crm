@@ -12,9 +12,6 @@ use Illuminate\Support\Facades\Auth;
 
 class ProjectTaskController extends Controller
 {
-    /**
-     * Store a newly created project task.
-     */
     public function store(StoreRequest $request, Project $project)
     {
         $validated = $request->validated();
@@ -29,9 +26,6 @@ class ProjectTaskController extends Controller
         return back()->with('success', 'Tugas berhasil ditambahkan.');
     }
 
-    /**
-     * Update the specified project task.
-     */
     public function update(UpdateRequest $request, Project $project, ProjectTask $task)
     {
         if ($error = $this->validateTask($project, $task)) return $error;
@@ -49,9 +43,6 @@ class ProjectTaskController extends Controller
         return back()->with('success', 'Tugas berhasil diperbarui.');
     }
 
-    /**
-     * Update the specified project task status.
-     */
     public function updateStatus(Request $request, Project $project, ProjectTask $task)
     {
         if ($error = $this->validateTask($project, $task)) return $error;
@@ -74,9 +65,6 @@ class ProjectTaskController extends Controller
         return back()->with('success', 'Status tugas berhasil diperbarui.');
     }
 
-    /**
-     * Update the specified project task priority.
-     */
     public function updatePriority(Request $request, Project $project, ProjectTask $task)
     {
         if ($error = $this->validateTask($project, $task)) return $error;
@@ -93,9 +81,6 @@ class ProjectTaskController extends Controller
         return back()->with('success', 'Prioritas tugas berhasil diperbarui.');
     }
 
-    /**
-     * Remove the specified project task.
-     */
     public function destroy(Project $project, ProjectTask $task)
     {
         if ($error = $this->validateTask($project, $task)) return $error;
@@ -105,9 +90,6 @@ class ProjectTaskController extends Controller
         return back()->with('success', 'Tugas berhasil dihapus.');
     }
 
-    /**
-     * Validate task belongs to project.
-     */
     private function validateTask(Project $project, ProjectTask $task)
     {
         if ($task->project_id !== $project->id) {

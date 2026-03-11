@@ -48,11 +48,11 @@ export default function EditSection({ invoice, selectedProject, fromProject, isE
         setData((prev) => ({ ...prev, ...val }));
     }
 
-    function submit(status: 'draft' | 'sent') {
+    function handleSubmit() {
         setProcessing(true);
         const toastId = toast.loading('Menyimpan...', { description: 'Invoice sedang diperbarui.' });
 
-        router.put(invoices.update(invoice.id).url, { ...data, status, from_project: fromProject } as any, {
+        router.put(invoices.update(invoice.id).url, { ...data, from_project: fromProject } as any, {
             onSuccess: () => {
                 toast.success('Berhasil', { description: 'Invoice berhasil diperbarui.' });
             },
@@ -82,8 +82,7 @@ export default function EditSection({ invoice, selectedProject, fromProject, isE
                     items={data.items ?? []}
                     isAdditional={isAdditional}
                     processing={processing}
-                    onSubmitDraft={() => submit('draft')}
-                    onSubmitSend={() => submit('sent')}
+                    onSubmit={() => handleSubmit()}
                 />
             </div>
         </div>

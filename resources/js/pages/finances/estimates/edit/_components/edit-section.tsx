@@ -2,11 +2,11 @@
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import finances from '@/routes/finances';
 import type { Estimate, EstimateFormData, Quote } from '@/types/quote';
 import { EstimateForm } from '../../_components/estimate-form';
 import type { EstimateFormErrors } from '../../_components/estimate-form';
 import { EstimateSummary } from '../../_components/estimate-summary';
-import finances from '@/routes/finances';
 
 type EditSectionProps = {
     estimate: Estimate;
@@ -66,7 +66,7 @@ export default function EditSection({ estimate, selectedQuote, fromQuote, isEdit
         <div className="space-y-6">
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_280px]">
                 <EstimateForm data={data} errors={errors} initialQuote={selectedQuote} fromQuote={fromQuote} isEdit={isEdit} onChange={handleChange} />
-                <EstimateSummary items={data.items} processing={processing} onSubmitEdit={() => handleSubmit()} isEdit={true} />
+                <EstimateSummary items={data.items} processing={processing} onSubmit={() => handleSubmit()} />
             </div>
         </div>
     );

@@ -1,4 +1,4 @@
-import { Link, router } from '@inertiajs/react';
+import { router } from '@inertiajs/react';
 import { ChevronDown, ChevronUp, GitBranch, Pencil } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -91,31 +91,32 @@ export default function Actions({ estimate, isExpanded, onToggleExpand }: Action
                 </Tooltip>
 
                 <HasPermission permission="edit-finance-estimates">
-                    {!isAccepted && (
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button variant="secondary" className="h-8 w-8" disabled={loading} asChild>
-                                    <Link href={finances.estimates.edit(estimate.id).url}>
-                                        <Pencil className="size-3.5" />
-                                    </Link>
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Edit Estimate</TooltipContent>
-                        </Tooltip>
-                    )}
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                variant="secondary"
+                                className="h-8 w-8"
+                                disabled={loading || isAccepted}
+                                onClick={() => {
+                                    router.visit(finances.estimates.edit(estimate.id).url);
+                                }}
+                            >
+                                <Pencil className="size-3.5" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Edit Estimate</TooltipContent>
+                    </Tooltip>
                 </HasPermission>
 
                 <HasPermission permission="edit-finance-estimates">
-                    {!isAccepted && (
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button variant="secondary" className="h-8 w-8" disabled={loading} onClick={handleRevise}>
-                                    <GitBranch className="size-3.5" />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Buat Revisi</TooltipContent>
-                        </Tooltip>
-                    )}
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button variant="secondary" className="h-8 w-8" disabled={loading || isAccepted} onClick={handleRevise}>
+                                <GitBranch className="size-3.5" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Buat Revisi</TooltipContent>
+                    </Tooltip>
                 </HasPermission>
 
                 <HasPermission permission="delete-finance-estimates">
@@ -127,17 +128,17 @@ export default function Actions({ estimate, isExpanded, onToggleExpand }: Action
                     />
                 </HasPermission>
 
-                {!isFinalized ? (
-                    <HasPermission permission="edit-finance-estimates">
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <button>
-                                    <Badge className={`${statusInfo?.classes} px-3 py-1`}>
-                                        {statusInfo?.label}
-                                        <ChevronDown className="size-3" />
-                                    </Badge>
-                                </button>
-                            </DropdownMenuTrigger>
+                <HasPermission permission="edit-finance-estimates">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <button>
+                                <Badge className={`${statusInfo?.classes} px-3 py-1`}>
+                                    {statusInfo?.label}
+                                    {!isFinalized && <ChevronDown className="size-3" />}
+                                </Badge>
+                            </button>
+                        </DropdownMenuTrigger>
+                        {!isFinalized && (
                             <DropdownMenuContent align="end">
                                 {ESTIMATE_STATUSES.map((s) => (
                                     <DropdownMenuItem key={s.value} disabled={s.value === estimate.status} onSelect={() => setConfirmStatus(s.value as EstimateStatus)}>
@@ -146,11 +147,9 @@ export default function Actions({ estimate, isExpanded, onToggleExpand }: Action
                                     </DropdownMenuItem>
                                 ))}
                             </DropdownMenuContent>
-                        </DropdownMenu>
-                    </HasPermission>
-                ) : (
-                    <Badge className={`${statusInfo?.classes} px-3 py-1`}>{statusInfo?.label}</Badge>
-                )}
+                        )}
+                    </DropdownMenu>
+                </HasPermission>
             </div>
 
             <Dialog

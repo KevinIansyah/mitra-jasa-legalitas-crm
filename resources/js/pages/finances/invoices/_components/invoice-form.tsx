@@ -104,7 +104,7 @@ export function InvoiceForm({ data, errors, initialProject, fromProject, isEdit,
             <div className="rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div>
-                        <h2 className="text-xl font-bold">Info Invoice</h2>
+                        <h2 className="text-xl font-semibold">Info Invoice</h2>
                         <p className="mt-0.5 text-sm text-muted-foreground">Pilih project dan atur detail dasar invoice</p>
                     </div>
 
@@ -220,7 +220,7 @@ export function InvoiceForm({ data, errors, initialProject, fromProject, isEdit,
                 <div className="rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                     <div className="space-y-4">
                         <div>
-                            <h2 className="text-xl font-bold">Jumlah Tagihan</h2>
+                            <h2 className="text-xl font-semibold">Jumlah Tagihan</h2>
                             {selectedProject ? (
                                 <p className="mt-0.5 text-sm text-muted-foreground">
                                     Budget project: <span className="font-medium text-foreground">{formatRupiah(Number(selectedProject.budget))}</span>
@@ -299,7 +299,7 @@ export function InvoiceForm({ data, errors, initialProject, fromProject, isEdit,
                     <div className="space-y-4">
                         <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
                             <div>
-                                <h2 className="text-xl font-bold">Item Invoice</h2>
+                                <h2 className="text-xl font-semibold">Item Invoice</h2>
                                 <p className="mt-0.5 text-sm text-muted-foreground">Rincian biaya tambahan</p>
                             </div>
 
@@ -366,7 +366,7 @@ export function InvoiceForm({ data, errors, initialProject, fromProject, isEdit,
             <div className="rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div>
-                        <h2 className="text-xl font-bold">Catatan</h2>
+                        <h2 className="text-xl font-semibold">Catatan</h2>
                         <p className="mt-0.5 text-sm text-muted-foreground">Tambahkan catatan atau instruksi pembayaran untuk invoice ini</p>
                     </div>
 

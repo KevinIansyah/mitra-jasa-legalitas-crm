@@ -12,9 +12,6 @@ use Inertia\Inertia;
 
 class ProjectPaymentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         $perPage = $request->get('per_page', 20);
@@ -24,35 +21,41 @@ class ProjectPaymentController extends Controller
         $status = $request->get('status');
         $method = $request->get('payment_method');
 
-        $query = ProjectPayment::with([
+        $payments = ProjectPayment::with([
             'invoice',
             'invoice.project:id,name,customer_id',
             'invoice.project.customer:id,name',
             'verifier:id,name',
-        ]);
-
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('reference_number', 'like', "%{$search}%")
-                    ->orWhereHas('invoice', fn($q) => $q->where('invoice_number', 'like', "%{$search}%"))
-                    ->orWhereHas('invoice.project', fn($q) => $q->where('name', 'like', "%{$search}%"));
-            });
-        }
-
-        if ($status) $query->where('status', $status);
-        if ($method) $query->where('payment_method', $method);
-
-        $payments = $query->latest()->paginate($perPage);
+        ])
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('reference_number', 'like', "%{$search}%")
+                        ->orWhereHas(
+                            'invoice',
+                            fn($q) =>
+                            $q->where('invoice_number', 'like', "%{$search}%")
+                        )
+                        ->orWhereHas(
+                            'invoice.project',
+                            fn($q) =>
+                            $q->where('name', 'like', "%{$search}%")
+                        );
+                });
+            })
+            ->when($status, fn($q, $status) => $q->where('status', $status))
+            ->when($method, fn($q, $method) => $q->where('payment_method', $method))
+            ->latest()
+            ->paginate($perPage);
 
         $summary = ProjectPayment::query()
             ->selectRaw("
-            COUNT(*) as total,
-            SUM(CASE WHEN status = 'pending'  THEN 1 ELSE 0 END) as pending,
-            SUM(CASE WHEN status = 'verified' THEN 1 ELSE 0 END) as verified,
-            SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) as rejected,
-            SUM(amount) as total_amount,
-            SUM(CASE WHEN status = 'verified' THEN amount ELSE 0 END) as verified_amount
-        ")
+                COUNT(*) as total,
+                COALESCE(SUM(CASE WHEN status = 'pending'  THEN 1 ELSE 0 END), 0) as pending,
+                COALESCE(SUM(CASE WHEN status = 'verified' THEN 1 ELSE 0 END), 0) as verified,
+                COALESCE(SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END), 0) as rejected,
+                COALESCE(SUM(amount), 0) as total_amount,
+                COALESCE(SUM(CASE WHEN status = 'verified' THEN amount ELSE 0 END), 0) as verified_amount
+            ")
             ->first();
 
         return Inertia::render('finances/payments/index', [
@@ -67,9 +70,6 @@ class ProjectPaymentController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created payment.
-     */
     public function store(Request $request, ProjectInvoice $invoice)
     {
         $validated = $request->validate([
@@ -94,9 +94,6 @@ class ProjectPaymentController extends Controller
         return back()->with('success', 'Pembayaran berhasil ditambahkan.');
     }
 
-    /**
-     * Update the specified payment.
-     */
     public function update(Request $request, ProjectInvoice $invoice, ProjectPayment $payment)
     {
         if ($error = $this->validatePaymentBelongsToInvoice($invoice, $payment)) return $error;
@@ -141,9 +138,6 @@ class ProjectPaymentController extends Controller
         return back()->with('success', 'Pembayaran berhasil diperbarui.');
     }
 
-    /**
-     * Update status payment (verify / reject).
-     */
     public function updateStatus(Request $request, ProjectInvoice $invoice, ProjectPayment $payment)
     {
         if ($error = $this->validatePaymentBelongsToInvoice($invoice, $payment)) return $error;
@@ -167,9 +161,6 @@ class ProjectPaymentController extends Controller
         return back()->with('success', $messages[$request->status]);
     }
 
-    /**
-     * Delete the specified payment.
-     */
     public function destroy(ProjectInvoice $invoice, ProjectPayment $payment)
     {
         if ($error = $this->validatePaymentBelongsToInvoice($invoice, $payment)) return $error;
@@ -184,9 +175,6 @@ class ProjectPaymentController extends Controller
         return back()->with('success', 'Pembayaran berhasil dihapus.');
     }
 
-    /**
-     * Validate payment belongs to invoice.
-     */
     private function validatePaymentBelongsToInvoice(ProjectInvoice $invoice, ProjectPayment $payment)
     {
         if ($payment->invoice_id !== $invoice->id) {
@@ -196,9 +184,6 @@ class ProjectPaymentController extends Controller
         return null;
     }
 
-    /**
-     * Validate payment is editable.
-     */
     private function validatePaymentEditable(ProjectPayment $payment)
     {
         if ($payment->isVerified()) {
@@ -208,9 +193,6 @@ class ProjectPaymentController extends Controller
         return null;
     }
 
-    /**
-     * Validate payment is pending.
-     */
     private function validatePaymentPending(ProjectPayment $payment)
     {
         if (!$payment->isPending()) {

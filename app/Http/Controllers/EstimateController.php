@@ -13,9 +13,6 @@ use Inertia\Inertia;
 
 class EstimateController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         $perPage = $request->get('per_page', 20);
@@ -24,27 +21,24 @@ class EstimateController extends Controller
         $search = $request->get('search');
         $status = $request->get('status');
 
-        $query = Estimate::with([
-            'quote:id,reference_number,project_name,status,user_id',
-            'quote.user:id,name',
-            'items',
-        ]);
-
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('estimate_number', 'like', "%{$search}%")
-                    ->orWhereHas(
-                        'quote',
-                        fn($q) => $q
-                            ->where('reference_number', 'like', "%{$search}%")
-                            ->orWhere('project_name', 'like', "%{$search}%")
-                    );
-            });
-        }
-
-        if ($status) $query->where('status', $status);
-
-        $estimates = $query->latest()->paginate($perPage);
+        $estimates = Estimate::query()
+            ->with([
+                'quote:id,reference_number,project_name,status,user_id',
+                'quote.user:id,name',
+                'items',
+            ])
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('estimate_number', 'like', "%{$search}%")
+                        ->orWhereHas('quote', function ($q) use ($search) {
+                            $q->where('reference_number', 'like', "%{$search}%")
+                                ->orWhere('project_name', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->when($status, fn($q) => $q->where('status', $status))
+            ->latest()
+            ->paginate($perPage);
 
         $summary = Estimate::query()
             ->selectRaw("
@@ -69,9 +63,6 @@ class EstimateController extends Controller
         ]);
     }
 
-    /**
-     * Show create form for a specific quote.
-     */
     public function create(Request $request)
     {
         $selectedQuote = null;
@@ -92,31 +83,6 @@ class EstimateController extends Controller
         ]);
     }
 
-    /**
-     * Show edit form.
-     */
-    public function edit(Request $request, Estimate $estimate)
-    {
-        $estimate->load([
-            'items',
-            'quote.user:id,name,email',
-            'quote.customer:id,name',
-            'quote.service:id,name',
-        ]);
-
-        $fromQuote = $request->filled('quote_id');
-
-        return Inertia::render('finances/estimates/edit/index', [
-            'estimate' => $estimate,
-            'selectedQuote' => $estimate->quote,
-            'fromQuote' => $fromQuote,
-            'isEdit'   => true,
-        ]);
-    }
-
-    /**
-     * Store a newly created estimate.
-     */
     public function store(StoreRequest $request)
     {
         $validated = $request->validated();
@@ -143,7 +109,7 @@ class EstimateController extends Controller
                 'discount_amount'      => 0,
                 'total_amount'         => 0,
                 'valid_until'          => $validated['valid_until'] ?? null,
-                'status'               => $validated['status'] ?? 'draft',
+                'status'               => 'draft',
                 'notes'                => $validated['notes'] ?? null,
 
             ]);
@@ -167,9 +133,25 @@ class EstimateController extends Controller
             ->with('success', 'Permintaan penawaran berhasil ditambahkan.');
     }
 
-    /**
-     * Update the specified estimate.
-     */
+    public function edit(Request $request, Estimate $estimate)
+    {
+        $estimate->load([
+            'items',
+            'quote.user:id,name,email',
+            'quote.customer:id,name',
+            'quote.service:id,name',
+        ]);
+
+        $fromQuote = $request->filled('quote_id');
+
+        return Inertia::render('finances/estimates/edit/index', [
+            'estimate' => $estimate,
+            'selectedQuote' => $estimate->quote,
+            'fromQuote' => $fromQuote,
+            'isEdit'   => true,
+        ]);
+    }
+
     public function update(UpdateRequest $request, Estimate $estimate)
     {
         if ($error = $this->validateNotAccepted($estimate)) return $error;
@@ -183,7 +165,6 @@ class EstimateController extends Controller
                 'discount_percent'     => $validated['discount_percent'] ?? 0,
                 'status'               => $validated['status'] ?? $estimate->status,
                 'notes'                => $validated['notes'] ?? null,
-
             ]);
 
             $this->syncItems($estimate, $validated);
@@ -199,9 +180,6 @@ class EstimateController extends Controller
             ->with('success', 'Permintaan penawaran berhasil diperbarui.');
     }
 
-    /**
-     * Update status only.
-     */
     public function updateStatus(Request $request, Estimate $estimate)
     {
         if ($estimate->status === 'accepted') {
@@ -241,9 +219,6 @@ class EstimateController extends Controller
         return back()->with('success', $messages[$request->status]);
     }
 
-    /**
-     * Create a new version from existing estimate.
-     */
     public function revise(Request $request, Estimate $estimate)
     {
         if ($estimate->status === 'accepted') {
@@ -264,9 +239,6 @@ class EstimateController extends Controller
             ->with('success', 'Revisi estmasi berhasil dibuat.');
     }
 
-    /**
-     * Remove the specified estimate.
-     */
     public function destroy(Estimate $estimate)
     {
         if ($estimate->status === 'accepted') {
@@ -289,9 +261,6 @@ class EstimateController extends Controller
         return back()->with('success', 'Estimate berhasil dihapus.');
     }
 
-    /**
-     * Sync estimate items.
-     */
     private function syncItems(Estimate $estimate, array $validated): void
     {
         $estimate->items()->delete();
@@ -317,9 +286,6 @@ class EstimateController extends Controller
         }
     }
 
-    /**
-     * Validate estimate is not accepted.
-     */
     private function validateNotAccepted(Estimate $estimate)
     {
         if ($estimate->status === 'accepted') {

@@ -15,7 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 
 import { deleteItemAndReindex, moveItemDown, moveItemUp } from '@/lib/service';
 import templates from '@/routes/projects/templates';
-import type { GetTemplateFromServiceResponse, ProjectTemplateStatus } from '@/types/project-template';
+import type { ProjectTemplateStatus, ProjectTemplateWithService } from '@/types/project-template';
 import type { Service } from '@/types/service';
 
 import type { LocalDocument } from '../../_components/document-card';
@@ -62,7 +62,7 @@ export function CreateSection({ services }: CreateSectionProps) {
         setIsLoadingService(true);
 
         try {
-            const { data: result } = await axios.get<GetTemplateFromServiceResponse>(templates.fromService(serviceId).url);
+            const { data: result } = await axios.get<ProjectTemplateWithService>(templates.fromService(serviceId).url);
 
             const service = services.find((s) => s.id === serviceId);
 
@@ -72,11 +72,11 @@ export function CreateSection({ services }: CreateSectionProps) {
                 name: `Template - ${service?.name || ''}`,
                 description: service?.short_description || '',
                 estimated_duration_days: result.estimated_duration_days,
-                milestones: result.milestones.map((m) => ({
+                milestones: result.milestones!.map((m) => ({
                     ...m,
                     _key: Math.random().toString(36).slice(2, 9),
                 })) as LocalMilestone[],
-                documents: result.documents.map((d) => ({
+                documents: result.documents!.map((d) => ({
                     ...d,
                     _key: Math.random().toString(36).slice(2, 9),
                 })) as LocalDocument[],
@@ -203,7 +203,7 @@ export function CreateSection({ services }: CreateSectionProps) {
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div>
-                        <h2 className="text-xl font-bold">Mode Pembuatan Template</h2>
+                        <h2 className="text-xl font-semibold">Mode Pembuatan Template</h2>
                         <p className="mt-0.5 text-sm text-muted-foreground">Pilih cara membuat template: dari layanan yang ada atau buat custom</p>
                     </div>
 
@@ -267,7 +267,7 @@ export function CreateSection({ services }: CreateSectionProps) {
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-6">
                     <div>
-                        <h2 className="text-xl font-bold">Informasi Dasar</h2>
+                        <h2 className="text-xl font-semibold">Informasi Dasar</h2>
                         <p className="mt-0.5 text-sm text-muted-foreground">Kelola identitas dan deskripsi template</p>
                     </div>
 
@@ -319,7 +319,7 @@ export function CreateSection({ services }: CreateSectionProps) {
                 <div className="space-y-6">
                     <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
                         <div>
-                            <h2 className="text-xl font-bold">Milestone</h2>
+                            <h2 className="text-xl font-semibold">Milestone</h2>
                             <p className="mt-0.5 text-sm text-muted-foreground">Kelola tahapan-tahapan dalam project template</p>
                         </div>
                         {data.milestones.length > 0 && (
@@ -365,7 +365,7 @@ export function CreateSection({ services }: CreateSectionProps) {
                 <div className="space-y-6">
                     <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
                         <div>
-                            <h2 className="text-xl font-bold">Dokumen</h2>
+                            <h2 className="text-xl font-semibold">Dokumen</h2>
                             <p className="mt-0.5 text-sm text-muted-foreground">Kelola daftar dokumen yang diperlukan dalam project</p>
                         </div>
                         {data.documents.length > 0 && (

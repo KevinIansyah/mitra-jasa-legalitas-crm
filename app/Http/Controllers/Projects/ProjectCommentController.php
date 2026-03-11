@@ -11,9 +11,6 @@ use Illuminate\Support\Facades\Auth;
 
 class ProjectCommentController extends Controller
 {
-    /**
-     * Store a new comment (top-level or reply).
-     */
     public function store(StoreRequest $request, Project $project)
     {
         $validated = $request->validated();
@@ -33,9 +30,6 @@ class ProjectCommentController extends Controller
         return back()->with('success', 'Komentar berhasil ditambahkan.');
     }
 
-    /**
-     * Update own comment.
-     */
     public function update(UpdateRequest $request, Project $project, ProjectComment $comment)
     {
         if ($error = $this->validateProjectComment($project, $comment)) return $error;
@@ -52,9 +46,6 @@ class ProjectCommentController extends Controller
         return back()->with('success', 'Komentar berhasil diperbarui.');
     }
 
-    /**
-     * Soft-delete own comment (or hard delete if admin).
-     */
     public function destroy(Project $project, ProjectComment $comment)
     {
         if ($error = $this->validateProjectComment($project, $comment)) return $error;
@@ -65,9 +56,6 @@ class ProjectCommentController extends Controller
         return back()->with('success', 'Komentar berhasil dihapus.');
     }
 
-    /**
-     * Validate parent comment (only top-level allowed).
-     */
     private function validateParentComment(Project $project, int $parentId)
     {
         $parent = ProjectComment::find($parentId);
@@ -93,9 +81,6 @@ class ProjectCommentController extends Controller
         return null;
     }
 
-    /**
-     * Validate comment belongs to project.
-     */
     private function validateProjectComment(Project $project, ProjectComment $comment)
     {
         if ($comment->project_id !== $project->id) {
@@ -107,9 +92,6 @@ class ProjectCommentController extends Controller
         return null;
     }
 
-    /**
-     * Validate comment ownership.
-     */
     private function validateOwnership(ProjectComment $comment)
     {
         if (!$comment->isOwnedBy(Auth::id())) {

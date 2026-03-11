@@ -14,53 +14,65 @@ use Inertia\Inertia;
 
 class ExpenseController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         $perPage  = $request->get('per_page', 20);
         $perPage  = in_array($perPage, [20, 30, 40, 50]) ? $perPage : 20;
+
         $search   = $request->get('search');
         $category = $request->get('category');
         $billable = $request->get('is_billable');
         $billed   = $request->get('is_billed');
 
-        $query = Expense::with([
-            'project:id,name,customer_id,status',
-            'project.customer:id,name',
-            'invoice:id,invoice_number',
-            'user:id,name,avatar',
-            'vendor:id,name,category',
-        ]);
+        $expenses = Expense::query()
+            ->with([
+                'project:id,name,customer_id,status',
+                'project.customer:id,name',
+                'invoice:id,invoice_number',
+                'user:id,name,avatar',
+                'vendor:id,name,category',
+            ])
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('description', 'like', "%{$search}%")
+                        ->orWhereHas(
+                            'project',
+                            fn($q) =>
+                            $q->where('name', 'like', "%{$search}%")
+                        );
+                });
+            })
+            ->when($category, fn($q) => $q->where('category', $category))
+            ->when(
+                $billable !== null,
+                fn($q) =>
+                $q->where('is_billable', filter_var($billable, FILTER_VALIDATE_BOOLEAN))
+            )
+            ->when(
+                $billed === 'true',
+                fn($q) =>
+                $q->whereNotNull('invoice_id')
+            )
+            ->when(
+                $billed === 'false',
+                fn($q) =>
+                $q->whereNull('invoice_id')->where('is_billable', true)
+            )
+            ->latest('expense_date')
+            ->paginate($perPage);
 
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('description', 'like', "%{$search}%")
-                    ->orWhereHas('project', fn($q) => $q->where('name', 'like', "%{$search}%"));
-            });
-        }
-
-        if ($category) $query->where('category', $category);
-
-        if ($billable !== null) $query->where('is_billable', filter_var($billable, FILTER_VALIDATE_BOOLEAN));
-
-        if ($billed === 'true')  $query->whereNotNull('invoice_id');
-
-        if ($billed === 'false') $query->whereNull('invoice_id')->where('is_billable', true);
-
-        $expenses = $query->latest('expense_date')->paginate($perPage);
-
-        $vendors = Vendor::active()->orderBy('name')->get(['id', 'name', 'category']);
+        $vendors = Vendor::active()
+            ->orderBy('name')
+            ->get(['id', 'name', 'category']);
 
         $summary = Expense::query()
             ->selectRaw("
-        COUNT(*) as total,
-        COALESCE(SUM(amount), 0) as total_amount,
-        COALESCE(SUM(CASE WHEN is_billable = 1 THEN amount ELSE 0 END), 0) as billable_amount,
-        COALESCE(SUM(CASE WHEN is_billable = 1 AND invoice_id IS NOT NULL THEN amount ELSE 0 END), 0) as billed_amount,
-        COALESCE(SUM(CASE WHEN is_billable = 1 AND invoice_id IS NULL THEN 1 ELSE 0 END), 0) as unbilled_count
-    ")
+            COUNT(*) as total,
+            COALESCE(SUM(amount), 0) as total_amount,
+            COALESCE(SUM(CASE WHEN is_billable = 1 THEN amount ELSE 0 END), 0) as billable_amount,
+            COALESCE(SUM(CASE WHEN is_billable = 1 AND invoice_id IS NOT NULL THEN amount ELSE 0 END), 0) as billed_amount,
+            COALESCE(SUM(CASE WHEN is_billable = 1 AND invoice_id IS NULL THEN 1 ELSE 0 END), 0) as unbilled_count
+        ")
             ->first();
 
         return Inertia::render('finances/expenses/index', [
@@ -77,9 +89,6 @@ class ExpenseController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreRequest $request)
     {
         $validated = $request->validated();
@@ -104,11 +113,10 @@ class ExpenseController extends Controller
         return back()->with('success', 'Pengeluaran berhasil ditambahkan.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateRequest $request, Expense $expense)
     {
+        if ($error = $this->validateEditable($expense)) return $error;
+
         $validated = $request->validated();
         unset($validated['remove_receipt_file']);
 
@@ -137,11 +145,14 @@ class ExpenseController extends Controller
         return back()->with('success', 'Pengeluaran berhasil diperbarui.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Expense $expense)
     {
+        if ($expense->invoice_id) {
+            return back()->withErrors([
+                'error' => 'Pengeluaran yang sudah ditagihkan ke invoice tidak dapat dihapus.'
+            ]);
+        }
+
         if ($expense->receipt_file) {
             FileHelper::deleteFromR2($expense->receipt_file);
         }
@@ -151,9 +162,6 @@ class ExpenseController extends Controller
         return back()->with('success', 'Pengeluaran berhasil dihapus.');
     }
 
-    /**
-     * Get all unbilled expenses for a project.
-     */
     public function unbilled(Project $project)
     {
         $expenses = $project->expenses()
@@ -163,5 +171,16 @@ class ExpenseController extends Controller
             ->get(['id', 'category', 'description', 'amount', 'expense_date']);
 
         return response()->json(['expenses' => $expenses]);
+    }
+
+    private function validateEditable(Expense $expense)
+    {
+        if ($expense->is_billable && $expense->invoice_id) {
+            return back()->withErrors([
+                'error' => 'Pengeluaran yang sudah ditagihkan ke invoice tidak dapat diubah.'
+            ]);
+        }
+
+        return null;
     }
 }

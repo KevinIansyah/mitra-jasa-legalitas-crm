@@ -217,7 +217,7 @@ export function ExpenseAddDrawer({ fromProject = false, initialProject, open, on
                 onOpenChange(false);
             },
             onError: (errors) => {
-                const msg = Object.values(errors)[0] ?? 'Terjadi kesalahan, coba lagi.';
+                const msg = Object.values(errors)[0] ?? 'Terjadi kesalahan saat menambahkan pengeluaran, coba lagi.';
                 toast.error('Gagal', { description: String(msg) });
             },
             onFinish: () => toast.dismiss(toastId),

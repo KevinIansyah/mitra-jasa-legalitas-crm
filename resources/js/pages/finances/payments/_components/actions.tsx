@@ -13,10 +13,10 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
+import finances from '@/routes/finances';
 import type { PaymentStatus, ProjectPayment } from '@/types/project';
 import { PAYMENT_STATUSES, PAYMENT_STATUSES_MAP } from '@/types/project';
 import { PaymentEditDrawer } from './payment-edit-drawer';
-import invoicesRoutes from '@/routes/finances/invoices';
 
 type ActionsProps = {
     payment: ProjectPayment;
@@ -48,7 +48,7 @@ export default function Actions({ payment, isExpanded, onToggleExpand }: Actions
         const toastId = toast.loading('Memproses...', { description: 'Status pembayaran sedang diperbarui.' });
 
         router.patch(
-            invoicesRoutes.payments.updateStatus({ invoice: payment.invoice_id, payment: payment.id }).url,
+            finances.invoices.payments.updateStatus({ invoice: payment.invoice_id, payment: payment.id }).url,
             {
                 status: confirmStatus,
                 ...(isRejecting ? { rejection_reason: rejectionReason } : {}),
@@ -116,7 +116,7 @@ export default function Actions({ payment, isExpanded, onToggleExpand }: Actions
                 <HasPermission permission="delete-finance-payments">
                     <DialogDelete
                         description={`Pembayaran ini akan dihapus secara permanen dari sistem.`}
-                        deleteUrl={invoicesRoutes.payments.destroy({ invoice: payment.invoice_id, payment: payment.id }).url}
+                        deleteUrl={finances.invoices.payments.destroy({ invoice: payment.invoice_id, payment: payment.id }).url}
                         tooltipText="Hapus Pembayaran"
                         isDisabled={loading || isVerified}
                     />

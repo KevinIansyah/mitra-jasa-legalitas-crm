@@ -15,9 +15,6 @@ use Inertia\Inertia;
 
 class ProjectInvoiceController extends Controller
 {
-    /**
-     * List all invoices across all projects.
-     */
     public function index(Request $request)
     {
         $perPage = $request->get('per_page', 20);
@@ -27,35 +24,38 @@ class ProjectInvoiceController extends Controller
         $status  = $request->get('status');
         $type    = $request->get('type');
 
-        $query = ProjectInvoice::with([
+        $invoices = ProjectInvoice::with([
             'project:id,name,status,customer_id',
             'project.customer:id,name,tier',
             'items',
             'payments',
-        ]);
-
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('invoice_number', 'like', "%{$search}%")
-                    ->orWhereHas('project', fn($q) => $q->where('name', 'like', "%{$search}%"));
-            });
-        }
-
-        if ($status) $query->where('status', $status);
-        if ($type)   $query->where('type', $type);
-
-        $invoices = $query->orderByDesc('project_id')->orderByDesc('created_at')->paginate($perPage);
+        ])
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('invoice_number', 'like', "%{$search}%")
+                        ->orWhereHas(
+                            'project',
+                            fn($q) =>
+                            $q->where('name', 'like', "%{$search}%")
+                        );
+                });
+            })
+            ->when($status, fn($q, $status) => $q->where('status', $status))
+            ->when($type, fn($q, $type) => $q->where('type', $type))
+            ->orderByDesc('project_id')
+            ->orderByDesc('created_at')
+            ->paginate($perPage);
 
         $summary = ProjectInvoice::query()
             ->selectRaw("
-        COUNT(*) as total,
-        COALESCE(SUM(CASE WHEN status = 'draft'     THEN 1 ELSE 0 END), 0) as draft,
-        COALESCE(SUM(CASE WHEN status = 'sent'      THEN 1 ELSE 0 END), 0) as sent,
-        COALESCE(SUM(CASE WHEN status = 'paid'      THEN 1 ELSE 0 END), 0) as paid,
-        COALESCE(SUM(CASE WHEN status = 'overdue'   THEN 1 ELSE 0 END), 0) as overdue,
-        COALESCE(SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END), 0) as cancelled,
-        COALESCE(SUM(total_amount), 0) as total_amount,
-        COALESCE(SUM(CASE WHEN status = 'paid' THEN total_amount ELSE 0 END), 0) as paid_amount
+            COUNT(*) as total,
+            COALESCE(SUM(CASE WHEN status = 'draft'     THEN 1 ELSE 0 END), 0) as draft,
+            COALESCE(SUM(CASE WHEN status = 'sent'      THEN 1 ELSE 0 END), 0) as sent,
+            COALESCE(SUM(CASE WHEN status = 'paid'      THEN 1 ELSE 0 END), 0) as paid,
+            COALESCE(SUM(CASE WHEN status = 'overdue'   THEN 1 ELSE 0 END), 0) as overdue,
+            COALESCE(SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END), 0) as cancelled,
+            COALESCE(SUM(total_amount), 0) as total_amount,
+            COALESCE(SUM(CASE WHEN status = 'paid' THEN total_amount ELSE 0 END), 0) as paid_amount
         ")
             ->first();
 
@@ -71,10 +71,6 @@ class ProjectInvoiceController extends Controller
         ]);
     }
 
-    /**
-     * Show the standalone create form.
-     * Accepts ?project_id=X to pre-select a project.
-     */
     public function create(Request $request)
     {
         $selectedProject = null;
@@ -91,9 +87,6 @@ class ProjectInvoiceController extends Controller
         ]);
     }
 
-    /**
-     * Show the standalone edit form.
-     */
     public function edit(Request $request, ProjectInvoice $invoice)
     {
         $invoice->load(['project.customer', 'items']);
@@ -108,9 +101,6 @@ class ProjectInvoiceController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created project invoice.
-     */
     public function store(StoreRequest $request)
     {
         $validated = $request->validated();
@@ -135,20 +125,26 @@ class ProjectInvoiceController extends Controller
                 'tax_amount'           => 0,
                 'discount_amount'      => 0,
                 'total_amount'         => 0,
-                'status'               => $validated['status'] ?? 'draft',
+                'status'               => 'draft',
             ]);
 
             $this->syncItems($invoice, $validated);
             $invoice->calculateTotals();
 
             if ($invoice->type === 'additional' && !empty($validated['items'])) {
-                $itemDescriptions = collect($validated['items'])->pluck('description');
+                $expenseIds = collect($validated['items'])
+                    ->pluck('expense_id')
+                    ->filter()
+                    ->values()
+                    ->toArray();
 
-                Expense::where('project_id', $invoice->project_id)
-                    ->where('is_billable', true)
-                    ->whereNull('invoice_id')
-                    ->whereIn('description', $itemDescriptions)
-                    ->update(['invoice_id' => $invoice->id]);
+                if (!empty($expenseIds)) {
+                    Expense::where('project_id', $invoice->project_id)
+                        ->where('is_billable', true)
+                        ->whereNull('invoice_id')
+                        ->whereIn('id', $expenseIds)
+                        ->update(['invoice_id' => $invoice->id]);
+                }
             }
 
             return $invoice;
@@ -163,9 +159,6 @@ class ProjectInvoiceController extends Controller
             ->with('success', 'Invoice berhasil dibuat.');
     }
 
-    /**
-     * Update the specified project invoice.
-     */
     public function update(UpdateRequest $request, ProjectInvoice $invoice)
     {
         if ($error = $this->validateNotPaid($invoice)) return $error;
@@ -190,17 +183,23 @@ class ProjectInvoiceController extends Controller
             $this->syncItems($invoice, $validated);
             $invoice->refresh()->calculateTotals();
 
-            if ($invoice->type === 'additional' && !empty($validated['items'])) {
+            if ($invoice->type === 'additional') {
                 Expense::where('invoice_id', $invoice->id)
                     ->update(['invoice_id' => null]);
 
-                $itemDescriptions = collect($validated['items'])->pluck('description');
+                $expenseIds = collect($validated['items'] ?? [])
+                    ->pluck('expense_id')
+                    ->filter()
+                    ->values()
+                    ->toArray();
 
-                Expense::where('project_id', $invoice->project_id)
-                    ->where('is_billable', true)
-                    ->whereNull('invoice_id')
-                    ->whereIn('description', $itemDescriptions)
-                    ->update(['invoice_id' => $invoice->id]);
+                if (!empty($expenseIds)) {
+                    Expense::where('project_id', $invoice->project_id)
+                        ->where('is_billable', true)
+                        ->whereNull('invoice_id')
+                        ->whereIn('id', $expenseIds)
+                        ->update(['invoice_id' => $invoice->id]);
+                }
             }
         });
 
@@ -213,9 +212,6 @@ class ProjectInvoiceController extends Controller
             ->with('success', 'Invoice berhasil diperbarui.');
     }
 
-    /**
-     * Update the specified project invoice status.
-     */
     public function updateStatus(Request $request, ProjectInvoice $invoice)
     {
         $validated = $request->validate([
@@ -226,6 +222,10 @@ class ProjectInvoiceController extends Controller
         ]);
 
         $status = $validated['status'];
+
+        if ($status === 'cancelled' && $invoice->isPaid()) {
+            return back()->withErrors(['error' => 'Invoice yang sudah dibayar tidak dapat dibatalkan.']);
+        }
 
         $data = [
             'status' => $status,
@@ -244,9 +244,6 @@ class ProjectInvoiceController extends Controller
         return back()->with('success', 'Status invoice berhasil diperbarui.');
     }
 
-    /**
-     * Remove the specified project invoice.
-     */
     public function destroy(ProjectInvoice $invoice)
     {
         if ($error = $this->validateNotPaid($invoice)) return $error;
@@ -256,9 +253,6 @@ class ProjectInvoiceController extends Controller
         return back()->with('success', 'Invoice berhasil dihapus.');
     }
 
-    /**
-     * Sync invoice items (only for 'additional' type).
-     */
     private function syncItems(ProjectInvoice $invoice, array $validated): void
     {
         if ($invoice->type !== 'additional') {
@@ -271,6 +265,7 @@ class ProjectInvoiceController extends Controller
         foreach ($validated['items'] ?? [] as $i => $itemData) {
             $item = new ProjectInvoiceItem([
                 'invoice_id'       => $invoice->id,
+                'expense_id'       => $itemData['expense_id'] ?? null,
                 'description'      => $itemData['description'],
                 'quantity'         => $itemData['quantity'],
                 'unit_price'       => $itemData['unit_price'],
@@ -283,9 +278,6 @@ class ProjectInvoiceController extends Controller
         }
     }
 
-    /**
-     * Validate invoice is not paid.
-     */
     private function validateNotPaid(ProjectInvoice $invoice)
     {
         if ($invoice->isPaid()) {

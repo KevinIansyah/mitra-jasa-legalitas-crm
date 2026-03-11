@@ -10,11 +10,11 @@ import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } 
 import { formatRupiah } from '@/lib/service';
 import { ExpenseAddDrawer } from '@/pages/finances/expenses/_components/expense-add-drawer';
 import { ExpenseEditDrawer } from '@/pages/finances/expenses/_components/expense-edit-drawer';
+import finances from '@/routes/finances';
 import type { Expense } from '@/types/expenses';
 import type { Project } from '@/types/project';
 import { ExpenseCard } from './_components/expense-card';
 import { InvoiceCard } from './_components/invoice-card';
-import invoices from '@/routes/finances/invoices';
 
 type FinancesProps = {
     project: Project;
@@ -101,7 +101,7 @@ export default function Finances({ project }: FinancesProps) {
     ];
 
     function goToCreateInvoice() {
-        router.visit(invoices.create().url, { data: { project_id: project.id } });
+        router.visit(finances.invoices.create().url, { data: { project_id: project.id } });
     }
 
     return (
@@ -137,7 +137,7 @@ export default function Finances({ project }: FinancesProps) {
                 <div className="space-y-6">
                     <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
                         <div>
-                            <h2 className="text-xl font-bold">Invoice</h2>
+                            <h2 className="text-xl font-semibold">Invoice</h2>
                             <p className="mt-0.5 text-sm text-muted-foreground">Daftar invoice yang telah diterbitkan pada project ini.</p>
                         </div>
                         {project.invoices && project.invoices.length > 0 && (
@@ -174,7 +174,7 @@ export default function Finances({ project }: FinancesProps) {
                 <div className="space-y-6">
                     <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
                         <div>
-                            <h2 className="text-xl font-bold">Pengeluaran</h2>
+                            <h2 className="text-xl font-semibold">Pengeluaran</h2>
                             <p className="mt-0.5 text-sm text-muted-foreground">Daftar pengeluaran yang tercatat pada project ini.</p>
                         </div>
                         {project.expenses && project.expenses.length > 0 && (

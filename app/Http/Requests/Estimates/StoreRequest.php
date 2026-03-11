@@ -19,8 +19,6 @@ class StoreRequest extends FormRequest
             'tax_percent'          => 'nullable|numeric|min:0|max:100',
             'discount_percent'     => 'nullable|numeric|min:0|max:100',
             'notes'                => 'nullable|string',
-     
-            'status'               => 'nullable|in:draft,sent,accepted,rejected',
 
             'items'                       => 'required|array|min:1',
             'items.*.description'         => 'required|string',
@@ -41,7 +39,6 @@ class StoreRequest extends FormRequest
             'tax_percent.max'                => 'Pajak maksimal 100%.',
             'discount_percent.numeric'       => 'Diskon harus berupa angka.',
             'discount_percent.max'           => 'Diskon maksimal 100%.',
-            'status.in'                      => 'Status tidak valid.',
             'items.required'                 => 'Item estimate wajib diisi.',
             'items.min'                      => 'Minimal 1 item estimate.',
             'items.*.description.required'   => 'Deskripsi item wajib diisi.',

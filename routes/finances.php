@@ -2,6 +2,10 @@
 
 use App\Http\Controllers\EstimateController;
 use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\Finances\AccountController;
+use App\Http\Controllers\Finances\ManualJournalController;
+use App\Http\Controllers\Finances\OpeningBalanceController;
+use App\Http\Controllers\Finances\FinancialReportController;
 use App\Http\Controllers\Projects\ProjectInvoiceController;
 use App\Http\Controllers\Projects\ProjectPaymentController;
 use App\Http\Controllers\QuoteController;
@@ -259,5 +263,117 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
     Route::delete('/{estimate}', [EstimateController::class, 'destroy'])
       ->middleware('permission:delete-finance-estimates')
       ->name('destroy');
+  });
+
+  /*
+    |--------------------------------------------------------------------------
+    | ACCOUNTS
+    |--------------------------------------------------------------------------
+    |
+    | GET    /finances/accounts                    -> List accounts
+    | POST   /finances/accounts                    -> Create account
+    | PUT    /finances/accounts/{account}          -> Update account
+    | PATCH  /finances/accounts/{account}/status   -> Update account status
+    | DELETE /finances/accounts/{account}          -> Delete account
+    |
+    |--------------------------------------------------------------------------
+    */
+
+  Route::prefix('/finances/accounts')->name('finances.accounts.')->group(function () {
+    Route::get('/', [AccountController::class, 'index'])
+      ->middleware('permission:view-finance-accounts')
+      ->name('index');
+
+    Route::post('/', [AccountController::class, 'store'])
+      ->middleware('permission:create-finance-accounts')
+      ->name('store');
+
+    Route::put('/{account}', [AccountController::class, 'update'])
+      ->middleware('permission:edit-finance-accounts')
+      ->name('update');
+
+    Route::patch('/{account}/status', [AccountController::class, 'toggleStatus'])
+      ->middleware('permission:edit-finance-accounts')
+      ->name('toggle-status');
+
+    Route::delete('/{account}', [AccountController::class, 'destroy'])
+      ->middleware('permission:delete-finance-accounts')
+      ->name('destroy');
+  });
+
+  /*
+    |--------------------------------------------------------------------------
+    | OPENING BALANCE
+    |--------------------------------------------------------------------------
+    |
+    | GET    /finances/opening-balance            -> List opening balance
+    | POST   /finances/opening-balance            -> Create opening balance
+    | PUT    /finances/opening-balance            -> Update opening balance
+    |
+    |--------------------------------------------------------------------------
+    */
+
+  Route::prefix('finances/opening-balance')->name('finances.opening-balance.')->group(function () {
+    Route::get('/', [OpeningBalanceController::class, 'index'])
+      ->middleware('permission:view-finance-opening-balances')
+      ->name('index');
+
+    Route::post('/', [OpeningBalanceController::class, 'store'])
+      ->middleware('permission:create-finance-opening-balances')
+      ->name('store');
+
+    Route::put('/', [OpeningBalanceController::class, 'update'])
+      ->middleware('permission:edit-finance-opening-balances')
+      ->name('update');
+  });
+
+  /*
+    |--------------------------------------------------------------------------
+    | JOURNAL ENTRIES
+    |--------------------------------------------------------------------------
+    |
+    | GET    /finances/journal-entries            -> List journal entries
+    | POST   /finances/journal-entries            -> Create journal entry
+    | PUT    /finances/journal-entries/{journalEntry}    -> Update journal entry
+    | DELETE /finances/journal-entries/{journalEntry}    -> Delete journal entry
+    |
+    |--------------------------------------------------------------------------
+    */
+
+  Route::prefix('finances/journal-entries')->name('finances.journal-entries.')->group(function () {
+    Route::get('/', [ManualJournalController::class, 'index'])
+      ->middleware('permission:view-finance-journals')
+      ->name('index');
+    Route::post('/', [ManualJournalController::class, 'store'])
+      ->middleware('permission:create-finance-journals')
+      ->name('store');
+    Route::put('/{journalEntry}', [ManualJournalController::class, 'update'])
+      ->middleware('permission:edit-finance-journals')
+      ->name('update');
+    Route::delete('/{journalEntry}', [ManualJournalController::class, 'destroy'])
+      ->middleware('permission:delete-finance-journals')
+      ->name('destroy');
+  });
+
+  /*
+    |--------------------------------------------------------------------------
+    | REPORTS
+    |--------------------------------------------------------------------------
+    |
+    | GET    /finances/reports/laba-rugi     -> Laba Rugi
+    | GET    /finances/reports/neraca        -> Neraca
+    | GET    /finances/reports/cash-flow     -> Cash Flow
+    |
+    |--------------------------------------------------------------------------
+    */
+
+  Route::prefix('finances/reports')->name('finances.reports.')->middleware('permission:view-finance-reports')->group(function () {
+    Route::get('/profit-loss', [FinancialReportController::class, 'labaRugi'])->name('profit-loss');
+    Route::get('/balance-sheet',    [FinancialReportController::class, 'neraca'])->name('balance-sheet');
+    Route::get('/cash-flow', [FinancialReportController::class, 'cashFlow'])->name('cash-flow');
+
+    Route::get('/profit-loss/pdf', [FinancialReportController::class, 'labaRugiPdf'])->name('profit-loss.pdf');
+    Route::get('/balance-sheet/pdf',    [FinancialReportController::class, 'neracaPdf'])->name('balance-sheet.pdf');
+    Route::get('/cash-flow/pdf', [FinancialReportController::class, 'cashFlowPdf'])->name('cash-flow.pdf');
   });
 });

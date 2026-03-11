@@ -9,9 +9,6 @@ use Spatie\Permission\Models\Permission;
 
 class RoleController extends Controller
 {
-    /**
-     * Display a listing of roles.
-     */
     public function index(Request $request)
     {
         $perPage = $request->get('per_page', 20);
@@ -19,13 +16,10 @@ class RoleController extends Controller
 
         $search = $request->get('search');
 
-        $query = Role::query();
-
-        if ($search) {
-            $query->where('name', 'like', "%{$search}%");
-        }
-
-        $roles = $query->latest()->paginate($perPage);
+        $roles = Role::query()
+            ->when($search, fn($q) => $q->where('name', 'like', "%{$search}%"))
+            ->latest()
+            ->paginate($perPage);
 
         return Inertia::render('roles/index', [
             'roles' => $roles,
@@ -36,9 +30,6 @@ class RoleController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created role in storage.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -55,9 +46,6 @@ class RoleController extends Controller
         return back()->with('success', 'Role berhasil ditambahkan.');
     }
 
-    /**
-     * Return role data for editing modal/sheet.
-     */
     public function edit(Role $role)
     {
         return response()->json([
@@ -65,9 +53,6 @@ class RoleController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified role in storage.
-     */
     public function update(Request $request, Role $role)
     {
         $validated = $request->validate([
@@ -84,9 +69,6 @@ class RoleController extends Controller
         return back()->with('success', 'Role berhasil diperbarui.');
     }
 
-    /**
-     * Remove the specified role from storage.
-     */
     public function destroy(Role $role)
     {
         if ($role->users()->count() > 0) {
@@ -98,9 +80,6 @@ class RoleController extends Controller
         return back()->with('success', 'Role berhasil dihapus.');
     }
 
-    /**
-     * Show the form for editing role permissions.
-     */
     public function editPermission(Role $role)
     {
         $role->load('permissions');
@@ -112,9 +91,6 @@ class RoleController extends Controller
         ]);
     }
 
-    /**
-     * Update the permissions for the specified role.
-     */
     public function updatePermission(Request $request, Role $role)
     {
         $validated = $request->validate([

@@ -269,7 +269,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                     <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                         <div className="space-y-6">
                             <div>
-                                <h2 className="text-xl font-bold">Informasi Dasar Layanan</h2>
+                                <h2 className="text-xl font-semibold">Informasi Dasar Layanan</h2>
                                 <p className="mt-0.5 text-sm text-muted-foreground">Kelola identitas, kategori, deskripsi singkat, dan pengaturan publikasi layanan.</p>
                             </div>
 
@@ -500,7 +500,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                         <div className="space-y-6">
                             <div className="flex items-start justify-between">
                                 <div>
-                                    <h2 className="text-xl font-bold">Konten Layanan</h2>
+                                    <h2 className="text-xl font-semibold">Konten Layanan</h2>
                                     <p className="mt-0.5 text-sm text-muted-foreground">Kelola pengantar dan konten utama layanan untuk kebutuhan informasi dan optimasi SEO.</p>
                                 </div>
                             </div>
@@ -540,7 +540,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                     <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                         <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
                             <div>
-                                <h2 className="text-xl font-bold">Paket Harga</h2>
+                                <h2 className="text-xl font-semibold">Paket Harga</h2>
                                 <p className="mt-0.5 text-sm text-muted-foreground">Kelola paket harga dengan dokumen/fitur yang berbeda untuk setiap paket</p>
                             </div>
                             <div className="flex w-full items-center gap-2 md:w-auto">
@@ -604,7 +604,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                     <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                         <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
                             <div>
-                                <h2 className="text-xl font-bold">FAQ (Frequently Asked Questions)</h2>
+                                <h2 className="text-xl font-semibold">FAQ (Frequently Asked Questions)</h2>
                                 <p className="mt-0.5 text-sm text-muted-foreground">Kelola pertanyaan yang sering diajukan terkait layanan ini.</p>
                             </div>
 
@@ -663,7 +663,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                     <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                         <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
                             <div>
-                                <h2 className="text-xl font-bold">Dasar Hukum</h2>
+                                <h2 className="text-xl font-semibold">Dasar Hukum</h2>
                                 <p className="mt-0.5 text-sm text-muted-foreground">Kelola referensi peraturan dan undang-undang yang menjadi dasar layanan.</p>
                             </div>
 
@@ -722,7 +722,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                     <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                         <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
                             <div>
-                                <h2 className="text-xl font-bold">Persyaratan</h2>
+                                <h2 className="text-xl font-semibold">Persyaratan</h2>
                                 <p className="mt-0.5 text-sm text-muted-foreground">Kelola kategori dan daftar persyaratan dokumen yang dibutuhkan.</p>
                             </div>
 
@@ -781,7 +781,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                     <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                         <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
                             <div>
-                                <h2 className="text-xl font-bold">Tahapan Proses</h2>
+                                <h2 className="text-xl font-semibold">Tahapan Proses</h2>
                                 <p className="mt-0.5 text-sm text-muted-foreground">Kelola langkah-langkah proses pengerjaan layanan secara berurutan.</p>
                             </div>
 

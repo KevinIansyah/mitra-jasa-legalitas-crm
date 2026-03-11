@@ -29,8 +29,8 @@ export function DatePicker({ value, onChange, placeholder = 'Pilih tanggal', fro
         <Popover>
             <PopoverTrigger asChild>
                 <Button variant="outline" className={cn('w-full justify-start text-left font-normal', !value && 'text-muted-foreground')}>
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {selected ? format(selected, 'dd MMMM yyyy', { locale: id }) : placeholder}
+                    <CalendarIcon className="mr-2 size-4" />
+                    <span>{selected ? format(selected, 'dd MMMM yyyy', { locale: id }) : placeholder}</span>
                 </Button>
             </PopoverTrigger>
 

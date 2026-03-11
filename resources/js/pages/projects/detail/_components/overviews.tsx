@@ -237,7 +237,7 @@ export default function Overviews({ project, services }: OverviewsProps) {
                     <div className="space-y-6">
                         <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
                             <div>
-                                <h2 className="text-xl font-bold">Ringkasan Project</h2>
+                                <h2 className="text-xl font-semibold">Ringkasan Project</h2>
                                 <p className="mt-0.5 text-sm text-muted-foreground">
                                     Informasi umum project mencakup status, deskripsi, pelanggan, perusahaan, layanan, dan jadwal pengerjaan
                                 </p>
@@ -406,7 +406,7 @@ export default function Overviews({ project, services }: OverviewsProps) {
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div>
-                        <h2 className="text-xl font-bold">Pilih Customer</h2>
+                        <h2 className="text-xl font-semibold">Pilih Customer</h2>
                         <p className="mt-0.5 text-sm text-muted-foreground">Cari dan pilih customer untuk project ini</p>
                     </div>
 
@@ -513,7 +513,7 @@ export default function Overviews({ project, services }: OverviewsProps) {
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div>
-                        <h2 className="text-xl font-bold">Layanan & Paket</h2>
+                        <h2 className="text-xl font-semibold">Layanan & Paket</h2>
                         <p className="mt-0.5 text-sm text-muted-foreground">Pilih layanan dan paket yang terkait dengan project ini</p>
                     </div>
 
@@ -577,7 +577,7 @@ export default function Overviews({ project, services }: OverviewsProps) {
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div>
-                        <h2 className="text-xl font-bold">Detail Project</h2>
+                        <h2 className="text-xl font-semibold">Detail Project</h2>
                         <p className="mt-0.5 text-sm text-muted-foreground">Nama, deskripsi, budget, dan jadwal pengerjaan</p>
                     </div>
 

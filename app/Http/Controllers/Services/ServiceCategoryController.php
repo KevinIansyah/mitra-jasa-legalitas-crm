@@ -9,9 +9,6 @@ use Inertia\Inertia;
 
 class ServiceCategoryController extends Controller
 {
-    /**
-     * Display a listing of categories.
-     */
     public function index(Request $request)
     {
         $perPage = $request->get('per_page', 20);
@@ -19,13 +16,10 @@ class ServiceCategoryController extends Controller
 
         $search = $request->get('search');
 
-        $query = ServiceCategory::query();
-
-        if ($search) {
-            $query->where('name', 'like', "%{$search}%");
-        }
-
-        $categories = $query->latest()->paginate($perPage);
+        $categories = ServiceCategory::query()
+            ->when($search, fn($q) => $q->where('name', 'like', "%{$search}%"))
+            ->latest()
+            ->paginate($perPage);
 
         return Inertia::render('services/categories/index', [
             'categories' => $categories,
@@ -36,9 +30,6 @@ class ServiceCategoryController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created category in storage.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -54,9 +45,6 @@ class ServiceCategoryController extends Controller
         return back()->with('success', 'Kategori berhasil ditambahkan.');
     }
 
-    /**
-     * Return category data for editing modal/sheet.
-     */
     public function edit(ServiceCategory $category)
     {
         return response()->json([
@@ -64,9 +52,6 @@ class ServiceCategoryController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified category in storage.
-     */
     public function update(Request $request, ServiceCategory $category)
     {
         $validated = $request->validate([
@@ -82,9 +67,6 @@ class ServiceCategoryController extends Controller
         return back()->with('success', 'Kategori berhasil diperbarui.');
     }
 
-    /**
-     * Remove the specified category from storage.
-     */
     public function destroy(ServiceCategory $category)
     {
         if ($category->services()->exists()) {

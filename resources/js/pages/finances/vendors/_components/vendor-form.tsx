@@ -60,7 +60,7 @@ export function VendorForm({ data, errors, onChange, isEdit }: VendorFormProps) 
             <div className="rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div>
-                        <h2 className="text-xl font-bold">Informasi Vendor</h2>
+                        <h2 className="text-xl font-semibold">Informasi Vendor</h2>
                         <p className="mt-0.5 text-sm text-muted-foreground">Data utama vendor atau supplier</p>
                     </div>
 
@@ -165,7 +165,7 @@ export function VendorForm({ data, errors, onChange, isEdit }: VendorFormProps) 
                 <div className="space-y-4">
                     <div className="flex items-start justify-between gap-4">
                         <div>
-                            <h2 className="text-xl font-bold">Rekening Bank</h2>
+                            <h2 className="text-xl font-semibold">Rekening Bank</h2>
                             <p className="mt-0.5 text-sm text-muted-foreground">Tambahkan rekening bank vendor</p>
                         </div>
 

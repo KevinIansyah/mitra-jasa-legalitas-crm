@@ -63,7 +63,7 @@ export default function Deliverables({ project }: DeliverablesProps) {
             {/* Summary */}
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div>
-                    <h2 className="text-xl font-bold">Hasil Akhir</h2>
+                    <h2 className="text-xl font-semibold">Hasil Akhir</h2>
                     <p className="mt-0.5 text-sm text-muted-foreground">Kelola dan distribusikan dokumen hasil akhir project kepada klien.</p>
                 </div>
             </div>

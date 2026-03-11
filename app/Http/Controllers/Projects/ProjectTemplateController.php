@@ -12,9 +12,6 @@ use Inertia\Inertia;
 
 class ProjectTemplateController extends Controller
 {
-    /**
-     * Display paginated listing of project templates with filters.
-     */
     public function index(Request $request)
     {
         $perPage = $request->get('per_page', 20);
@@ -26,58 +23,39 @@ class ProjectTemplateController extends Controller
         $status = $request->get('status');
         $includeArchived = $request->boolean('include_archived');
 
-        $query = ProjectTemplate::with('service:id,name');
-
-        if ($includeArchived) {
-            $query->withTrashed();
-        }
-
-        if ($search) {
-            $query->search($search);
-        }
-
-        if ($serviceId) {
-            $query->where('service_id', $serviceId);
-        }
-
-        if ($templateType === 'service_based') {
-            $query->serviceBased();
-        } elseif ($templateType === 'custom') {
-            $query->custom();
-        }
-
-        if ($status) {
-            $query->where('status', $status);
-        }
-
-        $templates = $query->latest()->paginate($perPage);
+        $templates = ProjectTemplate::with('service:id,name')
+            ->when($includeArchived, fn($q) => $q->withTrashed())
+            ->when($search, fn($q, $search) => $q->search($search))
+            ->when($serviceId, fn($q, $serviceId) => $q->where('service_id', $serviceId))
+            ->when($templateType === 'service_based', fn($q) => $q->serviceBased())
+            ->when($templateType === 'custom', fn($q) => $q->custom())
+            ->when($status, fn($q, $status) => $q->where('status', $status))
+            ->latest()
+            ->paginate($perPage);
 
         $services = Service::where('status', 'active')
             ->orderBy('name')
             ->get(['id', 'name']);
 
-        $statusCounts = ProjectTemplate::selectRaw('status, count(*) as count')
-            ->groupBy('status')
-            ->pluck('count', 'status');
-
-        $summary = [
-            'total'        => ProjectTemplate::count(),
-            'active'       => (int) ($statusCounts['active'] ?? 0),
-            'inactive'     => (int) ($statusCounts['inactive'] ?? 0),
-            'with_content' => ProjectTemplate::where(function ($q) {
-                $q->whereNotNull('milestones')->where('milestones', '!=', '[]')
-                  ->orWhere(function ($q2) {
-                      $q2->whereNotNull('documents')->where('documents', '!=', '[]');
-                  });
-            })->count(),
-            'service_based' => ProjectTemplate::whereNotNull('service_id')->count(),
-            'custom'        => ProjectTemplate::whereNull('service_id')->count(),
-        ];
+        $summary = ProjectTemplate::selectRaw("
+            COUNT(*) as total,
+            SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) as active,
+            SUM(CASE WHEN status = 'inactive' THEN 1 ELSE 0 END) as inactive,
+            SUM(CASE WHEN service_id IS NOT NULL THEN 1 ELSE 0 END) as service_based,
+            SUM(CASE WHEN service_id IS NULL THEN 1 ELSE 0 END) as custom,
+            SUM(
+                CASE 
+                    WHEN (milestones IS NOT NULL AND milestones != '[]')
+                    OR (documents IS NOT NULL AND documents != '[]')
+                    THEN 1 ELSE 0 
+                END
+            ) as with_content
+        ")->first();
 
         return Inertia::render('projects/templates/index', [
             'templates' => $templates,
             'summary'   => $summary,
-            'services' => $services,
+            'services'  => $services,
             'filters' => [
                 'search' => $search,
                 'per_page' => $perPage,
@@ -89,9 +67,6 @@ class ProjectTemplateController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new template.
-     */
     public function create()
     {
         $services = Service::where('status', 'active')
@@ -103,9 +78,6 @@ class ProjectTemplateController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created template.e
-     */
     public function store(StoreRequest $request)
     {
         $validated = $request->validated();
@@ -125,9 +97,6 @@ class ProjectTemplateController extends Controller
             ->with('success', 'Template project berhasil ditambahkan.');
     }
 
-    /**
-     * Show the form for editing the specified template.
-     */
     public function edit(ProjectTemplate $template)
     {
         $template->load('service:id,name');
@@ -142,9 +111,6 @@ class ProjectTemplateController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified template.
-     */
     public function update(UpdateRequest $request, ProjectTemplate $template)
     {
         $validated = $request->validated();
@@ -164,9 +130,6 @@ class ProjectTemplateController extends Controller
             ->with('success', 'Template project berhasil diperbarui.');
     }
 
-    /**
-     * Soft delete the specified template (archive).
-     */
     public function destroy(ProjectTemplate $template)
     {
         $template->delete();
@@ -186,14 +149,10 @@ class ProjectTemplateController extends Controller
      */
     public function duplicate(ProjectTemplate $template)
     {
-        // Create a copy of the template
         $newTemplate = $template->replicate();
-
-        // Generate unique name with counter
         $baseName = $template->name;
         $newName = $baseName . ' (Duplicate)';
 
-        // Check if name already exists
         $counter = 2;
         while (ProjectTemplate::where('name', $newName)->exists()) {
             $newName = $baseName . ' (Duplicate ' . $counter . ')';

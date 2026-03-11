@@ -177,7 +177,7 @@ export function EditSection({ services, template }: EditSectionProps) {
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-6">
                     <div>
-                        <h2 className="text-xl font-bold">Informasi Dasar</h2>
+                        <h2 className="text-xl font-semibold">Informasi Dasar</h2>
                         <p className="mt-0.5 text-sm text-muted-foreground">Kelola identitas dan deskripsi template</p>
                     </div>
 
@@ -267,7 +267,7 @@ export function EditSection({ services, template }: EditSectionProps) {
                 <div className="space-y-6">
                     <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
                         <div>
-                            <h2 className="text-xl font-bold">Milestone</h2>
+                            <h2 className="text-xl font-semibold">Milestone</h2>
                             <p className="mt-0.5 text-sm text-muted-foreground">Kelola tahapan-tahapan dalam project template</p>
                         </div>
 
@@ -314,7 +314,7 @@ export function EditSection({ services, template }: EditSectionProps) {
                 <div className="space-y-6">
                     <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
                         <div>
-                            <h2 className="text-xl font-bold">Dokumen</h2>
+                            <h2 className="text-xl font-semibold">Dokumen</h2>
                             <p className="mt-0.5 text-sm text-muted-foreground">Kelola daftar dokumen yang diperlukan dalam project</p>
                         </div>
                         {data.documents.length > 0 && (

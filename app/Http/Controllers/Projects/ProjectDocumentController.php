@@ -16,9 +16,6 @@ use ZipArchive;
 
 class ProjectDocumentController extends Controller
 {
-    /**
-     * Display paginated listing of project templates with filters.
-     */
     public function index(Request $request)
     {
         $perPage = $request->get('per_page', 20);
@@ -27,17 +24,13 @@ class ProjectDocumentController extends Controller
         $search = $request->get('search');
         $status = $request->get('status');
 
-        $query = ProjectDocument::with('project:id,name,status', 'uploader:id,name', 'verifier:id,name');
-
-        if ($search) {
-            $query->search($search);
-        }
-
-        if ($status) {
-            $query->where('status', $status);
-        }
-
-        $documents = $query
+        $documents = ProjectDocument::with('project:id,name,status', 'uploader:id,name', 'verifier:id,name')
+            ->when($search, function ($query, $search) {
+                $query->search($search);
+            })
+            ->when($status, function ($query, $status) {
+                $query->where('status', $status);
+            })
             ->orderByDesc('project_id')
             ->orderByDesc('created_at')
             ->paginate($perPage);
@@ -63,9 +56,6 @@ class ProjectDocumentController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created project document.
-     */
     public function store(StoreRequest $request, Project $project)
     {
         $validated = $request->validated();
@@ -79,9 +69,6 @@ class ProjectDocumentController extends Controller
         return back()->with('success', 'Dokumen berhasil ditambahkan.');
     }
 
-    /**
-     * Update the specified project document metadata.
-     */
     public function update(UpdateRequest $request, Project $project, ProjectDocument $document)
     {
         if ($error = $this->validateDocument($project, $document)) return $error;
@@ -91,9 +78,6 @@ class ProjectDocumentController extends Controller
         return back()->with('success', 'Dokumen berhasil diperbarui.');
     }
 
-    /**
-     * Update the specified project document status.
-     */
     public function updateStatus(Project $project, ProjectDocument $document)
     {
         if ($error = $this->validateDocument($project, $document)) return $error;
@@ -148,9 +132,6 @@ class ProjectDocumentController extends Controller
         return back()->with('success', 'Status dokumen berhasil diperbarui.');
     }
 
-    /**
-     * Update encryption flag for the specified project document.
-     */
     public function updateEncrypt(Project $project, ProjectDocument $document)
     {
         if ($error = $this->validateDocument($project, $document)) return $error;
@@ -172,9 +153,6 @@ class ProjectDocumentController extends Controller
         return back()->with('success', $message);
     }
 
-    /**
-     * Upload file to Cloudflare R2 for the specified document.
-     */
     public function upload(UploadRequest $request, Project $project, ProjectDocument $document)
     {
         if ($error = $this->validateDocument($project, $document)) return $error;
@@ -204,9 +182,6 @@ class ProjectDocumentController extends Controller
         return back()->with('success', 'Dokumen berhasil diunggah dan menunggu review.');
     }
 
-    /**
-     * Remove the specified project document.
-     */
     public function destroy(Project $project, ProjectDocument $document)
     {
         if ($error = $this->validateDocument($project, $document)) return $error;
@@ -226,9 +201,6 @@ class ProjectDocumentController extends Controller
         return back()->with('success', 'Dokumen berhasil dihapus.');
     }
 
-    /**
-     * Reorder documents.
-     */
     public function reorder(Project $project)
     {
         request()->validate([
@@ -244,9 +216,6 @@ class ProjectDocumentController extends Controller
         return back();
     }
 
-    /**
-     * View/preview a document file (handles encrypted files).
-     */
     public function view(Project $project, ProjectDocument $document, string $filename)
     {
         if ($error = $this->validateDocument($project, $document)) return $error;
@@ -268,9 +237,6 @@ class ProjectDocumentController extends Controller
             ->header('Content-Disposition', 'inline; filename="' . $filename . '"');
     }
 
-    /**
-     * Force-download a project document file.
-     */
     public function download(Project $project, ProjectDocument $document)
     {
         if ($error = $this->validateDocument($project, $document)) return $error;
@@ -288,9 +254,6 @@ class ProjectDocumentController extends Controller
         ]);
     }
 
-    /**
-     * Download all uploaded documents for a project as a single ZIP file.
-     */
     public function downloadAll(Project $project)
     {
         $documents = $project->documents()
@@ -327,9 +290,6 @@ class ProjectDocumentController extends Controller
         ])->deleteFileAfterSend(true);
     }
 
-    /**
-     * Delete file from R2 and reset document status to not_uploaded.
-     */
     public function deleteFile(Project $project, ProjectDocument $document)
     {
         if ($error = $this->validateDocument($project, $document)) return $error;
@@ -358,9 +318,6 @@ class ProjectDocumentController extends Controller
         return back()->with('success', 'File berhasil dihapus.');
     }
 
-    /**
-     * Validate user has approve documents permission.
-     */
     private function validateApprover(Project $project)
     {
         $canApprove = $project->members()
@@ -375,9 +332,6 @@ class ProjectDocumentController extends Controller
         return null;
     }
 
-    /**
-     * Validate document belongs to project.
-     */
     private function validateDocument(Project $project, ProjectDocument $document)
     {
         if ($document->project_id !== $project->id) {

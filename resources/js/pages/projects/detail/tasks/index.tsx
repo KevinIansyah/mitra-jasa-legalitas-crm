@@ -116,7 +116,7 @@ export default function Tasks({ project }: TasksProps) {
         <div className="space-y-4">
             {/* Header + stats */}
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                <h2 className="text-xl font-bold">Tugas</h2>
+                <h2 className="text-xl font-semibold">Tugas</h2>
                 <p className="mt-0.5 text-sm text-muted-foreground">Kelola dan pantau tugas-tugas dalam project ini.</p>
             </div>
 

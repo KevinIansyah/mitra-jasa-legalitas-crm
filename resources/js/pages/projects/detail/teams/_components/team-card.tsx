@@ -79,7 +79,7 @@ export function TeamCard({ project }: TeamCardProps) {
                     return (
                         <div
                             key={member.id}
-                            className={`flex flex-col items-start justify-between gap-4 p-4 sm:flex-row sm:items-center md:p-5 ${
+                            className={`flex flex-col items-start justify-between gap-4 p-3 sm:flex-row sm:items-center ${
                                 index !== teams.length - 1 ? 'border-b border-border' : ''
                             }`}
                         >

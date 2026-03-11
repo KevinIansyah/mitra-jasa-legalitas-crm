@@ -23,19 +23,19 @@ class StoreRequest extends FormRequest
             'due_date'             => 'required|date|after_or_equal:invoice_date',
             'notes'                => 'nullable|string',
             'payment_instructions' => 'nullable|string',
-            'status'               => 'nullable|in:draft,sent',
 
             'percentage'           => 'nullable|numeric|min:0|max:100',
-            'subtotal'               => $isAdditional ? 'nullable|numeric|min:0' : 'required|numeric|min:0',
+            'subtotal'             => $isAdditional ? 'nullable|numeric|min:0' : 'required|numeric|min:0',
             'tax_percent'          => 'nullable|numeric|min:0|max:100',
             'discount_percent'     => 'nullable|numeric|min:0|max:100',
 
-            'items'                    => $isAdditional ? 'required|array|min:1' : 'nullable|array',
-            'items.*.description'      => $isAdditional ? 'required|string|max:500' : 'nullable|string|max:500',
-            'items.*.quantity'         => $isAdditional ? 'required|numeric|min:0.01' : 'nullable|numeric|min:0.01',
-            'items.*.unit_price'       => $isAdditional ? 'required|numeric|min:0' : 'nullable|numeric|min:0',
-            'items.*.tax_percent'      => 'nullable|numeric|min:0|max:100',
-            'items.*.discount_percent' => 'nullable|numeric|min:0|max:100',
+            'items'                        => $isAdditional ? 'required|array|min:1' : 'nullable|array',
+            'items.*.expense_id'           => 'nullable|integer|exists:expenses,id',
+            'items.*.description'          => $isAdditional ? 'required|string|max:500' : 'nullable|string|max:500',
+            'items.*.quantity'             => $isAdditional ? 'required|numeric|min:0.01' : 'nullable|numeric|min:0.01',
+            'items.*.unit_price'           => $isAdditional ? 'required|numeric|min:0' : 'nullable|numeric|min:0',
+            'items.*.tax_percent'          => 'nullable|numeric|min:0|max:100',
+            'items.*.discount_percent'     => 'nullable|numeric|min:0|max:100',
         ];
     }
 
@@ -55,17 +55,18 @@ class StoreRequest extends FormRequest
             'due_date.date'            => 'Format tanggal tidak valid.',
             'due_date.after_or_equal'  => 'Jatuh tempo harus setelah atau sama dengan tanggal invoice.',
 
-            'subtotal.required'          => 'Nominal wajib diisi.',
-            'subtotal.numeric'           => 'Nominal harus berupa angka.',
-            'subtotal.min'               => 'Nominal tidak boleh kurang dari 0.',
+            'subtotal.required'        => 'Nominal wajib diisi.',
+            'subtotal.numeric'         => 'Nominal harus berupa angka.',
+            'subtotal.min'             => 'Nominal tidak boleh kurang dari 0.',
 
-            'items.required'           => 'Item wajib diisi untuk invoice tambahan.',
-            'items.min'                => 'Minimal 1 item diperlukan.',
-            'items.*.description.required' => 'Deskripsi item wajib diisi.',
-            'items.*.quantity.required'    => 'Qty item wajib diisi.',
-            'items.*.quantity.min'         => 'Qty minimal 0.01.',
-            'items.*.unit_price.required'  => 'Harga satuan item wajib diisi.',
-            'items.*.unit_price.min'       => 'Harga satuan tidak boleh negatif.',
+            'items.required'                   => 'Item wajib diisi untuk invoice tambahan.',
+            'items.min'                        => 'Minimal 1 item diperlukan.',
+            'items.*.expense_id.exists'        => 'Expense tidak ditemukan.',
+            'items.*.description.required'     => 'Deskripsi item wajib diisi.',
+            'items.*.quantity.required'        => 'Qty item wajib diisi.',
+            'items.*.quantity.min'             => 'Qty minimal 0.01.',
+            'items.*.unit_price.required'      => 'Harga satuan item wajib diisi.',
+            'items.*.unit_price.min'           => 'Harga satuan tidak boleh negatif.',
         ];
     }
 }

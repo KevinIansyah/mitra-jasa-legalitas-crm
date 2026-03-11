@@ -14,9 +14,6 @@ use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {
-    /**
-     * Search customer
-     */
     public function searchCustomers(Request $request)
     {
         $search = $request->get('search', '');
@@ -47,9 +44,6 @@ class SearchController extends Controller
         ]);
     }
 
-    /**
-     * Search company
-     */
     public function searchCompanies(Request $request)
     {
         $search = $request->get('search', '');
@@ -71,9 +65,6 @@ class SearchController extends Controller
         ]);
     }
 
-    /**
-     * Search company by customer id
-     */
     public function searchCompaniesByCustomerId(Customer $customer)
     {
         $companies = $customer->companies()
@@ -86,9 +77,6 @@ class SearchController extends Controller
         ]);
     }
 
-    /**
-     * Search packages by service id
-     */
     public function searchPackagesByServiceId(Service $service)
     {
         $packages = $service->packages()
@@ -102,9 +90,6 @@ class SearchController extends Controller
         ]);
     }
 
-    /**
-     * Search templates by service id
-     */
     public function searchTemplatesByServiceId(Service $service)
     {
         $templates = ProjectTemplate::select('id', 'name')
@@ -120,9 +105,6 @@ class SearchController extends Controller
         ]);
     }
 
-    /**
-     * Search user staff
-     */
     public function searchUsersStaff(Request $request)
     {
         $search = $request->get('search', '');
@@ -150,9 +132,6 @@ class SearchController extends Controller
         ]);
     }
 
-    /**
-     * Search project
-     */
     public function seachProjects(Request $request)
     {
         $search = $request->get('search', '');
@@ -169,9 +148,6 @@ class SearchController extends Controller
         ]);
     }
 
-    /**
-     * Search vendor
-     */
     public function searchVendors(Request $request)
     {
         $search = $request->get('search', '');
@@ -186,10 +162,6 @@ class SearchController extends Controller
         ]);
     }
 
-
-    /**
-     * Search quote
-     */
     public function searchQuotes(Request $request)
     {
         $search = $request->get('search', '');

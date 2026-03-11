@@ -50,6 +50,7 @@ export function BillableExpensePicker({ projectId, currentItems, onImport }: Bil
     function handleImport() {
         const toImport = expenses.filter((e) => selected.has(e.id));
         const newItems: ProjectInvoiceItemFormData[] = toImport.map((expense) => ({
+            expense_id: expense.id, // ← tambah ini
             description: expense.description,
             quantity: 1,
             unit_price: Number(expense.amount),
@@ -57,8 +58,8 @@ export function BillableExpensePicker({ projectId, currentItems, onImport }: Bil
             discount_percent: 0,
         }));
 
-        const existingDescs = new Set(currentItems.map((i) => i.description));
-        onImport([...currentItems, ...newItems.filter((i) => !existingDescs.has(i.description))]);
+        const existingExpenseIds = new Set(currentItems.map((i) => i.expense_id).filter(Boolean));
+        onImport([...currentItems, ...newItems.filter((i) => !existingExpenseIds.has(i.expense_id))]);
         setSelected(new Set());
     }
 
@@ -103,7 +104,9 @@ export function BillableExpensePicker({ projectId, currentItems, onImport }: Bil
                 <Button type="button" disabled={selected.size === 0} className="w-40" onClick={handleImport}>
                     <Import className="size-4" />
                     Import Item
-                    {selected.size > 0 && <Badge className="flex h-4 w-4 items-center justify-center rounded-full bg-primary-foreground text-[10px] text-foreground">{selected.size}</Badge>}
+                    {selected.size > 0 && (
+                        <Badge className="flex h-4 w-4 items-center justify-center rounded-full bg-primary-foreground text-[10px] text-foreground">{selected.size}</Badge>
+                    )}
                 </Button>
             </div>
 

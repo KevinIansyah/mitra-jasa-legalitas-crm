@@ -41,11 +41,11 @@ export default function CreateSection({ selectedProject, fromProject }: CreateSe
         setData((prev) => ({ ...prev, ...val }));
     }
 
-    function submit(status: 'draft' | 'sent') {
+    function handleSubmit() {
         setProcessing(true);
         const toastId = toast.loading('Menyimpan...', { description: 'Invoice sedang ditambahkan.' });
 
-        router.post(invoices.store().url, { ...data, status, from_project: fromProject } as any, {
+        router.post(invoices.store().url, { ...data, from_project: fromProject } as any, {
             onSuccess: () => {
                 toast.success('Berhasil', { description: 'Invoice berhasil ditambahkan.' });
             },
@@ -75,8 +75,7 @@ export default function CreateSection({ selectedProject, fromProject }: CreateSe
                     items={data.items ?? []}
                     isAdditional={isAdditional}
                     processing={processing}
-                    onSubmitDraft={() => submit('draft')}
-                    onSubmitSend={() => submit('sent')}
+                    onSubmit={() => handleSubmit()}
                 />
             </div>
         </div>

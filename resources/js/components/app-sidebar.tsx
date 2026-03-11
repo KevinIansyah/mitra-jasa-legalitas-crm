@@ -1,6 +1,6 @@
 'use client';
 
-import { Briefcase, ChartBar, Clock, Command, DollarSign, LayoutGrid, MessageSquare, Newspaper, Settings, Settings2, Table2, Users } from 'lucide-react';
+import { ChartBar, Clock, Command, DollarSign, LayoutGrid, MessageSquare, Newspaper, Settings, Settings2, Table2, Toolbox, Users } from 'lucide-react';
 import * as React from 'react';
 
 import { NavMain } from '@/components/nav-main';
@@ -9,13 +9,13 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { usePermission } from '@/hooks/use-permission';
 import contacts from '@/routes/contacts';
 import dashboard from '@/routes/dashboard';
+import finances from '@/routes/finances';
 import projects from '@/routes/projects';
 import { index as deliverablesIndex } from '@/routes/projects/deliverables';
 import { index as documentsIndex } from '@/routes/projects/documents';
 import roles from '@/routes/roles';
 import services from '@/routes/services';
 import type { NavItem, NavSection } from '@/types';
-import finances from '@/routes/finances';
 
 const allNavData: {
     navMain: NavSection;
@@ -147,6 +147,21 @@ const allNavData: {
                         url: finances.vendors.index().url,
                         permission: 'view-finance-vendors',
                     },
+                    {
+                        title: 'Akun',
+                        url: finances.accounts.index().url,
+                        permission: 'view-finance-accounts',
+                    },
+                    {
+                        title: 'Jurnal',
+                        url: finances.journalEntries.index().url,
+                        permission: 'view-finance-journals',
+                    },
+                    {
+                        title: 'Saldo Awal',
+                        url: finances.openingBalance.index().url,
+                        permission: 'view-finance-opening-balances',
+                    },
                 ],
             },
             {
@@ -154,9 +169,21 @@ const allNavData: {
                 url: '#',
                 icon: ChartBar,
                 items: [
-                    { title: 'Laba Rugi', url: '#' },
-                    { title: 'Neraca', url: '#' },
-                    { title: 'Cash Flow', url: '#' },
+                    {
+                        title: 'Laba Rugi',
+                        url: finances.reports.profitLoss().url,
+                        permission: 'view-finance-reports',
+                    },
+                    {
+                        title: 'Neraca',
+                        url: finances.reports.balanceSheet().url,
+                        permission: 'view-finance-reports',
+                    },
+                    {
+                        title: 'Arus Kas',
+                        url: finances.reports.cashFlow().url,
+                        permission: 'view-finance-reports',
+                    },
                 ],
             },
         ],
@@ -168,7 +195,7 @@ const allNavData: {
             {
                 title: 'Layanan',
                 url: '#',
-                icon: Briefcase,
+                icon: Toolbox,
                 permission: ['view-services', 'view-service-categories'],
                 items: [
                     {

@@ -34,6 +34,7 @@ class UpdateRequest extends FormRequest
             'discount_percent'     => 'nullable|numeric|min:0|max:100',
 
             'items'                    => $isAdditional ? 'required|array|min:1' : 'nullable|array',
+            'items.*.expense_id'           => 'nullable|integer|exists:expenses,id',
             'items.*.description'      => $isAdditional ? 'required|string|max:500' : 'nullable|string|max:500',
             'items.*.quantity'         => $isAdditional ? 'required|numeric|min:0.01' : 'nullable|numeric|min:0.01',
             'items.*.unit_price'       => $isAdditional ? 'required|numeric|min:0' : 'nullable|numeric|min:0',
@@ -63,6 +64,7 @@ class UpdateRequest extends FormRequest
 
             'items.required'           => 'Item wajib diisi untuk invoice tambahan.',
             'items.min'                => 'Minimal 1 item diperlukan.',
+            'items.*.expense_id.exists'        => 'Expense tidak ditemukan.',
             'items.*.description.required' => 'Deskripsi item wajib diisi.',
             'items.*.quantity.required'    => 'Qty item wajib diisi.',
             'items.*.quantity.min'         => 'Qty minimal 0.01.',

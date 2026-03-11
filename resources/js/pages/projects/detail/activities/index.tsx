@@ -42,7 +42,7 @@ export default function Activities({ activities }: ActivitiesProps) {
         <div className="space-y-4">
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div>
-                    <h2 className="text-xl font-bold">Aktivitas</h2>
+                    <h2 className="text-xl font-semibold">Aktivitas</h2>
                     <p className="mt-0.5 text-sm text-muted-foreground">Riwayat seluruh perubahan yang terjadi pada project ini.</p>
                 </div>
             </div>

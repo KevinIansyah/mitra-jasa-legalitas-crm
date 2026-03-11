@@ -4,6 +4,8 @@ import { PaymentCard } from '../../payments/_components/payment-card';
 
 export default function InvoiceDetail({ invoice }: { invoice: ProjectInvoice }) {
     const items = invoice.items ?? [];
+    const { subtotal, discount_amount, tax_amount, total_amount, paid_at } = invoice;
+    const hasBreakdown = Number(discount_amount) > 0 || Number(tax_amount) > 0;
 
     return (
         <div className="space-y-4 whitespace-normal">
@@ -24,6 +26,40 @@ export default function InvoiceDetail({ invoice }: { invoice: ProjectInvoice }) 
                                 <p className="shrink-0 font-semibold tabular-nums">{formatRupiah(Number(item.total))}</p>
                             </div>
                         ))}
+                    </div>
+
+                    {/* Summary */}
+                    <div className="space-y-1 border-t pt-3 text-sm">
+                        {hasBreakdown && (
+                            <>
+                                <div className="flex justify-between text-muted-foreground">
+                                    <span>Subtotal</span>
+                                    <span className="tabular-nums">{formatRupiah(Number(subtotal))}</span>
+                                </div>
+                                {Number(discount_amount) > 0 && (
+                                    <div className="flex justify-between text-destructive">
+                                        <span>Diskon</span>
+                                        <span className="tabular-nums">- {formatRupiah(Number(discount_amount))}</span>
+                                    </div>
+                                )}
+                                {Number(tax_amount) > 0 && (
+                                    <div className="flex justify-between text-muted-foreground">
+                                        <span>Pajak</span>
+                                        <span className="tabular-nums">+ {formatRupiah(Number(tax_amount))}</span>
+                                    </div>
+                                )}
+                            </>
+                        )}
+                        <div className="flex justify-between font-semibold">
+                            <span>Total</span>
+                            <span className="tabular-nums">{formatRupiah(Number(total_amount))}</span>
+                        </div>
+                        {paid_at && (
+                            <div className="flex justify-between text-xs text-muted-foreground">
+                                <span>Dibayar pada</span>
+                                <span>{formatDate(paid_at)}</span>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

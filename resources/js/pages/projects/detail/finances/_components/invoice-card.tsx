@@ -14,9 +14,9 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { formatRupiah } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
 import { PaymentCard } from '@/pages/finances/payments/_components/payment-card';
+import finances from '@/routes/finances';
 import type { InvoiceStatus, ProjectInvoice } from '@/types/project';
 import { INVOICE_STATUSES, INVOICE_STATUSES_MAP, INVOICE_TYPES_MAP, type Project } from '@/types/project';
-import invoicesRoutes from '@/routes/finances/invoices';
 
 type InvoiceCardProps = {
     project: Project;
@@ -49,7 +49,7 @@ export function InvoiceCard({ project }: InvoiceCardProps) {
     }
 
     function goToEditInvoice(invoiceId: number) {
-        router.visit(invoicesRoutes.edit(invoiceId).url, {
+        router.visit(finances.invoices.edit(invoiceId).url, {
             data: { project_id: project.id, from_project: true },
         });
     }
@@ -61,7 +61,7 @@ export function InvoiceCard({ project }: InvoiceCardProps) {
         setSelectedInvoice(null);
 
         router.patch(
-            invoicesRoutes.updateStatus(invoiceId).url,
+            finances.invoices.updateStatus(invoiceId).url,
             { status },
             {
                 preserveScroll: true,
@@ -136,7 +136,7 @@ export function InvoiceCard({ project }: InvoiceCardProps) {
                                         <HasPermission permission="delete-finance-invoices">
                                             <DialogDelete
                                                 description={`Tindakan ini tidak dapat dibatalkan. Data invoice "${invoice.invoice_number}" akan dihapus secara permanen dari sistem.`}
-                                                deleteUrl={invoicesRoutes.destroy(invoice.id).url}
+                                                deleteUrl={finances.invoices.destroy(invoice.id).url}
                                                 tooltipText="Hapus Invoice"
                                                 isDisabled={loading || isPaid}
                                             />

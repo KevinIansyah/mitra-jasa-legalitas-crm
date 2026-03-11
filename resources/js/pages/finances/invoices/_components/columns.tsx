@@ -11,70 +11,62 @@ export default function getColumns(expandedRow: string | null, setExpandedRow: (
             accessorKey: 'invoice',
             header: 'Invoice',
             cell: ({ row }) => {
-                const { invoice_number, type, project } = row.original;
+                const { invoice_number, type } = row.original;
                 const typeInfo = type ? INVOICE_TYPES_MAP[type] : null;
-
                 return (
-                    <div className="grid w-100 grid-cols-[110px_1fr] items-center gap-x-2 gap-y-2 text-sm">
-                        <span className="col-span-2 text-xs font-bold text-muted-foreground">Invoice</span>
-                        <span className="text-xs font-medium text-muted-foreground">Nomor</span>
-                        <span className="font-medium whitespace-normal">{invoice_number || '-'}</span>
-
-                        <span className="text-xs font-medium text-muted-foreground">Tipe</span>
-                        {typeInfo ? <Badge className={typeInfo.classes}>{typeInfo.label}</Badge> : <span>-</span>}
-
-                        {project && (
-                            <>
-                                <span className="col-span-2 mt-4 text-xs font-bold text-muted-foreground">Project</span>
-                                <span className="text-xs font-medium text-muted-foreground">Nama</span>
-                                <span className="whitespace-normal">{project.name || '-'}</span>
-                                {project.customer && (
-                                    <>
-                                        <span className="text-xs font-medium text-muted-foreground">Pelanggan (PIC)</span>
-                                        <span className="whitespace-normal">{project.customer.name}</span>
-                                    </>
-                                )}
-                            </>
+                    <div className="space-y-1">
+                        <p className="text-sm font-medium">{invoice_number || '-'}</p>
+                        {typeInfo && <Badge className={typeInfo.classes}>{typeInfo.label}</Badge>}
+                    </div>
+                );
+            },
+        },
+        {
+            accessorKey: 'project',
+            header: 'Project',
+            cell: ({ row }) => {
+                const { project } = row.original;
+                return (
+                    <div className="space-y-0.5">
+                        <p className="text-sm font-medium">{project?.name || '-'}</p>
+                        {project?.customer && <p className="text-xs text-muted-foreground">{project.customer.name}</p>}
+                    </div>
+                );
+            },
+        },
+        {
+            accessorKey: 'total_amount',
+            header: 'Total',
+            cell: ({ row }) => {
+                const { total_amount, subtotal, discount_amount, tax_amount, tax_percent, discount_percent } = row.original;
+                const hasBreakdown = Number(discount_amount) > 0 || Number(tax_amount) > 0;
+                return (
+                    <div className="space-y-0.5">
+                        <span className="text-sm font-medium tabular-nums">{formatRupiah(Number(total_amount))}</span>
+                        {hasBreakdown && <p className="text-xs text-muted-foreground tabular-nums">Harga asli: {formatRupiah(Number(subtotal))}</p>}
+                        {Number(discount_amount) > 0 && (
+                            <p className="text-xs text-destructive tabular-nums">
+                                Diskon: ({discount_percent}%) {formatRupiah(Number(discount_amount))}
+                            </p>
+                        )}
+                        {Number(tax_amount) > 0 && (
+                            <p className="text-xs text-muted-foreground tabular-nums">
+                                Pajak: ({tax_percent}%) {formatRupiah(Number(tax_amount))}
+                            </p>
                         )}
                     </div>
                 );
             },
         },
         {
-            accessorKey: 'amount',
-            header: 'Jumlah',
-            cell: ({ row }) => {
-                const { total_amount, subtotal, tax_amount, discount_amount, invoice_date, due_date, paid_at } = row.original;
-
-                return (
-                    <div className="grid w-60 grid-cols-[110px_1fr] items-center gap-x-2 gap-y-2 text-sm">
-                        <span className="col-span-2 text-xs font-bold text-muted-foreground">Jumlah</span>
-                        <span className="text-xs font-medium text-muted-foreground">Total</span>
-                        <span className="tabular-nums">{formatRupiah(Number(total_amount))}</span>
-
-                        {(Number(discount_amount) > 0 || Number(tax_amount) > 0) && (
-                            <>
-                                <span className="text-xs font-medium text-muted-foreground">Subtotal</span>
-                                <span className="tabular-nums">{formatRupiah(Number(subtotal))}</span>
-                            </>
-                        )}
-
-                        <span className="col-span-2 mt-4 text-xs font-bold text-muted-foreground">Tanggal</span>
-                        <span className="text-xs font-medium text-muted-foreground">Invoice</span>
-                        <span>{formatDate(invoice_date)}</span>
-
-                        <span className="text-xs font-medium text-muted-foreground">Jatuh Tempo</span>
-                        <span>{due_date ? formatDate(due_date) : '-'}</span>
-
-                        {paid_at && (
-                            <>
-                                <span className="text-xs font-medium text-muted-foreground">Dibayar</span>
-                                <span>{formatDate(paid_at)}</span>
-                            </>
-                        )}
-                    </div>
-                );
-            },
+            accessorKey: 'invoice_date',
+            header: 'Tgl Invoice',
+            cell: ({ row }) => (
+                <div className="space-y-0.5">
+                    <p className="text-sm">{formatDate(row.original.invoice_date)}</p>
+                    {row.original.due_date && <p className="text-xs text-muted-foreground">Jatuh tempo: {formatDate(row.original.due_date)}</p>}
+                </div>
+            ),
         },
         {
             accessorKey: 'action',

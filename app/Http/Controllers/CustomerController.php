@@ -13,9 +13,6 @@ use Inertia\Inertia;
 
 class CustomerController extends Controller
 {
-    /**
-     * Display a listing of customers.
-     */
     public function index(Request $request)
     {
         $perPage = $request->get('per_page', 20);
@@ -26,29 +23,18 @@ class CustomerController extends Controller
         $tier = $request->get('tier');
         $haveAccount = $request->get('have_account');
 
-        $query = Customer::query()->with(['companies' => function ($query) {
-            $query->withPivot('is_primary', 'position_at_company');
-        }]);
-
-        if ($search) {
-            $query->search($search);
-        }
-
-        if ($status) {
-            $query->where('status', $status);
-        }
-
-        if ($tier) {
-            $query->where('tier', $tier);
-        }
-
-        if ($haveAccount === 'registered') {
-            $query->haveAccount();
-        } elseif ($haveAccount === 'unregistered') {
-            $query->noAccount();
-        }
-
-        $customers = $query->latest()->paginate($perPage);
+        $customers = Customer::query()
+            ->with([
+                'companies' => fn($q) =>
+                $q->withPivot('is_primary', 'position_at_company')
+            ])
+            ->when($search, fn($q) => $q->search($search))
+            ->when($status, fn($q) => $q->where('status', $status))
+            ->when($tier, fn($q) => $q->where('tier', $tier))
+            ->when($haveAccount === 'registered', fn($q) => $q->haveAccount())
+            ->when($haveAccount === 'unregistered', fn($q) => $q->noAccount())
+            ->latest()
+            ->paginate($perPage);
 
         $summary = [
             'total'        => Customer::count(),
@@ -65,13 +51,11 @@ class CustomerController extends Controller
                 'per_page' => $perPage,
                 'status' => $status,
                 'tier' => $tier,
+                'have_account' => $haveAccount,
             ],
         ]);
     }
 
-    /**
-     * Store a newly created customer in storage.
-     */
     public function store(StoreRequest $request)
     {
         $validated = $request->validated();
@@ -81,9 +65,6 @@ class CustomerController extends Controller
         return back()->with('success', 'Customer berhasil ditambahkan.');
     }
 
-    /**
-     * Display the specified customer.
-     */
     public function show(Customer $customer)
     {
         $customer->load(['companies' => function ($query) {
@@ -95,9 +76,6 @@ class CustomerController extends Controller
         ]);
     }
 
-    /**
-     * Return customer data for editing modal/sheet.
-     */
     public function edit(Customer $customer)
     {
         return response()->json([
@@ -105,9 +83,6 @@ class CustomerController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified customer in storage.
-     */
     public function update(UpdateRequest $request, Customer $customer)
     {
         $validated = $request->validated();
@@ -117,9 +92,6 @@ class CustomerController extends Controller
         return back()->with('success', 'Customer berhasil diperbarui.');
     }
 
-    /**
-     * Remove the specified customer from storage.
-     */
     public function destroy(Customer $customer)
     {
         if ($customer->user_id) {
@@ -131,9 +103,6 @@ class CustomerController extends Controller
         return back()->with('success', 'Customer berhasil dihapus.');
     }
 
-    /**
-     * Attach company to customer
-     */
     public function attachCompany(AttachCompanyRequest $request, Customer $customer)
     {
         $validated = $request->validated();
@@ -150,9 +119,6 @@ class CustomerController extends Controller
         return back()->with('success', 'Perusahaan berhasil ditambahkan ke customer.');
     }
 
-    /**
-     * Detach company from customer
-     */
     public function detachCompany(Customer $customer, $companyId)
     {
         $customer->companies()->detach($companyId);
@@ -160,9 +126,6 @@ class CustomerController extends Controller
         return back()->with('success', 'Perusahaan berhasil dihapus dari customer.');
     }
 
-    /**
-     * Update pivot data for company
-     */
     public function updateCompanyPivot(Request $request, Customer $customer, $companyId)
     {
         $validated = $request->validate([
@@ -175,9 +138,6 @@ class CustomerController extends Controller
         return back()->with('success', 'Data perusahaan berhasil diperbarui.');
     }
 
-    /**
-     * Check if email exists in users table
-     */
     public function checkAccount(Customer $customer)
     {
         if (!$customer->email) {
@@ -214,9 +174,6 @@ class CustomerController extends Controller
         return response()->json(['status' => 'not_found']);
     }
 
-    /**
-     * Create new user account for customer
-     */
     public function createAccount(Customer $customer)
     {
         if ($customer->user_id) {
@@ -253,9 +210,6 @@ class CustomerController extends Controller
         ]);
     }
 
-    /**
-     * Link existing user to customer
-     */
     public function linkAccount(Request $request, Customer $customer)
     {
         $validated = $request->validate([
@@ -276,9 +230,6 @@ class CustomerController extends Controller
         return response()->json(['message' => 'Akun berhasil dihubungkan ke customer.']);
     }
 
-    /**
-     * Revoke user account from customer (deactivate, not delete)
-     */
     public function revokeAccount(Customer $customer)
     {
         if (!$customer->user_id) {
@@ -299,9 +250,6 @@ class CustomerController extends Controller
         return response()->json(['message' => 'Akun berhasil dicabut.']);
     }
 
-    /**
-     * Generate readable random password
-     */
     private function generatePassword(): string
     {
         $upper   = substr(str_shuffle('ABCDEFGHJKLMNPQRSTUVWXYZ'), 0, 2);

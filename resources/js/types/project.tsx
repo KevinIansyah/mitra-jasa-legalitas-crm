@@ -429,6 +429,7 @@ export interface ProjectInvoiceFormData {
 }
 
 export interface ProjectInvoiceItemFormData {
+    expense_id?: number | null;
     description: string;
     quantity: number;
     unit_price: number;
@@ -675,7 +676,7 @@ export const UNDELETABLE_MILESTONE_STATUSES: MilestoneStatus[] = ['in_progress',
 export const DOCUMENT_STATUS_ICONS: Record<DocumentStatus, React.ReactNode> = {
     not_uploaded: <FileQuestion className="size-5 text-slate-400" />,
     pending_review: <Clock className="size-5 text-yellow-500" />,
-    uploaded: <CheckCircle2 className="size-5 text-blue-500" />,
+    uploaded: <CheckCircle2 className="size-5 text-blue-600" />,
     verified: <FileCheck className="size-5 text-emerald-500" />,
     rejected: <FileX className="size-5 text-red-500" />,
 };

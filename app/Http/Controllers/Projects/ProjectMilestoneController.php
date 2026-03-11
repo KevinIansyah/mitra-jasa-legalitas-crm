@@ -10,9 +10,6 @@ use App\Models\ProjectMilestone;
 
 class ProjectMilestoneController extends Controller
 {
-    /**
-     * Store a newly created project milestone.
-     */
     public function store(StoreRequest $request, Project $project)
     {
         $project->milestones()->create([
@@ -24,9 +21,6 @@ class ProjectMilestoneController extends Controller
         return back()->with('success', 'Milestone berhasil ditambahkan.');
     }
 
-    /**
-     * Update the specified project milestone.
-     */
     public function update(UpdateRequest $request, Project $project, ProjectMilestone $milestone)
     {
         if ($error = $this->validateMilestone($project, $milestone)) return $error;
@@ -36,9 +30,6 @@ class ProjectMilestoneController extends Controller
         return back()->with('success', 'Milestone berhasil diperbarui.');
     }
 
-    /**
-     * Update the specified project milestone status.
-     */
     public function updateStatus(Project $project, ProjectMilestone $milestone)
     {
         if ($error = $this->validateMilestone($project, $milestone)) return $error;
@@ -69,9 +60,6 @@ class ProjectMilestoneController extends Controller
         return back()->with('success', 'Status milestone berhasil diperbarui.');
     }
 
-    /**
-     * Remove the specified project milestone.
-     */
     public function destroy(Project $project, ProjectMilestone $milestone)
     {
         if ($error = $this->validateMilestone($project, $milestone)) return $error;
@@ -87,9 +75,6 @@ class ProjectMilestoneController extends Controller
         return back()->with('success', 'Milestone berhasil dihapus.');
     }
 
-    /**
-     * Reorder milestones.
-     */
     public function reorder(Project $project)
     {
         request()->validate([
@@ -105,9 +90,6 @@ class ProjectMilestoneController extends Controller
         return back();
     }
 
-    /**
-     * Validate milestone belongs to project.
-     */
     private function validateMilestone(Project $project, ProjectMilestone $milestone)
     {
         if ($milestone->project_id !== $project->id) {

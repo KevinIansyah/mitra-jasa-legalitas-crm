@@ -1,5 +1,5 @@
-import { Link, router } from '@inertiajs/react';
-import { AlertTriangle, Briefcase, ClipboardList, FileText, GitBranch, Pencil, User } from 'lucide-react';
+import { router } from '@inertiajs/react';
+import { AlertTriangle, Briefcase, ClipboardList, FileText, GitBranch, Pencil, Toolbox, User } from 'lucide-react';
 import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -18,9 +18,10 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 import { formatRupiah } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
+import finances from '@/routes/finances';
+import { CATEGORY_BUSINESS_MAP, STATUS_LEGAL_MAP } from '@/types/contact';
 import type { Estimate, EstimateStatus, Quote, QuoteStatus } from '@/types/quote';
 import { QUOTE_STATUSES, QUOTE_STATUSES_MAP, QUOTE_TIMELINES_MAP, QUOTE_SOURCES_MAP, QUOTE_BUDGET_RANGES_MAP, ESTIMATE_STATUSES, ESTIMATE_STATUSES_MAP } from '@/types/quote';
-import finances from '@/routes/finances';
 
 function InfoRow({ label, value, children }: { label: string; value?: string | null; children?: React.ReactNode }) {
     return (
@@ -42,6 +43,8 @@ export function DetailSection({ quote }: { quote: Quote }) {
     const timelineInfo = QUOTE_TIMELINES_MAP[quote.timeline];
     const sourceInfo = QUOTE_SOURCES_MAP[quote.source];
     const budgetInfo = quote.budget_range ? QUOTE_BUDGET_RANGES_MAP[quote.budget_range] : null;
+    const BusinessLegalStatus = quote.business_legal_status ? STATUS_LEGAL_MAP[quote.business_legal_status] : null;
+    const BusinesType = quote.business_type ? CATEGORY_BUSINESS_MAP[quote.business_type] : null;
     const targetStatus = confirmStatus ? QUOTE_STATUSES_MAP[confirmStatus] : null;
     const isFinalized = quote.status === 'rejected' || quote.status === 'converted';
     const estimates = quote.estimates ?? [];
@@ -148,37 +151,38 @@ export function DetailSection({ quote }: { quote: Quote }) {
                 <div className="space-y-6">
                     <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
                         <div>
-                            <h2 className="text-xl font-bold">Ringkasan Permintaan</h2>
+                            <h2 className="text-xl font-semibold">Ringkasan Permintaan</h2>
                             <p className="mt-0.5 text-sm text-muted-foreground">Informasi umum permintaan mencakup status, deskripsi, layanan, pemohon, project, dan estimasi</p>
                         </div>
 
                         <div className="flex gap-1">
                             <HasPermission permission="create-finance-estimates">
-                                {!isFinalized && (
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <Button variant="secondary" className="h-8 w-8" onClick={goToCreateEstimates}>
-                                                <FileText className="size-3.5" />
-                                            </Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent>Buat Estimasi</TooltipContent>
-                                    </Tooltip>
-                                )}
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button variant="secondary" className="h-8 w-8" disabled={isFinalized} onClick={goToCreateEstimates}>
+                                            <FileText className="size-3.5" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Buat Estimasi</TooltipContent>
+                                </Tooltip>
                             </HasPermission>
 
                             <HasPermission permission="create-projects">
-                                {quote.is_convertible && (
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <Button className="h-8 w-8" asChild>
-                                                <Link href={finances.quotes.convert(quote.id).url}>
-                                                    <Briefcase className="size-3.5" />
-                                                </Link>
-                                            </Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent>Convert ke Project</TooltipContent>
-                                    </Tooltip>
-                                )}
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            className="h-8 w-8"
+                                            disabled={!quote.is_convertible}
+                                            onClick={() => {
+                                                if (!quote.is_convertible) return;
+                                                router.visit(finances.quotes.convert(quote.id).url);
+                                            }}
+                                        >
+                                            <Briefcase className="size-3.5" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>{quote.is_convertible ? 'Convert ke Project' : 'Quote tidak dapat dikonversi'}</TooltipContent>
+                                </Tooltip>
                             </HasPermission>
                         </div>
                     </div>
@@ -298,8 +302,20 @@ export function DetailSection({ quote }: { quote: Quote }) {
                         <div className="grid grid-cols-[130px_1fr] gap-x-2 gap-y-2">
                             <InfoRow label="Layanan" value={quote.service.name} />
                             <InfoRow label="Paket" value={quote.service_package?.name} />
-                            <InfoRow label="Tipe Bisnis" value={quote.business_type} />
-                            <InfoRow label="Status Legal" value={quote.business_legal_status} />
+
+                            {quote.business_type && (
+                                <>
+                                    <span className="text-xs text-muted-foreground">Tipe Bisnis</span>
+                                    <Badge className={BusinesType?.classes}>{BusinesType?.label}</Badge>
+                                </>
+                            )}
+                            {quote.business_type && (
+                                <>
+                                    <span className="text-xs text-muted-foreground">Status Legal</span>
+                                    <Badge className={BusinessLegalStatus?.classes}>{BusinessLegalStatus?.label}</Badge>
+                                </>
+                            )}
+
                             <InfoRow label="Budget Range" value={budgetInfo?.label} />
                         </div>
                     ) : (
@@ -332,7 +348,7 @@ export function DetailSection({ quote }: { quote: Quote }) {
             <div className="w-full space-y-4 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h2 className="text-xl font-bold">Estimasi Biaya</h2>
+                        <h2 className="text-xl font-semibold">Estimasi Biaya</h2>
                         <p className="mt-0.5 text-sm text-muted-foreground">
                             {estimates.length > 0 ? `${estimates.length} versi estimate tersedia` : 'Belum ada estimate untuk quote ini'}
                         </p>
@@ -348,8 +364,8 @@ export function DetailSection({ quote }: { quote: Quote }) {
 
                             return (
                                 <div key={estimate.id} className="space-y-4 rounded-lg bg-primary/10 p-4 dark:bg-muted/40">
-                                    <div className="flex flex-col md:flex-row items-start justify-between gap-4">
-                                        <div className="space-y-2 order-2 md:oreder-1">
+                                    <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
+                                        <div className="md:oreder-1 order-2 space-y-2">
                                             <div className="flex items-center gap-1">
                                                 <span className="text-sm font-medium">{estimate.estimate_number}</span>
                                                 <Badge className="bg-blue-600 text-white">{estimate.version_label}</Badge>
@@ -366,31 +382,37 @@ export function DetailSection({ quote }: { quote: Quote }) {
                                                 </span>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-1 order-1 md:order-2">
+                                        <div className="order-1 flex items-center gap-1 md:order-2">
                                             <HasPermission permission="edit-finance-estimates">
-                                                {!estimateIsAccepted && (
-                                                    <Tooltip>
-                                                        <TooltipTrigger asChild>
-                                                            <Button variant="secondary" className="h-8 w-8" disabled={loading} onClick={() => handleRevise(estimate.id)}>
-                                                                <GitBranch className="size-3.5" />
-                                                            </Button>
-                                                        </TooltipTrigger>
-                                                        <TooltipContent>Buat Revisi</TooltipContent>
-                                                    </Tooltip>
-                                                )}
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <Button
+                                                            variant="secondary"
+                                                            className="h-8 w-8"
+                                                            disabled={loading || estimateIsAccepted}
+                                                            onClick={() => handleRevise(estimate.id)}
+                                                        >
+                                                            <GitBranch className="size-3.5" />
+                                                        </Button>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>Buat Revisi</TooltipContent>
+                                                </Tooltip>
                                             </HasPermission>
 
                                             <HasPermission permission="edit-finance-estimates">
-                                                {!estimateIsAccepted && (
-                                                    <Tooltip>
-                                                        <TooltipTrigger asChild>
-                                                            <Button variant="secondary" className="h-8 w-8" disabled={loading} onClick={() => goToEditEstimate(estimate.id)}>
-                                                                <Pencil className="size-3.5" />
-                                                            </Button>
-                                                        </TooltipTrigger>
-                                                        <TooltipContent>Edit Estimate</TooltipContent>
-                                                    </Tooltip>
-                                                )}
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <Button
+                                                            variant="secondary"
+                                                            className="h-8 w-8"
+                                                            disabled={loading || estimateIsAccepted}
+                                                            onClick={() => goToEditEstimate(estimate.id)}
+                                                        >
+                                                            <Pencil className="size-3.5" />
+                                                        </Button>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>Edit Estimate</TooltipContent>
+                                                </Tooltip>
                                             </HasPermission>
 
                                             <HasPermission permission="delete-finance-estimates">
@@ -431,36 +453,6 @@ export function DetailSection({ quote }: { quote: Quote }) {
                                         </div>
                                     </div>
 
-                                    <div className="space-y-1">
-                                        <p className="text-xs text-muted-foreground">Rincian Item</p>
-
-                                        {estimate.items && estimate.items.length > 0 && (
-                                            <div>
-                                                {estimate.items.map((item, i) => (
-                                                    <div key={i} className="mb-0 flex items-start justify-between gap-4 border-t p-3 text-sm">
-                                                        <div className="space-y-0.5">
-                                                            <p>{item.description}</p>
-
-                                                            <p className="text-xs text-muted-foreground">
-                                                                {item.quantity} × {formatRupiah(Number(item.unit_price))}
-                                                                {Number(item.discount_percent) > 0 && (
-                                                                    <span className="ml-2 text-destructive">diskon {item.discount_percent}%</span>
-                                                                )}
-                                                                {Number(item.tax_percent) > 0 && <span className="ml-2">pajak {item.tax_percent}%</span>}
-                                                            </p>
-                                                        </div>
-
-                                                        <p className="shrink-0 font-semibold tabular-nums">{formatRupiah(Number(item.total_amount))}</p>
-                                                    </div>
-                                                ))}
-                                                <div className="flex justify-between border-t border-b p-3 text-sm font-semibold">
-                                                    <span>Total</span>
-                                                    <span className="tabular-nums">{formatRupiah(Number(estimate.total_amount))}</span>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-
                                     {estimate.status === 'rejected' && estimate.rejected_reason && (
                                         <Alert className="border-destructive bg-destructive/10 text-destructive">
                                             <AlertTriangle />
@@ -468,6 +460,54 @@ export function DetailSection({ quote }: { quote: Quote }) {
                                             <AlertDescription>{estimate.rejected_reason}</AlertDescription>
                                         </Alert>
                                     )}
+
+                                    <div className="space-y-2">
+                                        <p className="text-xs text-muted-foreground">Rincian Item</p>
+
+                                        {estimate.items && estimate.items.length > 0 && (
+                                            <div>
+                                                <div className="border-b border-primary/20 dark:border-border">
+                                                    {estimate.items.map((item, i) => (
+                                                        <div
+                                                            key={i}
+                                                            className="mb-0 flex items-start justify-between gap-4 border-t border-primary/20 px-3 py-2 text-sm dark:border-border"
+                                                        >
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10">
+                                                                    <Toolbox className="size-4 text-primary" />
+                                                                </div>
+                                                                <div className="space-y-0.5">
+                                                                    <p>{item.description}</p>
+
+                                                                    <p className="text-xs text-muted-foreground">
+                                                                        {item.quantity} × {formatRupiah(Number(item.unit_price))}
+                                                                        {Number(item.discount_percent) > 0 && (
+                                                                            <span className="ml-2 text-destructive">diskon {item.discount_percent}%</span>
+                                                                        )}
+                                                                        {Number(item.tax_percent) > 0 && <span className="ml-2">pajak {item.tax_percent}%</span>}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+
+                                                            <p className="shrink-0 tabular-nums">{formatRupiah(Number(item.total_amount))}</p>
+                                                        </div>
+                                                    ))}
+                                                </div>
+
+                                                <div className="mt-1 border-t border-primary/20 px-3 py-2 text-sm dark:border-border">
+                                                    <div className="flex justify-between font-medium">
+                                                        <span>Total</span>
+                                                        <span className="tabular-nums">{formatRupiah(Number(estimate.total_amount))}</span>
+                                                    </div>
+
+                                                    <div className="flex justify-between font-medium">
+                                                        <span className="text-xs text-muted-foreground">Subtotal</span>
+                                                        <span className="text-xs text-muted-foreground">{formatRupiah(Number(estimate.subtotal))}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
 
                                     {estimate.notes && (
                                         <div className="space-y-1 text-sm text-foreground">

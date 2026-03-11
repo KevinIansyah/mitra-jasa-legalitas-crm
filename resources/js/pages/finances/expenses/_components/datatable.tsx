@@ -89,7 +89,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                                     <SheetTitle>Filter Pengeluaran</SheetTitle>
                                     <SheetDescription>Saring data berdasarkan kategori atau status tagihan</SheetDescription>
                                 </SheetHeader>
-                                <div className="mt-6 space-y-4 px-4">
+                                <div className="space-y-4 px-4">
                                     <Field>
                                         <FieldLabel>Kategori</FieldLabel>
                                         <Select value={filters.category || ''} onValueChange={(v) => updateFilter('category', v || undefined)}>

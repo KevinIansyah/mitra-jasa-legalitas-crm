@@ -10,9 +10,6 @@ use App\Models\ProjectMember;
 
 class ProjectMemberController extends Controller
 {
-    /**
-     * Store a newly created project member.
-     */
     public function store(StoreRequest $request, Project $project)
     {
         $validated = $request->validated();
@@ -25,9 +22,6 @@ class ProjectMemberController extends Controller
         return back()->with('success', 'Anggota tim berhasil ditambahkan.');
     }
 
-    /**
-     * Update the specified project member.
-     */
     public function update(UpdateRequest $request, Project $project, ProjectMember $member)
     {
         if ($error = $this->validateMember($project, $member)) return $error;
@@ -37,9 +31,6 @@ class ProjectMemberController extends Controller
         return back()->with('success', 'Anggota tim berhasil diperbarui.');
     }
 
-    /**
-     * Update role member project.
-     */
     public function updateRole(Project $project, ProjectMember $member)
     {
         if ($error = $this->validateMember($project, $member)) return $error;
@@ -56,9 +47,6 @@ class ProjectMemberController extends Controller
         return back()->with('success', 'Role anggota berhasil diperbarui.');
     }
 
-    /**
-     * Update permission approve document member project.
-     */
     public function updateApproveDocuments(Project $project, ProjectMember $member)
     {
         if ($error = $this->validateMember($project, $member)) return $error;
@@ -75,9 +63,6 @@ class ProjectMemberController extends Controller
         return back()->with('success', 'Izin persetujuan dokumen berhasil diperbarui.');
     }
 
-    /**
-     * Remove the specified project member.
-     */
     public function destroy(Project $project, ProjectMember $member)
     {
         if ($error = $this->validateMember($project, $member)) return $error;
@@ -87,9 +72,6 @@ class ProjectMemberController extends Controller
         return back()->with('success', 'Anggota tim berhasil dihapus.');
     }
 
-    /**
-     * Validate member belongs to project.
-     */
     private function validateMember(Project $project, ProjectMember $member)
     {
         if ($member->project_id !== $project->id) {

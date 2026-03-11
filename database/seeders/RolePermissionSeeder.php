@@ -115,28 +115,40 @@ class RolePermissionSeeder extends Seeder
             'create-finance-vendors',
             'edit-finance-vendors',
             'delete-finance-vendors',
+
+            'view-finance-accounts',
+            'create-finance-accounts',
+            'edit-finance-accounts',
+            'delete-finance-accounts',
+
+            'view-finance-opening-balances',
+            'create-finance-opening-balances',
+            'edit-finance-opening-balances',
+
+            'view-finance-journals',
+            'create-finance-journals',
+            'edit-finance-journals',
+            'delete-finance-journals',
+
+            'view-finance-reports',
         ];
 
         foreach ($permissions as $permission) {
             Permission::firstOrCreate([
-                'name' => $permission,
+                'name'       => $permission,
                 'guard_name' => 'web',
             ]);
         }
 
-        // ========================
-        // ROLES
-        // ========================
-
         $roleAdmin = Role::firstOrCreate([
-            'name' => 'super-admin',
+            'name'       => 'super-admin',
             'guard_name' => 'web',
         ]);
 
         $roleAdmin->syncPermissions(Permission::all());
 
         $roleStaff = Role::firstOrCreate([
-            'name' => 'staff',
+            'name'       => 'staff',
             'guard_name' => 'web',
         ]);
 
@@ -148,7 +160,7 @@ class RolePermissionSeeder extends Seeder
         ]);
 
         Role::firstOrCreate([
-            'name' => 'user',
+            'name'       => 'user',
             'guard_name' => 'web',
         ]);
 

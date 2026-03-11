@@ -12,88 +12,49 @@ export default function getColumns(expandedRow: string | null, setExpandedRow: (
             accessorKey: 'estimate',
             header: 'Estimate',
             cell: ({ row }) => {
-                const { estimate_number, version_label, is_active, quote } = row.original;
-                const quoteStatus = quote ? QUOTE_STATUSES_MAP[quote.status] : null;
-
+                const { estimate_number, version_label, is_active } = row.original;
                 return (
-                    <div className="grid w-100 grid-cols-[110px_1fr] items-center gap-x-2 gap-y-2 text-sm">
-                        <span className="col-span-2 text-xs font-bold text-muted-foreground">Estimate</span>
-                        <span className="text-xs font-medium text-muted-foreground">Nomor</span>
-                        <span className="font-medium">{estimate_number}</span>
-
-                        <span className="text-xs font-medium text-muted-foreground">Keterangan</span>
+                    <div className="space-y-1">
+                        <p className="text-sm font-medium">{estimate_number}</p>
                         <div className="flex flex-wrap items-center gap-1">
                             <Badge className="bg-blue-600 text-white">{version_label}</Badge>
                             {is_active && <Badge className="bg-emerald-500 text-white">Active</Badge>}
                         </div>
-
-                        {quote && (
-                            <>
-                                <span className="col-span-2 mt-4 text-xs font-bold text-muted-foreground">Permintaan</span>
-                                <span className="text-xs font-medium text-muted-foreground">Nomor Ref</span>
-                                <span className="whitespace-normal">{quote.reference_number}</span>
-                                <span className="text-xs font-medium text-muted-foreground">Project</span>
-                                <span className="whitespace-normal">{quote.project_name}</span>
-                                {quoteStatus && (
-                                    <>
-                                        <span className="text-xs font-medium text-muted-foreground">Status</span>
-                                        <Badge className={quoteStatus.classes}>{quoteStatus.label}</Badge>
-                                    </>
-                                )}
-                                {quote.user && (
-                                    <>
-                                        <span className="text-xs font-medium text-muted-foreground">Pemohon</span>
-                                        <span className="whitespace-normal">{quote.user.name}</span>
-                                    </>
-                                )}
-                            </>
-                        )}
                     </div>
                 );
             },
         },
         {
-            accessorKey: 'detail',
-            header: 'Detail',
+            accessorKey: 'quote',
+            header: 'Permintaan',
             cell: ({ row }) => {
-                const { total_amount, subtotal, valid_until, is_expired, created_at } = row.original;
-
+                const { quote } = row.original;
+                const quoteStatus = quote ? QUOTE_STATUSES_MAP[quote.status] : null;
+                if (!quote) return <span className="text-sm">-</span>;
                 return (
-                    <div className="grid w-60 grid-cols-[110px_1fr] items-center gap-x-2 gap-y-2 text-sm">
-                        <span className="col-span-2 text-xs font-bold text-muted-foreground">Jumlah</span>
-                        <span className="text-xs font-medium text-muted-foreground">Subtotal</span>
-                        <span className="font-semibold tabular-nums">{formatRupiah(Number(subtotal))}</span>
-                        <span className="text-xs font-medium text-muted-foreground">Total</span>
-                        <span className="font-semibold tabular-nums">{formatRupiah(Number(total_amount))}</span>
-                        {/* {Number(discount_percent) > 0 && (
-                            <>
-                                <span className="text-xs font-medium text-muted-foreground">Diskon</span>
-                                <span>{discount_percent}%</span>
-                            </>
-                        )}
-                        {Number(tax_percent) > 0 && (
-                            <>
-                                <span className="text-xs font-medium text-muted-foreground">Pajak</span>
-                                <span>{tax_percent}%</span>
-                            </>
-                        )} */}
-
-                        <span className="col-span-2 mt-4 text-xs font-bold text-muted-foreground">Tanggal</span>
-                        <span className="text-xs font-medium text-muted-foreground">Dibuat</span>
-                        <span>{formatDate(created_at)}</span>
-                        {valid_until && (
-                            <>
-                                <span className="text-xs font-medium text-muted-foreground">Berlaku s/d</span>
-                                <div className="flex items-center gap-1.5">
-                                    <span>{formatDate(valid_until)}</span>
-                                    {is_expired && (
-                                        <Badge variant="destructive" className="text-xs">
-                                            Expired
-                                        </Badge>
-                                    )}
-                                </div>
-                            </>
-                        )}
+                    <div className="space-y-0.5">
+                        <p className="text-sm font-medium">{quote.project_name}</p>
+                        <p className="text-xs text-muted-foreground">{quote.reference_number}</p>
+                        {quoteStatus && <Badge className={quoteStatus.classes}>{quoteStatus.label}</Badge>}
+                    </div>
+                );
+            },
+        },
+        {
+            accessorKey: 'total_amount',
+            header: 'Total',
+            cell: ({ row }) => <span className="text-sm font-medium tabular-nums">{formatRupiah(Number(row.original.total_amount))}</span>,
+        },
+        {
+            accessorKey: 'valid_until',
+            header: 'Berlaku s/d',
+            cell: ({ row }) => {
+                const { valid_until, is_expired, created_at } = row.original;
+                return (
+                    <div className="space-y-0.5">
+                        <p className="text-sm">{valid_until ? formatDate(valid_until) : '-'}</p>
+                        {is_expired && <Badge variant="destructive">Expired</Badge>}
+                        <p className="text-xs text-muted-foreground">Dibuat: {formatDate(created_at)}</p>
                     </div>
                 );
             },

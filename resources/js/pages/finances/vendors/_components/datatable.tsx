@@ -90,7 +90,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                                     <SheetTitle>Filter Vendor</SheetTitle>
                                     <SheetDescription>Saring data berdasarkan kategori atau status</SheetDescription>
                                 </SheetHeader>
-                                <div className="mt-6 space-y-4 px-4">
+                                <div className="space-y-4 px-4">
                                     <Field>
                                         <FieldLabel>Kategori</FieldLabel>
                                         <Select value={filters.category || ''} onValueChange={(v) => updateFilter('category', v || undefined)}>
@@ -118,7 +118,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                                             <SelectContent>
                                                 <SelectGroup>
                                                     <SelectLabel>Status</SelectLabel>
-                                                    <SelectItem value="active">Aktif</SelectItem>
+                                                    <SelectItem value="active">Active</SelectItem>
                                                     <SelectItem value="inactive">Inactive</SelectItem>
                                                 </SelectGroup>
                                             </SelectContent>
@@ -185,7 +185,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                         )}
                         {filters.status && (
                             <Badge variant="secondary" className="gap-2">
-                                {filters.status === 'active' ? 'Aktif' : 'Inactive'}
+                                {filters.status === 'active' ? 'Active' : 'Inactive'}
                                 <Button variant="ghost" size="sm" className="h-6 w-6 text-xs" onClick={() => updateFilter('status', undefined)}>
                                     <X className="size-3" />
                                 </Button>

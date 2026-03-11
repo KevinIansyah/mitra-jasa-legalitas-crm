@@ -13,49 +13,45 @@ export default function getColumns(): ColumnDef<Expense>[] {
             accessorKey: 'expense',
             header: 'Pengeluaran',
             cell: ({ row }) => {
-                const { category, description, project, invoice, user } = row.original;
-
+                const { category, description, invoice } = row.original;
                 const categoryInfo = category ? EXPENSE_CATEGORIES_MAP[category] : null;
-                const isBilled = !!invoice;
-
                 return (
-                    <div className="grid w-100 grid-cols-[110px_1fr] items-center gap-x-2 gap-y-2 text-sm">
-                        <span className="col-span-2 text-xs font-bold text-muted-foreground">Pengeluaran</span>
-                        <span className="text-xs font-medium text-muted-foreground">Kategori</span>
-                        {categoryInfo ? <Badge className={categoryInfo.classes}>{categoryInfo.label}</Badge> : <span>-</span>}
-
-                        <span className="text-xs font-medium text-muted-foreground">Deskripsi</span>
-                        <span className="min-w-0 wrap-break-word whitespace-normal">{description || '-'}</span>
-
-                        {user && (
-                            <>
-                                <span className="text-xs font-medium text-muted-foreground">Dicatat</span>
-                                <span>{user.name}</span>
-                            </>
-                        )}
-
-                        {project && (
-                            <>
-                                <span className="col-span-2 mt-4 text-xs font-bold text-muted-foreground">Project</span>
-                                <span className="text-xs font-medium text-muted-foreground">Nama</span>
-                                <span className="min-w-0 wrap-break-word whitespace-normal">{project.name}</span>
-                                {project.customer && (
-                                    <>
-                                        <span className="text-xs font-medium text-muted-foreground">Pelanggan (PIC)</span>
-                                        <span>{project.customer.name}</span>
-                                    </>
-                                )}
-                            </>
-                        )}
-
-                        {isBilled && (
-                            <>
-                                <span className="col-span-2 mt-4 text-xs font-bold text-muted-foreground">Invoice</span>
-                                <span className="text-xs font-medium text-muted-foreground">Nomor</span>
-                                <span className="font-medium">{invoice.invoice_number}</span>
-                            </>
-                        )}
+                    <div className="space-y-1">
+                        {categoryInfo && <Badge className={categoryInfo.classes}>{categoryInfo.label}</Badge>}
+                        <p className="text-sm whitespace-normal">{description || '-'}</p>
+                        {invoice && <p className="text-xs text-muted-foreground">Invoice: {invoice.invoice_number}</p>}
                     </div>
+                );
+            },
+        },
+        {
+            accessorKey: 'project',
+            header: 'Project',
+            cell: ({ row }) => {
+                const { project, user } = row.original;
+                return (
+                    <div className="space-y-0.5">
+                        <p className="text-sm font-medium whitespace-normal">{project?.name ?? '-'}</p>
+                        {project?.customer && <p className="text-xs text-muted-foreground">{project.customer.name}</p>}
+                        {user && <p className="text-xs text-muted-foreground">Dicatat: {user.name}</p>}
+                    </div>
+                );
+            },
+        },
+        {
+            accessorKey: 'vendor',
+            header: 'Vendor',
+            cell: ({ row }) => {
+                const { vendor, vendor_id, vendor_name } = row.original;
+                const vendorInfo = vendor?.category ? VENDOR_CATEGORIES_MAP[vendor.category] : null;
+                const name = vendor_id ? vendor?.name : vendor_name;
+                return name ? (
+                    <div className="space-y-1">
+                        <p className="text-sm">{name}</p>
+                        {vendorInfo && <Badge className={vendorInfo.classes}>{vendorInfo.label}</Badge>}
+                    </div>
+                ) : (
+                    <span className="text-sm">-</span>
                 );
             },
         },
@@ -63,22 +59,11 @@ export default function getColumns(): ColumnDef<Expense>[] {
             accessorKey: 'amount',
             header: 'Jumlah',
             cell: ({ row }) => {
-                const { amount, expense_date, is_billable, invoice, vendor, vendor_id, vendor_name } = row.original;
-
+                const { amount, is_billable, invoice } = row.original;
                 const isBilled = !!invoice;
-                const vendorInfo = vendor?.category ? VENDOR_CATEGORIES_MAP[vendor.category] : null;
-
                 return (
-                    <div className="grid w-60 grid-cols-[110px_1fr] items-center gap-x-2 gap-y-2 text-sm">
-                        <span className="col-span-2 text-xs font-bold text-muted-foreground">Jumlah</span>
-                        <span className="text-xs font-medium text-muted-foreground">Total</span>
-                        <span className="tabular-nums">{formatRupiah(Number(amount))}</span>
-
-                        <span className="col-span-2 mt-4 text-xs font-bold text-muted-foreground">Informasi</span>
-                        <span className="text-xs font-medium text-muted-foreground">Tanggal</span>
-                        <span>{formatDate(expense_date)}</span>
-
-                        <span className="text-xs font-medium text-muted-foreground">Billable</span>
+                    <div className="space-y-1">
+                        <p className="text-sm font-medium tabular-nums">{formatRupiah(Number(amount))}</p>
                         {is_billable ? (
                             isBilled ? (
                                 <Badge className="bg-emerald-500 text-white">Sudah Ditagihkan</Badge>
@@ -88,31 +73,14 @@ export default function getColumns(): ColumnDef<Expense>[] {
                         ) : (
                             <Badge variant="secondary">Non-billable</Badge>
                         )}
-
-                        {vendor && vendor_id && (
-                            <>
-                                <span className="col-span-2 mt-4 text-xs font-bold text-muted-foreground">Vendor</span>
-                                <span className="text-xs font-medium text-muted-foreground">Nama</span>
-                                <span>{vendor.name}</span>
-                                {vendorInfo && (
-                                    <>
-                                        <span className="text-xs font-medium text-muted-foreground">Kategori</span>
-                                        <Badge className={vendorInfo.classes}>{vendorInfo.label}</Badge>
-                                    </>
-                                )}
-                            </>
-                        )}
-
-                        {!vendor_id && vendor_name && (
-                            <>
-                                <span className="col-span-2 mt-4 text-xs font-bold text-muted-foreground">Vendor</span>
-                                <span className="text-xs font-medium text-muted-foreground">Nama</span>
-                                <span>{vendor_name}</span>
-                            </>
-                        )}
                     </div>
                 );
             },
+        },
+        {
+            accessorKey: 'expense_date',
+            header: 'Tanggal',
+            cell: ({ row }) => <span className="text-sm">{formatDate(row.original.expense_date)}</span>,
         },
         {
             accessorKey: 'action',

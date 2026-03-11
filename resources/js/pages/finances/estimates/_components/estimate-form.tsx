@@ -79,7 +79,7 @@ export function EstimateForm({ data, errors, initialQuote, fromQuote, isEdit, on
             <div className="rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div>
-                        <h2 className="text-xl font-bold">Info Estimate</h2>
+                        <h2 className="text-xl font-semibold">Info Estimate</h2>
                         <p className="mt-0.5 text-sm text-muted-foreground">Pilih permintaan penawaran dan atur detail estimate</p>
                     </div>
 
@@ -171,7 +171,7 @@ export function EstimateForm({ data, errors, initialQuote, fromQuote, isEdit, on
                 <div className="space-y-4">
                     <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
                         <div>
-                            <h2 className="text-xl font-bold">Item Estimasi</h2>
+                            <h2 className="text-xl font-semibold">Item Estimasi</h2>
                             <p className="mt-0.5 text-sm text-muted-foreground">Rincian biaya layanan yang diestimasi</p>
                         </div>
                         <Button
@@ -205,7 +205,7 @@ export function EstimateForm({ data, errors, initialQuote, fromQuote, isEdit, on
             <div className="rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div>
-                        <h2 className="text-xl font-bold">Catatan</h2>
+                        <h2 className="text-xl font-semibold">Catatan</h2>
                         <p className="mt-0.5 text-sm text-muted-foreground">Tambahkan catatan dan instruksi pembayaran</p>
                     </div>
                     <Field>

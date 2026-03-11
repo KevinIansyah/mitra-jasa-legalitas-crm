@@ -1,5 +1,5 @@
 import { Link, router } from '@inertiajs/react';
-import { ChevronDown, ChevronUp, Eye, FileText } from 'lucide-react';
+import { ChevronDown, ChevronUp, Eye } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -85,21 +85,6 @@ export default function Actions({ quote, isExpanded, onToggleExpand }: ActionsPr
                         </TooltipTrigger>
                         <TooltipContent>Lihat Detail</TooltipContent>
                     </Tooltip>
-                </HasPermission>
-
-                <HasPermission permission="create-finance-estimates">
-                    {!isFinalized && (
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button variant="secondary" className="h-8 w-8" asChild>
-                                    <Link href="#">
-                                        <FileText className="size-3.5" />
-                                    </Link>
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Buat Estimate</TooltipContent>
-                        </Tooltip>
-                    )}
                 </HasPermission>
 
                 <HasPermission permission="delete-finance-quotes">

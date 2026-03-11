@@ -89,7 +89,7 @@ export default function Documents({ project, canApproveDocuments }: DocumentsPro
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-6">
                     <div>
-                        <h2 className="text-xl font-bold">Dokumen</h2>
+                        <h2 className="text-xl font-semibold">Dokumen</h2>
                         <p className="mt-0.5 text-sm text-muted-foreground">Kelola dan pantau status dokumen yang diperlukan untuk project ini.</p>
                     </div>
 

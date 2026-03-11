@@ -6,10 +6,7 @@ import type { EstimateItemFormData } from '@/types/quote';
 type EstimateSummaryProps = {
     items: EstimateItemFormData[];
     processing: boolean;
-    onSubmitDraft?: () => void;
-    onSubmitSend?: () => void;
-    onSubmitEdit?: () => void;
-    isEdit?: boolean;
+    onSubmit?: () => void;
 };
 
 function calcItems(items: EstimateItemFormData[]) {
@@ -32,7 +29,7 @@ function calcItems(items: EstimateItemFormData[]) {
     return { subtotal, discountAmount, taxAmount, total };
 }
 
-export function EstimateSummary({ items, processing, onSubmitDraft, onSubmitSend, onSubmitEdit, isEdit }: EstimateSummaryProps) {
+export function EstimateSummary({ items, processing, onSubmit }: EstimateSummaryProps) {
     const calc = calcItems(items);
 
     return (
@@ -68,41 +65,16 @@ export function EstimateSummary({ items, processing, onSubmitDraft, onSubmitSend
                 </div>
             </div>
 
-            {isEdit ? (
-                <Button type="button" className="w-full" disabled={processing} onClick={onSubmitEdit}>
-                    {processing ? (
-                        <>
-                            <Spinner className="mr-2" />
-                            Menyimpan...
-                        </>
-                    ) : (
-                        'Simpan Perubahan'
-                    )}
-                </Button>
-            ) : (
-                <div className="space-y-2">
-                    <Button type="button" className="w-full" disabled={processing} onClick={onSubmitSend}>
-                        {processing ? (
-                            <>
-                                <Spinner className="mr-2" />
-                                Menyimpan...
-                            </>
-                        ) : (
-                            'Simpan & Kirim'
-                        )}
-                    </Button>
-                    <Button type="button" variant="secondary" className="w-full" disabled={processing} onClick={onSubmitDraft}>
-                        {processing ? (
-                            <>
-                                <Spinner className="mr-2" />
-                                Menyimpan...
-                            </>
-                        ) : (
-                            'Simpan sebagai Draft'
-                        )}
-                    </Button>
-                </div>
-            )}
+            <Button type="button" className="w-full" disabled={processing} onClick={onSubmit}>
+                {processing ? (
+                    <>
+                        <Spinner className="mr-2" />
+                        Menyimpan...
+                    </>
+                ) : (
+                    'Simpan'
+                )}
+            </Button>
         </div>
     );
 }

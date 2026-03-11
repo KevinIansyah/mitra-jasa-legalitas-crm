@@ -89,7 +89,7 @@ export function ExpenseCard({ project, onEdit }: ExpenseCardProps) {
                                 <HasPermission permission="edit-finance-expenses">
                                     <Tooltip>
                                         <TooltipTrigger asChild>
-                                            <Button variant="secondary" size="sm" className="h-8 w-8" disabled={loading} onClick={() => onEdit(expense)}>
+                                            <Button variant="secondary" size="sm" className="h-8 w-8" disabled={loading || isBilled} onClick={() => onEdit(expense)}>
                                                 <Pencil className="size-3.5" />
                                             </Button>
                                         </TooltipTrigger>

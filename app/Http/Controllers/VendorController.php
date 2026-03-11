@@ -13,43 +13,36 @@ class VendorController extends Controller
     {
         $perPage  = $request->get('per_page', 20);
         $perPage  = in_array($perPage, [20, 30, 40, 50]) ? $perPage : 20;
+
         $search   = $request->get('search');
         $category = $request->get('category');
-        $status = $request->get('status');
+        $status   = $request->get('status');
 
-        $query = Vendor::withCount('expenses')
-            ->with('primaryBankAccount', 'bankAccounts');
-
-        if ($search) {
-            $query->search($search);
-        }
-
-        if ($category) {
-            $query->byCategory($category);
-        }
-
-        if ($status) {
-            $query->where('status', $status);
-        }
-
-        $vendors = $query->latest()->paginate($perPage);
+        $vendors = Vendor::query()
+            ->withCount('expenses')
+            ->with('primaryBankAccount', 'bankAccounts')
+            ->when($search, fn($q) => $q->search($search))
+            ->when($category, fn($q) => $q->byCategory($category))
+            ->when($status, fn($q) => $q->where('status', $status))
+            ->latest()
+            ->paginate($perPage);
 
         $summary = Vendor::query()
             ->selectRaw("
-        COUNT(*) as total,
-        COALESCE(SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END), 0) as active,
-        COALESCE(SUM(CASE WHEN status = 'inactive' THEN 1 ELSE 0 END), 0) as inactive
-    ")
+            COUNT(*) as total,
+            COALESCE(SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END), 0) as active,
+            COALESCE(SUM(CASE WHEN status = 'inactive' THEN 1 ELSE 0 END), 0) as inactive
+        ")
             ->first();
 
         return Inertia::render('finances/vendors/index', [
             'vendors' => $vendors,
             'summary' => $summary,
             'filters' => [
-                'search'    => $search,
-                'per_page'  => $perPage,
-                'category'  => $category,
-                'status' => $status,
+                'search'   => $search,
+                'per_page' => $perPage,
+                'category' => $category,
+                'status'   => $status,
             ],
         ]);
     }

@@ -9,6 +9,7 @@ class ProjectInvoiceItem extends Model
 {
     protected $fillable = [
         'invoice_id',
+        'expense_id',
         'description',
         'quantity',
         'unit_price',
@@ -43,6 +44,11 @@ class ProjectInvoiceItem extends Model
         return $this->belongsTo(ProjectInvoice::class, 'invoice_id');
     }
 
+    public function expense(): BelongsTo  // ← tambah
+    {
+        return $this->belongsTo(Expense::class, 'expense_id');
+    }
+
     /*
     |--------------------------------------------------------------------------
     | COMPUTED
@@ -51,7 +57,7 @@ class ProjectInvoiceItem extends Model
 
     public function calculateTotals(): static
     {
-        $subtotal      = (float) $this->quantity * (float) $this->unit_price;
+        $subtotal       = (float) $this->quantity * (float) $this->unit_price;
         $discountAmount = $subtotal * ((float) $this->discount_percent / 100);
         $afterDiscount  = $subtotal - $discountAmount;
         $taxAmount      = $afterDiscount * ((float) $this->tax_percent / 100);

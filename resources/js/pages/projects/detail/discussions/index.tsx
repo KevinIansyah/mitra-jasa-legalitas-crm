@@ -58,7 +58,7 @@ export default function Discussions({ project }: DiscussionsProps) {
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="flex items-start justify-between">
                     <div>
-                        <h2 className="text-xl font-bold">Diskusi</h2>
+                        <h2 className="text-xl font-semibold">Diskusi</h2>
                         <p className="mt-0.5 text-sm text-muted-foreground">Komunikasi tim dan catatan internal project. Gunakan @mention untuk menandai anggota tim.</p>
                     </div>
                     {/* <div className="flex items-center rounded-full bg-primary px-3 py-1 text-sm text-background">

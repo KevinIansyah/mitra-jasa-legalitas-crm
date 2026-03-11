@@ -128,40 +128,34 @@ export default function Actions({ document, isExpanded, onToggleExpand }: Action
                 </Tooltip>
 
                 <HasPermission permission="view-project-documents">
-                    {hasFile && (
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button variant="secondary" className="h-8 w-8" onClick={handleView}>
-                                    <FileCheck className="size-3.5" />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Lihat Dokumen</TooltipContent>
-                        </Tooltip>
-                    )}
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button variant="secondary" className="h-8 w-8" disabled={!hasFile} onClick={handleView}>
+                                <FileCheck className="size-3.5" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Lihat Dokumen</TooltipContent>
+                    </Tooltip>
 
-                    {hasFile && (
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button variant="secondary" className="h-8 w-8" onClick={handleDownload}>
-                                    <Download className="size-3.5" />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Unduh Dokumen</TooltipContent>
-                        </Tooltip>
-                    )}
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button variant="secondary" className="h-8 w-8" disabled={!hasFile} onClick={handleDownload}>
+                                <Download className="size-3.5" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Unduh Dokumen</TooltipContent>
+                    </Tooltip>
                 </HasPermission>
 
                 <HasPermission permission="edit-project-documents">
-                    {!isVerified && (
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button variant="secondary" className="h-8 w-8" disabled={loading} onClick={() => setUploadingDocument(document)}>
-                                    <Upload className="size-3.5" />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>{hasFile ? 'Ganti File' : 'Unggah Dokumen'}</TooltipContent>
-                        </Tooltip>
-                    )}
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button variant="secondary" className="h-8 w-8" disabled={loading || isVerified} onClick={() => setUploadingDocument(document)}>
+                                <Upload className="size-3.5" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>{hasFile ? 'Ganti File' : 'Unggah Dokumen'}</TooltipContent>
+                    </Tooltip>
                 </HasPermission>
 
                 <HasPermission permission="delete-project-documents">

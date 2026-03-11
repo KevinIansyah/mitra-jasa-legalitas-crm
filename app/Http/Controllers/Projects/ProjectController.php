@@ -28,47 +28,40 @@ use Spatie\Activitylog\Models\Activity;
 
 class ProjectController extends Controller
 {
-    /**
-     * Display a listing of the projects.
-     */
     public function index(Request $request)
     {
         $perPage = $request->get('per_page', 20);
         $perPage = in_array($perPage, [20, 30, 40, 50]) ? $perPage : 20;
 
-        $search = $request->get('search');
-        $status = $request->get('status');
+        $search     = $request->get('search');
+        $status     = $request->get('status');
         $customerId = $request->get('customer_id');
-        $companyId = $request->get('company_id');
-        $serviceID = $request->get('service_id');
+        $companyId  = $request->get('company_id');
+        $serviceId  = $request->get('service_id');
 
-        $query = Project::with('customer:id,name,tier', 'company:id,name', 'service:id,name', 'servicePackage:id,name', 'projectLeaders:id,name');
+        $projects = Project::query()
+            ->with(
+                'customer:id,name,tier',
+                'company:id,name',
+                'service:id,name',
+                'servicePackage:id,name',
+                'projectLeaders:id,name'
+            )
+            ->when($search, fn($q) => $q->search($search))
+            ->when($status, fn($q) => $q->where('status', $status))
+            ->when($customerId, fn($q) => $q->where('customer_id', $customerId))
+            ->when($companyId, fn($q) => $q->where('company_id', $companyId))
+            ->when($serviceId, fn($q) => $q->where('service_id', $serviceId))
+            ->latest()
+            ->paginate($perPage)
+            ->through(fn($project) => $project->append([
+                'progress_percentage',
+                'project_leader'
+            ]));
 
-        if ($search) {
-            $query->search($search);
-        }
-
-        if ($status) {
-            $query->where('status', $status);
-        }
-
-        if ($customerId) {
-            $query->where('customer_id', $customerId);
-        }
-
-        if ($companyId) {
-            $query->where('company_id', $companyId);
-        }
-
-        if ($serviceID) {
-            $query->where('service_id', $serviceID);
-        }
-
-        $projects = $query->latest()->paginate($perPage);
-        $projects->through(fn($project) => $project->append(['progress_percentage', 'project_leader']));
         $customers = Customer::select('id', 'name')->get();
         $companies = Company::select('id', 'name')->get();
-        $services = Service::select('id', 'name')->get();
+        $services  = Service::select('id', 'name')->get();
 
         $statusCounts = Project::selectRaw('status, count(*) as count')
             ->groupBy('status')
@@ -84,22 +77,22 @@ class ProjectController extends Controller
         ];
 
         return Inertia::render('projects/index', [
-            'projects' => $projects,
-            'summary'  => $summary,
+            'projects'  => $projects,
+            'summary'   => $summary,
             'customers' => $customers,
             'companies' => $companies,
-            'services' => $services,
+            'services'  => $services,
             'filters' => [
-                'search' => $search,
-                'per_page' => $perPage,
-                'status' => $status,
+                'search'      => $search,
+                'per_page'    => $perPage,
+                'status'      => $status,
+                'customer_id' => $customerId,
+                'company_id'  => $companyId,
+                'service_id'  => $serviceId,
             ],
         ]);
     }
 
-    /**
-     * Show the form for creating a new project.
-     */
     public function create()
     {
         $services = Service::where('status', 'active')
@@ -241,9 +234,6 @@ class ProjectController extends Controller
             ->with('success', 'Project berhasil ditambahkan.');
     }
 
-    /**
-     * Display the specified project.
-     */
     public function show(Project $project)
     {
         $project->load(['customer.companies', 'customer.user', 'company', 'service.category',  'servicePackage']);
@@ -443,9 +433,6 @@ class ProjectController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateRequest $request, Project $project)
     {
         $validated =  $request->validated();
@@ -455,9 +442,6 @@ class ProjectController extends Controller
         return back()->with('success', 'Project berhasil diperbarui.');
     }
 
-    /**
-     * Update the specified project status.
-     */
     public function updateStatus(Project $project)
     {
         request()->validate([
@@ -486,9 +470,6 @@ class ProjectController extends Controller
         return back()->with('success', 'Status project berhasil diperbarui.');
     }
 
-    /**
-     * Remove the specified project.
-     */
     public function destroy(Project $project)
     {
         $project->delete();
@@ -496,9 +477,6 @@ class ProjectController extends Controller
         return back()->with('success', 'Project berhasil dihapus.');
     }
 
-    /**
-     * Copy template milestones and documents to project.
-     */
     private function copyTemplateToProject(Project $project, ProjectTemplate $template)
     {
         $startDate = Carbon::parse($project->start_date);

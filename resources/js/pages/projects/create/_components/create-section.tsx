@@ -368,7 +368,7 @@ export function CreateSection({ services, quote }: CreateSectionProps) {
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div>
-                        <h2 className="text-xl font-bold">Pilih Customer</h2>
+                        <h2 className="text-xl font-semibold">Pilih Customer</h2>
                         <p className="mt-0.5 text-sm text-muted-foreground">
                             {isConvertMode && !hasExistingCustomer ? 'Quote ini belum memiliki customer, isi data customer berikut.' : 'Cari dan pilih customer untuk project ini.'}
                         </p>
@@ -542,7 +542,7 @@ export function CreateSection({ services, quote }: CreateSectionProps) {
                 <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                     <div className="space-y-4">
                         <div>
-                            <h2 className="text-xl font-bold">Perusahaan</h2>
+                            <h2 className="text-xl font-semibold">Perusahaan</h2>
                             <p className="mt-0.5 text-sm text-muted-foreground">Hubungkan customer dengan perusahaan jika ada</p>
                         </div>
 
@@ -814,7 +814,7 @@ export function CreateSection({ services, quote }: CreateSectionProps) {
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div>
-                        <h2 className="text-xl font-bold">Layanan & Paket</h2>
+                        <h2 className="text-xl font-semibold">Layanan & Paket</h2>
                         <p className="mt-0.5 text-sm text-muted-foreground">Pilih layanan dan paket jika project terkait dengan layanan tertentu</p>
                     </div>
 
@@ -924,6 +924,7 @@ export function CreateSection({ services, quote }: CreateSectionProps) {
                                 {data.project_template_id && (
                                     <Alert className="border-primary bg-primary/10">
                                         <Info className="size-4" />
+                                        <AlertTitle>Informasi</AlertTitle>
                                         <AlertDescription>Template akan otomatis mengisi milestone dan dokumen project.</AlertDescription>
                                     </Alert>
                                 )}
@@ -938,7 +939,7 @@ export function CreateSection({ services, quote }: CreateSectionProps) {
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div>
-                        <h2 className="text-xl font-bold">Detail Project</h2>
+                        <h2 className="text-xl font-semibold">Detail Project</h2>
                         <p className="mt-0.5 text-sm text-muted-foreground">Informasi dasar tentang project</p>
                     </div>
 
@@ -968,7 +969,7 @@ export function CreateSection({ services, quote }: CreateSectionProps) {
                         </FieldLabel>
                         <Alert className="border-primary bg-primary/20">
                             <Info className="size-4" />
-                            <AlertTitle>Informasi Budget</AlertTitle>
+                            <AlertTitle>Informasi</AlertTitle>
                             <AlertDescription className="space-y-1">
                                 <p>
                                     Masukkan nilai <strong>sebelum pajak</strong> (subtotal), pajak akan dihitung terpisah di invoice.

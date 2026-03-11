@@ -2,52 +2,48 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Project;
 use App\Models\Quote;
 use App\Models\Service;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class QuoteController extends Controller
 {
-    /**
-     * Display a listing of quotes.
-     */
     public function index(Request $request)
     {
         $perPage  = $request->get('per_page', 20);
         $perPage  = in_array($perPage, [20, 30, 40, 50]) ? $perPage : 20;
+
         $search   = $request->get('search');
         $status   = $request->get('status');
         $timeline = $request->get('timeline');
         $source   = $request->get('source');
 
-        $query = Quote::with([
-            'user:id,name,email',
-            'customer:id,name',
-            'service:id,name',
-            'servicePackage:id,name',
-            'activeEstimate',
-        ]);
-
-        if ($search)   $query->search($search);
-        if ($status)   $query->byStatus($status);
-        if ($timeline) $query->where('timeline', $timeline);
-        if ($source)   $query->where('source', $source);
-
-        $quotes = $query->latest()->paginate($perPage);
+        $quotes = Quote::query()
+            ->with([
+                'user:id,name,email',
+                'customer:id,name',
+                'service:id,name',
+                'servicePackage:id,name',
+                'activeEstimate',
+            ])
+            ->when($search, fn($q) => $q->search($search))
+            ->when($status, fn($q) => $q->byStatus($status))
+            ->when($timeline, fn($q) => $q->where('timeline', $timeline))
+            ->when($source, fn($q) => $q->where('source', $source))
+            ->latest()
+            ->paginate($perPage);
 
         $summary = Quote::query()
             ->selectRaw("
-        COUNT(*) as total,
-        COALESCE(SUM(CASE WHEN status = 'pending'   THEN 1 ELSE 0 END), 0) as pending,
-        COALESCE(SUM(CASE WHEN status = 'contacted' THEN 1 ELSE 0 END), 0) as contacted,
-        COALESCE(SUM(CASE WHEN status = 'estimated' THEN 1 ELSE 0 END), 0) as estimated,
-        COALESCE(SUM(CASE WHEN status = 'accepted'  THEN 1 ELSE 0 END), 0) as accepted,
-        COALESCE(SUM(CASE WHEN status = 'rejected'  THEN 1 ELSE 0 END), 0) as rejected,
-        COALESCE(SUM(CASE WHEN status = 'converted' THEN 1 ELSE 0 END), 0) as converted
-    ")
+            COUNT(*) as total,
+            COALESCE(SUM(CASE WHEN status = 'pending'   THEN 1 ELSE 0 END), 0) as pending,
+            COALESCE(SUM(CASE WHEN status = 'contacted' THEN 1 ELSE 0 END), 0) as contacted,
+            COALESCE(SUM(CASE WHEN status = 'estimated' THEN 1 ELSE 0 END), 0) as estimated,
+            COALESCE(SUM(CASE WHEN status = 'accepted'  THEN 1 ELSE 0 END), 0) as accepted,
+            COALESCE(SUM(CASE WHEN status = 'rejected'  THEN 1 ELSE 0 END), 0) as rejected,
+            COALESCE(SUM(CASE WHEN status = 'converted' THEN 1 ELSE 0 END), 0) as converted
+        ")
             ->first();
 
         return Inertia::render('finances/quotes/index', [
@@ -63,9 +59,6 @@ class QuoteController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified quote.
-     */
     public function show(Quote $quote)
     {
         $quote->load([
@@ -82,9 +75,6 @@ class QuoteController extends Controller
         ]);
     }
 
-    /**
-     * Update quote status.
-     */
     public function updateStatus(Request $request, Quote $quote)
     {
         if ($quote->status === 'converted') {
@@ -120,9 +110,6 @@ class QuoteController extends Controller
         return back()->with('success', $messages[$request->status]);
     }
 
-    /**
-     * Convert quote to project.
-     */
     public function convert(Quote $quote)
     {
         if (!$quote->is_convertible) {
@@ -146,9 +133,6 @@ class QuoteController extends Controller
         ]);
     }
 
-    /**
-     * Destroy a quote.
-     */
     public function destroy(Quote $quote)
     {
         if ($quote->status === 'converted') {

@@ -192,16 +192,20 @@ export function ExpenseEditDrawer({ expense, initialProject, open, onOpenChange 
         e.preventDefault();
         setIsDragging(true);
     }, []);
+    
     const handleDragLeave = React.useCallback((e: React.DragEvent) => {
         e.preventDefault();
         if (!e.currentTarget.contains(e.relatedTarget as Node)) setIsDragging(false);
     }, []);
+
     const handleDragOver = (e: React.DragEvent) => e.preventDefault();
+
     const handleDrop = (e: React.DragEvent) => {
         e.preventDefault();
         setIsDragging(false);
         handleFile(e.dataTransfer.files[0]);
     };
+
     const handleRemoveFile = () => {
         setFilePreview(null);
         setImageError(null);
