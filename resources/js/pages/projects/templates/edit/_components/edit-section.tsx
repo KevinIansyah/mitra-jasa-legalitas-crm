@@ -364,7 +364,7 @@ export function EditSection({ services, template }: EditSectionProps) {
                             Menyimpan...
                         </>
                     ) : (
-                        'Simpan Perubahan'
+                        'Simpan'
                     )}
                 </Button>
                 <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={handleCancel} disabled={processing}>

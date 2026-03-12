@@ -1,0 +1,283 @@
+import { useForm } from '@inertiajs/react';
+import { Plus } from 'lucide-react';
+import * as React from 'react';
+import { toast } from 'sonner';
+
+import { DatePicker } from '@/components/date-picker';
+import { Button } from '@/components/ui/button';
+import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Spinner } from '@/components/ui/spinner';
+import { Textarea } from '@/components/ui/textarea';
+
+import staffRoutes from '@/routes/staff';
+import type { Role } from '@/types/role';
+import { AVAILABILITY_STATUSES, type StaffCreateFormData } from '@/types/staff';
+
+export function DrawerAdd({ roles }: { roles: Role[] }) {
+    const [open, setOpen] = React.useState(false);
+
+    const { data, setData, post, processing, errors, reset } = useForm<StaffCreateFormData>({
+        name: '',
+        email: '',
+        phone: '',
+        role: '',
+        password: '',
+        password_confirmation: '',
+        max_concurrent_projects: 5,
+        availability_status: 'available',
+        skills: '',
+        leave_start_date: '',
+        leave_end_date: '',
+        notes: '',
+    });
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        const id = toast.loading('Memproses...', {
+            description: 'Staff sedang ditambahkan.',
+        });
+
+        post(staffRoutes.store().url, {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success('Berhasil', {
+                    description: 'Staff berhasil ditambahkan.',
+                });
+                reset();
+                setOpen(false);
+            },
+            onError: (errors) => {
+                const msg = Object.values(errors)[0] ?? 'Terjadi kesalahan saat menambahkan staff, coba lagi.';
+                toast.error('Gagal', { description: String(msg) });
+            },
+            onFinish: () => {
+                toast.dismiss(id);
+            },
+        });
+    };
+
+    return (
+        <Drawer direction="bottom" open={open} onOpenChange={setOpen}>
+            <DrawerTrigger asChild>
+                <Button className="flex-1 gap-1.5 md:w-30">
+                    <Plus />
+                    Tambah
+                </Button>
+            </DrawerTrigger>
+
+            <DrawerContent className="flex h-screen flex-col">
+                <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 overflow-y-auto">
+                    <DrawerHeader className="px-4">
+                        <DrawerTitle>Tambah Staff Baru</DrawerTitle>
+                        <DrawerDescription>Isi formulir di bawah untuk mendaftarkan akun staff baru ke sistem</DrawerDescription>
+                    </DrawerHeader>
+
+                    <form onSubmit={handleSubmit} className="flex flex-1 flex-col px-4">
+                        <div className="grid gap-4">
+                            {/* Informasi Akun */}
+                            <p className="text-sm font-medium tracking-wide text-muted-foreground uppercase">Informasi Akun</p>
+
+                            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                                <Field>
+                                    <FieldLabel htmlFor="name">
+                                        Nama <span className="text-destructive">*</span>
+                                    </FieldLabel>
+                                    <Input
+                                        id="name"
+                                        type="text"
+                                        required
+                                        autoFocus
+                                        placeholder="Masukkan nama lengkap"
+                                        value={data.name}
+                                        onChange={(e) => setData('name', e.target.value)}
+                                    />
+                                    {errors.name && <FieldError>{errors.name}</FieldError>}
+                                </Field>
+
+                                <Field>
+                                    <FieldLabel htmlFor="role">
+                                        Role <span className="text-destructive">*</span>
+                                    </FieldLabel>
+                                    <Select required value={data.role} onValueChange={(value) => setData('role', value as typeof data.role)}>
+                                        <SelectTrigger id="role">
+                                            <SelectValue placeholder="Pilih role" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectLabel>Status Ketersediaan</SelectLabel>
+                                                {roles.map((item) => {
+                                                    const label = item.name.replace('-', ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+
+                                                    return (
+                                                        <SelectItem key={item.name} value={item.name}>
+                                                            {label}
+                                                        </SelectItem>
+                                                    );
+                                                })}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                    {errors.availability_status && <FieldError>{errors.availability_status}</FieldError>}
+                                </Field>
+
+                                <Field>
+                                    <FieldLabel htmlFor="email">
+                                        Email <span className="text-destructive">*</span>
+                                    </FieldLabel>
+                                    <Input id="email" type="email" required placeholder="nama@email.com" value={data.email} onChange={(e) => setData('email', e.target.value)} />
+                                    {errors.email && <FieldError>{errors.email}</FieldError>}
+                                </Field>
+
+                                <Field>
+                                    <FieldLabel htmlFor="phone">
+                                        Phone <span className="text-destructive">*</span>
+                                    </FieldLabel>
+                                    <Input id="phone" type="text" required placeholder="628xxxxxxxxxx" value={data.phone} onChange={(e) => setData('phone', e.target.value)} />
+                                    {errors.phone && <FieldError>{errors.phone}</FieldError>}
+                                </Field>
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                                <Field>
+                                    <FieldLabel htmlFor="password">
+                                        Password <span className="text-destructive">*</span>
+                                    </FieldLabel>
+                                    <Input
+                                        id="password"
+                                        type="password"
+                                        required
+                                        placeholder="Minimal 8 karakter"
+                                        value={data.password}
+                                        onChange={(e) => setData('password', e.target.value)}
+                                    />
+                                    {errors.password && <FieldError>{errors.password}</FieldError>}
+                                </Field>
+
+                                <Field>
+                                    <FieldLabel htmlFor="password_confirmation">
+                                        Konfirmasi Password <span className="text-destructive">*</span>
+                                    </FieldLabel>
+                                    <Input
+                                        id="password_confirmation"
+                                        type="password"
+                                        required
+                                        placeholder="Ulangi password"
+                                        value={data.password_confirmation}
+                                        onChange={(e) => setData('password_confirmation', e.target.value)}
+                                    />
+                                    {errors.password_confirmation && <FieldError>{errors.password_confirmation}</FieldError>}
+                                </Field>
+                            </div>
+
+                            {/* Profil Staff */}
+                            <p className="mt-2 text-sm font-medium tracking-wide text-muted-foreground uppercase">Profil Staff</p>
+
+                            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                                <Field>
+                                    <FieldLabel htmlFor="availability_status">
+                                        Status Ketersediaan <span className="text-destructive">*</span>
+                                    </FieldLabel>
+                                    <Select
+                                        required
+                                        value={data.availability_status}
+                                        onValueChange={(value) => setData('availability_status', value as typeof data.availability_status)}
+                                    >
+                                        <SelectTrigger id="availability_status">
+                                            <SelectValue placeholder="Pilih status" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectLabel>Status Ketersediaan</SelectLabel>
+                                                {AVAILABILITY_STATUSES.map((item) => (
+                                                    <SelectItem key={item.value} value={item.value}>
+                                                        <span className={`mr-2 inline-block h-2 w-2 rounded-full ${item.classes.replace('text-white', '')}`} />
+                                                        {item.label}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                    {errors.availability_status && <FieldError>{errors.availability_status}</FieldError>}
+                                </Field>
+
+                                <Field>
+                                    <FieldLabel htmlFor="max_concurrent_projects">Maks. Project Bersamaan</FieldLabel>
+                                    <Input
+                                        id="max_concurrent_projects"
+                                        type="number"
+                                        min={1}
+                                        max={20}
+                                        placeholder="5"
+                                        value={data.max_concurrent_projects}
+                                        onChange={(e) => setData('max_concurrent_projects', e.target.value)}
+                                    />
+                                    {errors.max_concurrent_projects && <FieldError>{errors.max_concurrent_projects}</FieldError>}
+                                </Field>
+                            </div>
+
+                            <Field>
+                                <FieldLabel htmlFor="skills">Keahlian</FieldLabel>
+                                <Input
+                                    id="skills"
+                                    type="text"
+                                    placeholder="Contoh: Laravel, React, Desain Grafis (pisahkan dengan koma)"
+                                    value={data.skills}
+                                    onChange={(e) => setData('skills', e.target.value)}
+                                />
+                                {errors.skills && <FieldError>{errors.skills}</FieldError>}
+                            </Field>
+
+                            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                                <Field>
+                                    <FieldLabel htmlFor="leave_start_date">Tanggal Mulai Cuti</FieldLabel>
+                                    <DatePicker value={data.leave_start_date ?? ''} onChange={(value) => setData('leave_start_date', value)} fromYear={2000} toYear={2040} />
+                                    {errors.leave_start_date && <FieldError>{errors.leave_start_date}</FieldError>}
+                                </Field>
+
+                                <Field>
+                                    <FieldLabel htmlFor="leave_end_date">Tanggal Selesai Cuti</FieldLabel>
+                                    <DatePicker value={data.leave_end_date ?? ''} onChange={(value) => setData('leave_end_date', value)} fromYear={2000} toYear={2040} />
+                                    {errors.leave_end_date && <FieldError>{errors.leave_end_date}</FieldError>}
+                                </Field>
+                            </div>
+
+                            <Field>
+                                <FieldLabel htmlFor="notes">Catatan</FieldLabel>
+                                <Textarea
+                                    id="notes"
+                                    className="min-h-24"
+                                    placeholder="Tambahkan catatan jika diperlukan"
+                                    value={data.notes}
+                                    onChange={(e) => setData('notes', e.target.value)}
+                                />
+                                {errors.notes && <FieldError>{errors.notes}</FieldError>}
+                            </Field>
+                        </div>
+
+                        <DrawerFooter className="mt-auto px-0">
+                            <Button type="submit" disabled={processing}>
+                                {processing ? (
+                                    <>
+                                        <Spinner className="mr-2" />
+                                        Menyimpan...
+                                    </>
+                                ) : (
+                                    'Simpan'
+                                )}
+                            </Button>
+                            <DrawerClose asChild>
+                                <Button variant="secondary" type="button">
+                                    Batal
+                                </Button>
+                            </DrawerClose>
+                        </DrawerFooter>
+                    </form>
+                </div>
+            </DrawerContent>
+        </Drawer>
+    );
+}

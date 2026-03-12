@@ -81,7 +81,7 @@ export default function Page() {
                 <div className="flex items-center gap-2">
                     <AsOfFilterSheet asOf={formatDate(filters.as_of)} routeUrl={reportRoutes.balanceSheet().url} />
                     <Button className="flex-1 md:w-30 md:flex-none" asChild>
-                        <a href={`${finances.reports.balanceSheet.pdf}?as_of=${formatDate(filters.as_of)}`} target="_blank" rel="noopener noreferrer">
+                        <a href={`${finances.reports.balanceSheet.pdf.url({ query: { as_of: filters.as_of } })}`} target="_blank" rel="noopener noreferrer">
                             <FileDown className="size-3.5" />
                             Export PDF
                         </a>

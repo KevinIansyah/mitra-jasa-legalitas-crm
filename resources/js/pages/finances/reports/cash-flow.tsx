@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
 import AppLayout from '@/layouts/app-layout';
+
 import { formatRupiah } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
 import finances from '@/routes/finances';
@@ -97,7 +98,7 @@ export default function Page() {
                 <div className="flex items-center gap-2">
                     <PeriodFilterSheet from={filters.from} to={filters.to} routeUrl={finances.reports.cashFlow().url} />
                     <Button className="flex-1 md:w-30 md:flex-none" asChild>
-                        <a href={`${finances.reports.cashFlow.pdf.url}?from=${filters.from}&to=${filters.to}`} target="_blank" rel="noopener noreferrer">
+                        <a href={finances.reports.cashFlow.pdf.url({ query: { from: filters.from, to: filters.to } })} target="_blank" rel="noopener noreferrer">
                             <FileDown className="size-3.5" />
                             Export PDF
                         </a>

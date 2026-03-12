@@ -238,7 +238,7 @@ export function JournalEditDrawer({ entry, open, onOpenChange, accounts }: Props
                                     Menyimpan...
                                 </>
                             ) : (
-                                'Simpan Perubahan'
+                                'Simpan'
                             )}
                         </Button>
                         <DrawerClose asChild>

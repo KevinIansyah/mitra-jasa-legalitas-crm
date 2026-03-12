@@ -3,8 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Laporan Laba Rugi</title>
+  <title>Neraca</title>
   <style>
     * {
       margin: 0;
@@ -50,14 +49,19 @@
       margin-bottom: 4px;
     }
 
-    .section-title.revenue {
-      background: #d1fae5;
-      color: #065f46;
+    .section-title.asset {
+      background: #dbeafe;
+      color: #1e40af;
     }
 
-    .section-title.expense {
-      background: #ffedd5;
-      color: #9a3412;
+    .section-title.liability {
+      background: #ffe4e6;
+      color: #9f1239;
+    }
+
+    .section-title.equity {
+      background: #ede9fe;
+      color: #5b21b6;
     }
 
     table {
@@ -89,42 +93,36 @@
       padding-top: 7px;
     }
 
-    .net-box {
+    .balance-box {
       margin-top: 24px;
-      padding: 14px 16px;
+      padding: 12px 16px;
       border: 2px solid;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
+      gap: 6px;
     }
 
-    .net-box.profit {
+    .balance-box.ok {
       border-color: #10b981;
       background: #f0fdf4;
     }
 
-    .net-box.loss {
+    .balance-box.err {
       border-color: #ef4444;
       background: #fef2f2;
     }
 
-    .net-box .label {
+    .balance-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+    }
+
+    .balance-row.status {
       font-weight: 700;
-      font-size: 13px;
-    }
-
-    .net-box .value {
-      font-weight: 700;
-      font-size: 15px;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .net-box.profit .value {
-      color: #065f46;
-    }
-
-    .net-box.loss .value {
-      color: #991b1b;
+      border-top: 1px solid #d1d5db;
+      padding-top: 6px;
+      margin-top: 2px;
     }
 
     .footer {
@@ -140,59 +138,84 @@
 
 <body>
   <div class="header">
-    <h1>Laporan Laba Rugi</h1>
-    <div class="subtitle">
-      Periode {{ $report['period']['from'] }} s/d {{ $report['period']['to'] }}
+    <h1>Neraca</h1>
+    <div class="subtitle">Per tanggal {{ $report['as_of'] }}</div>
+  </div>
+
+  {{-- Aset --}}
+  <div class="section">
+    <div class="section-title asset">Aset</div>
+    <table>
+      @foreach ($report['assets']['detail'] as $item)
+        <tr>
+          <td class="code">{{ $item['code'] }}</td>
+          <td>{{ $item['name'] }}</td>
+          <td class="amount">{{ number_format($item['amount'], 0, ',', '.') }}</td>
+        </tr>
+      @endforeach
+      <tr class="total">
+        <td class="code"></td>
+        <td>Total Aset</td>
+        <td class="amount">Rp {{ number_format($report['assets']['total'], 0, ',', '.') }}</td>
+      </tr>
+    </table>
+  </div>
+
+  {{-- Kewajiban --}}
+  <div class="section">
+    <div class="section-title liability">Kewajiban</div>
+    <table>
+      @foreach ($report['liabilities']['detail'] as $item)
+        <tr>
+          <td class="code">{{ $item['code'] }}</td>
+          <td>{{ $item['name'] }}</td>
+          <td class="amount">{{ number_format($item['amount'], 0, ',', '.') }}</td>
+        </tr>
+      @endforeach
+      <tr class="total">
+        <td class="code"></td>
+        <td>Total Kewajiban</td>
+        <td class="amount">Rp {{ number_format($report['liabilities']['total'], 0, ',', '.') }}</td>
+      </tr>
+    </table>
+  </div>
+
+  {{-- Ekuitas --}}
+  <div class="section">
+    <div class="section-title equity">Ekuitas</div>
+    <table>
+      @foreach ($report['equity']['detail'] as $item)
+        <tr>
+          <td class="code">{{ $item['code'] }}</td>
+          <td>{{ $item['name'] }}</td>
+          <td class="amount">{{ number_format($item['amount'], 0, ',', '.') }}</td>
+        </tr>
+      @endforeach
+      <tr class="total">
+        <td class="code"></td>
+        <td>Total Ekuitas</td>
+        <td class="amount">Rp {{ number_format($report['equity']['total'], 0, ',', '.') }}</td>
+      </tr>
+    </table>
+  </div>
+
+  {{-- Balance check --}}
+  <div class="balance-box {{ $report['is_balanced'] ? 'ok' : 'err' }}">
+    <div class="balance-row">
+      <span>Total Aset</span>
+      <span>Rp {{ number_format($report['assets']['total'], 0, ',', '.') }}</span>
+    </div>
+    <div class="balance-row">
+      <span>Total Kewajiban + Ekuitas</span>
+      <span>Rp {{ number_format($report['total_liabilities_and_equity'], 0, ',', '.') }}</span>
+    </div>
+    <div class="balance-row status">
+      <span>Status</span>
+      <span>{{ $report['is_balanced'] ? 'Balance ✓' : 'Tidak Balance ✗' }}</span>
     </div>
   </div>
 
-  {{-- Pendapatan --}}
-  <div class="section">
-    <div class="section-title revenue">Pendapatan</div>
-    <table>
-      @foreach ($report['revenue']['detail'] as $item)
-        <tr>
-          <td class="code">{{ $item['code'] }}</td>
-          <td>{{ $item['name'] }}</td>
-          <td class="amount">{{ number_format($item['amount'], 0, ',', '.') }}</td>
-        </tr>
-      @endforeach
-      <tr class="total">
-        <td class="code"></td>
-        <td>Total Pendapatan</td>
-        <td class="amount">Rp {{ number_format($report['revenue']['total'], 0, ',', '.') }}</td>
-      </tr>
-    </table>
-  </div>
-
-  {{-- Beban --}}
-  <div class="section">
-    <div class="section-title expense">Beban</div>
-    <table>
-      @foreach ($report['expense']['detail'] as $item)
-        <tr>
-          <td class="code">{{ $item['code'] }}</td>
-          <td>{{ $item['name'] }}</td>
-          <td class="amount">{{ number_format($item['amount'], 0, ',', '.') }}</td>
-        </tr>
-      @endforeach
-      <tr class="total">
-        <td class="code"></td>
-        <td>Total Beban</td>
-        <td class="amount">Rp {{ number_format($report['expense']['total'], 0, ',', '.') }}</td>
-      </tr>
-    </table>
-  </div>
-
-  {{-- Net --}}
-  <div class="net-box {{ $report['is_profitable'] ? 'profit' : 'loss' }}">
-    <span class="label">{{ $report['is_profitable'] ? 'Laba Bersih' : 'Rugi Bersih' }}</span>
-    <span class="value">Rp {{ number_format(abs($report['net_profit']), 0, ',', '.') }}</span>
-  </div>
-
-  <div class="footer">
-    Dicetak pada {{ now()->format('d/m/Y H:i') }}
-  </div>
+  <div class="footer">Dicetak pada {{ now()->format('d/m/Y H:i') }}</div>
 </body>
 
 </html>

@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { formatRupiah } from '@/lib/service';
 import type { ProjectInvoiceItemFormData } from '@/types/project';
 
@@ -85,7 +86,14 @@ export function InvoiceSummary({ subtotal = 0, taxPercent = 0, discountPercent =
 
             <div className="space-y-2">
                 <Button type="button" className="w-full" disabled={processing} onClick={onSubmit}>
-                    Simpan
+                    {processing ? (
+                        <>
+                            <Spinner className="mr-2" />
+                            Menyimpan...
+                        </>
+                    ) : (
+                        'Simpan'
+                    )}
                 </Button>
             </div>
         </div>

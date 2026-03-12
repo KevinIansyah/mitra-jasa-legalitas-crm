@@ -122,7 +122,7 @@ class FinancialReportController extends Controller
         $to     = Carbon::parse($request->filled('to')   ? $request->to   : now()->endOfMonth())->endOfDay();
         $report = FinancialReportService::cashFlow($from, $to);
 
-        return Pdf::loadView('finances.reports.cash-flow', compact('report'))
+        return Pdf::loadView('pdf.finances.reports.cash-flow', compact('report'))
             ->setPaper('a4', 'portrait')
             ->download('arus-kas-' . $from->format('Ymd') . '-' . $to->format('Ymd') . '.pdf');
     }

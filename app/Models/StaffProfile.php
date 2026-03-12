@@ -71,4 +71,40 @@ class StaffProfile extends Model
     {
         return $this->skills ? implode(', ', $this->skills) : '';
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | HELPERS 
+    |--------------------------------------------------------------------------
+    */
+
+    public function hasTokenQuota(int $estimatedTokens = 0): bool
+    {
+        $this->resetDailyTokensIfNeeded();
+        return ($this->used_tokens_today + $estimatedTokens) <= $this->daily_token_limit;
+    }
+
+    public function consumeTokens(int $tokens): void
+    {
+        $this->resetDailyTokensIfNeeded();
+        $this->increment('used_tokens_today', $tokens);
+    }
+
+    public function remainingTokens(): int
+    {
+        $this->resetDailyTokensIfNeeded();
+        return max(0, $this->daily_token_limit - $this->used_tokens_today);
+    }
+
+    private function resetDailyTokensIfNeeded(): void
+    {
+        $today = now()->toDateString();
+
+        if ($this->token_usage_reset_date !== $today) {
+            $this->update([
+                'used_tokens_today'       => 0,
+                'token_usage_reset_date'  => $today,
+            ]);
+        }
+    }
 }

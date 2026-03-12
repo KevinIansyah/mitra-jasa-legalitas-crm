@@ -321,16 +321,44 @@ body {
     @apply my-2 border-l-4 border-muted-foreground pl-4 text-muted-foreground italic;
 }
 
-.tiptap img {
+/* .tiptap img {
     @apply mx-auto my-4 block h-auto max-w-[50%] cursor-pointer rounded-lg;
 }
 
 .tiptap img:hover {
-    @apply ring-1 ring-primary;
+    @apply ring-1 ring-border;
 }
 
 .tiptap img.ProseMirror-selectednode {
-    @apply ring-1 ring-primary;
+    @apply ring-1 ring-border;
+} */
+
+.tiptap figure {
+    @apply my-4 flex w-full flex-col items-center;
+}
+
+.tiptap figure img {
+    @apply max-w-full rounded-md lg:max-w-[80%];
+}
+
+.tiptap figure figcaption {
+    @apply mt-1 w-full text-center text-sm text-muted-foreground italic;
+    min-height: 1.5em;
+}
+
+.tiptap figure figcaption.is-empty::before {
+    content: 'Tulis caption...';
+    @apply text-muted-foreground/50;
+    pointer-events: none;
+    float: left;
+}
+
+.tiptap div[data-youtube-video] {
+    @apply my-4;
+}
+
+.tiptap div[data-youtube-video] iframe {
+    @apply aspect-video w-full rounded-md lg:max-w-[80%] mx-auto;
 }
 
 .tiptap [style*='text-align: center'] {

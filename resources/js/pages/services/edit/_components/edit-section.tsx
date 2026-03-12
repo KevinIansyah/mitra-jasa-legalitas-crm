@@ -81,10 +81,9 @@ type EditSectionProps = {
     categories: ServiceCategory[];
 };
 
-const R2_PUBLIC_URL = import.meta.env.VITE_CLOUDFLARE_R2_URL;
+const R2_PUBLIC_URL = import.meta.env.VITE_CLOUDFLARE_R2_PUBLIC_URL;
 
 export function EditSection({ service, categories }: EditSectionProps) {
-    console.log(`${R2_PUBLIC_URL}/${service.featured_image}`);
     const [activeTab, setActiveTab] = useState<TabId>('basic-information');
     const [imagePreview, setImagePreview] = useState<{ src: string; name: string; size: number } | null>(
         service.featured_image
@@ -717,8 +716,8 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                                 imageError
                                                     ? 'border-destructive bg-destructive/5'
                                                     : isDragging
-                                                      ? 'border-primary bg-primary/10'
-                                                      : 'border-border hover:border-primary hover:bg-muted/40',
+                                                      ? 'border-border bg-muted/40'
+                                                      : 'border-border hover:border-border hover:bg-muted/40',
                                             ].join(' ')}
                                         >
                                             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
@@ -820,7 +819,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                     Menyimpan...
                                 </>
                             ) : (
-                                'Simpan Perubahan'
+                                'Simpan'
                             )}
                         </Button>
                         <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
@@ -864,7 +863,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                     Menyimpan...
                                 </>
                             ) : (
-                                'Simpan Perubahan'
+                                'Simpan'
                             )}
                         </Button>
                         <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
@@ -947,7 +946,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                     Menyimpan...
                                 </>
                             ) : (
-                                'Simpan Perubahan'
+                                'Simpan'
                             )}
                         </Button>
                         <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
@@ -1030,7 +1029,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                     Menyimpan...
                                 </>
                             ) : (
-                                'Simpan Perubahan'
+                                'Simpan'
                             )}
                         </Button>
                         <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
@@ -1113,7 +1112,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                     Menyimpan...
                                 </>
                             ) : (
-                                'Simpan Perubahan'
+                                'Simpan'
                             )}
                         </Button>
                         <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
@@ -1196,7 +1195,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                     Menyimpan...
                                 </>
                             ) : (
-                                'Simpan Perubahan'
+                                'Simpan'
                             )}
                         </Button>
                         <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
@@ -1279,7 +1278,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                     Menyimpan...
                                 </>
                             ) : (
-                                'Simpan Perubahan'
+                                'Simpan'
                             )}
                         </Button>
                         <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>

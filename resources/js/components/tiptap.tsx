@@ -13,8 +13,10 @@ import TableRow from '@tiptap/extension-table-row';
 import TextAlign from '@tiptap/extension-text-align';
 import { TextStyle } from '@tiptap/extension-text-style';
 import Underline from '@tiptap/extension-underline';
+import Youtube from '@tiptap/extension-youtube';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import axios from 'axios';
 import { common, createLowlight } from 'lowlight';
 import {
     AlignLeft,
@@ -26,7 +28,6 @@ import {
     Strikethrough,
     Code,
     Heading,
-    Heading1,
     Heading2,
     Heading3,
     List,
@@ -48,22 +49,33 @@ import {
     Table as TableIcon,
     CodeSquare,
     Minus,
+    YoutubeIcon,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
+import tiptap from '@/routes/tiptap';
+import { ImageCaption, ImageFigure } from './tiptap/extension/image-caption';
+import { Spinner } from './ui/spinner';
 
 const lowlight = createLowlight(common);
 
 interface TiptapProps {
     content?: string;
     onChange?: (html: string) => void;
+    uploadUrl?: string;
 }
 
-const Tiptap = ({ content = '', onChange }: TiptapProps) => {
+const Tiptap = ({ content = '', onChange, uploadUrl = tiptap.imageUpload().url }: TiptapProps) => {
+    const [isUploading, setIsUploading] = useState(false);
+    const [youtubeUrl, setYoutubeUrl] = useState('');
+    const [isYoutubeOpen, setIsYoutubeOpen] = useState(false);
+    const [imageUrl, setImageUrl] = useState('');
+    const [isImageUrlOpen, setIsImageUrlOpen] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [linkUrl, setLinkUrl] = useState('');
     const [isLinkOpen, setIsLinkOpen] = useState(false);
@@ -83,10 +95,6 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
             CodeBlockLowlight.configure({
                 lowlight,
                 defaultLanguage: 'javascript',
-            }),
-            Image.configure({
-                inline: true,
-                allowBase64: true,
             }),
             TextAlign.configure({
                 types: ['heading', 'paragraph', 'image'],
@@ -111,6 +119,16 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
             TableRow,
             TableHeader,
             TableCell,
+            ImageFigure,
+            ImageCaption,
+            Image.configure({ inline: false }),
+            Youtube.configure({
+                controls: true,
+                nocookie: true,
+                HTMLAttributes: {
+                    class: 'w-full rounded-md aspect-video',
+                },
+            }),
         ],
         content: content || '<p>Hello World! 🌎️</p>',
         immediatelyRender: false,
@@ -137,27 +155,54 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
         return null;
     }
 
-    const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file) return;
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const base64 = e.target?.result as string;
-            editor.chain().focus().setImage({ src: base64 }).run();
-        };
-        reader.readAsDataURL(file);
+        setIsUploading(true);
+        try {
+            const formData = new FormData();
+            formData.append('image', file);
 
-        if (fileInputRef.current) {
-            fileInputRef.current.value = '';
+            const { data } = await axios.post(uploadUrl, formData);
+
+            editor
+                .chain()
+                .focus()
+                .insertContent({
+                    type: 'imageFigure',
+                    content: [
+                        { type: 'image', attrs: { src: data.url } },
+                        { type: 'imageCaption', content: [{ type: 'text', text: 'Tulis caption...' }] },
+                    ],
+                })
+                .run();
+        } catch (errors) {
+            let msg = 'Terjadi kesalahan saat mengunggah gambar, coba lagi.';
+
+            if (axios.isAxiosError(errors)) {
+                msg = errors.response?.data?.message || Object.values(errors.response?.data?.errors || {})[0] || msg;
+            }
+
+            toast.error(msg);
+        } finally {
+            setIsUploading(false);
+            if (fileInputRef.current) fileInputRef.current.value = '';
         }
     };
 
+    const insertYoutube = () => {
+        if (!youtubeUrl) return;
+        editor.chain().focus().setYoutubeVideo({ src: youtubeUrl }).run();
+        setYoutubeUrl('');
+        setIsYoutubeOpen(false);
+    };
+
     const addImageFromUrl = () => {
-        const url = window.prompt('Masukkan URL gambar:');
-        if (url) {
-            editor.chain().focus().setImage({ src: url }).run();
-        }
+        if (!imageUrl) return;
+        editor.chain().focus().setImage({ src: imageUrl }).run();
+        setImageUrl('');
+        setIsImageUrlOpen(false);
     };
 
     const setLink = () => {
@@ -203,11 +248,11 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
             <div className="flex flex-wrap items-center gap-1 border-b bg-input/30 p-2">
                 {/* History */}
                 <Button type="button" variant="ghost" size="sm" onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()} title="Undo">
-                    <Undo className="h-4 w-4" />
+                    <Undo className="size-4" />
                 </Button>
 
                 <Button type="button" variant="ghost" size="sm" onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()} title="Redo">
-                    <Redo className="h-4 w-4" />
+                    <Redo className="size-4" />
                 </Button>
 
                 <Separator orientation="vertical" className="min-h-8" />
@@ -216,25 +261,21 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button type="button" variant="ghost" size="sm" title="Heading">
-                            <Heading className="h-4 w-4" />
+                            <Heading className="size-4" />
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-40 p-2">
                         <div className="flex flex-col gap-1">
-                            <Button variant="ghost" size="sm" className="justify-start" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}>
-                                <Heading1 className="h-4 w-4" />
-                                Heading 1
-                            </Button>
                             <Button variant="ghost" size="sm" className="justify-start" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>
-                                <Heading2 className="h-4 w-4" />
+                                <Heading2 className="size-4" />
                                 Heading 2
                             </Button>
                             <Button variant="ghost" size="sm" className="justify-start" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}>
-                                <Heading3 className="h-4 w-4" />
+                                <Heading3 className="size-4" />
                                 Heading 3
                             </Button>
                             <Button variant="ghost" size="sm" className="justify-start" onClick={() => editor.chain().focus().setParagraph().run()}>
-                                <Pilcrow className="h-4 w-4" />
+                                <Pilcrow className="size-4" />
                                 Paragraph
                             </Button>
                         </div>
@@ -245,7 +286,7 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
 
                 {/* Text Formatting */}
                 <Button type="button" variant={editor.isActive('bold') ? 'default' : 'ghost'} size="sm" onClick={() => editor.chain().focus().toggleBold().run()} title="Bold">
-                    <Bold className="h-4 w-4" />
+                    <Bold className="size-4" />
                 </Button>
 
                 <Button
@@ -255,7 +296,7 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
                     onClick={() => editor.chain().focus().toggleItalic().run()}
                     title="Italic"
                 >
-                    <Italic className="h-4 w-4" />
+                    <Italic className="size-4" />
                 </Button>
 
                 <Button
@@ -265,7 +306,7 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
                     onClick={() => editor.chain().focus().toggleStrike().run()}
                     title="Strikethrough"
                 >
-                    <Strikethrough className="h-4 w-4" />
+                    <Strikethrough className="size-4" />
                 </Button>
 
                 <Button
@@ -275,7 +316,7 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
                     onClick={() => editor.chain().focus().toggleCode().run()}
                     title="Inline Code"
                 >
-                    <Code className="h-4 w-4" />
+                    <Code className="size-4" />
                 </Button>
 
                 <Button
@@ -285,7 +326,7 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
                     onClick={() => editor.chain().focus().toggleCodeBlock().run()}
                     title="Code Block"
                 >
-                    <CodeSquare className="h-4 w-4" />
+                    <CodeSquare className="size-4" />
                 </Button>
 
                 <Button
@@ -295,7 +336,7 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
                     onClick={() => editor.chain().focus().toggleUnderline().run()}
                     title="Underline"
                 >
-                    <UnderlineIcon className="h-4 w-4" />
+                    <UnderlineIcon className="size-4" />
                 </Button>
 
                 <Button
@@ -305,19 +346,16 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
                     onClick={() => editor.chain().focus().toggleHighlight().run()}
                     title="Highlight"
                 >
-                    <Highlighter className="h-4 w-4" />
+                    <Highlighter className="size-4" />
                 </Button>
 
                 <Separator orientation="vertical" className="min-h-8" />
-
-                {/* ... rest of your toolbar buttons ... */}
-                {/* Link, Color, Alignment, Lists, Table, Image, etc. - tetap sama seperti sebelumnya */}
 
                 {/* Link */}
                 <Popover open={isLinkOpen} onOpenChange={setIsLinkOpen}>
                     <PopoverTrigger asChild>
                         <Button type="button" variant={editor.isActive('link') ? 'default' : 'ghost'} size="sm" title="Add Link">
-                            <Link2 className="h-4 w-4" />
+                            <Link2 className="size-4" />
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-80">
@@ -340,7 +378,7 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
                 </Popover>
 
                 <Button type="button" variant="ghost" size="sm" onClick={() => editor.chain().focus().unsetLink().run()} disabled={!editor.isActive('link')} title="Remove Link">
-                    <Unlink className="h-4 w-4" />
+                    <Unlink className="size-4" />
                 </Button>
 
                 <Separator orientation="vertical" className="min-h-8" />
@@ -349,7 +387,7 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button type="button" variant="ghost" size="sm" title="Text Color">
-                            <Palette className="h-4 w-4" />
+                            <Palette className="size-4" />
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-64">
@@ -379,7 +417,7 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
                     onClick={() => editor.chain().focus().toggleSuperscript().run()}
                     title="Superscript"
                 >
-                    <SuperscriptIcon className="h-4 w-4" />
+                    <SuperscriptIcon className="size-4" />
                 </Button>
 
                 <Button
@@ -389,7 +427,7 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
                     onClick={() => editor.chain().focus().toggleSubscript().run()}
                     title="Subscript"
                 >
-                    <SubscriptIcon className="h-4 w-4" />
+                    <SubscriptIcon className="size-4" />
                 </Button>
 
                 <Separator orientation="vertical" className="min-h-8" />
@@ -402,7 +440,7 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
                     onClick={() => editor.chain().focus().setTextAlign('left').run()}
                     title="Align Left"
                 >
-                    <AlignLeft className="h-4 w-4" />
+                    <AlignLeft className="size-4" />
                 </Button>
 
                 <Button
@@ -412,7 +450,7 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
                     onClick={() => editor.chain().focus().setTextAlign('center').run()}
                     title="Align Center"
                 >
-                    <AlignCenter className="h-4 w-4" />
+                    <AlignCenter className="size-4" />
                 </Button>
 
                 <Button
@@ -422,7 +460,7 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
                     onClick={() => editor.chain().focus().setTextAlign('right').run()}
                     title="Align Right"
                 >
-                    <AlignRight className="h-4 w-4" />
+                    <AlignRight className="size-4" />
                 </Button>
 
                 <Button
@@ -432,7 +470,7 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
                     onClick={() => editor.chain().focus().setTextAlign('justify').run()}
                     title="Justify"
                 >
-                    <AlignJustify className="h-4 w-4" />
+                    <AlignJustify className="size-4" />
                 </Button>
 
                 <Separator orientation="vertical" className="min-h-8" />
@@ -445,7 +483,7 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
                     onClick={() => editor.chain().focus().toggleBulletList().run()}
                     title="Bullet List"
                 >
-                    <List className="h-4 w-4" />
+                    <List className="size-4" />
                 </Button>
 
                 <Button
@@ -455,7 +493,7 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
                     onClick={() => editor.chain().focus().toggleOrderedList().run()}
                     title="Numbered List"
                 >
-                    <ListOrdered className="h-4 w-4" />
+                    <ListOrdered className="size-4" />
                 </Button>
 
                 <Button
@@ -465,11 +503,11 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
                     onClick={() => editor.chain().focus().toggleBlockquote().run()}
                     title="Quote"
                 >
-                    <Quote className="h-4 w-4" />
+                    <Quote className="size-4" />
                 </Button>
 
                 <Button type="button" variant="ghost" size="sm" onClick={() => editor.chain().focus().setHorizontalRule().run()} title="Horizontal Line">
-                    <Minus className="h-4 w-4" />
+                    <Minus className="size-4" />
                 </Button>
 
                 <Separator orientation="vertical" className="min-h-8" />
@@ -478,7 +516,7 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button type="button" variant={editor.isActive('table') ? 'default' : 'ghost'} size="sm" title="Table">
-                            <TableIcon className="h-4 w-4" />
+                            <TableIcon className="size-4" />
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-56 p-2">
@@ -592,9 +630,34 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
                 <Separator orientation="vertical" className="min-h-8" />
 
                 {/* Image */}
-                <Button type="button" variant="ghost" size="sm" onClick={() => fileInputRef.current?.click()} title="Upload Image">
-                    <ImagePlus className="h-4 w-4" />
+                <Button type="button" variant="ghost" size="sm" onClick={() => fileInputRef.current?.click()} disabled={isUploading} title="Upload Image">
+                    {isUploading ? <Spinner className="size-4" /> : <ImagePlus className="size-4" />}
                 </Button>
+
+                {/* YouTube */}
+                <Popover open={isYoutubeOpen} onOpenChange={setIsYoutubeOpen}>
+                    <PopoverTrigger asChild>
+                        <Button type="button" variant="ghost" size="sm" title="Embed YouTube">
+                            <YoutubeIcon className="h-4 w-4" />
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-80">
+                        <div className="space-y-2">
+                            <Label>YouTube URL</Label>
+                            <div className="flex gap-2">
+                                <Input
+                                    placeholder="https://youtube.com/watch?v=..."
+                                    value={youtubeUrl}
+                                    onChange={(e) => setYoutubeUrl(e.target.value)}
+                                    onKeyDown={(e) => e.key === 'Enter' && insertYoutube()}
+                                />
+                                <Button type="button" onClick={insertYoutube}>
+                                    Embed
+                                </Button>
+                            </div>
+                        </div>
+                    </PopoverContent>
+                </Popover>
 
                 <Separator orientation="vertical" className="min-h-8" />
 
@@ -602,19 +665,39 @@ const Tiptap = ({ content = '', onChange }: TiptapProps) => {
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button type="button" variant="ghost" size="sm" title="More">
-                            <MoreHorizontal className="h-4 w-4" />
+                            <MoreHorizontal className="size-4" />
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-48 p-1">
                         <div className="flex flex-col gap-1">
                             <Button type="button" variant="ghost" size="sm" className="justify-start" onClick={() => editor.chain().focus().clearNodes().unsetAllMarks().run()}>
-                                <RemoveFormatting className="mr-2 h-4 w-4" />
+                                <RemoveFormatting className="mr-2 size-4" />
                                 Clear Format
                             </Button>
-                            <Button type="button" variant="ghost" size="sm" className="justify-start" onClick={addImageFromUrl}>
-                                <Link2 className="mr-2 h-4 w-4" />
-                                Image from URL
-                            </Button>
+                            <Popover open={isImageUrlOpen} onOpenChange={setIsImageUrlOpen}>
+                                <PopoverTrigger asChild>
+                                    <Button type="button" variant="ghost" size="sm" className="justify-start">
+                                        <Link2 className="mr-2 size-4" />
+                                        Image from URL
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-80">
+                                    <div className="space-y-2">
+                                        <Label>URL Gambar</Label>
+                                        <div className="flex gap-2">
+                                            <Input
+                                                placeholder="https://example.com/image.jpg"
+                                                value={imageUrl}
+                                                onChange={(e) => setImageUrl(e.target.value)}
+                                                onKeyDown={(e) => e.key === 'Enter' && addImageFromUrl()}
+                                            />
+                                            <Button type="button" onClick={addImageFromUrl}>
+                                                Insert
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </PopoverContent>
+                            </Popover>
                         </div>
                     </PopoverContent>
                 </Popover>

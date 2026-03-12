@@ -69,6 +69,22 @@ export function NavMain({ section }: { section: NavSection }) {
             return currentPath.startsWith('/projects/deliverables');
         }
 
+        // =========================
+        // STAFF MANAGEMENT
+        // =========================
+
+        if (itemPath === '/staff') {
+            return currentPath === '/staff' || /^\/staff\/\d+$/.test(currentPath);
+        }
+
+        if (itemPath === '/staff/my-task') {
+            return currentPath.includes('/my-task');
+        }
+
+        if (itemPath === '/staff/my-projects') {
+            return currentPath.includes('/my-projects');
+        }
+
         return currentPath.startsWith(itemPath);
     };
 

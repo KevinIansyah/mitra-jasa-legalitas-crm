@@ -62,7 +62,7 @@ export function DialogManageAccount({ customer, open, onOpenChange }: Props) {
                 toast.error('Gagal', { description: message });
             }
         } catch (errors) {
-            let msg = 'Terjadi kesalahan, coba lagi.';
+            let msg = 'Terjadi kesalahan saat memeriksa email, coba lagi.';
 
             if (axios.isAxiosError(errors)) {
                 msg = errors.response?.data?.message || (Object.values(errors.response?.data?.errors || {})[0] as string) || msg;
@@ -89,7 +89,7 @@ export function DialogManageAccount({ customer, open, onOpenChange }: Props) {
             router.reload({ only: ['customers'] });
             onOpenChange(false);
         } catch (errors) {
-            let msg = 'Gagal menghubungkan akun, coba lagi.';
+            let msg = 'Terjadi kesalahan saat menghubungkan akun, coba lagi.';
 
             if (axios.isAxiosError(errors)) {
                 msg = errors.response?.data?.message || (Object.values(errors.response?.data?.errors || {})[0] as string) || msg;
@@ -115,7 +115,7 @@ export function DialogManageAccount({ customer, open, onOpenChange }: Props) {
             setStep('credentials');
             toast.success('Berhasil', { description: 'Akun berhasil dibuat.' });
         } catch (errors) {
-            let msg = 'Gagal membuat akun, coba lagi.';
+            let msg = 'Terjadi kesalahan saat membuat akun, coba lagi.';
 
             if (axios.isAxiosError(errors)) {
                 msg = errors.response?.data?.message || (Object.values(errors.response?.data?.errors || {})[0] as string) || msg;
@@ -141,7 +141,7 @@ export function DialogManageAccount({ customer, open, onOpenChange }: Props) {
             router.reload({ only: ['customers'] });
             onOpenChange(false);
         } catch (errors) {
-            let msg = 'Gagal mencabut akun, coba lagi.';
+            let msg = 'Terjadi kesalahan saat mencabut akun, coba lagi.';
 
             if (axios.isAxiosError(errors)) {
                 msg = errors.response?.data?.message || (Object.values(errors.response?.data?.errors || {})[0] as string) || msg;

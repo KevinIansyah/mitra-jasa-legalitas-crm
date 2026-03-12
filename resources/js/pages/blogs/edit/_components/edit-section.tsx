@@ -844,7 +844,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                     Menyimpan...
                                 </>
                             ) : (
-                                'Simpan Perubahan'
+                                'Simpan'
                             )}
                         </Button>
                         <Button type="button" variant="outline" onClick={() => router.visit(services.index().url)}>
@@ -889,7 +889,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                     Menyimpan...
                                 </>
                             ) : (
-                                'Simpan Perubahan'
+                                'Simpan'
                             )}
                         </Button>
                         <Button type="button" variant="outline" onClick={() => router.visit(services.index().url)}>
@@ -970,7 +970,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                     Menyimpan...
                                 </>
                             ) : (
-                                'Simpan Perubahan'
+                                'Simpan'
                             )}
                         </Button>
                         <Button type="button" variant="outline" onClick={() => router.visit(services.index().url)}>
@@ -1051,7 +1051,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                     Menyimpan...
                                 </>
                             ) : (
-                                'Simpan Perubahan'
+                                'Simpan'
                             )}
                         </Button>
                         <Button type="button" variant="outline" onClick={() => router.visit(services.index().url)}>
@@ -1132,7 +1132,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                     Menyimpan...
                                 </>
                             ) : (
-                                'Simpan Perubahan'
+                                'Simpan'
                             )}
                         </Button>
                         <Button type="button" variant="outline" onClick={() => router.visit(services.index().url)}>
@@ -1213,7 +1213,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                     Menyimpan...
                                 </>
                             ) : (
-                                'Simpan Perubahan'
+                                'Simpan'
                             )}
                         </Button>
                         <Button type="button" variant="outline" onClick={() => router.visit(services.index().url)}>
@@ -1294,7 +1294,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                     Menyimpan...
                                 </>
                             ) : (
-                                'Simpan Perubahan'
+                                'Simpan'
                             )}
                         </Button>
                         <Button type="button" variant="outline" onClick={() => router.visit(services.index().url)}>

@@ -105,7 +105,7 @@ export function DrawerEdit({ roleId, open, onOpenChange }: DrawerEditProps) {
 
                             <DrawerFooter className="mt-auto px-0">
                                 <Button type="button" ref={loadingFocusRef}>
-                                    Simpan Perubahan
+                                    Simpan
                                 </Button>
                                 <DrawerClose asChild>
                                     <Button variant="outline" type="button">

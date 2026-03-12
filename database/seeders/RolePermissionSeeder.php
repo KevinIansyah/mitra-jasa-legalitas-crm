@@ -82,6 +82,15 @@ class RolePermissionSeeder extends Seeder
             'edit-project-discussions',
             'delete-project-discussions',
 
+            'view-staff',
+            'create-staff',
+            'edit-staff',
+            'delete-staff',
+
+            'view-staff-my-task',
+
+            'view-staff-my-project',
+
             'view-finance-quotes',
             'edit-finance-quotes',
             'delete-finance-quotes',

@@ -145,7 +145,7 @@ export function DrawerEdit({ categoryId, open, onOpenChange }: DrawerEditProps) 
                             <DrawerFooter className="mt-auto px-0">
                                 <Button type="submit" disabled={processing}>
                                     {processing && <Spinner />}
-                                    Simpan Perubahan
+                                    Simpan
                                 </Button>
                                 <DrawerClose asChild>
                                     <Button variant="outline" type="button">

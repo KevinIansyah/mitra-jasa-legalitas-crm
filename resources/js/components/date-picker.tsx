@@ -41,7 +41,7 @@ export function DatePicker({ value, onChange, placeholder = 'Pilih tanggal', fro
                         <SelectTrigger className="h-8 flex-1">
                             <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="max-h-70 overflow-y-auto">
                             {MONTHS.map((name, i) => (
                                 <SelectItem key={i} value={String(i)}>
                                     {name}
@@ -54,7 +54,7 @@ export function DatePicker({ value, onChange, placeholder = 'Pilih tanggal', fro
                         <SelectTrigger className="h-8 w-20">
                             <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="max-h-70 overflow-y-auto">
                             {years.map((year) => (
                                 <SelectItem key={year} value={String(year)}>
                                     {year}

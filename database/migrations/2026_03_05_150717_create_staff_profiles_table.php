@@ -17,6 +17,13 @@ return new class extends Migration
             $table->date('leave_start_date')->nullable();
             $table->date('leave_end_date')->nullable();
             $table->text('notes')->nullable();
+
+            // AI Token Limiter
+            $table->unsignedBigInteger('daily_token_limit')->default(100000);
+            $table->unsignedBigInteger('used_tokens_today')->default(0);
+            $table->date('token_usage_reset_date')->nullable();
+
+
             $table->timestamps();
         });
     }

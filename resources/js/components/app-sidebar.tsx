@@ -15,16 +15,20 @@ import { index as deliverablesIndex } from '@/routes/projects/deliverables';
 import { index as documentsIndex } from '@/routes/projects/documents';
 import roles from '@/routes/roles';
 import services from '@/routes/services';
+import staffRoutes from '@/routes/staff';
 import type { NavItem, NavSection } from '@/types';
+import { usePage } from '@inertiajs/react';
+import type { SharedData } from '@/types';
 
-const allNavData: {
+function buildNavData(userId: number): {
     navMain: NavSection;
     navCrm: NavSection;
     navManagement: NavSection;
     navContentSeo: NavSection;
     navChatbot: NavSection;
     navSettings: NavSection;
-} = {
+} {
+return {
     navMain: {
         title: 'Utama',
         items: [
@@ -99,12 +103,24 @@ const allNavData: {
         items: [
             {
                 title: 'Staff & Task',
-                url: '#',
+                url: staffRoutes.index().url,
                 icon: Clock,
                 items: [
-                    { title: 'Daftar Staff', url: '#' },
-                    { title: 'My Task', url: '#' },
-                    { title: 'My Project', url: '#' },
+                    {
+                        title: 'Daftar Staff',
+                        url: staffRoutes.index().url,
+                        permission: 'view-staff',
+                    },
+                    {
+                        title: 'My Tasks',
+                        url: staffRoutes.myTasks(userId).url,
+                        permission: 'view-staff-my-task',
+                    },
+                    {
+                        title: 'My Projects',
+                        url: staffRoutes.myProjects(userId).url,
+                        permission: 'view-staff-my-project',
+                    },
                 ],
             },
             {
@@ -281,10 +297,12 @@ const allNavData: {
             },
         ],
     },
-};
+};}
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { hasPermission } = usePermission();
+    const { auth } = usePage<SharedData>().props;
+    const allNavData = buildNavData(auth.user.id);
 
     const filterMenuItems = (items: NavItem[]): NavItem[] => {
         return items

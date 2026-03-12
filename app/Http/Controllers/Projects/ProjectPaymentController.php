@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Projects;
 
 use App\Http\Controllers\Controller;
 use App\Helpers\FileHelper;
+use App\Http\Requests\Projects\Payments\StoreRequest;
+use App\Http\Requests\Projects\Payments\UpdateRequest;
 use App\Models\ProjectInvoice;
 use App\Models\ProjectPayment;
 use Illuminate\Http\Request;
@@ -70,16 +72,9 @@ class ProjectPaymentController extends Controller
         ]);
     }
 
-    public function store(Request $request, ProjectInvoice $invoice)
+    public function store(StoreRequest $request, ProjectInvoice $invoice)
     {
-        $validated = $request->validate([
-            'amount'           => 'required|numeric|min:0',
-            'payment_date'     => 'required|date',
-            'payment_method'   => 'nullable|string',
-            'reference_number' => 'nullable|string|max:255',
-            'proof_file'       => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf|max:5120',
-            'notes'            => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         if ($request->hasFile('proof_file')) {
             $fileData = FileHelper::uploadToR2(
@@ -94,21 +89,12 @@ class ProjectPaymentController extends Controller
         return back()->with('success', 'Pembayaran berhasil ditambahkan.');
     }
 
-    public function update(Request $request, ProjectInvoice $invoice, ProjectPayment $payment)
+    public function update(UpdateRequest $request, ProjectInvoice $invoice, ProjectPayment $payment)
     {
         if ($error = $this->validatePaymentBelongsToInvoice($invoice, $payment)) return $error;
         if ($error = $this->validatePaymentEditable($payment)) return $error;
 
-        $validated = $request->validate([
-            'amount'            => 'required|numeric|min:0',
-            'payment_date'      => 'required|date',
-            'payment_method'    => 'nullable|string',
-            'reference_number'  => 'nullable|string|max:255',
-            'proof_file'        => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf|max:5120',
-            'remove_proof_file' => 'nullable|boolean',
-            'notes'             => 'nullable|string',
-            'resubmit'          => 'nullable|boolean',
-        ]);
+        $validated = $request->validated();
 
         if ($request->boolean('remove_proof_file') && $payment->proof_file) {
             FileHelper::deleteFromR2($payment->proof_file);

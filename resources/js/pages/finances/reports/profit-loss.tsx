@@ -82,7 +82,7 @@ export default function Page() {
                 <div className="flex items-center gap-2">
                     <PeriodFilterSheet from={filters.from} to={filters.to} routeUrl={reportRoutes.profitLoss().url} />
                     <Button className="flex-1 md:w-30 md:flex-none" asChild>
-                        <a href={`${finances.reports.profitLoss().url}?from=${filters.from}&to=${filters.to}`} target="_blank" rel="noopener noreferrer">
+                        <a href={finances.reports.profitLoss.pdf.url({ query: { from: filters.from, to: filters.to } })} target="_blank" rel="noopener noreferrer">
                             <FileDown className="size-3.5" />
                             Export PDF
                         </a>
@@ -202,7 +202,7 @@ export default function Page() {
                                 <p className="flex h-32 items-center justify-center text-sm text-muted-foreground">Tidak ada pendapatan dalam periode ini.</p>
                             )}
                             {report.revenue.detail.length > 0 && (
-                                <div className="flex items-center justify-between pt-3 border-t text-sm font-medium">
+                                <div className="flex items-center justify-between border-t pt-3 text-sm font-medium">
                                     <span>Total</span>
                                     <span className="tabular-nums">{formatRupiah(report.revenue.total)}</span>
                                 </div>
@@ -230,7 +230,7 @@ export default function Page() {
                                 <p className="flex h-32 items-center justify-center text-sm text-muted-foreground">Tidak ada beban dalam periode ini.</p>
                             )}
                             {report.expense.detail.length > 0 && (
-                                <div className="flex items-center justify-between pt-3 border-t text-sm font-medium">
+                                <div className="flex items-center justify-between border-t pt-3 text-sm font-medium">
                                     <span>Total</span>
                                     <span className="tabular-nums">{formatRupiah(report.expense.total)}</span>
                                 </div>

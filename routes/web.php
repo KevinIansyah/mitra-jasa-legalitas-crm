@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\TiptapController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
@@ -130,6 +131,18 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
 
 /*
 |--------------------------------------------------------------------------
+| TIPTAP IMAGE UPLOAD
+|--------------------------------------------------------------------------
+| POST /editor/image-upload -> Upload image to Tiptap
+|--------------------------------------------------------------------------
+*/
+
+Route::post('/tiptap/image-upload', [TiptapController::class, 'store'])
+    ->middleware(['auth'])
+    ->name('tiptap.image-upload');
+
+/*
+|--------------------------------------------------------------------------
 | FILE ACCESS (PRIVATE)
 |--------------------------------------------------------------------------
 | GET /files/{path} -> Serve private file (auth + verified + permission)
@@ -199,3 +212,4 @@ require __DIR__ . '/contacts.php';
 require __DIR__ . '/services.php';
 require __DIR__ . '/projects.php';
 require __DIR__ . '/finances.php';
+require __DIR__ . '/staff.php';

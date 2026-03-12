@@ -3,9 +3,9 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
+import finances from '@/routes/finances';
 import type { Vendor, VendorFormData } from '@/types/vendors';
 import { VendorForm } from '../../_components/vendor-form';
-import finances from '@/routes/finances';
 
 type VendorFormErrors = Partial<Record<string, string>>;
 
@@ -71,7 +71,7 @@ export default function EditSection({ vendor, isEdit }: EditSectionProps) {
                             Menyimpan...
                         </>
                     ) : (
-                        'Simpan Perubahan'
+                        'Simpan'
                     )}
                 </Button>
                 <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={handleCancel} disabled={processing}>
