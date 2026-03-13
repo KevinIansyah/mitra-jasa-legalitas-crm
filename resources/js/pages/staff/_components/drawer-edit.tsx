@@ -82,10 +82,10 @@ export function DrawerEdit({ staff, roles, open, onOpenChange }: DrawerEditProps
 
                     <form onSubmit={handleSubmit} className="flex flex-1 flex-col px-4">
                         <div className="grid gap-4">
-                            {/* Informasi Akun */}
                             <p className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">Informasi Akun</p>
 
                             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                                {/* Name */}
                                 <Field>
                                     <FieldLabel htmlFor="name">
                                         Nama <span className="text-destructive">*</span>
@@ -94,6 +94,7 @@ export function DrawerEdit({ staff, roles, open, onOpenChange }: DrawerEditProps
                                     {errors.name && <FieldError>{errors.name}</FieldError>}
                                 </Field>
 
+                                {/* Role */}
                                 <Field>
                                     <FieldLabel htmlFor="role">
                                         Role <span className="text-destructive">*</span>
@@ -120,6 +121,7 @@ export function DrawerEdit({ staff, roles, open, onOpenChange }: DrawerEditProps
                                     {errors.availability_status && <FieldError>{errors.availability_status}</FieldError>}
                                 </Field>
 
+                                {/* Email */}
                                 <Field>
                                     <FieldLabel htmlFor="email">
                                         Email <span className="text-destructive">*</span>
@@ -128,6 +130,7 @@ export function DrawerEdit({ staff, roles, open, onOpenChange }: DrawerEditProps
                                     {errors.email && <FieldError>{errors.email}</FieldError>}
                                 </Field>
 
+                                {/* Phone */}
                                 <Field>
                                     <FieldLabel htmlFor="phone">
                                         Phone <span className="text-destructive">*</span>
@@ -138,6 +141,7 @@ export function DrawerEdit({ staff, roles, open, onOpenChange }: DrawerEditProps
                             </div>
 
                             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                                {/* Password */}
                                 <Field>
                                     <FieldLabel htmlFor="password">
                                         Password Baru <span className="text-xs font-normal text-muted-foreground">(kosongkan jika tidak diubah)</span>
@@ -152,6 +156,7 @@ export function DrawerEdit({ staff, roles, open, onOpenChange }: DrawerEditProps
                                     {errors.password && <FieldError>{errors.password}</FieldError>}
                                 </Field>
 
+                                {/* Password Confirmation */}
                                 <Field>
                                     <FieldLabel htmlFor="password_confirmation">Konfirmasi Password Baru</FieldLabel>
                                     <Input
@@ -165,10 +170,10 @@ export function DrawerEdit({ staff, roles, open, onOpenChange }: DrawerEditProps
                                 </Field>
                             </div>
 
-                            {/* Profil Staff */}
                             <p className="mt-2 text-sm font-semibold tracking-wide text-muted-foreground uppercase">Profil Staff</p>
 
                             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                                {/* Availability Status */}
                                 <Field>
                                     <FieldLabel htmlFor="availability_status">
                                         Status Ketersediaan <span className="text-destructive">*</span>
@@ -196,6 +201,7 @@ export function DrawerEdit({ staff, roles, open, onOpenChange }: DrawerEditProps
                                     {errors.availability_status && <FieldError>{errors.availability_status}</FieldError>}
                                 </Field>
 
+                                {/* Max Concurrent Projects */}
                                 <Field>
                                     <FieldLabel htmlFor="max_concurrent_projects">Maks. Project Bersamaan</FieldLabel>
                                     <Input
@@ -210,6 +216,7 @@ export function DrawerEdit({ staff, roles, open, onOpenChange }: DrawerEditProps
                                 </Field>
                             </div>
 
+                            {/* Skills */}
                             <Field>
                                 <FieldLabel htmlFor="skills">Keahlian</FieldLabel>
                                 <Input
@@ -223,12 +230,14 @@ export function DrawerEdit({ staff, roles, open, onOpenChange }: DrawerEditProps
                             </Field>
 
                             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                                {/* Leave Start Date */}
                                 <Field>
                                     <FieldLabel htmlFor="leave_start_date">Tanggal Mulai Cuti</FieldLabel>
                                     <DatePicker value={data.leave_start_date ?? ''} onChange={(value) => setData('leave_start_date', value)} fromYear={2000} toYear={2040} />
                                     {errors.leave_start_date && <FieldError>{errors.leave_start_date}</FieldError>}
                                 </Field>
 
+                                {/* Leave End Date */}
                                 <Field>
                                     <FieldLabel htmlFor="leave_end_date">Tanggal Selesai Cuti</FieldLabel>
                                     <DatePicker value={data.leave_end_date ?? ''} onChange={(value) => setData('leave_end_date', value)} fromYear={2000} toYear={2040} />
@@ -236,6 +245,7 @@ export function DrawerEdit({ staff, roles, open, onOpenChange }: DrawerEditProps
                                 </Field>
                             </div>
 
+                            {/* Notes */}
                             <Field>
                                 <FieldLabel htmlFor="notes">Catatan</FieldLabel>
                                 <Textarea

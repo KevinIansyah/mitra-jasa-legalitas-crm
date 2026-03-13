@@ -25,6 +25,7 @@ type CommentItemProps = {
 };
 
 export function CommentItem({ comment, projectId, currentUserId, mentionUsers, depth = 0 }: CommentItemProps) {
+    const R2_PUBLIC_URL = import.meta.env.VITE_R2_PUBLIC_URL;
     const [showReplyForm, setShowReplyForm] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [processing, setProcessing] = useState(false);
@@ -109,7 +110,7 @@ export function CommentItem({ comment, projectId, currentUserId, mentionUsers, d
                 <Avatar className="h-8 w-8 shrink-0 rounded-full">
                     {!isDeleted && (
                         <>
-                            <AvatarImage src={comment.user?.avatar ?? undefined} />
+                            <AvatarImage src={comment.user?.avatar ? `${R2_PUBLIC_URL}/${comment.user?.avatar}` : undefined} />
                             <AvatarFallback className="bg-primary/10 text-primary">{getInitials(comment.user?.name)}</AvatarFallback>
                         </>
                     )}
@@ -141,7 +142,6 @@ export function CommentItem({ comment, projectId, currentUserId, mentionUsers, d
                 ) : (
                     // Normal message
                     <div className="group relative rounded-lg bg-primary/10 p-4 dark:bg-muted/40">
-                        {/* Header */}
                         <div className="mb-2 flex items-center justify-between gap-2">
                             <div className="flex items-center gap-2">
                                 <span className="text-sm font-semibold">{comment.user?.name ?? 'Pengguna'}</span>

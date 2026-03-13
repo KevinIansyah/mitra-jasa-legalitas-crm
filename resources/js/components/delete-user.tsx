@@ -38,20 +38,18 @@ export default function DeleteUser() {
                     <DialogTrigger asChild>
                         <Button
                             variant="destructive"
+                            className="w-full md:w-40"
                             data-test="delete-user-button"
                         >
-                            Delete account
+                            Hapus Akun
                         </Button>
                     </DialogTrigger>
                     <DialogContent>
                         <DialogTitle>
-                            Are you sure you want to delete your account?
+                            Apakah Anda yakin ingin menghapus akun Anda?
                         </DialogTitle>
                         <DialogDescription>
-                            Once your account is deleted, all of its resources
-                            and data will also be permanently deleted. Please
-                            enter your password to confirm you would like to
-                            permanently delete your account.
+                            Setelah akun Anda dihapus, semua sumber daya dan data Anda juga akan dihapus secara permanen. Silakan masukkan password Anda untuk konfirmasi Anda ingin menghapus akun Anda secara permanen.
                         </DialogDescription>
 
                         <Form
@@ -70,7 +68,7 @@ export default function DeleteUser() {
                                             htmlFor="password"
                                             className="sr-only"
                                         >
-                                            Password
+                                            Password Saat Ini
                                         </Label>
 
                                         <Input
@@ -78,7 +76,7 @@ export default function DeleteUser() {
                                             type="password"
                                             name="password"
                                             ref={passwordInput}
-                                            placeholder="Password"
+                                            placeholder="Password Saat Ini"
                                             autoComplete="current-password"
                                         />
 
@@ -93,7 +91,7 @@ export default function DeleteUser() {
                                                     resetAndClearErrors()
                                                 }
                                             >
-                                                Cancel
+                                                Batal
                                             </Button>
                                         </DialogClose>
 
@@ -106,7 +104,7 @@ export default function DeleteUser() {
                                                 type="submit"
                                                 data-test="confirm-delete-user-button"
                                             >
-                                                Delete account
+                                                Hapus Akun
                                             </button>
                                         </Button>
                                     </DialogFooter>

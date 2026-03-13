@@ -20,7 +20,6 @@ export default function QuoteDetail({ quote }: { quote: Quote }) {
 
     return (
         <div className="space-y-4 p-4 text-sm whitespace-normal">
-            {/* Alasan penolakan */}
             {quote.status === 'rejected' && quote.rejected_reason && (
                 <Alert className="border-destructive bg-destructive/10 text-destructive">
                     <AlertTriangle />
@@ -29,7 +28,6 @@ export default function QuoteDetail({ quote }: { quote: Quote }) {
                 </Alert>
             )}
 
-            {/* Info tambahan */}
             {(budgetInfo || quote.business_type || quote.service_package || quote.business_legal_status) && (
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                     {quote.service_package && (
@@ -59,7 +57,6 @@ export default function QuoteDetail({ quote }: { quote: Quote }) {
                 </div>
             )}
 
-            {/* Deskripsi */}
             {quote.description && (
                 <div className="space-y-1">
                     <p className="text-xs text-muted-foreground">Deskripsi</p>
@@ -67,7 +64,6 @@ export default function QuoteDetail({ quote }: { quote: Quote }) {
                 </div>
             )}
 
-            {/* Riwayat estimate */}
             {estimates.length > 0 && (
                 <div className="space-y-2">
                     <p className="text-xs text-muted-foreground">Riwayat Estimate ({estimates.length} versi)</p>

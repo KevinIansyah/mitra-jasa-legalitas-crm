@@ -88,7 +88,7 @@ export default function Page() {
                     </Button>
                 </div>
 
-                {/* Summary cards */}
+                {/* ───────────────── Summary cards Section ───────────────── */}
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     {summaryCards.map(({ label, value, description }) => (
                         <Card key={label} className="border-none bg-sidebar shadow dark:shadow-none">
@@ -101,7 +101,7 @@ export default function Page() {
                     ))}
                 </div>
 
-                {/* Balance status */}
+                {/* ───────────────── Balance status Section ───────────────── */}
                 <Card className="border-none bg-sidebar shadow dark:shadow-none">
                     <CardHeader>
                         <CardDescription>Persamaan Akuntansi</CardDescription>
@@ -117,7 +117,7 @@ export default function Page() {
                     </CardFooter>
                 </Card>
 
-                {/* Detail sections */}
+                {/* ───────────────── Detail Section ───────────────── */}
                 <NeracaSection title="Aset" items={report.assets.detail} total={report.assets.total} />
                 <NeracaSection title="Kewajiban" items={report.liabilities.detail} total={report.liabilities.total} />
                 <NeracaSection title="Ekuitas" items={report.equity.detail} total={report.equity.total} />

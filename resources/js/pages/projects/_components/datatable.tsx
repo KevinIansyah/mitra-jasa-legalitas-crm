@@ -81,9 +81,11 @@ export function DataTable({ data, customers, companies, services, pageIndex, set
 
     return (
         <>
+            {/* ───────────────── Filter & Search Section ───────────────── */}
             <div className="flex flex-col gap-4 pb-4">
                 <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
                     <div className="flex w-full flex-1 items-center gap-2 md:w-auto">
+                        {/* Search */}
                         <InputGroup className="max-w-sm">
                             <InputGroupInput placeholder="Cari nama project..." value={searchValue} onChange={handleSearchChange} />
                             <InputGroupAddon>
@@ -91,6 +93,7 @@ export function DataTable({ data, customers, companies, services, pageIndex, set
                             </InputGroupAddon>
                         </InputGroup>
 
+                        {/* Filter */}
                         <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
                             <SheetTrigger asChild>
                                 <Button variant="secondary" className="relative gap-1.5 lg:w-30">
@@ -114,13 +117,15 @@ export function DataTable({ data, customers, companies, services, pageIndex, set
                                         <FieldLabel htmlFor="status">Status</FieldLabel>
                                         <Select value={filters.status || ''} onValueChange={(value) => updateFilter('status', value || undefined)}>
                                             <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Pilih status" />
+                                                <SelectValue placeholder="Pilih status..." />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
                                                     <SelectLabel>Status</SelectLabel>
-                                                    {PROJECT_STATUSES.map((status) => (
-                                                        <SelectItem key={status.value} value={status.value}>{`${status.label}`}</SelectItem>
+                                                    {PROJECT_STATUSES.map((item) => (
+                                                        <SelectItem key={item.value} value={item.value}>
+                                                            {item.label}
+                                                        </SelectItem>
                                                     ))}
                                                 </SelectGroup>
                                             </SelectContent>
@@ -129,18 +134,6 @@ export function DataTable({ data, customers, companies, services, pageIndex, set
 
                                     <Field>
                                         <FieldLabel htmlFor="customers">Pelanggan</FieldLabel>
-                                        {/* <Select value={filters.customer_id || ''} onValueChange={(value) => updateFilter('customer_id', value || undefined)}>
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Pilih pelanggan" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    {customers.map((customer) => (
-                                                        <SelectItem key={customer.id} value={String(customer.id)}>{`${customer.name}`}</SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select> */}
                                         <SearchSelect
                                             options={customers}
                                             value={filters.customer_id}
@@ -154,18 +147,6 @@ export function DataTable({ data, customers, companies, services, pageIndex, set
 
                                     <Field>
                                         <FieldLabel htmlFor="companies">Perusahaan</FieldLabel>
-                                        {/* <Select value={filters.company_id || ''} onValueChange={(value) => updateFilter('company_id', value || undefined)}>
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Pilih perusahaan" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    {companies.map((company) => (
-                                                        <SelectItem key={company.id} value={String(company.id)}>{`${company.name}`}</SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select> */}
                                         <SearchSelect
                                             options={companies}
                                             value={filters.company_id}
@@ -179,18 +160,6 @@ export function DataTable({ data, customers, companies, services, pageIndex, set
 
                                     <Field>
                                         <FieldLabel htmlFor="services">Layanan</FieldLabel>
-                                        {/* <Select value={filters.service_id || ''} onValueChange={(value) => updateFilter('service_id', value || undefined)}>
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Pilih layanan" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    {services.map((service) => (
-                                                        <SelectItem key={service.id} value={String(service.id)}>{`${service.name}`}</SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select> */}
                                         <SearchSelect
                                             options={services}
                                             value={filters.service_id}
@@ -213,6 +182,7 @@ export function DataTable({ data, customers, companies, services, pageIndex, set
                     </div>
 
                     <div className="flex w-full gap-2 md:w-auto">
+                        {/* Column Visibility */}
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" className="flex-1 gap-1.5 md:w-30">
@@ -231,6 +201,7 @@ export function DataTable({ data, customers, companies, services, pageIndex, set
                             </DropdownMenuContent>
                         </DropdownMenu>
 
+                        {/* Add Project */}
                         <HasPermission permission="create-projects">
                             <Button className="flex-1 gap-1.5 md:w-30" asChild>
                                 <Link href={projects.create().url}>
@@ -242,6 +213,7 @@ export function DataTable({ data, customers, companies, services, pageIndex, set
                     </div>
                 </div>
 
+                {/* Active Filters */}
                 {activeFiltersCount > 0 && (
                     <div className="flex flex-wrap items-center gap-2">
                         <span className="text-sm text-muted-foreground">Filter aktif:</span>
@@ -292,6 +264,7 @@ export function DataTable({ data, customers, companies, services, pageIndex, set
                 )}
             </div>
 
+            {/* ───────────────── Table Section ───────────────── */}
             <div className="overflow-hidden rounded-t-md border-b">
                 <Table>
                     <TableHeader>
@@ -326,6 +299,7 @@ export function DataTable({ data, customers, companies, services, pageIndex, set
                 </Table>
             </div>
 
+            {/* ───────────────── Pagination Section ───────────────── */}
             <div className="flex items-center justify-between gap-8 pt-4">
                 <div className="hidden flex-1 text-sm md:flex">
                     Menampilkan {Math.min(pageIndex * perPage + 1, totalItems)} sampai {Math.min((pageIndex + 1) * perPage, totalItems)} dari {totalItems} hasil

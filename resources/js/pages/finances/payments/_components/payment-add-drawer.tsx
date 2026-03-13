@@ -70,11 +70,14 @@ export function PaymentAddDrawer({ invoice, open, onOpenChange }: PaymentAddDraw
         e.preventDefault();
         setIsDragging(true);
     }, []);
+
     const handleDragLeave = React.useCallback((e: React.DragEvent) => {
         e.preventDefault();
         if (!e.currentTarget.contains(e.relatedTarget as Node)) setIsDragging(false);
     }, []);
+
     const handleDragOver = (e: React.DragEvent) => e.preventDefault();
+
     const handleDrop = (e: React.DragEvent) => {
         e.preventDefault();
         setIsDragging(false);
@@ -89,7 +92,7 @@ export function PaymentAddDrawer({ invoice, open, onOpenChange }: PaymentAddDraw
     };
 
     // ============================================================
-    // SUBMIT
+    // SUBMIT HANDLER
     // ============================================================
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -124,6 +127,7 @@ export function PaymentAddDrawer({ invoice, open, onOpenChange }: PaymentAddDraw
 
                     <form onSubmit={handleSubmit} className="flex flex-1 flex-col px-4">
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            {/* Invoice */}
                             <Field className="col-span-2 gap-0">
                                 <FieldLabel className="mb-3">
                                     Invoice <span className="text-destructive">*</span>
@@ -175,10 +179,10 @@ export function PaymentAddDrawer({ invoice, open, onOpenChange }: PaymentAddDraw
                                     <SelectContent>
                                         <SelectGroup>
                                             <SelectLabel>Metode</SelectLabel>
-                                            {PAYMENT_METHODS.map((method) => (
-                                                <SelectItem key={method.value} value={method.value}>
-                                                    <span className={`mr-2 inline-block h-2 w-2 rounded-full ${method.classes.replace('text-white', '')}`} />
-                                                    {method.label}
+                                            {PAYMENT_METHODS.map((item) => (
+                                                <SelectItem key={item.value} value={item.value}>
+                                                    <span className={`mr-2 inline-block h-2 w-2 rounded-full ${item.classes.replace('text-white', '')}`} />
+                                                    {item.label}
                                                 </SelectItem>
                                             ))}
                                         </SelectGroup>

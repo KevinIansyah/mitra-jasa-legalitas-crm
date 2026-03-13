@@ -11,9 +11,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
+import finances from '@/routes/finances';
 import type { InvoiceStatus, ProjectInvoice } from '@/types/project';
 import { INVOICE_STATUSES, INVOICE_STATUSES_MAP } from '@/types/project';
-import finances from '@/routes/finances';
 
 type ActionsProps = {
     invoice: ProjectInvoice;

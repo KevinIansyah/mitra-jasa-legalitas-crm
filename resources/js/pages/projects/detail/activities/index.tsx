@@ -76,7 +76,7 @@ export default function Activities({ activities }: ActivitiesProps) {
                                             <span className="order-1 shrink-0 text-xs text-muted-foreground lg:order-2">{formatDateTime(activity.created_at)}</span>
                                         </div>
 
-                                        {/* Detail perubahan */}
+                                        {/* Detail changes */}
                                         {activity.event === 'updated' && activity.properties.old && (
                                             <div className="mt-4 space-y-1 rounded-lg bg-primary/10 p-4 text-xs dark:bg-muted/40">
                                                 {Object.entries(activity.properties.old).map(([field, oldVal]) => (

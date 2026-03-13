@@ -25,6 +25,7 @@ export default function Page() {
             <Head title="Permintaan Penawaran" />
             <div className="p-4 md:p-6">
                 <Heading title="Permintaan Penawaran" description="Kelola semua permintaan penawaran dari customer dan prospek" />
+                
                 <QuoteSection quotes={quotes} summary={summary} filters={filters} />
             </div>
         </AppLayout>

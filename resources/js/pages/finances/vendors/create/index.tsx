@@ -1,10 +1,9 @@
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
-
+import finances from '@/routes/finances';
 import type { BreadcrumbItem } from '@/types';
 import CreateSection from './_components/create-section';
-import finances from '@/routes/finances';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Keuangan', href: '#' },
@@ -18,6 +17,7 @@ export default function Page() {
             <Head title="Tambah Vendor" />
             <div className="p-4 md:p-6">
                 <Heading title="Tambah Vendor" description="Daftarkan vendor atau supplier baru ke sistem" />
+                
                 <CreateSection />
             </div>
         </AppLayout>

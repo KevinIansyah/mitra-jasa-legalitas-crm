@@ -192,7 +192,7 @@ export function ExpenseEditDrawer({ expense, initialProject, open, onOpenChange 
         e.preventDefault();
         setIsDragging(true);
     }, []);
-    
+
     const handleDragLeave = React.useCallback((e: React.DragEvent) => {
         e.preventDefault();
         if (!e.currentTarget.contains(e.relatedTarget as Node)) setIsDragging(false);
@@ -215,7 +215,7 @@ export function ExpenseEditDrawer({ expense, initialProject, open, onOpenChange 
     };
 
     // ============================================================
-    // SUBMIT
+    // SUBMIT HANDLER
     // ============================================================
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -247,7 +247,7 @@ export function ExpenseEditDrawer({ expense, initialProject, open, onOpenChange 
                         <DrawerTitle>Edit Pengeluaran</DrawerTitle>
                         <DrawerDescription>
                             {isBilled ? (
-                                <span className="text-yellow-600">Pengeluaran ini sudah ditagihkan ke invoice. Beberapa perubahan mungkin tidak berpengaruh.</span>
+                                <span className="text-yellow-500">Pengeluaran ini sudah ditagihkan ke invoice. Beberapa perubahan mungkin tidak berpengaruh.</span>
                             ) : (
                                 'Perbarui data pengeluaran yang sudah ada.'
                             )}
@@ -409,15 +409,15 @@ export function ExpenseEditDrawer({ expense, initialProject, open, onOpenChange 
                                 </FieldLabel>
                                 <Select value={data.category} onValueChange={(v) => setData('category', v)}>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Pilih kategori" />
+                                        <SelectValue placeholder="Pilih kategori..." />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
                                             <SelectLabel>Kategori</SelectLabel>
-                                            {EXPENSE_CATEGORIES.map((cat) => (
-                                                <SelectItem key={cat.value} value={cat.value}>
-                                                    <span className={`mr-2 inline-block h-2 w-2 rounded-full ${cat.classes.replace('text-white', '')}`} />
-                                                    {cat.label}
+                                            {EXPENSE_CATEGORIES.map((item) => (
+                                                <SelectItem key={item.value} value={item.value}>
+                                                    <span className={`mr-2 inline-block h-2 w-2 rounded-full ${item.classes.replace('text-white', '')}`} />
+                                                    {item.label}
                                                 </SelectItem>
                                             ))}
                                         </SelectGroup>
@@ -550,7 +550,7 @@ export function ExpenseEditDrawer({ expense, initialProject, open, onOpenChange 
                                 )}
                             </Field>
 
-                            {/* is_billable */}
+                            {/* Billable */}
                             {(hasProject || selectedProject) && (
                                 <div
                                     className={`col-span-2 flex items-center gap-4 rounded-lg border p-4 ${isBilled ? 'border-yellow-500/40 bg-yellow-500/5' : 'border-primary bg-transparent dark:bg-input/30'}`}

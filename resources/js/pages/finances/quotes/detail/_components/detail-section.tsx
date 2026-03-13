@@ -146,7 +146,7 @@ export function DetailSection({ quote }: { quote: Quote }) {
 
     return (
         <div className="space-y-4">
-            {/* Header Card — Status & Actions */}
+            {/* ───────────────── Header Card Section ───────────────── */}
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-6">
                     <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
@@ -258,7 +258,7 @@ export function DetailSection({ quote }: { quote: Quote }) {
                 </div>
             </div>
 
-            {/* Pemohon & Customer */}
+            {/* ───────────────── Pemohon & Customer Section ───────────────── */}
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                 <div className="w-full space-y-3 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                     <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
@@ -291,7 +291,7 @@ export function DetailSection({ quote }: { quote: Quote }) {
                 </div>
             </div>
 
-            {/* Layanan & Project */}
+            {/* ───────────────── Layanan & Project Section ───────────────── */}
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                 <div className="min-h-40 w-full space-y-3 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                     <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
@@ -344,7 +344,7 @@ export function DetailSection({ quote }: { quote: Quote }) {
                 </div>
             </div>
 
-            {/* Estimates */}
+            {/* ───────────────── Estimates Section ───────────────── */}
             <div className="w-full space-y-4 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="flex items-center justify-between">
                     <div>
@@ -522,7 +522,7 @@ export function DetailSection({ quote }: { quote: Quote }) {
                 )}
             </div>
 
-            {/* Dialog: Edit Status */}
+            {/* ───────────────── Dialog: Edit Status ───────────────── */}
             <Dialog
                 open={!!confirmStatus}
                 onOpenChange={(open) => {
@@ -581,7 +581,7 @@ export function DetailSection({ quote }: { quote: Quote }) {
                 </DialogContent>
             </Dialog>
 
-            {/* Dialog: Edit Status Estimate */}
+            {/* ───────────────── Dialog: Edit Status Estimate ───────────────── */}
             <Dialog
                 open={!!estimateConfirmStatus}
                 onOpenChange={(open) => {

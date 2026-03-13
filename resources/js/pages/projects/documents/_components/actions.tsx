@@ -205,7 +205,7 @@ export default function Actions({ document, isExpanded, onToggleExpand }: Action
                 </DropdownMenu>
             </div>
 
-            {/* Confirm Status Modal */}
+            {/* ───────────────── Dialog: Confirm Status ───────────────── */}
             <Dialog
                 open={!!confirmStatus}
                 onOpenChange={(open) => {
@@ -266,7 +266,7 @@ export default function Actions({ document, isExpanded, onToggleExpand }: Action
                 </DialogContent>
             </Dialog>
 
-            {/* Confirm Encrypt Modal */}
+            {/* ───────────────── Dialog: Confirm Encrypt ───────────────── */}
             <Dialog open={confirmEncrypt !== null} onOpenChange={() => setConfirmEncrypt(null)}>
                 <DialogContent>
                     <DialogHeader>
@@ -285,7 +285,6 @@ export default function Actions({ document, isExpanded, onToggleExpand }: Action
                 </DialogContent>
             </Dialog>
 
-            {/* Upload Document Drawer */}
             {uploadingDocument && (
                 <DocumentUploadDrawer
                     projectId={document.project_id}

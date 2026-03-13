@@ -142,7 +142,7 @@ export function DeliverableAddForm({ projectId, onSuccess, onCancel }: Deliverab
 
     return (
         <div className="space-y-4 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-            {/* Is final & encrypted */}
+            
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div className="flex items-start gap-3 rounded-lg border border-primary bg-transparent dark:bg-input/30 p-3">
                     <Switch id="is_final" checked={data.is_final} onCheckedChange={(v) => set({ is_final: v })} />

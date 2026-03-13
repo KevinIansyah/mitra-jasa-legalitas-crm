@@ -187,7 +187,7 @@ Segera login dan ganti password Anda.`,
     return (
         <Dialog open={open} onOpenChange={handleClose}>
             <DialogContent>
-                {/* STEP: REVOKE */}
+                {/* ───────────────── Revoke Account Section ───────────────── */}
                 {step === 'revoke' && (
                     <>
                         <DialogHeader>
@@ -223,7 +223,7 @@ Segera login dan ganti password Anda.`,
                     </>
                 )}
 
-                {/* STEP: CHECK */}
+                {/* ───────────────── Check Email Section ───────────────── */}
                 {step === 'check' && (
                     <>
                         <DialogHeader>
@@ -255,7 +255,7 @@ Segera login dan ganti password Anda.`,
                     </>
                 )}
 
-                {/* STEP: CONFIRM LINK */}
+                {/* ───────────────── Confirm Link Section ───────────────── */}
                 {step === 'confirm_link' && existingUser && (
                     <>
                         <DialogHeader>
@@ -284,7 +284,7 @@ Segera login dan ganti password Anda.`,
                     </>
                 )}
 
-                {/* STEP: CREATE */}
+                {/* ───────────────── Create Account Section ───────────────── */}
                 {step === 'create' && (
                     <>
                         <DialogHeader>
@@ -312,7 +312,7 @@ Segera login dan ganti password Anda.`,
                     </>
                 )}
 
-                {/* STEP: CREDENTIALS */}
+                {/* ───────────────── Credentials Section ───────────────── */}
                 {step === 'credentials' && credentials && (
                     <>
                         <DialogHeader>

@@ -6,7 +6,6 @@ import type { Paginator } from '@/types/paginator';
 import type { Vendor } from '@/types/vendors';
 import { VendorSection } from './_components/vendor-section';
 
-
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Keuangan', href: '#' },
     { title: 'Vendor', href: '#' },
@@ -30,6 +29,7 @@ export default function Page() {
             <Head title="Vendor" />
             <div className="p-4 md:p-6">
                 <Heading title="Manajemen Vendor" description="Kelola daftar vendor dan supplier yang digunakan dalam project" />
+
                 <VendorSection vendors={vendors} summary={summary} filters={filters} />
             </div>
         </AppLayout>

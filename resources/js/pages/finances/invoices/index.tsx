@@ -23,6 +23,7 @@ export default function Page() {
             <Head title="Invoice" />
             <div className="p-4 md:p-6">
                 <Heading title="Manajemen Invoice" description="Kelola invoice project, pantau status pembayaran, dan lihat riwayat transaksi" />
+                
                 <InvoiceSection invoices={invoices} summary={summary} filters={filters} />
             </div>
         </AppLayout>

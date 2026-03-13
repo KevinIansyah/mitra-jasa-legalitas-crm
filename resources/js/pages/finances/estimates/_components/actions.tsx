@@ -11,9 +11,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
+import finances from '@/routes/finances';
 import type { Estimate, EstimateStatus } from '@/types/quote';
 import { ESTIMATE_STATUSES, ESTIMATE_STATUSES_MAP } from '@/types/quote';
-import finances from '@/routes/finances';
 
 type ActionsProps = {
     estimate: Estimate;

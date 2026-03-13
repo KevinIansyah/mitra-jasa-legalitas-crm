@@ -71,6 +71,7 @@ export function AccountAddDrawer({ open, onOpenChange }: AccountAddDrawerProps) 
                     <form onSubmit={handleSubmit} className="flex flex-1 flex-col px-4">
                         <div className="grid gap-4">
                             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                                {/* Name */}
                                 <Field>
                                     <FieldLabel htmlFor="name">
                                         Nama Akun <span className="text-destructive">*</span>
@@ -79,6 +80,7 @@ export function AccountAddDrawer({ open, onOpenChange }: AccountAddDrawerProps) 
                                     {errors.name && <FieldError>{errors.name}</FieldError>}
                                 </Field>
 
+                                {/* Code */}
                                 <Field>
                                     <FieldLabel htmlFor="code">
                                         Kode Akun <span className="text-destructive">*</span>
@@ -89,21 +91,22 @@ export function AccountAddDrawer({ open, onOpenChange }: AccountAddDrawerProps) 
                             </div>
 
                             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                                {/* Type */}
                                 <Field>
                                     <FieldLabel>
                                         Tipe Akun <span className="text-destructive">*</span>
                                     </FieldLabel>
                                     <Select value={data.type} onValueChange={(val) => handleTypeChange(val as AccountType)}>
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Pilih tipe akun" />
+                                            <SelectValue placeholder="Pilih tipe akun..." />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
                                                 <SelectLabel>Tipe</SelectLabel>
-                                                {ACCOUNT_TYPES.map((type) => (
-                                                    <SelectItem key={type.value} value={type.value}>
-                                                        <span className={`mr-2 inline-block h-2 w-2 rounded-full ${type.classes.replace('text-white', '')}`} />
-                                                        {type.label}
+                                                {ACCOUNT_TYPES.map((item) => (
+                                                    <SelectItem key={item.value} value={item.value}>
+                                                        <span className={`mr-2 inline-block h-2 w-2 rounded-full ${item.classes.replace('text-white', '')}`} />
+                                                        {item.label}
                                                     </SelectItem>
                                                 ))}
                                             </SelectGroup>
@@ -112,21 +115,22 @@ export function AccountAddDrawer({ open, onOpenChange }: AccountAddDrawerProps) 
                                     {errors.type && <FieldError>{errors.type}</FieldError>}
                                 </Field>
 
+                                {/* Category */}
                                 <Field>
                                     <FieldLabel>
                                         Kategori <span className="text-destructive">*</span>
                                     </FieldLabel>
                                     <Select value={data.category} onValueChange={(val) => setData('category', val as AccountCategory)} disabled={data.type === ''}>
                                         <SelectTrigger>
-                                            <SelectValue placeholder={data.type === '' ? 'Pilih tipe dulu' : 'Pilih kategori'} />
+                                            <SelectValue placeholder={data.type === '' ? 'Pilih tipe dulu...' : 'Pilih kategori...'} />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
                                                 <SelectLabel>Kategori</SelectLabel>
-                                                {filteredCategories.map((cat) => (
-                                                    <SelectItem key={cat.value} value={cat.value}>
-                                                        <span className={`mr-2 inline-block h-2 w-2 rounded-full ${cat.classes.replace('text-white', '')}`} />
-                                                        {cat.label}
+                                                {filteredCategories.map((item) => (
+                                                    <SelectItem key={item.value} value={item.value}>
+                                                        <span className={`mr-2 inline-block h-2 w-2 rounded-full ${item.classes.replace('text-white', '')}`} />
+                                                        {item.label}
                                                     </SelectItem>
                                                 ))}
                                             </SelectGroup>
@@ -136,13 +140,14 @@ export function AccountAddDrawer({ open, onOpenChange }: AccountAddDrawerProps) 
                                 </Field>
                             </div>
 
+                            {/* Normal Balance */}
                             <Field>
                                 <FieldLabel>
                                     Normal Balance <span className="text-destructive">*</span>
                                 </FieldLabel>
                                 <Select value={data.normal_balance} onValueChange={(val) => setData('normal_balance', val as AccountNormalBalance)}>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Pilih normal balance" />
+                                        <SelectValue placeholder="Pilih normal balance..." />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="debit">Debit</SelectItem>

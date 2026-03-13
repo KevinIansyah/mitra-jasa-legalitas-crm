@@ -78,10 +78,10 @@ export function DrawerAdd({ roles }: { roles: Role[] }) {
 
                     <form onSubmit={handleSubmit} className="flex flex-1 flex-col px-4">
                         <div className="grid gap-4">
-                            {/* Informasi Akun */}
                             <p className="text-sm font-medium tracking-wide text-muted-foreground uppercase">Informasi Akun</p>
 
                             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                                {/* Name */}
                                 <Field>
                                     <FieldLabel htmlFor="name">
                                         Nama <span className="text-destructive">*</span>
@@ -98,6 +98,7 @@ export function DrawerAdd({ roles }: { roles: Role[] }) {
                                     {errors.name && <FieldError>{errors.name}</FieldError>}
                                 </Field>
 
+                                {/* Role */}
                                 <Field>
                                     <FieldLabel htmlFor="role">
                                         Role <span className="text-destructive">*</span>
@@ -124,6 +125,7 @@ export function DrawerAdd({ roles }: { roles: Role[] }) {
                                     {errors.availability_status && <FieldError>{errors.availability_status}</FieldError>}
                                 </Field>
 
+                                {/* Email */}
                                 <Field>
                                     <FieldLabel htmlFor="email">
                                         Email <span className="text-destructive">*</span>
@@ -132,6 +134,7 @@ export function DrawerAdd({ roles }: { roles: Role[] }) {
                                     {errors.email && <FieldError>{errors.email}</FieldError>}
                                 </Field>
 
+                                {/* Phone */}
                                 <Field>
                                     <FieldLabel htmlFor="phone">
                                         Phone <span className="text-destructive">*</span>
@@ -142,6 +145,7 @@ export function DrawerAdd({ roles }: { roles: Role[] }) {
                             </div>
 
                             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                                {/* Password */}
                                 <Field>
                                     <FieldLabel htmlFor="password">
                                         Password <span className="text-destructive">*</span>
@@ -157,6 +161,7 @@ export function DrawerAdd({ roles }: { roles: Role[] }) {
                                     {errors.password && <FieldError>{errors.password}</FieldError>}
                                 </Field>
 
+                                {/* Password Confirmation */}
                                 <Field>
                                     <FieldLabel htmlFor="password_confirmation">
                                         Konfirmasi Password <span className="text-destructive">*</span>
@@ -173,10 +178,10 @@ export function DrawerAdd({ roles }: { roles: Role[] }) {
                                 </Field>
                             </div>
 
-                            {/* Profil Staff */}
                             <p className="mt-2 text-sm font-medium tracking-wide text-muted-foreground uppercase">Profil Staff</p>
 
                             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                                {/* Availability Status */}
                                 <Field>
                                     <FieldLabel htmlFor="availability_status">
                                         Status Ketersediaan <span className="text-destructive">*</span>
@@ -204,6 +209,7 @@ export function DrawerAdd({ roles }: { roles: Role[] }) {
                                     {errors.availability_status && <FieldError>{errors.availability_status}</FieldError>}
                                 </Field>
 
+                                {/* Max Concurrent Projects */}
                                 <Field>
                                     <FieldLabel htmlFor="max_concurrent_projects">Maks. Project Bersamaan</FieldLabel>
                                     <Input
@@ -219,6 +225,7 @@ export function DrawerAdd({ roles }: { roles: Role[] }) {
                                 </Field>
                             </div>
 
+                            {/* Skills */}
                             <Field>
                                 <FieldLabel htmlFor="skills">Keahlian</FieldLabel>
                                 <Input
@@ -232,12 +239,14 @@ export function DrawerAdd({ roles }: { roles: Role[] }) {
                             </Field>
 
                             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                                {/* Leave Start Date */}
                                 <Field>
                                     <FieldLabel htmlFor="leave_start_date">Tanggal Mulai Cuti</FieldLabel>
                                     <DatePicker value={data.leave_start_date ?? ''} onChange={(value) => setData('leave_start_date', value)} fromYear={2000} toYear={2040} />
                                     {errors.leave_start_date && <FieldError>{errors.leave_start_date}</FieldError>}
                                 </Field>
 
+                                {/* Leave End Date */}
                                 <Field>
                                     <FieldLabel htmlFor="leave_end_date">Tanggal Selesai Cuti</FieldLabel>
                                     <DatePicker value={data.leave_end_date ?? ''} onChange={(value) => setData('leave_end_date', value)} fromYear={2000} toYear={2040} />
@@ -245,6 +254,7 @@ export function DrawerAdd({ roles }: { roles: Role[] }) {
                                 </Field>
                             </div>
 
+                            {/* Notes */}
                             <Field>
                                 <FieldLabel htmlFor="notes">Catatan</FieldLabel>
                                 <Textarea

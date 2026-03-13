@@ -1,4 +1,4 @@
-import { Ban, CheckCircle2, Clock, FolderOpen, PauseCircle } from 'lucide-react';
+import { Ban, CheckCircle2, Clock, FolderOpen } from 'lucide-react';
 import { useState } from 'react';
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Company, Customer } from '@/types/contact';

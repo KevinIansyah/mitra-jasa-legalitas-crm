@@ -72,6 +72,7 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
 
     return (
         <>
+            {/* ───────────────── Filter & Search Section ───────────────── */}
             <div className="flex flex-col gap-4 pb-4">
                 <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
                     <div className="flex w-full flex-1 items-center gap-2 md:w-auto">
@@ -105,14 +106,14 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
                                         <FieldLabel htmlFor="category">Kategori</FieldLabel>
                                         <Select value={filters.category || ''} onValueChange={(value) => updateFilter('category', value || undefined)}>
                                             <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Pilih kategori" />
+                                                <SelectValue placeholder="Pilih kategori..." />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
                                                     <SelectLabel>Kategori</SelectLabel>
-                                                    {categories.map((category) => (
-                                                        <SelectItem key={category.id} value={String(category.id)}>
-                                                            {category.name}
+                                                    {categories.map((item) => (
+                                                        <SelectItem key={item.id} value={String(item.id)}>
+                                                            {item.name}
                                                         </SelectItem>
                                                     ))}
                                                 </SelectGroup>
@@ -124,7 +125,7 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
                                         <FieldLabel htmlFor="is_published">Publikasi</FieldLabel>
                                         <Select value={filters.is_published || ''} onValueChange={(value) => updateFilter('is_published', value || undefined)}>
                                             <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Pilih publikasi" />
+                                                <SelectValue placeholder="Pilih publikasi..." />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
@@ -140,7 +141,7 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
                                         <FieldLabel htmlFor="status">Status</FieldLabel>
                                         <Select value={filters.status || ''} onValueChange={(value) => updateFilter('status', value || undefined)}>
                                             <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Pilih status" />
+                                                <SelectValue placeholder="Pilih status..." />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
@@ -163,6 +164,7 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
                     </div>
 
                     <div className="flex w-full gap-2 md:w-auto">
+                        {/* Column Visibility */}
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" className="flex-1 gap-1.5 md:w-30">
@@ -181,6 +183,7 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
                             </DropdownMenuContent>
                         </DropdownMenu>
 
+                        {/* Add Service */}
                         <HasPermission permission="create-services">
                             <Button className="flex-1 gap-1.5 md:w-30" asChild>
                                 <Link href={services.create().url}>
@@ -192,6 +195,7 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
                     </div>
                 </div>
 
+                {/* Active Filters */}
                 {activeFiltersCount > 0 && (
                     <div className="flex flex-wrap items-center gap-2">
                         <span className="text-sm text-muted-foreground">Filter aktif:</span>
@@ -234,6 +238,7 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
                 )}
             </div>
 
+            {/* ───────────────── Table Section ───────────────── */}
             <div className="overflow-hidden rounded-t-md border-b">
                 <Table>
                     <TableHeader>
@@ -265,6 +270,7 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
                 </Table>
             </div>
 
+            {/* ───────────────── Pagination Section ───────────────── */}
             <div className="flex items-center justify-between gap-8 pt-4">
                 <div className="hidden flex-1 text-sm md:flex">
                     Menampilkan {Math.min(pageIndex * perPage + 1, totalItems)} sampai {Math.min((pageIndex + 1) * perPage, totalItems)} dari {totalItems} hasil

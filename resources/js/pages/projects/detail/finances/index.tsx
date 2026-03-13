@@ -106,7 +106,6 @@ export default function Finances({ project }: FinancesProps) {
 
     return (
         <div className="space-y-4">
-            {/* Summary Cards */}
             <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:border-none *:data-[slot=card]:bg-sidebar *:data-[slot=card]:shadow sm:grid-cols-2 lg:grid-cols-3 *:data-[slot=card]:dark:shadow-none">
                 {STAT_CARDS.map(({ label, value, description, trend }) => (
                     <Card key={label} className="@container/card dark:*:data-[slot=card]:shadow-none">
@@ -132,7 +131,6 @@ export default function Finances({ project }: FinancesProps) {
                 ))}
             </div>
 
-            {/* Invoices */}
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-6">
                     <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
@@ -169,7 +167,6 @@ export default function Finances({ project }: FinancesProps) {
                 </div>
             </div>
 
-            {/* Expenses */}
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-6">
                     <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
@@ -219,10 +216,8 @@ export default function Finances({ project }: FinancesProps) {
                 </div>
             </div>
 
-            {/* Add Drawer */}
             {addingExpense && <ExpenseAddDrawer fromProject={true} initialProject={project} open={addingExpense} onOpenChange={setAddingExpense} />}
 
-            {/* Edit Drawer */}
             {editingExpense && (
                 <ExpenseEditDrawer
                     expense={editingExpense}

@@ -105,7 +105,7 @@ export default function Page() {
                     </Button>
                 </div>
 
-                {/* Summary cards */}
+                {/* ───────────────── Summary cards Section ───────────────── */}
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     {summaryCards.map(({ label, value, description, trend }) => (
                         <Card key={label} className="border-none bg-sidebar shadow dark:shadow-none">
@@ -129,7 +129,7 @@ export default function Page() {
                     ))}
                 </div>
 
-                {/* Interactive bar chart per bulan */}
+                {/* ───────────────── Interactive bar chart Section ───────────────── */}
                 <Card className="border-none bg-sidebar py-0 shadow dark:shadow-none">
                     <CardHeader className="mt-6 flex flex-col items-stretch border-b sm:flex-row">
                         <div className="flex flex-1 flex-col justify-center gap-1">
@@ -193,9 +193,8 @@ export default function Page() {
                     </CardContent>
                 </Card>
 
-                {/* Bottom row: Donut + Aktivitas */}
+                {/* ───────────────── Donut & Detail Section ───────────────── */}
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                    {/* Donut — proporsi kas masuk per aktivitas */}
                     <Card className="border-none bg-sidebar shadow dark:shadow-none">
                         <CardHeader>
                             <CardTitle>Sumber Kas Masuk</CardTitle>
@@ -239,7 +238,6 @@ export default function Page() {
                         </CardFooter>
                     </Card>
 
-                    {/* Rincian per aktivitas */}
                     <Card className="border-none bg-sidebar shadow dark:shadow-none">
                         <CardHeader>
                             <CardTitle>Rincian per Aktivitas</CardTitle>

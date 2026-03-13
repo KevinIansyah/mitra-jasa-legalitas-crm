@@ -119,6 +119,7 @@ export default function Page() {
             <div className="p-4 md:p-6">
                 <Heading title="Saldo Awal" description="Input saldo awal akun sebelum pencatatan transaksi dimulai" />
 
+                {/* ───────────────── Opening Balance Alert Section ───────────────── */}
                 {isSet ? (
                     <Alert className="mb-4 border-emerald-500 bg-emerald-500/10">
                         <CircleCheck className="size-4 text-emerald-600" />
@@ -138,7 +139,7 @@ export default function Page() {
                     </Alert>
                 )}
 
-                {/* View mode */}
+                {/* ───────────────── Opening Balance Summary Section ───────────────── */}
                 {isSet && !isEditing && (
                     <div className="mb-6 space-y-4">
                         <div className="rounded-xl border-none bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
@@ -174,7 +175,7 @@ export default function Page() {
                     </div>
                 )}
 
-                {/* Form */}
+                {/* ───────────────── Opening Balance Form Section ───────────────── */}
                 {isEditing && (
                     <form onSubmit={handleSubmit}>
                         <div className="rounded-xl border-none bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
@@ -185,18 +186,18 @@ export default function Page() {
                                 </div>
 
                                 <div className="space-y-4">
-                                    {/* Tanggal */}
+                                    {/* Date */}
                                     <Field>
                                         <FieldLabel>Tanggal Saldo Awal</FieldLabel>
                                         <DatePicker value={data.date} onChange={(val) => setData('date', val)} fromYear={2020} toYear={2040} />
                                         {errors.date && <FieldError>{errors.date}</FieldError>}
                                     </Field>
 
-                                    {/* Akun & Saldo */}
+                                    {/* Accounts & Balances */}
                                     <Field>
                                         <FieldLabel>Akun & Saldo</FieldLabel>
 
-                                        {/* List akun yang sudah ditambahkan */}
+                                        {/* List accounts that have been added */}
                                         {data.balances.length > 0 && (
                                             <div className="mb-2 space-y-2">
                                                 {data.balances.map((line, i) => {
@@ -230,23 +231,25 @@ export default function Page() {
 
                                         <InputError message={fieldErrors.balances} />
 
-                                        {/* Input tambah */}
+                                        
                                         <div className="flex flex-col gap-2 md:flex-row">
+                                            {/* Account Select */}
                                             <Select value={draftAccountId ? String(draftAccountId) : ''} onValueChange={(v) => setDraftAccountId(Number(v))}>
                                                 <SelectTrigger className="flex-1">
                                                     <SelectValue placeholder="Pilih akun..." />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    {availableAccounts.map((a) => (
-                                                        <SelectItem key={a.id} value={String(a.id)}>
-                                                            <span className="mr-2">{a.code}</span>
+                                                    {availableAccounts.map((item) => (
+                                                        <SelectItem key={item.id} value={String(item.id)}>
+                                                            <span className="mr-2">{item.code}</span>
                                                             <span className="mr-2">-</span>
-                                                            {a.name}
+                                                            {item.name}
                                                         </SelectItem>
                                                     ))}
                                                 </SelectContent>
                                             </Select>
 
+                                            {/* Balance Input */}
                                             <div className="flex gap-2">
                                                 <div className="flex w-full flex-col gap-3 md:w-40">
                                                     <Input
@@ -275,13 +278,12 @@ export default function Page() {
                                         </div>
                                     </Field>
 
-                                    {/* Total */}
+                                    {/* Total Balance */}
                                     <div className="flex items-center justify-between rounded-lg bg-primary/10 px-4 py-3 dark:bg-muted/40">
                                         <span className="text-sm font-medium">Total Saldo</span>
                                         <span className="text-sm font-semibold tabular-nums">{formatRupiah(totalBalance)}</span>
                                     </div>
 
-                                    {/* Actions */}
                                     <div className="flex gap-2">
                                         <Button type="submit" className="flex-1 md:w-45 md:flex-none" disabled={processing}>
                                             {processing ? (

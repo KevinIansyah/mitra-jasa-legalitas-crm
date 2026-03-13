@@ -52,6 +52,7 @@ export function InvoiceItemsEditor({ items, onChange }: Props) {
                         </div>
                     </div>
 
+                    {/* Description */}
                     <Field>
                         <FieldLabel>
                             Deskripsi <span className="text-destructive">*</span>
@@ -66,6 +67,7 @@ export function InvoiceItemsEditor({ items, onChange }: Props) {
                     </Field>
 
                     <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                        {/* Quantity */}
                         <Field>
                             <FieldLabel>Qty</FieldLabel>
                             <Input
@@ -77,10 +79,14 @@ export function InvoiceItemsEditor({ items, onChange }: Props) {
                                 className="text-sm"
                             />
                         </Field>
+
+                        {/* Unit Price */}
                         <Field>
                             <FieldLabel>Harga Satuan</FieldLabel>
                             <Input type="number" min="0" value={item.unit_price} onChange={(e) => updateNumber(index, 'unit_price', e.target.value)} className="text-sm" />
                         </Field>
+
+                        {/* Tax Percent */}
                         <Field>
                             <FieldLabel>Pajak (%)</FieldLabel>
                             <Input
@@ -93,6 +99,8 @@ export function InvoiceItemsEditor({ items, onChange }: Props) {
                                 className="text-sm"
                             />
                         </Field>
+
+                        {/* Discount Percent */}
                         <Field>
                             <FieldLabel>Diskon (%)</FieldLabel>
                             <Input

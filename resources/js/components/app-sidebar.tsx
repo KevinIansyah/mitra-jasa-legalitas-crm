@@ -1,11 +1,11 @@
-'use client';
-
+import { usePage } from '@inertiajs/react';
 import { ChartBar, Clock, Command, DollarSign, LayoutGrid, MessageSquare, Newspaper, Settings, Settings2, Table2, Toolbox, Users } from 'lucide-react';
 import * as React from 'react';
 
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarRail } from '@/components/ui/sidebar';
+
 import { usePermission } from '@/hooks/use-permission';
 import contacts from '@/routes/contacts';
 import dashboard from '@/routes/dashboard';
@@ -15,9 +15,9 @@ import { index as deliverablesIndex } from '@/routes/projects/deliverables';
 import { index as documentsIndex } from '@/routes/projects/documents';
 import roles from '@/routes/roles';
 import services from '@/routes/services';
+import siteSettings from '@/routes/site-settings';
 import staffRoutes from '@/routes/staff';
 import type { NavItem, NavSection } from '@/types';
-import { usePage } from '@inertiajs/react';
 import type { SharedData } from '@/types';
 
 function buildNavData(userId: number): {
@@ -28,276 +28,277 @@ function buildNavData(userId: number): {
     navChatbot: NavSection;
     navSettings: NavSection;
 } {
-return {
-    navMain: {
-        title: 'Utama',
-        items: [
-            {
-                title: 'Dashboard',
-                url: dashboard.index().url,
-                icon: LayoutGrid,
-            },
-            {
-                title: 'Manajemen Role',
-                url: roles.index().url,
-                icon: Settings2,
-                permission: 'view-roles',
-            },
-        ],
-    },
+    return {
+        navMain: {
+            title: 'Utama',
+            items: [
+                {
+                    title: 'Dashboard',
+                    url: dashboard.index().url,
+                    icon: LayoutGrid,
+                },
+                {
+                    title: 'Manajemen Role',
+                    url: roles.index().url,
+                    icon: Settings2,
+                    permission: 'view-roles',
+                },
+            ],
+        },
 
-    navCrm: {
-        title: 'CRM & Proyek',
-        items: [
-            {
-                title: 'Kontak',
-                url: contacts.companies.index().url,
-                icon: Users,
-                permission: ['view-contact-companies', 'view-contact-customers'],
-                items: [
-                    {
-                        title: 'Pelanggan (PIC)',
-                        url: contacts.customers.index().url,
-                        permission: 'view-contact-customers',
-                    },
-                    {
-                        title: 'Perusahaan',
-                        url: contacts.companies.index().url,
-                        permission: 'view-contact-companies',
-                    },
-                ],
-            },
-            {
-                title: 'Project',
-                url: projects.index().url,
-                icon: Table2,
-                permission: ['view-projects', 'view-project-templates'],
-                items: [
-                    {
-                        title: 'Semua Project',
-                        url: projects.index().url,
-                        permission: 'view-projects',
-                    },
-                    {
-                        title: 'Dokumen',
-                        url: documentsIndex().url,
-                        permission: 'view-project-documents',
-                    },
-                    {
-                        title: 'Hasil Akhir',
-                        url: deliverablesIndex().url,
-                        permission: 'view-project-deliverables',
-                    },
-                    {
-                        title: 'Template',
-                        url: projects.templates.index().url,
-                        permission: 'view-project-templates',
-                    },
-                ],
-            },
-        ],
-    },
+        navCrm: {
+            title: 'CRM & Proyek',
+            items: [
+                {
+                    title: 'Kontak',
+                    url: contacts.companies.index().url,
+                    icon: Users,
+                    permission: ['view-contact-companies', 'view-contact-customers'],
+                    items: [
+                        {
+                            title: 'Pelanggan (PIC)',
+                            url: contacts.customers.index().url,
+                            permission: 'view-contact-customers',
+                        },
+                        {
+                            title: 'Perusahaan',
+                            url: contacts.companies.index().url,
+                            permission: 'view-contact-companies',
+                        },
+                    ],
+                },
+                {
+                    title: 'Project',
+                    url: projects.index().url,
+                    icon: Table2,
+                    permission: ['view-projects', 'view-project-templates'],
+                    items: [
+                        {
+                            title: 'Semua Project',
+                            url: projects.index().url,
+                            permission: 'view-projects',
+                        },
+                        {
+                            title: 'Dokumen',
+                            url: documentsIndex().url,
+                            permission: 'view-project-documents',
+                        },
+                        {
+                            title: 'Hasil Akhir',
+                            url: deliverablesIndex().url,
+                            permission: 'view-project-deliverables',
+                        },
+                        {
+                            title: 'Template',
+                            url: projects.templates.index().url,
+                            permission: 'view-project-templates',
+                        },
+                    ],
+                },
+            ],
+        },
 
-    navManagement: {
-        title: 'Manajemen',
-        items: [
-            {
-                title: 'Staff & Task',
-                url: staffRoutes.index().url,
-                icon: Clock,
-                items: [
-                    {
-                        title: 'Daftar Staff',
-                        url: staffRoutes.index().url,
-                        permission: 'view-staff',
-                    },
-                    {
-                        title: 'My Tasks',
-                        url: staffRoutes.myTasks(userId).url,
-                        permission: 'view-staff-my-task',
-                    },
-                    {
-                        title: 'My Projects',
-                        url: staffRoutes.myProjects(userId).url,
-                        permission: 'view-staff-my-project',
-                    },
-                ],
-            },
-            {
-                title: 'Keuangan',
-                url: '#',
-                icon: DollarSign,
-                items: [
-                    {
-                        title: 'Permintan Penawaran',
-                        url: finances.quotes.index().url,
-                        permission: 'view-finance-quotes',
-                    },
-                    {
-                        title: 'Proposal',
-                        url: '#',
-                        permission: 'view-finance-proposals',
-                    },
-                    {
-                        title: 'Estimasi',
-                        url: finances.estimates.index().url,
-                        permission: 'view-finance-estimates',
-                    },
-                    {
-                        title: 'Invoice',
-                        url: finances.invoices.index().url,
-                        permission: 'view-finance-invoices',
-                    },
-                    {
-                        title: 'Pembayaran',
-                        url: finances.payments.index().url,
-                        permission: 'view-finance-payments',
-                    },
-                    {
-                        title: 'Pengeluaran',
-                        url: finances.expenses.index().url,
-                        permission: 'view-finance-expenses',
-                    },
-                    {
-                        title: 'Vendor',
-                        url: finances.vendors.index().url,
-                        permission: 'view-finance-vendors',
-                    },
-                    {
-                        title: 'Akun',
-                        url: finances.accounts.index().url,
-                        permission: 'view-finance-accounts',
-                    },
-                    {
-                        title: 'Jurnal',
-                        url: finances.journalEntries.index().url,
-                        permission: 'view-finance-journals',
-                    },
-                    {
-                        title: 'Saldo Awal',
-                        url: finances.openingBalance.index().url,
-                        permission: 'view-finance-opening-balances',
-                    },
-                ],
-            },
-            {
-                title: 'Laporan',
-                url: '#',
-                icon: ChartBar,
-                items: [
-                    {
-                        title: 'Laba Rugi',
-                        url: finances.reports.profitLoss().url,
-                        permission: 'view-finance-reports',
-                    },
-                    {
-                        title: 'Neraca',
-                        url: finances.reports.balanceSheet().url,
-                        permission: 'view-finance-reports',
-                    },
-                    {
-                        title: 'Arus Kas',
-                        url: finances.reports.cashFlow().url,
-                        permission: 'view-finance-reports',
-                    },
-                ],
-            },
-        ],
-    },
+        navManagement: {
+            title: 'Manajemen',
+            items: [
+                {
+                    title: 'Staff & Task',
+                    url: staffRoutes.index().url,
+                    icon: Clock,
+                    items: [
+                        {
+                            title: 'Daftar Staff',
+                            url: staffRoutes.index().url,
+                            permission: 'view-staff',
+                        },
+                        {
+                            title: 'My Tasks',
+                            url: staffRoutes.myTasks(userId).url,
+                            permission: 'view-staff-my-task',
+                        },
+                        {
+                            title: 'My Projects',
+                            url: staffRoutes.myProjects(userId).url,
+                            permission: 'view-staff-my-project',
+                        },
+                    ],
+                },
+                {
+                    title: 'Keuangan',
+                    url: '#',
+                    icon: DollarSign,
+                    items: [
+                        {
+                            title: 'Permintan Penawaran',
+                            url: finances.quotes.index().url,
+                            permission: 'view-finance-quotes',
+                        },
+                        {
+                            title: 'Proposal',
+                            url: '#',
+                            permission: 'view-finance-proposals',
+                        },
+                        {
+                            title: 'Estimasi',
+                            url: finances.estimates.index().url,
+                            permission: 'view-finance-estimates',
+                        },
+                        {
+                            title: 'Invoice',
+                            url: finances.invoices.index().url,
+                            permission: 'view-finance-invoices',
+                        },
+                        {
+                            title: 'Pembayaran',
+                            url: finances.payments.index().url,
+                            permission: 'view-finance-payments',
+                        },
+                        {
+                            title: 'Pengeluaran',
+                            url: finances.expenses.index().url,
+                            permission: 'view-finance-expenses',
+                        },
+                        {
+                            title: 'Vendor',
+                            url: finances.vendors.index().url,
+                            permission: 'view-finance-vendors',
+                        },
+                        {
+                            title: 'Akun',
+                            url: finances.accounts.index().url,
+                            permission: 'view-finance-accounts',
+                        },
+                        {
+                            title: 'Jurnal',
+                            url: finances.journalEntries.index().url,
+                            permission: 'view-finance-journals',
+                        },
+                        {
+                            title: 'Saldo Awal',
+                            url: finances.openingBalance.index().url,
+                            permission: 'view-finance-opening-balances',
+                        },
+                    ],
+                },
+                {
+                    title: 'Laporan',
+                    url: '#',
+                    icon: ChartBar,
+                    items: [
+                        {
+                            title: 'Laba Rugi',
+                            url: finances.reports.profitLoss().url,
+                            permission: 'view-finance-reports',
+                        },
+                        {
+                            title: 'Neraca',
+                            url: finances.reports.balanceSheet().url,
+                            permission: 'view-finance-reports',
+                        },
+                        {
+                            title: 'Arus Kas',
+                            url: finances.reports.cashFlow().url,
+                            permission: 'view-finance-reports',
+                        },
+                    ],
+                },
+            ],
+        },
 
-    navContentSeo: {
-        title: 'Konten & SEO',
-        items: [
-            {
-                title: 'Layanan',
-                url: '#',
-                icon: Toolbox,
-                permission: ['view-services', 'view-service-categories'],
-                items: [
-                    {
-                        title: 'Semua Layanan',
-                        url: services.index().url,
-                        permission: 'view-services',
-                    },
-                    {
-                        title: 'Kategori',
-                        url: services.categories.index().url,
-                        permission: 'view-service-categories',
-                    },
-                ],
-            },
-            {
-                title: 'Blog',
-                url: '#',
-                icon: Newspaper,
-                permission: ['view-services', 'view-service-categories'],
-                items: [
-                    {
-                        title: 'Semua Blog',
-                        url: services.index().url,
-                        permission: 'view-services',
-                    },
-                    {
-                        title: 'Tag',
-                        url: services.categories.index().url,
-                        permission: 'view-service-categories',
-                    },
-                ],
-            },
-            // {
-            //     title: 'Content',
-            //     url: '#',
-            //     icon: PenLine,
-            //     items: [
-            //         { title: 'Halaman Layanan', url: '#' },
-            //         { title: 'Blog', url: '#' },
-            //         { title: 'Email Templates', url: '#' },
-            //     ],
-            // },
-            // {
-            //     title: 'SEO',
-            //     url: '#',
-            //     icon: Search,
-            //     items: [
-            //         { title: 'AI SEO Dashboard', url: '#' },
-            //         { title: 'Schema Management', url: '#' },
-            //         { title: 'Media & Image Optimizer', url: '#' },
-            //     ],
-            // },
-        ],
-    },
+        navContentSeo: {
+            title: 'Konten & SEO',
+            items: [
+                {
+                    title: 'Layanan',
+                    url: '#',
+                    icon: Toolbox,
+                    permission: ['view-services', 'view-service-categories'],
+                    items: [
+                        {
+                            title: 'Semua Layanan',
+                            url: services.index().url,
+                            permission: 'view-services',
+                        },
+                        {
+                            title: 'Kategori',
+                            url: services.categories.index().url,
+                            permission: 'view-service-categories',
+                        },
+                    ],
+                },
+                {
+                    title: 'Blog',
+                    url: '#',
+                    icon: Newspaper,
+                    permission: ['view-services', 'view-service-categories'],
+                    items: [
+                        {
+                            title: 'Semua Blog',
+                            url: services.index().url,
+                            permission: 'view-services',
+                        },
+                        {
+                            title: 'Tag',
+                            url: services.categories.index().url,
+                            permission: 'view-service-categories',
+                        },
+                    ],
+                },
+                // {
+                //     title: 'Content',
+                //     url: '#',
+                //     icon: PenLine,
+                //     items: [
+                //         { title: 'Halaman Layanan', url: '#' },
+                //         { title: 'Blog', url: '#' },
+                //         { title: 'Email Templates', url: '#' },
+                //     ],
+                // },
+                // {
+                //     title: 'SEO',
+                //     url: '#',
+                //     icon: Search,
+                //     items: [
+                //         { title: 'AI SEO Dashboard', url: '#' },
+                //         { title: 'Schema Management', url: '#' },
+                //         { title: 'Media & Image Optimizer', url: '#' },
+                //     ],
+                // },
+            ],
+        },
 
-    navChatbot: {
-        title: 'AI',
-        items: [
-            {
-                title: 'AI Chatbot',
-                url: '#',
-                icon: MessageSquare,
-                items: [
-                    { title: 'Knowledge Base', url: '#' },
-                    { title: 'Chat Analytics', url: '#' },
-                    { title: 'Routing', url: '#' },
-                ],
-            },
-        ],
-    },
+        navChatbot: {
+            title: 'AI',
+            items: [
+                {
+                    title: 'AI Chatbot',
+                    url: '#',
+                    icon: MessageSquare,
+                    items: [
+                        { title: 'Knowledge Base', url: '#' },
+                        { title: 'Chat Analytics', url: '#' },
+                        { title: 'Routing', url: '#' },
+                    ],
+                },
+            ],
+        },
 
-    navSettings: {
-        title: 'Pengaturan',
-        items: [
-            {
-                title: 'Pengaturan',
-                url: '#',
-                icon: Settings,
-                items: [
-                    { title: 'Pengaturan Perusahaan', url: '#' },
-                    { title: 'Integrasi (Google, WhatsApp)', url: '#' },
-                ],
-            },
-        ],
-    },
-};}
+        navSettings: {
+            title: 'Pengaturan',
+            items: [
+                {
+                    title: 'Pengaturan',
+                    url: '#',
+                    icon: Settings,
+                    items: [
+                        { title: 'Pengaturan Website', url: siteSettings.company().url },
+                        { title: 'Integrasi (Google, WhatsApp)', url: '#' },
+                    ],
+                },
+            ],
+        },
+    };
+}
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { hasPermission } = usePermission();

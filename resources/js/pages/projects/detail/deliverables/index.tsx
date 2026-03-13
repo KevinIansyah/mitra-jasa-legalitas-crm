@@ -60,7 +60,6 @@ export default function Deliverables({ project }: DeliverablesProps) {
 
     return (
         <div className="space-y-4">
-            {/* Summary */}
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div>
                     <h2 className="text-xl font-semibold">Hasil Akhir</h2>
@@ -68,7 +67,6 @@ export default function Deliverables({ project }: DeliverablesProps) {
                 </div>
             </div>
 
-            {/* Stats */}
             <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:border-none *:data-[slot=card]:bg-sidebar *:data-[slot=card]:shadow md:grid-cols-2 lg:grid-cols-4 *:data-[slot=card]:dark:shadow-none">
                 {STATS_BADGE.map(({ label, value, color, badge, icon }) => (
                     <Card key={label}>
@@ -86,7 +84,6 @@ export default function Deliverables({ project }: DeliverablesProps) {
                 ))}
             </div>
 
-            {/* Add Form */}
             {showAddForm && <DeliverableAddForm projectId={project.id} onSuccess={() => setShowAddForm(false)} onCancel={() => setShowAddForm(false)} />}
 
             {!showAddForm && deliverables.length > 0 && (
@@ -111,7 +108,6 @@ export default function Deliverables({ project }: DeliverablesProps) {
                 </div>
             )}
 
-            {/* List */}
             <div className="space-y-3">
                 {deliverables.length > 0
                     ? deliverables.map((deliverable) => <DeliverableCard key={deliverable.id} deliverable={deliverable} projectId={project.id} />)

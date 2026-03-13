@@ -129,6 +129,24 @@ export default function PermissionSection({ role, allPermissions }: PermissionSe
                     break;
                 }
 
+                // Staf Management
+                case resource.startsWith('staff'): {
+                    groupName = 'Manajemen Staff';
+                    if (resource === 'staff') {
+                        itemName = 'Semua Staff';
+                    }
+
+                    if (resource === 'staff-my-task') {
+                        itemName = 'My Tasks';
+                    }
+
+                    if (resource === 'staff-my-project') {
+                        itemName = 'My Projects';
+                    }
+
+                    break;
+                }
+
                 case resource.startsWith('finance'): {
                     groupName = 'Manajemen Keuangan';
 
@@ -187,8 +205,34 @@ export default function PermissionSection({ role, allPermissions }: PermissionSe
                         itemName = 'Semua Layanan';
                     }
 
+                    if (resource === 'service-city-pages') {
+                        itemName = 'Halaman Layanan Kota';
+                    }
+
                     if (resource === 'service-categories') {
                         itemName = 'Kategori';
+                    }
+
+                    break;
+                }
+
+                // Master Management
+                case resource.startsWith('master'): {
+                    groupName = 'Manajemen Master Data';
+
+                    if (resource === 'master-cities') {
+                        itemName = 'Kota';
+                    }
+
+                    break;
+                }
+
+                // Site Management
+                case resource.startsWith('site'): {
+                    groupName = 'Manajemen Pengaturan Website';
+
+                    if (resource === 'site-settings') {
+                        itemName = 'Pengaturan Website';
                     }
 
                     break;

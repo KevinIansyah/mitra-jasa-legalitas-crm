@@ -68,6 +68,7 @@ export function DrawerEdit({ category, open, onOpenChange }: DrawerEditProps) {
 
                     <form onSubmit={handleSubmit} className="flex flex-1 flex-col px-4">
                         <div>
+                            
                             <Field>
                                 <FieldLabel htmlFor="name">
                                     Label <span className="text-destructive">*</span>

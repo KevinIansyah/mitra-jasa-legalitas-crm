@@ -9,7 +9,6 @@ export default function PaymentDetail({ payment }: { payment: ProjectPayment }) 
 
     return (
         <div className="space-y-4 p-4 whitespace-normal">
-            {/* Rejection */}
             {status === 'rejected' && rejection_reason && (
                 <Alert className="border-destructive bg-destructive/10 text-destructive">
                     <AlertTriangle />
@@ -18,7 +17,6 @@ export default function PaymentDetail({ payment }: { payment: ProjectPayment }) 
                 </Alert>
             )}
 
-            {/* Details */}
             {(method || reference_number || verified_at || verifier) && (
                 <div className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
                     {method && (
@@ -51,7 +49,6 @@ export default function PaymentDetail({ payment }: { payment: ProjectPayment }) 
                 </div>
             )}
 
-            {/* Notes */}
             {notes && (
                 <div className="space-y-1 text-sm">
                     <p className="text-xs text-muted-foreground">Catatan</p>

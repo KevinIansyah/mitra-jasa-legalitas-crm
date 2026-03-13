@@ -89,6 +89,8 @@ export default function Overviews({ project, services }: OverviewsProps) {
     const categoryBusiness = project.company?.category_business ? CATEGORY_BUSINESS_MAP[project.company.category_business] : null;
     const targetStatus = confirmStatus ? PROJECT_STATUSES_MAP[confirmStatus] : null;
 
+    const R2_PUBLIC_URL = import.meta.env.VITE_CLOUDFLARE_R2_PUBLIC_URL;
+
     function handleSearchCustomer(query: string) {
         setCustomerSearch(query);
         if (customerTimeoutRef.current) clearTimeout(customerTimeoutRef.current);
@@ -232,7 +234,6 @@ export default function Overviews({ project, services }: OverviewsProps) {
     if (mode === 'view') {
         return (
             <div className="space-y-4">
-                {/* Header */}
                 <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                     <div className="space-y-6">
                         <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
@@ -273,10 +274,14 @@ export default function Overviews({ project, services }: OverviewsProps) {
                                     </DropdownMenuTrigger>
                                     <HasPermission permission="edit-projects">
                                         <DropdownMenuContent align="end">
-                                            {PROJECT_STATUSES.map((s) => (
-                                                <DropdownMenuItem key={s.value} disabled={s.value === project.status} onSelect={() => setConfirmStatus(s.value as ProjectStatus)}>
-                                                    <span className={`mr-2 inline-block h-2 w-2 rounded-full ${s.classes.replace('text-white', '')}`} />
-                                                    {s.label}
+                                            {PROJECT_STATUSES.map((item) => (
+                                                <DropdownMenuItem
+                                                    key={item.value}
+                                                    disabled={item.value === project.status}
+                                                    onSelect={() => setConfirmStatus(item.value as ProjectStatus)}
+                                                >
+                                                    <span className={`mr-2 inline-block h-2 w-2 rounded-full ${item.classes.replace('text-white', '')}`} />
+                                                    {item.label}
                                                 </DropdownMenuItem>
                                             ))}
                                         </DropdownMenuContent>
@@ -297,11 +302,11 @@ export default function Overviews({ project, services }: OverviewsProps) {
                     </div>
                 </div>
 
-                {/* Customer & Company */}
+                {/* ───────────────── Customer & Company Section ───────────────── */}
                 <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-2">
                     <div className="w-full space-y-3 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                         <Avatar className="h-12 w-12 rounded-xl">
-                            <AvatarImage src={project.customer?.user?.avatar ?? undefined} />
+                            <AvatarImage src={`${R2_PUBLIC_URL}/${project.customer?.user?.avatar}`} alt={project.customer?.name} />
                             <AvatarFallback className="rounded-xl bg-primary/10 text-lg text-primary">{getInitials(project.customer?.name)}</AvatarFallback>
                         </Avatar>
                         <FieldLabel>Pelanggan</FieldLabel>
@@ -343,7 +348,7 @@ export default function Overviews({ project, services }: OverviewsProps) {
                     </div>
                 </div>
 
-                {/* Service & Date */}
+                {/* ───────────────── Service & Date Section ───────────────── */}
                 <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-2">
                     <div className="relative min-h-60 w-full space-y-3 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                         <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
@@ -374,7 +379,7 @@ export default function Overviews({ project, services }: OverviewsProps) {
                     </div>
                 </div>
 
-                {/* Confirm Status Modal */}
+                {/* ───────────────── Dialog: Confirm Status ───────────────── */}
                 <Dialog open={!!confirmStatus} onOpenChange={() => setConfirmStatus(null)}>
                     <DialogContent>
                         <DialogHeader>
@@ -402,7 +407,7 @@ export default function Overviews({ project, services }: OverviewsProps) {
 
     return (
         <div className="space-y-4">
-            {/* Customer */}
+            {/* ───────────────── Customer Section ───────────────── */}
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div>
@@ -419,7 +424,7 @@ export default function Overviews({ project, services }: OverviewsProps) {
                             <div className="flex items-center justify-between rounded-md bg-primary/10 p-3 dark:bg-muted/40">
                                 <div className="flex items-center gap-3">
                                     <Avatar className="rounded-full">
-                                        <AvatarImage src={selectedCustomer.user?.avatar ?? undefined} />
+                                        <AvatarImage src={`${R2_PUBLIC_URL}/${selectedCustomer.user?.avatar}`} alt={selectedCustomer.name} />
                                         <AvatarFallback className="bg-primary/10 text-xs text-primary">{getInitials(selectedCustomer.name)}</AvatarFallback>
                                     </Avatar>
                                     <div>
@@ -449,23 +454,25 @@ export default function Overviews({ project, services }: OverviewsProps) {
                                 </InputGroup>
                                 {customerResults.length > 0 && (
                                     <div className="-mt-2 max-h-64 space-y-1 overflow-y-auto">
-                                        {customerResults.map((c) => (
+                                        {customerResults.map((item) => (
                                             <button
-                                                key={c.id}
+                                                key={item.id}
                                                 type="button"
-                                                onClick={() => handleSelectCustomer(c)}
+                                                onClick={() => handleSelectCustomer(item)}
                                                 className="flex w-full items-center gap-3 rounded-lg bg-primary/10 p-3 text-left hover:bg-primary/20 dark:bg-muted/40 dark:hover:bg-muted/50"
                                             >
                                                 <Avatar className="rounded-full">
-                                                    <AvatarImage src={c.user?.avatar ?? undefined} />
-                                                    <AvatarFallback className="bg-primary/10 text-sm text-primary">{getInitials(c.name)}</AvatarFallback>
+                                                    <AvatarImage src={`${R2_PUBLIC_URL}/${item.user?.avatar}`} alt={item.name} />
+                                                    <AvatarFallback className="bg-primary/10 text-sm text-primary">{getInitials(item.name)}</AvatarFallback>
                                                 </Avatar>
                                                 <div className="flex-1">
-                                                    <p className="text-sm font-medium">{c.name}</p>
-                                                    <p className="text-xs text-muted-foreground">{c.email || c.phone || 'Tidak ada info kontak'}</p>
+                                                    <p className="text-sm font-medium">{item.name}</p>
+                                                    <p className="text-xs text-muted-foreground">{item.email || item.phone || 'Tidak ada info kontak'}</p>
                                                 </div>
-                                                {c.tier && (
-                                                    <Badge className={TIER_MAP[c.tier]?.classes ?? 'bg-muted text-muted-foreground'}>{TIER_MAP[c.tier]?.label ?? c.tier}</Badge>
+                                                {item.tier && (
+                                                    <Badge className={TIER_MAP[item.tier]?.classes ?? 'bg-muted text-muted-foreground'}>
+                                                        {TIER_MAP[item.tier]?.label ?? item.tier}
+                                                    </Badge>
                                                 )}
                                             </button>
                                         ))}
@@ -496,9 +503,9 @@ export default function Overviews({ project, services }: OverviewsProps) {
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="_none">Tidak ada</SelectItem>
-                                    {companies.map((c) => (
-                                        <SelectItem key={c.id} value={String(c.id)}>
-                                            {c.name}
+                                    {companies.map((item) => (
+                                        <SelectItem key={item.id} value={String(item.id)}>
+                                            {item.name}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -509,7 +516,7 @@ export default function Overviews({ project, services }: OverviewsProps) {
                 </div>
             </div>
 
-            {/* Services & Packages */}
+            {/* ───────────────── Services & Packages Section ───────────────── */}
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div>
@@ -536,9 +543,9 @@ export default function Overviews({ project, services }: OverviewsProps) {
                                 <SelectGroup>
                                     <SelectLabel>Layanan</SelectLabel>
                                     <SelectItem value="_none">Tidak ada</SelectItem>
-                                    {services.map((s) => (
-                                        <SelectItem key={s.id} value={String(s.id)}>
-                                            {s.name}
+                                    {services.map((item) => (
+                                        <SelectItem key={item.id} value={String(item.id)}>
+                                            {item.name}
                                         </SelectItem>
                                     ))}
                                 </SelectGroup>
@@ -560,9 +567,9 @@ export default function Overviews({ project, services }: OverviewsProps) {
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="_none">Tidak ada</SelectItem>
-                                    {packages.map((p) => (
-                                        <SelectItem key={p.id} value={String(p.id)}>
-                                            {p.name} — Rp {Number(p.price).toLocaleString('id-ID')}
+                                    {packages.map((item) => (
+                                        <SelectItem key={item.id} value={String(item.id)}>
+                                            {item.name} — Rp {Number(item.price).toLocaleString('id-ID')}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -573,7 +580,7 @@ export default function Overviews({ project, services }: OverviewsProps) {
                 </div>
             </div>
 
-            {/* Project Details */}
+            {/* ───────────────── Project Details Section ─────────────────  */}
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div>

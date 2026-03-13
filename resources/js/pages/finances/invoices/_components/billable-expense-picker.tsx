@@ -50,7 +50,7 @@ export function BillableExpensePicker({ projectId, currentItems, onImport }: Bil
     function handleImport() {
         const toImport = expenses.filter((e) => selected.has(e.id));
         const newItems: ProjectInvoiceItemFormData[] = toImport.map((expense) => ({
-            expense_id: expense.id, // ← tambah ini
+            expense_id: expense.id,
             description: expense.description,
             quantity: 1,
             unit_price: Number(expense.amount),
@@ -85,13 +85,11 @@ export function BillableExpensePicker({ projectId, currentItems, onImport }: Bil
 
     return (
         <div className="space-y-3">
-            {/* Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <Checkbox
                         id="select-all"
                         checked={allSelected}
-                        // indeterminate state saat sebagian dipilih
                         ref={(el) => {
                             if (el) el.dataset.state = someSelected ? 'indeterminate' : allSelected ? 'checked' : 'unchecked';
                         }}
@@ -110,7 +108,6 @@ export function BillableExpensePicker({ projectId, currentItems, onImport }: Bil
                 </Button>
             </div>
 
-            {/* List */}
             <div className="space-y-2">
                 {expenses.map((expense) => {
                     const isSelected = selected.has(expense.id);

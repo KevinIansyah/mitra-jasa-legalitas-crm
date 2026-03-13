@@ -18,10 +18,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
 import finances from '@/routes/finances';
 import type { Account } from '@/types/account';
+import { JOURNAL_REFERENCE_TYPES, type JournalEntry } from '@/types/journal-entries';
 import getColumns from './columns';
 import { JournalAddDrawer } from './journal-add-drawer';
 import { JournalEntryDetail } from './journal-entry-detail';
-import { JOURNAL_REFERENCE_TYPES, type JournalEntry } from '@/types/journal-entries';
 
 interface DataTableProps {
     data: JournalEntry[];
@@ -67,10 +67,11 @@ export function DataTable({ data, accounts, pageIndex, setPageIndex, totalPages,
 
     return (
         <>
-            {/* Toolbar */}
+            {/* ───────────────── Toolbar Section ───────────────── */}
             <div className="flex flex-col gap-4 pb-4">
                 <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
                     <div className="flex w-full flex-1 items-center gap-2 md:w-auto">
+                        {/* Search */}
                         <InputGroup className="max-w-sm">
                             <InputGroupInput placeholder="Cari keterangan jurnal..." value={searchValue} onChange={handleSearchChange} />
                             <InputGroupAddon>
@@ -78,7 +79,7 @@ export function DataTable({ data, accounts, pageIndex, setPageIndex, totalPages,
                             </InputGroupAddon>
                         </InputGroup>
 
-                        {/* Filter Sheet */}
+                        {/* Filter */}
                         <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
                             <SheetTrigger asChild>
                                 <Button variant="secondary" className="relative gap-1.5 lg:w-30">
@@ -101,14 +102,14 @@ export function DataTable({ data, accounts, pageIndex, setPageIndex, totalPages,
                                         <FieldLabel>Tipe Jurnal</FieldLabel>
                                         <Select value={filters.reference_type || ''} onValueChange={(v) => updateFilter('reference_type', v || undefined)}>
                                             <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Semua tipe" />
+                                                <SelectValue placeholder="Pilih tipe..." />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
                                                     <SelectLabel>Tipe</SelectLabel>
-                                                    {JOURNAL_REFERENCE_TYPES.map((t) => (
-                                                        <SelectItem key={t.value} value={t.value}>
-                                                            {t.label}
+                                                    {JOURNAL_REFERENCE_TYPES.map((item) => (
+                                                        <SelectItem key={item.value} value={item.value}>
+                                                            {item.label}
                                                         </SelectItem>
                                                     ))}
                                                 </SelectGroup>
@@ -137,6 +138,7 @@ export function DataTable({ data, accounts, pageIndex, setPageIndex, totalPages,
                     </div>
 
                     <div className="flex w-full gap-2 md:w-auto">
+                        {/* Column Visibility */}
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" className="flex-1 gap-1.5 md:w-30">
@@ -155,6 +157,7 @@ export function DataTable({ data, accounts, pageIndex, setPageIndex, totalPages,
                             </DropdownMenuContent>
                         </DropdownMenu>
 
+                        {/* Add Journal */}
                         <HasPermission permission="create-finance-journals">
                             <Button
                                 type="button"
@@ -171,7 +174,7 @@ export function DataTable({ data, accounts, pageIndex, setPageIndex, totalPages,
                     </div>
                 </div>
 
-                {/* Active filter badges */}
+                {/* Active Filters */}
                 {activeFiltersCount > 0 && (
                     <div className="flex flex-wrap items-center gap-2">
                         <span className="text-sm text-muted-foreground">Filter aktif:</span>
@@ -214,7 +217,7 @@ export function DataTable({ data, accounts, pageIndex, setPageIndex, totalPages,
                 )}
             </div>
 
-            {/* Table */}
+            {/* ───────────────── Table Section ───────────────── */}
             <div className="overflow-hidden rounded-t-md border-b">
                 <Table>
                     <TableHeader>
@@ -257,7 +260,7 @@ export function DataTable({ data, accounts, pageIndex, setPageIndex, totalPages,
                 </Table>
             </div>
 
-            {/* Pagination */}
+            {/* ───────────────── Pagination Section ───────────────── */}
             <div className="flex items-center justify-between gap-8 pt-4">
                 <div className="hidden flex-1 text-sm md:flex">
                     Menampilkan {Math.min(pageIndex * perPage + 1, totalItems)} sampai {Math.min((pageIndex + 1) * perPage, totalItems)} dari {totalItems} jurnal
@@ -301,7 +304,6 @@ export function DataTable({ data, accounts, pageIndex, setPageIndex, totalPages,
                 </div>
             </div>
 
-            {/* Create drawer */}
             {addingJournal && (
                 <JournalAddDrawer
                     open={addingJournal}

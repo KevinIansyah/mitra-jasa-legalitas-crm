@@ -100,7 +100,7 @@ export function InvoiceForm({ data, errors, initialProject, fromProject, isEdit,
 
     return (
         <div className="space-y-4">
-            {/* Info Invoice */}
+            {/* ───────────────── Info Invoice Section ───────────────── */}
             <div className="rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div>
@@ -109,6 +109,7 @@ export function InvoiceForm({ data, errors, initialProject, fromProject, isEdit,
                     </div>
 
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        {/* Project */}
                         <Field className="col-span-2">
                             <FieldLabel htmlFor="search-project">
                                 Project <span className="text-destructive">*</span>
@@ -167,15 +168,14 @@ export function InvoiceForm({ data, errors, initialProject, fromProject, isEdit,
                                         </div>
                                     )}
 
-                                    {searchQuery.length >= 2 && searchResults.length === 0 && !isSearching && (
-                                        <FieldDescription>Tidak ada project ditemukan</FieldDescription>
-                                    )}
+                                    {searchQuery.length >= 2 && searchResults.length === 0 && !isSearching && <FieldDescription>Tidak ada project ditemukan</FieldDescription>}
                                 </>
                             )}
 
                             {errors.project_id && <FieldError>{errors.project_id}</FieldError>}
                         </Field>
 
+                        {/* Type */}
                         <Field className="col-span-2">
                             <FieldLabel>
                                 Tipe Invoice <span className="text-destructive">*</span>
@@ -185,10 +185,10 @@ export function InvoiceForm({ data, errors, initialProject, fromProject, isEdit,
                                     <SelectValue placeholder="Pilih tipe..." />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {INVOICE_TYPES.map((type) => (
-                                        <SelectItem key={type.value} value={type.value}>
-                                            <span className={`mr-2 inline-block h-2 w-2 rounded-full ${type.classes.replace('text-white', '')}`} />
-                                            {type.label}
+                                    {INVOICE_TYPES.map((item) => (
+                                        <SelectItem key={item.value} value={item.value}>
+                                            <span className={`mr-2 inline-block h-2 w-2 rounded-full ${item.classes.replace('text-white', '')}`} />
+                                            {item.label}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -196,6 +196,7 @@ export function InvoiceForm({ data, errors, initialProject, fromProject, isEdit,
                             {errors.type && <FieldError>{errors.type}</FieldError>}
                         </Field>
 
+                        {/* Invoice Date */}
                         <Field>
                             <FieldLabel>
                                 Tanggal Invoice <span className="text-destructive">*</span>
@@ -204,6 +205,7 @@ export function InvoiceForm({ data, errors, initialProject, fromProject, isEdit,
                             {errors.invoice_date && <FieldError>{errors.invoice_date}</FieldError>}
                         </Field>
 
+                        {/* Due Date */}
                         <Field>
                             <FieldLabel>
                                 Jatuh Tempo <span className="text-destructive">*</span>
@@ -215,7 +217,7 @@ export function InvoiceForm({ data, errors, initialProject, fromProject, isEdit,
                 </div>
             </div>
 
-            {/* Jumlah Tagihan — simple types only */}
+            {/* ───────────────── Jumlah Tagihan Section ───────────────── */}
             {!isAdditional && data.type && (
                 <div className="rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                     <div className="space-y-4">
@@ -231,6 +233,7 @@ export function InvoiceForm({ data, errors, initialProject, fromProject, isEdit,
                         </div>
 
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            {/* Percentage Field */}
                             {selectedProject && (
                                 <Field>
                                     <FieldLabel>Persentase dari Budget (%)</FieldLabel>
@@ -247,6 +250,7 @@ export function InvoiceForm({ data, errors, initialProject, fromProject, isEdit,
                                 </Field>
                             )}
 
+                            {/* Amount */}
                             <Field>
                                 <FieldLabel>
                                     Amount <span className="text-destructive">*</span>
@@ -263,6 +267,7 @@ export function InvoiceForm({ data, errors, initialProject, fromProject, isEdit,
                                 {errors.subtotal && <FieldError>{errors.subtotal}</FieldError>}
                             </Field>
 
+                            {/* Tax Percent */}
                             <Field>
                                 <FieldLabel>Pajak (%)</FieldLabel>
                                 <Input
@@ -276,6 +281,7 @@ export function InvoiceForm({ data, errors, initialProject, fromProject, isEdit,
                                 />
                             </Field>
 
+                            {/* Discount Percent */}
                             <Field>
                                 <FieldLabel>Diskon (%)</FieldLabel>
                                 <Input
@@ -293,7 +299,7 @@ export function InvoiceForm({ data, errors, initialProject, fromProject, isEdit,
                 </div>
             )}
 
-            {/* Items — additional only */}
+            {/* ───────────────── Items Section ───────────────── */}
             {isAdditional && (
                 <div className="rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                     <div className="space-y-4">
@@ -362,7 +368,8 @@ export function InvoiceForm({ data, errors, initialProject, fromProject, isEdit,
                     </div>
                 </div>
             )}
-            {/* Catatan */}
+
+            {/* ───────────────── Notes Section ───────────────── */}
             <div className="rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div>
@@ -370,6 +377,7 @@ export function InvoiceForm({ data, errors, initialProject, fromProject, isEdit,
                         <p className="mt-0.5 text-sm text-muted-foreground">Tambahkan catatan atau instruksi pembayaran untuk invoice ini</p>
                     </div>
 
+                    {/* Notes */}
                     <Field>
                         <FieldLabel>Catatan</FieldLabel>
                         <Textarea
@@ -381,6 +389,7 @@ export function InvoiceForm({ data, errors, initialProject, fromProject, isEdit,
                         />
                     </Field>
 
+                    {/* Payment Instructions */}
                     <Field>
                         <FieldLabel>Instruksi Pembayaran</FieldLabel>
                         <Textarea

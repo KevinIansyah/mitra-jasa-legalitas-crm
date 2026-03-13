@@ -63,9 +63,11 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
 
     return (
         <>
+            {/* ───────────────── Filter & Search Section ───────────────── */}
             <div className="flex flex-col gap-4 pb-4">
                 <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
                     <div className="flex w-full flex-1 items-center gap-2 md:w-auto">
+                        {/* Search */}
                         <InputGroup className="max-w-sm">
                             <InputGroupInput placeholder="Cari nama template..." value={searchValue} onChange={handleSearchChange} />
                             <InputGroupAddon>
@@ -75,6 +77,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                     </div>
 
                     <div className="flex w-full gap-2 md:w-auto">
+                        {/* Column Visibility */}
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" className="flex-1 gap-1.5 md:w-30">
@@ -95,6 +98,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                     </div>
                 </div>
 
+                {/* Active Filters */}
                 {activeFiltersCount > 0 && (
                     <div className="flex flex-wrap items-center gap-2">
                         <span className="text-sm text-muted-foreground">Filter aktif:</span>
@@ -113,6 +117,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                 )}
             </div>
 
+            {/* ───────────────── Table Section ───────────────── */}
             <div className="overflow-hidden rounded-t-md border-b">
                 <Table>
                     <TableHeader>
@@ -156,6 +161,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                 </Table>
             </div>
 
+            {/* ───────────────── Pagination Section ───────────────── */}
             <div className="flex items-center justify-between gap-8 pt-4">
                 <div className="hidden flex-1 text-sm md:flex">
                     Menampilkan {Math.min(pageIndex * perPage + 1, totalItems)} sampai {Math.min((pageIndex + 1) * perPage, totalItems)} dari {totalItems} hasil

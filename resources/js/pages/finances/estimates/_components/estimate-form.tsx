@@ -75,7 +75,7 @@ export function EstimateForm({ data, errors, initialQuote, fromQuote, isEdit, on
 
     return (
         <div className="space-y-4">
-            {/* Info Estimate */}
+            {/* ───────────────── Info Estimate Section ───────────────── */}
             <div className="rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div>
@@ -84,7 +84,7 @@ export function EstimateForm({ data, errors, initialQuote, fromQuote, isEdit, on
                     </div>
 
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        {/* Quote Search */}
+                        {/* Quote */}
                         <Field className="col-span-2">
                             <FieldLabel>
                                 Permintaan Penawaran <span className="text-destructive">*</span>
@@ -166,7 +166,7 @@ export function EstimateForm({ data, errors, initialQuote, fromQuote, isEdit, on
                 </div>
             </div>
 
-            {/* Items */}
+            {/* ───────────────── Items Section ───────────────── */}
             <div className="rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
@@ -174,6 +174,7 @@ export function EstimateForm({ data, errors, initialQuote, fromQuote, isEdit, on
                             <h2 className="text-xl font-semibold">Item Estimasi</h2>
                             <p className="mt-0.5 text-sm text-muted-foreground">Rincian biaya layanan yang diestimasi</p>
                         </div>
+
                         <Button
                             type="button"
                             onClick={() =>
@@ -201,7 +202,7 @@ export function EstimateForm({ data, errors, initialQuote, fromQuote, isEdit, on
                 </div>
             </div>
 
-            {/* Catatan */}
+            {/* ───────────────── Notes Section ───────────────── */}
             <div className="rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div>

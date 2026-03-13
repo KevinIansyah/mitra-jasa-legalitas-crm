@@ -1,11 +1,10 @@
 import { Head, usePage } from '@inertiajs/react';
-
 import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
+import finances from '@/routes/finances';
 import type { BreadcrumbItem } from '@/types';
 import type { Quote } from '@/types/quote';
 import CreateSection from './_components/create-section';
-import finances from '@/routes/finances';
 
 export default function Page() {
     const { selectedQuote, fromQuote } = usePage<{
@@ -24,6 +23,7 @@ export default function Page() {
             <Head title="Buat Estimate" />
             <div className="p-4 md:p-6">
                 <Heading title="Buat Estimate" description={`Buat estimasi biaya untuk ${selectedQuote ? selectedQuote.project_name : ''}`} />
+                
                 <CreateSection selectedQuote={selectedQuote} fromQuote={fromQuote} />
             </div>
         </AppLayout>

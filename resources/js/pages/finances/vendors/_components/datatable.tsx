@@ -16,11 +16,11 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
+import finances from '@/routes/finances';
 import { VENDOR_CATEGORIES } from '@/types/vendors';
 import type { Vendor } from '@/types/vendors';
 import getColumns from './columns';
 import VendorDetail from './vendor-detail';
-import finances from '@/routes/finances';
 
 interface DataTableProps {
     data: Vendor[];
@@ -63,6 +63,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
 
     return (
         <>
+            {/* ───────────────── Toolbar Section ───────────────── */}
             <div className="flex flex-col gap-4 pb-4">
                 <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
                     <div className="flex w-full flex-1 items-center gap-2 md:w-auto">
@@ -73,6 +74,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                             </InputGroupAddon>
                         </InputGroup>
 
+                        {/* Filter */}
                         <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
                             <SheetTrigger asChild>
                                 <Button variant="secondary" className="relative gap-1.5 lg:w-30">
@@ -95,14 +97,14 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                                         <FieldLabel>Kategori</FieldLabel>
                                         <Select value={filters.category || ''} onValueChange={(v) => updateFilter('category', v || undefined)}>
                                             <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Semua kategori" />
+                                                <SelectValue placeholder="Pilih kategori..." />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
                                                     <SelectLabel>Kategori</SelectLabel>
-                                                    {VENDOR_CATEGORIES.map((c) => (
-                                                        <SelectItem key={c.value} value={c.value}>
-                                                            {c.label}
+                                                    {VENDOR_CATEGORIES.map((item) => (
+                                                        <SelectItem key={item.value} value={item.value}>
+                                                            {item.label}
                                                         </SelectItem>
                                                     ))}
                                                 </SelectGroup>
@@ -113,7 +115,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                                         <FieldLabel>Status</FieldLabel>
                                         <Select value={filters.status || ''} onValueChange={(v) => updateFilter('status', v || undefined)}>
                                             <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Semua status" />
+                                                <SelectValue placeholder="Pilih status..." />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
@@ -135,6 +137,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                     </div>
 
                     <div className="flex w-full gap-2 md:w-auto">
+                        {/* Column Visibility */}
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" className="flex-1 gap-1.5 md:w-30">
@@ -153,6 +156,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                             </DropdownMenuContent>
                         </DropdownMenu>
 
+                        {/* Add Vendor */}
                         <HasPermission permission="create-finance-vendors">
                             <Button className="flex-1 gap-1.5 md:w-30" asChild>
                                 <Link href={finances.vendors.create().url}>
@@ -164,6 +168,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                     </div>
                 </div>
 
+                {/* Active Filters */}
                 {activeFiltersCount > 0 && (
                     <div className="flex flex-wrap items-center gap-2">
                         <span className="text-sm text-muted-foreground">Filter aktif:</span>
@@ -198,6 +203,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                 )}
             </div>
 
+            {/* ───────────────── Table Section ───────────────── */}
             <div className="overflow-hidden rounded-t-md border-b">
                 <Table>
                     <TableHeader>
@@ -240,6 +246,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                 </Table>
             </div>
 
+            {/* ───────────────── Pagination Section ───────────────── */}
             <div className="flex items-center justify-between gap-8 pt-4">
                 <div className="hidden flex-1 text-sm md:flex">
                     Menampilkan {Math.min(pageIndex * perPage + 1, totalItems)} sampai {Math.min((pageIndex + 1) * perPage, totalItems)} dari {totalItems} hasil

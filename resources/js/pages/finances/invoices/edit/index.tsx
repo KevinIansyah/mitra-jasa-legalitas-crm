@@ -1,16 +1,15 @@
 import { Head, usePage } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
-
+import finances from '@/routes/finances';
 import type { BreadcrumbItem } from '@/types';
 import type { Project, ProjectInvoice } from '@/types/project';
 import EditSection from './_components/edit-section';
-import invoices from '@/routes/finances/invoices';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Invoice',
-        href: invoices.index().url,
+        href: finances.invoices.index().url,
     },
     {
         title: 'Edit',

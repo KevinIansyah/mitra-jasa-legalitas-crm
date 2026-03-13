@@ -82,7 +82,6 @@ export default function Milestones({ project }: MilestonesProps) {
 
     return (
         <div className="space-y-4">
-            {/* Summary */}
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-6">
                     <div>
@@ -99,7 +98,7 @@ export default function Milestones({ project }: MilestonesProps) {
                 </div>
             </div>
 
-            {/* Stats */}
+    
             <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:border-none *:data-[slot=card]:bg-sidebar *:data-[slot=card]:shadow md:grid-cols-2 lg:grid-cols-4 *:data-[slot=card]:dark:shadow-none">
                 {STATS_BADGE.map(({ label, value, color, badge, icon }) => (
                     <Card key={label}>
@@ -129,9 +128,8 @@ export default function Milestones({ project }: MilestonesProps) {
                 </HasPermission>
             )}
 
-            {/* Timeline */}
+          
             <div className="mb-0 space-y-0">
-                {/* Add Form */}
                 {showAddForm && (
                     <div className="flex gap-4">
                         <div className="flex flex-col items-center">
@@ -158,6 +156,7 @@ export default function Milestones({ project }: MilestonesProps) {
                     </div>
                 )}
 
+         
                 {milestones.length > 0
                     ? milestones.map((milestone, index) => (
                           <MilestoneCard

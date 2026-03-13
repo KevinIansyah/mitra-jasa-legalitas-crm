@@ -1,150 +1,154 @@
-import { Transition } from '@headlessui/react';
-import { Form, Head, Link, usePage } from '@inertiajs/react';
-import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { toast } from 'sonner';
+
 import DeleteUser from '@/components/delete-user';
 import Heading from '@/components/heading';
-import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Spinner } from '@/components/ui/spinner';
 import AppLayout from '@/layouts/app-layout';
-import SettingsLayout from '@/layouts/settings/layout';
+import SettingsProfileLayout from '@/layouts/settings/profile-layout';
+
 import { edit } from '@/routes/profile';
 import { send } from '@/routes/verification';
 import type { BreadcrumbItem, SharedData } from '@/types';
+import { ImageUpload } from './_components/shared';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Profile settings',
+        title: 'Pengaturan Profil',
         href: edit().url,
     },
 ];
 
-export default function Profile({
-    mustVerifyEmail,
-    status,
-}: {
-    mustVerifyEmail: boolean;
-    status?: string;
-}) {
+export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: boolean; status?: string }) {
     const { auth } = usePage<SharedData>().props;
+
+    const { data, setData, post, processing, errors } = useForm({
+        name: auth.user.name,
+        email: auth.user.email,
+        avatar: null as File | null,
+        remove_avatar: false,
+    });
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        const id = toast.loading('Memproses...', {
+            description: 'Profil sedang diperbarui.',
+        });
+
+        post(edit().url, {
+            forceFormData: true,
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success('Berhasil', {
+                    description: 'Profil berhasil diperbarui.',
+                });
+            },
+            onError: (errs) => {
+                const msg = Object.values(errs)[0] ?? 'Terjadi kesalahan, coba lagi.';
+                toast.error('Gagal', { description: String(msg) });
+            },
+            onFinish: () => {
+                toast.dismiss(id);
+            },
+        });
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Profile settings" />
+            <Head title="Pengaturan Profil" />
 
-            <h1 className="sr-only">Profile Settings</h1>
+            <h1 className="sr-only">Pengaturan Profil</h1>
 
-            <SettingsLayout>
+            <SettingsProfileLayout>
                 <div className="space-y-6">
-                    <Heading
-                        variant="small"
-                        title="Profile information"
-                        description="Update your name and email address"
-                    />
+                    <Heading variant="small" title="Informasi Profil" description="Perbarui nama, email, dan avatar Anda" />
 
-                    <Form
-                        {...ProfileController.update.form()}
-                        options={{
-                            preserveScroll: true,
-                        }}
-                        className="space-y-6"
-                    >
-                        {({ processing, recentlySuccessful, errors }) => (
-                            <>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="name">Name</Label>
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <ImageUpload
+                            label="Avatar"
+                            name="avatar"
+                            currentUrl={auth.user.avatar ?? null}
+                            hint="Rekomendasi: foto persegi, maks. 5 MB"
+                            onChange={(file) => {
+                                setData('avatar', file);
+                                setData('remove_avatar', false);
+                            }}
+                            onRemove={() => {
+                                setData('avatar', null);
+                                setData('remove_avatar', true);
+                            }}
+                            errorForm={errors.avatar}
+                        />
 
-                                    <Input
-                                        id="name"
-                                        className="mt-1 block w-full"
-                                        defaultValue={auth.user.name}
-                                        name="name"
-                                        required
-                                        autoComplete="name"
-                                        placeholder="Full name"
-                                    />
+                        <Field>
+                            <FieldLabel htmlFor="name">Nama</FieldLabel>
+                            <Input
+                                id="name"
+                                name="name"
+                                className="mt-1 block w-full"
+                                value={data.name}
+                                onChange={(e) => setData('name', e.target.value)}
+                                required
+                                autoComplete="name"
+                                placeholder="Nama lengkap"
+                            />
+                            {errors.name && <FieldError>{errors.name}</FieldError>}
+                        </Field>
 
-                                    <InputError
-                                        className="mt-2"
-                                        message={errors.name}
-                                    />
-                                </div>
+                        <Field>
+                            <FieldLabel htmlFor="email">Alamat Email</FieldLabel>
+                            <Input
+                                id="email"
+                                type="email"
+                                name="email"
+                                className="mt-1 block w-full"
+                                value={data.email}
+                                onChange={(e) => setData('email', e.target.value)}
+                                required
+                                autoComplete="username"
+                                placeholder="Alamat Email"
+                            />
+                            {errors.email && <FieldError>{errors.email}</FieldError>}
+                        </Field>
 
-                                <div className="grid gap-2">
-                                    <Label htmlFor="email">Email address</Label>
-
-                                    <Input
-                                        id="email"
-                                        type="email"
-                                        className="mt-1 block w-full"
-                                        defaultValue={auth.user.email}
-                                        name="email"
-                                        required
-                                        autoComplete="username"
-                                        placeholder="Email address"
-                                    />
-
-                                    <InputError
-                                        className="mt-2"
-                                        message={errors.email}
-                                    />
-                                </div>
-
-                                {mustVerifyEmail &&
-                                    auth.user.email_verified_at === null && (
-                                        <div>
-                                            <p className="-mt-4 text-sm text-muted-foreground">
-                                                Your email address is
-                                                unverified.{' '}
-                                                <Link
-                                                    href={send()}
-                                                    as="button"
-                                                    className="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
-                                                >
-                                                    Click here to resend the
-                                                    verification email.
-                                                </Link>
-                                            </p>
-
-                                            {status ===
-                                                'verification-link-sent' && (
-                                                <div className="mt-2 text-sm font-medium text-green-600">
-                                                    A new verification link has
-                                                    been sent to your email
-                                                    address.
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-
-                                <div className="flex items-center gap-4">
-                                    <Button
-                                        disabled={processing}
-                                        data-test="update-profile-button"
+                        {mustVerifyEmail && auth.user.email_verified_at === null && (
+                            <div>
+                                <p className="-mt-4 text-sm text-muted-foreground">
+                                    Alamat email Anda belum terverifikasi.{' '}
+                                    <Link
+                                        href={send()}
+                                        as="button"
+                                        className="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
                                     >
-                                        Save
-                                    </Button>
+                                        Klik di sini untuk mengirim ulang email verifikasi.
+                                    </Link>
+                                </p>
 
-                                    <Transition
-                                        show={recentlySuccessful}
-                                        enter="transition ease-in-out"
-                                        enterFrom="opacity-0"
-                                        leave="transition ease-in-out"
-                                        leaveTo="opacity-0"
-                                    >
-                                        <p className="text-sm text-neutral-600">
-                                            Saved
-                                        </p>
-                                    </Transition>
-                                </div>
-                            </>
+                                {status === 'verification-link-sent' && (
+                                    <div className="mt-2 text-sm font-medium text-green-600">Sebuah tautan verifikasi baru telah dikirim ke alamat email Anda.</div>
+                                )}
+                            </div>
                         )}
-                    </Form>
+
+                        <Button disabled={processing} className="w-full md:w-40" data-test="update-profile-button">
+                            {processing ? (
+                                <>
+                                    <Spinner className="mr-2" />
+                                    Menyimpan...
+                                </>
+                            ) : (
+                                'Simpan'
+                            )}
+                        </Button>
+                    </form>
                 </div>
 
                 <DeleteUser />
-            </SettingsLayout>
+            </SettingsProfileLayout>
         </AppLayout>
     );
 }

@@ -6,8 +6,8 @@ import { HasPermission } from '@/components/has-permission';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
-import type { Vendor } from '@/types/vendors';
 import finances from '@/routes/finances';
+import type { Vendor } from '@/types/vendors';
 
 type ActionsProps = {
     vendor: Vendor;

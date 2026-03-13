@@ -74,9 +74,11 @@ export function DataTable({ data, services, pageIndex, setPageIndex, totalPages,
 
     return (
         <>
+            {/* ───────────────── Filter & Search Section ───────────────── */}
             <div className="flex flex-col gap-4 pb-4">
                 <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
                     <div className="flex w-full flex-1 items-center gap-2 md:w-auto">
+                        {/* Search */}
                         <InputGroup className="max-w-sm">
                             <InputGroupInput placeholder="Cari nama template..." value={searchValue} onChange={handleSearchChange} />
                             <InputGroupAddon>
@@ -84,6 +86,7 @@ export function DataTable({ data, services, pageIndex, setPageIndex, totalPages,
                             </InputGroupAddon>
                         </InputGroup>
 
+                        {/* Filter */}
                         <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
                             <SheetTrigger asChild>
                                 <Button variant="secondary" className="relative gap-1.5 lg:w-30">
@@ -107,14 +110,14 @@ export function DataTable({ data, services, pageIndex, setPageIndex, totalPages,
                                         <FieldLabel htmlFor="service_id">Layanan</FieldLabel>
                                         <Select value={filters.service_id || ''} onValueChange={(value) => updateFilter('service_id', value || undefined)}>
                                             <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Pilih layanan" />
+                                                <SelectValue placeholder="Pilih layanan..." />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
                                                     <SelectLabel>Layanan</SelectLabel>
-                                                    {services.map((service) => (
-                                                        <SelectItem key={service.id} value={String(service.id)}>
-                                                            {service.name}
+                                                    {services.map((item) => (
+                                                        <SelectItem key={item.id} value={String(item.id)}>
+                                                            {item.name}
                                                         </SelectItem>
                                                     ))}
                                                 </SelectGroup>
@@ -126,7 +129,7 @@ export function DataTable({ data, services, pageIndex, setPageIndex, totalPages,
                                         <FieldLabel htmlFor="template_type">Tipe</FieldLabel>
                                         <Select value={filters.template_type || ''} onValueChange={(value) => updateFilter('template_type', value || undefined)}>
                                             <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Pilih tipe" />
+                                                <SelectValue placeholder="Pilih tipe..." />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
@@ -142,7 +145,7 @@ export function DataTable({ data, services, pageIndex, setPageIndex, totalPages,
                                         <FieldLabel htmlFor="status">Status</FieldLabel>
                                         <Select value={filters.status || ''} onValueChange={(value) => updateFilter('status', value || undefined)}>
                                             <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Pilih status" />
+                                                <SelectValue placeholder="Pilih status..." />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
@@ -165,6 +168,7 @@ export function DataTable({ data, services, pageIndex, setPageIndex, totalPages,
                     </div>
 
                     <div className="flex w-full gap-2 md:w-auto">
+                        {/* Column Visibility */}
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" className="flex-1 gap-1.5 md:w-30">
@@ -183,6 +187,7 @@ export function DataTable({ data, services, pageIndex, setPageIndex, totalPages,
                             </DropdownMenuContent>
                         </DropdownMenu>
 
+                        {/* Add Template */}
                         <HasPermission permission="create-project-templates">
                             <Button className="flex-1 gap-1.5 md:w-30" asChild>
                                 <Link href={templates.create().url}>
@@ -194,6 +199,7 @@ export function DataTable({ data, services, pageIndex, setPageIndex, totalPages,
                     </div>
                 </div>
 
+                {/* Active Filters */}
                 {activeFiltersCount > 0 && (
                     <div className="flex flex-wrap items-center gap-2">
                         <span className="text-sm text-muted-foreground">Filter aktif:</span>
@@ -236,6 +242,7 @@ export function DataTable({ data, services, pageIndex, setPageIndex, totalPages,
                 )}
             </div>
 
+            {/* ───────────────── Table Section ───────────────── */}
             <div className="overflow-hidden rounded-t-md border-b">
                 <Table>
                     <TableHeader>
@@ -279,6 +286,7 @@ export function DataTable({ data, services, pageIndex, setPageIndex, totalPages,
                 </Table>
             </div>
 
+            {/* ───────────────── Pagination Section ───────────────── */}
             <div className="flex items-center justify-between gap-8 pt-4">
                 <div className="hidden flex-1 text-sm md:flex">
                     Menampilkan {Math.min(pageIndex * perPage + 1, totalItems)} sampai {Math.min((pageIndex + 1) * perPage, totalItems)} dari {totalItems} hasil

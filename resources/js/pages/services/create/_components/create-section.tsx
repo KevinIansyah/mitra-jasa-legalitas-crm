@@ -717,7 +717,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                     )} */}
                 </TabsContent>
 
-               {/* ───────────────── Requirement Section ───────────────── */}
+                {/* ───────────────── Requirement Section ───────────────── */}
                 <TabsContent value="requirement" className="space-y-4">
                     <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                         <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
@@ -737,10 +737,10 @@ export function CreateSection({ categories }: CreateSectionProps) {
 
                     {data.requirement_categories.length === 0 ? (
                         <div className="rounded-xl bg-sidebar p-6 shadow md:p-6 dark:shadow-none">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                                <ClipboardList className="size-5 text-primary" />
-                            </div>
                             <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                    <ClipboardList className="size-5 text-primary" />
+                                </div>
                                 <p className="text-sm">Belum ada kategori persyaratan</p>
                                 <Button type="button" onClick={addRequirementCategory} className="gap-1.5">
                                     <Plus className="size-4" />
@@ -833,6 +833,79 @@ export function CreateSection({ categories }: CreateSectionProps) {
                             </Button>
                         </div>
                     )} */}
+                </TabsContent>
+
+                {/* ───────────────── SEO Section ───────────────── */}
+                <TabsContent value="seo">
+                    <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+                        <div className="space-y-6">
+                            <div>
+                                <h2 className="text-xl font-semibold">Pengaturan SEO</h2>
+                                <p className="mt-0.5 text-sm text-muted-foreground">Kelola pengaturan SEO untuk halaman layanan.</p>
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                                {/* Name */}
+                                <Field>
+                                    <FieldLabel htmlFor="name">
+                                        Nama <span className="text-destructive">*</span>
+                                    </FieldLabel>
+                                    <Input
+                                        id="name"
+                                        type="text"
+                                        name="name"
+                                        required
+                                        autoFocus
+                                        placeholder="Masukkan nama layanan"
+                                        value={data.name}
+                                        onChange={(e) => setData('name', e.target.value)}
+                                    />
+                                    {errors.name && <FieldError>{errors.name}</FieldError>}
+                                </Field>
+
+                                {/* Slug */}
+                                <Field>
+                                    <FieldLabel htmlFor="slug">Slug</FieldLabel>
+                                    <Input
+                                        id="slug"
+                                        type="text"
+                                        name="slug"
+                                        placeholder="Masukkan slug, contoh: slug-kategori-layanan"
+                                        value={data.slug}
+                                        onChange={(e) => setData('slug', e.target.value)}
+                                    />
+                                    {errors.slug && <FieldError>{errors.slug}</FieldError>}
+                                </Field>
+
+                                {/* Category */}
+                                <Field>
+                                    <FieldLabel htmlFor="category">
+                                        Kategori <span className="text-destructive">*</span>
+                                    </FieldLabel>
+                                    <Select
+                                        value={data.service_category_id ? String(data.service_category_id) : ''}
+                                        required
+                                        onValueChange={(val) => setData('service_category_id', Number(val))}
+                                    >
+                                        <SelectTrigger id="category">
+                                            <SelectValue placeholder="Pilih kategori" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectLabel>Kategori</SelectLabel>
+                                                {categories.map((category) => (
+                                                    <SelectItem key={category.id} value={String(category.id)}>
+                                                        {category.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                    {errors.service_category_id && <FieldError>{errors.service_category_id}</FieldError>}
+                                </Field>
+                            </div>
+                        </div>
+                    </div>
                 </TabsContent>
             </Tabs>
 

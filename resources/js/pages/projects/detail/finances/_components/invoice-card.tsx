@@ -99,13 +99,11 @@ export function InvoiceCard({ project }: InvoiceCardProps) {
                             <div className="space-y-4 py-4 md:py-6">
                                 <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
                                     <div className="order-2 space-y-2 lg:order-1">
-                                        {/* Type & number */}
                                         <div className="flex items-center gap-2">
                                             <Badge className={typeInfo.classes}>{typeInfo.label}</Badge>
                                             <p className="text-sm whitespace-normal text-muted-foreground">{invoice.invoice_number}</p>
                                         </div>
 
-                                        {/* Amount */}
                                         <div className="flex items-baseline gap-2">
                                             <p className="text-base font-semibold tabular-nums">{formatRupiah(Number(invoice.total_amount))}</p>
                                             {(Number(invoice.discount_amount) > 0 || Number(invoice.tax_amount) > 0) && (
@@ -114,7 +112,6 @@ export function InvoiceCard({ project }: InvoiceCardProps) {
                                         </div>
                                     </div>
 
-                                    {/* Actions */}
                                     <div className="order-1 flex shrink-0 flex-wrap items-center gap-1 lg:order-2">
                                         <HasPermission permission="edit-finance-invoices">
                                             <Tooltip>
@@ -178,7 +175,6 @@ export function InvoiceCard({ project }: InvoiceCardProps) {
                                     </div>
                                 </div>
 
-                                {/* Dates */}
                                 <div className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-5">
                                     <div className="space-y-1">
                                         <p className="text-xs text-muted-foreground">Diskon</p>
@@ -216,7 +212,6 @@ export function InvoiceCard({ project }: InvoiceCardProps) {
                                     </div>
                                 </div>
 
-                                {/* Toggle buttons */}
                                 <div className="flex items-center gap-6">
                                     {hasItems && (
                                         <button
@@ -248,7 +243,6 @@ export function InvoiceCard({ project }: InvoiceCardProps) {
                                 </div>
                             </div>
 
-                            {/* Items collapsible */}
                             {hasItems && isItemsExpanded && (
                                 <div className="pb-4">
                                     <p className="mb-4 text-sm font-medium text-foreground">Item Invoice</p>
@@ -270,14 +264,13 @@ export function InvoiceCard({ project }: InvoiceCardProps) {
                                 </div>
                             )}
 
-                            {/* Payments collapsible */}
                             {isPaymentsExpanded && <PaymentCard invoice={invoice} />}
                         </div>
                     );
                 })}
             </div>
 
-            {/* Confirm Status Dialog */}
+            {/* ───────────────── Dialog: Confirm Status ───────────────── */}
             <Dialog
                 open={!!confirmStatus && !!selectedInvoice}
                 onOpenChange={() => {

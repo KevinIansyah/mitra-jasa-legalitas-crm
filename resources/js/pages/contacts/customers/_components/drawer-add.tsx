@@ -67,7 +67,6 @@ export function DrawerAdd() {
                     </DrawerHeader>
 
                     <form onSubmit={handleSubmit} className="flex flex-1 flex-col px-4">
-                        {/* Content */}
                         <div className="grid gap-4">
                             <div className="gird-cols-1 grid gap-4 lg:grid-cols-2">
                                 <Field>
@@ -127,7 +126,7 @@ export function DrawerAdd() {
                                     </FieldLabel>
                                     <Select required value={data.tier} onValueChange={(value) => setData('tier', value)}>
                                         <SelectTrigger id="tier">
-                                            <SelectValue placeholder="Pilih tier" />
+                                            <SelectValue placeholder="Pilih tier..." />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
@@ -158,7 +157,6 @@ export function DrawerAdd() {
                             </Field>
                         </div>
 
-                        {/* Footer */}
                         <DrawerFooter className="mt-auto px-0">
                             <Button type="submit" disabled={processing}>
                                 {processing ? (

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Services\ServiceCategoryController;
+use App\Http\Controllers\Services\ServiceCityPageController;
 use App\Http\Controllers\Services\ServiceController;
 use Illuminate\Support\Facades\Route;
 
@@ -83,8 +84,66 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
 
       Route::patch('/process-steps', [ServiceController::class, 'updateProcessSteps'])
         ->name('update.process-steps');
+
+      Route::patch('/seo', [ServiceController::class, 'updateSeo'])
+        ->name('update.seo');
     });
 
+    /*
+    |--------------------------------------------------------------------------
+    | SERVICE CITY PAGES
+    |--------------------------------------------------------------------------
+    | GET    /services/{service}/city-pages                   -> List city pages
+    | POST   /services/{service}/city-pages                   -> Store city page
+    | GET    /services/city-pages/{cityPage}/edit             -> Show edit form
+    | PATCH  /services/{service}/city-pages/{cityPage}        -> Update city page
+    | DELETE /services/{service}/city-pages/{cityPage}        -> Delete city page
+    |
+    | PATCH  /services/{service}/city-pages/{cityPage}/content      -> Update content
+    | PATCH  /services/{service}/city-pages/{cityPage}/seo          -> Update SEO
+    | PATCH  /services/{service}/city-pages/{cityPage}/publish      -> Publish city page
+    | POST   /services/{service}/city-pages/{cityPage}/generate-ai  -> Generate AI content
+    |--------------------------------------------------------------------------
+    */
+
+    Route::prefix('city-pages')->name('city-pages.')->group(function () {
+
+      Route::get('/', [ServiceCityPageController::class, 'index'])
+        ->middleware('permission:view-service-city-pages')
+        ->name('index');
+
+      Route::get('/create', [ServiceCityPageController::class, 'create'])
+        ->middleware('permission:create-service-city-pages')
+        ->name('create');
+
+      Route::post('/', [ServiceCityPageController::class, 'store'])
+        ->middleware('permission:create-service-city-pages')
+        ->name('store');
+
+      Route::get('/{cityPage}/edit', [ServiceCityPageController::class, 'edit'])
+        ->middleware('permission:edit-service-city-pages')
+        ->name('edit');
+
+      Route::delete('/{cityPage}', [ServiceCityPageController::class, 'destroy'])
+        ->middleware('permission:delete-service-city-pages')
+        ->name('destroy');
+
+      Route::prefix('{cityPage}')->middleware('permission:edit-service-city-pages')->group(function () {
+
+        Route::patch('/content', [ServiceCityPageController::class, 'updateContent'])
+          ->name('update.content');
+
+        Route::patch('/seo', [ServiceCityPageController::class, 'updateSeo'])
+          ->name('update.seo');
+
+        Route::patch('/publish', [ServiceCityPageController::class, 'publish'])
+          ->name('publish');
+
+        Route::post('/generate-ai', [ServiceCityPageController::class, 'generateAi'])
+          ->middleware('permission:generate-ai-content')
+          ->name('generate-ai');
+      });
+    });
 
     /*
         |--------------------------------------------------------------------------

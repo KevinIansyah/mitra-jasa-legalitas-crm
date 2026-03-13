@@ -173,7 +173,7 @@ export function EditSection({ services, template }: EditSectionProps) {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            {/* BASIC INFORMATION */}
+            {/* ───────────────── Basic Information Section ───────────────── */}   
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-6">
                     <div>
@@ -199,6 +199,7 @@ export function EditSection({ services, template }: EditSectionProps) {
                             </Select>
                         </Field>
 
+                        {/* Name */}
                         <Field>
                             <FieldLabel htmlFor="name">
                                 Nama Template <span className="text-destructive">*</span>
@@ -207,6 +208,7 @@ export function EditSection({ services, template }: EditSectionProps) {
                             {errors.name && <FieldError>{errors.name}</FieldError>}
                         </Field>
 
+                        {/* Service */}
                         <Field>
                             <FieldLabel htmlFor="service">Jenis Layanan</FieldLabel>
                             <Select value={data.service_id ? String(data.service_id) : 'null'} onValueChange={(val) => setData('service_id', val === 'null' ? null : Number(val))}>
@@ -228,6 +230,7 @@ export function EditSection({ services, template }: EditSectionProps) {
                             {errors.service_id && <FieldError>{errors.service_id}</FieldError>}
                         </Field>
 
+                        {/* Duration */}
                         <Field>
                             <FieldLabel htmlFor="duration">Estimasi Durasi (hari)</FieldLabel>
                             <Input
@@ -242,6 +245,7 @@ export function EditSection({ services, template }: EditSectionProps) {
                         </Field>
                     </div>
 
+                    {/* Description */}
                     <Field>
                         <FieldLabel htmlFor="description">Deskripsi</FieldLabel>
                         <Textarea
@@ -254,6 +258,7 @@ export function EditSection({ services, template }: EditSectionProps) {
                         {errors.description && <FieldError>{errors.description}</FieldError>}
                     </Field>
 
+                    {/* Notes */}
                     <Field>
                         <FieldLabel htmlFor="notes">Catatan</FieldLabel>
                         <Textarea id="notes" className="min-h-24" placeholder="Catatan tambahan (opsional)" value={data.notes} onChange={(e) => setData('notes', e.target.value)} />
@@ -262,7 +267,7 @@ export function EditSection({ services, template }: EditSectionProps) {
                 </div>
             </div>
 
-            {/* MILESTONES */}
+            {/* ───────────────── Milestones Section ───────────────── */}
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-6">
                     <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
@@ -309,7 +314,7 @@ export function EditSection({ services, template }: EditSectionProps) {
                 </div>
             </div>
 
-            {/* DOCUMENTS */}
+            {/* ───────────────── Documents Section ───────────────── */}
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-6">
                     <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
@@ -355,7 +360,7 @@ export function EditSection({ services, template }: EditSectionProps) {
                 </div>
             </div>
 
-            {/* ACTIONS */}
+         
             <div className="flex items-center gap-2">
                 <Button type="submit" className="flex-1 md:w-45 md:flex-none" disabled={processing}>
                     {processing ? (

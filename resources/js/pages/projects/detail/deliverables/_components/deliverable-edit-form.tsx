@@ -45,6 +45,7 @@ export function DeliverableEditForm({ id, data, loading, onChange, onSubmit, onC
             </div>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                {/* Name */}
                 <Field className="md:col-span-2">
                     <FieldLabel>
                         Nama <span className="text-destructive">*</span>
@@ -52,11 +53,13 @@ export function DeliverableEditForm({ id, data, loading, onChange, onSubmit, onC
                     <Input value={data.name} onChange={(e) => onChange({ name: e.target.value })} placeholder="Contoh: Akta Pendirian CV" />
                 </Field>
 
+                {/* Version */}
                 <Field>
                     <FieldLabel>Versi</FieldLabel>
                     <Input value={data.version} onChange={(e) => onChange({ version: e.target.value })} placeholder="Contoh: v1.0" />
                 </Field>
 
+                {/* Description */}
                 <Field className="md:col-span-3">
                     <FieldLabel>Deskripsi</FieldLabel>
                     <Textarea
@@ -68,6 +71,7 @@ export function DeliverableEditForm({ id, data, loading, onChange, onSubmit, onC
                     />
                 </Field>
 
+                {/* Notes */}
                 <Field className="md:col-span-3">
                     <FieldLabel>Catatan</FieldLabel>
                     <Textarea

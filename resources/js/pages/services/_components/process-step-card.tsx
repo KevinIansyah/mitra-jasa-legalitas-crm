@@ -193,13 +193,6 @@ export function ProcessStepCard({ step, index, totalItems, onChange, onDelete, o
                 />
                 {errors[`process_steps.${index}.notes`] && <FieldError>{errors[`process_steps.${index}.notes`]}</FieldError>}
             </Field>
-
-            {/* Icon (optional field for future icon picker) */}
-            <Field>
-                <FieldLabel>Icon</FieldLabel>
-                <Input value={step.icon ?? ''} onChange={(e) => update({ icon: e.target.value })} placeholder="Nama icon atau kelas CSS" />
-                {errors[`process_steps.${index}.icon`] && <FieldError>{errors[`process_steps.${index}.icon`]}</FieldError>}
-            </Field>
         </div>
     );
 }

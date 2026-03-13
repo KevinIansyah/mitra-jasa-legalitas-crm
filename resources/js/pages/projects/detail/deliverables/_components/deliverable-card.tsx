@@ -113,7 +113,6 @@ export function DeliverableCard({ deliverable, projectId }: DeliverableCardProps
                 <DeliverableEditForm id={deliverable.id} data={editData} loading={loading} onChange={set} onSubmit={handleEditSubmit} onCancel={() => setMode('view')} />
             ) : (
                 <div className="space-y-4">
-                    {/* Header */}
                     <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-start">
                         <div className="order-2 flex items-start gap-3 lg:order-1">
                             <FileIcon fileType={deliverable.file_type} />
@@ -170,12 +169,10 @@ export function DeliverableCard({ deliverable, projectId }: DeliverableCardProps
                         </div>
                     </div>
 
-                    {/* Description */}
                     {deliverable.description && <p className="text-sm whitespace-normal text-muted-foreground">{deliverable.description}</p>}
 
                     <hr />
 
-                    {/* Details */}
                     <div className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
                         <div className="space-y-1">
                             <p className="text-xs text-muted-foreground">Format</p>
@@ -195,7 +192,6 @@ export function DeliverableCard({ deliverable, projectId }: DeliverableCardProps
                         </div>
                     </div>
 
-                    {/* Notes */}
                     {deliverable.notes && (
                         <div className="space-y-1 text-sm whitespace-normal text-foreground">
                             <p className="text-xs text-muted-foreground">Catatan</p>

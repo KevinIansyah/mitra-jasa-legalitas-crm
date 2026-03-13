@@ -27,6 +27,7 @@ interface DrawerManageCustomersProps {
 }
 
 export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerManageCustomersProps) {
+    const R2_PUBLIC_URL = import.meta.env.VITE_CLOUDFLARE_R2_PUBLIC_URL;
     const loadingFocusRef = React.useRef<HTMLButtonElement>(null);
     const [activeTab, setActiveTab] = React.useState<'list' | 'add'>('list');
     const [searchQuery, setSearchQuery] = React.useState('');
@@ -149,26 +150,25 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
                         <DrawerDescription>Tambah atau hapus hubungan antara pelanggan dengan perusahaan {company.name}</DrawerDescription>
                     </DrawerHeader>
 
-                    <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'list' | 'add')} className="flex flex-1 flex-col gap-4 overflow-hidden">
-                        <div className="px-4">
-                            <TabsList className="w-full">
-                                <TabsTrigger value="list" className="group flex-1">
-                                    Daftar
-                                    {customersCount > 0 && (
-                                        <Badge className="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] group-data-[state=active]:bg-primary-foreground group-data-[state=active]:text-foreground">
-                                            {customersCount}
-                                        </Badge>
-                                    )}
-                                </TabsTrigger>
+                    <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'list' | 'add')} className="flex flex-1 flex-col gap-4 overflow-hidden px-4">
+                        {/* ───────────────── Tabs List ───────────────── */}
+                        <TabsList className="w-full">
+                            <TabsTrigger value="list" className="group flex-1">
+                                Daftar
+                                {customersCount > 0 && (
+                                    <Badge className="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] group-data-[state=active]:bg-primary-foreground group-data-[state=active]:text-foreground">
+                                        {customersCount}
+                                    </Badge>
+                                )}
+                            </TabsTrigger>
 
-                                <TabsTrigger value="add" className="flex-1">
-                                    Tambah
-                                </TabsTrigger>
-                            </TabsList>
-                        </div>
+                            <TabsTrigger value="add" className="flex-1">
+                                Tambah
+                            </TabsTrigger>
+                        </TabsList>
 
-                        {/* Tab: List Customers */}
-                        <TabsContent value="list" className="flex-1 overflow-y-auto px-4 pb-4">
+                        {/* ───────────────── List Customers Section ───────────────── */}
+                        <TabsContent value="list" className="flex-1 overflow-y-auto pb-4">
                             <div className="h-full space-y-2">
                                 {customersCount === 0 ? (
                                     <div className="flex h-full flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border text-center">
@@ -188,8 +188,8 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
                             </div>
                         </TabsContent>
 
-                        {/* Tab: Add Customer - tetap sama */}
-                        <TabsContent value="add" className="mt-4 flex-1 overflow-y-auto px-4">
+                        {/* ───────────────── Add Customer Section ───────────────── */}
+                        <TabsContent value="add" className="mt-4 flex-1 overflow-y-auto">
                             <form onSubmit={handleSubmit} className="flex h-full flex-col">
                                 <div className="flex-1 space-y-4">
                                     <Field>
@@ -201,7 +201,7 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
                                             <div className="flex items-center justify-between rounded-md bg-primary/10 p-3 dark:bg-muted/40">
                                                 <div className="flex items-center gap-3">
                                                     <Avatar className="rounded-full">
-                                                        <AvatarImage src={selectedCustomer.user?.avatar ?? undefined} />
+                                                        <AvatarImage src={`${R2_PUBLIC_URL}/${selectedCustomer.user?.avatar}`} alt={selectedCustomer.name} />
                                                         <AvatarFallback className="bg-primary/10 text-xs text-primary">{getInitials(selectedCustomer.name)}</AvatarFallback>
                                                     </Avatar>
                                                     <div>
@@ -235,24 +235,24 @@ export function DrawerManageCustomers({ company, open, onOpenChange }: DrawerMan
 
                                                 {searchResults.length > 0 && (
                                                     <div className="-mt-2 max-h-64 space-y-1 overflow-y-auto">
-                                                        {searchResults.map((c) => (
+                                                        {searchResults.map((item) => (
                                                             <button
-                                                                key={c.id}
+                                                                key={item.id}
                                                                 type="button"
-                                                                onClick={() => handleSelectCustomer(c)}
+                                                                onClick={() => handleSelectCustomer(item)}
                                                                 className="flex w-full items-center gap-3 rounded-md bg-primary/10 p-3 text-left hover:bg-primary/20 dark:bg-muted/40 dark:hover:bg-muted/50"
                                                             >
                                                                 <Avatar className="rounded-full">
-                                                                    <AvatarImage src={c.user?.avatar ?? undefined} />
-                                                                    <AvatarFallback className="bg-primary/10 text-sm text-primary">{getInitials(c.name)}</AvatarFallback>
+                                                                    <AvatarImage src={`${R2_PUBLIC_URL}/${item.user?.avatar}`} alt={item.name} />
+                                                                    <AvatarFallback className="bg-primary/10 text-sm text-primary">{getInitials(item.name)}</AvatarFallback>
                                                                 </Avatar>
                                                                 <div className="flex-1">
-                                                                    <p className="text-sm font-medium">{c.name}</p>
-                                                                    <p className="text-sm text-muted-foreground">{c.email || c.phone || 'Tidak ada info kontak'}</p>
+                                                                    <p className="text-sm font-medium">{item.name}</p>
+                                                                    <p className="text-sm text-muted-foreground">{item.email || item.phone || 'Tidak ada info kontak'}</p>
                                                                 </div>
-                                                                {c.tier && (
-                                                                    <Badge className={TIER_MAP[c.tier]?.classes ?? 'bg-muted text-muted-foreground'}>
-                                                                        {TIER_MAP[c.tier]?.label ?? c.tier}
+                                                                {item.tier && (
+                                                                    <Badge className={TIER_MAP[item.tier]?.classes ?? 'bg-muted text-muted-foreground'}>
+                                                                        {TIER_MAP[item.tier]?.label ?? item.tier}
                                                                     </Badge>
                                                                 )}
                                                             </button>

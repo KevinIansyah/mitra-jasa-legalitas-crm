@@ -29,10 +29,7 @@ export default function Page() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dokumen Project" />
             <div className="p-4 md:p-6">
-                <Heading
-                    title="Manajemen Dokumen"
-                    description="Kelola dokumen yang terkait dengan project, termasuk menambah, melihat, dan mengunduh file yang dibutuhkan"
-                />
+                <Heading title="Manajemen Dokumen" description="Kelola dokumen yang terkait dengan project, termasuk menambah, melihat, dan mengunduh file yang dibutuhkan" />
 
                 <DocumentSection documents={documents} summary={summary} filters={filters} />
             </div>

@@ -1,12 +1,10 @@
 import { BookOpen, CalendarDays, PenLine } from 'lucide-react';
 import { useState } from 'react';
-
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-
 import type { Account } from '@/types/account';
+import type { JournalEntry, JournalSummary } from '@/types/journal-entries';
 import type { Paginator } from '@/types/paginator';
 import { DataTable } from './datatable';
-import type { JournalEntry, JournalSummary } from '@/types/journal-entries';
 
 interface JournalSectionProps {
     entries: Paginator<JournalEntry>;
@@ -60,7 +58,6 @@ export function JournalSection({ entries, accounts, summary, filters }: JournalS
 
     return (
         <div className="space-y-4">
-            {/* Summary cards */}
             <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:border-none *:data-[slot=card]:bg-sidebar *:data-[slot=card]:shadow md:grid-cols-3 *:data-[slot=card]:dark:shadow-none">
                 {STATS.map(({ label, value, badge, icon, footer }) => (
                     <Card key={label}>
@@ -76,7 +73,6 @@ export function JournalSection({ entries, accounts, summary, filters }: JournalS
                 ))}
             </div>
 
-            {/* Datatable */}
             <div className="w-full rounded-xl bg-sidebar p-4">
                 <DataTable
                     data={data}

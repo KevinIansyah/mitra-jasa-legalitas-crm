@@ -71,9 +71,11 @@ export function DataTable({ data, roles, pageIndex, setPageIndex, totalPages, to
 
     return (
         <>
+            {/* ───────────────── Filter & Search Section ───────────────── */}
             <div className="flex flex-col gap-4 pb-4">
                 <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
                     <div className="flex w-full flex-1 items-center gap-2 md:w-auto">
+                        {/* Search */}
                         <InputGroup className="max-w-sm">
                             <InputGroupInput placeholder="Cari nama atau email staff..." value={searchValue} onChange={handleSearchChange} />
                             <InputGroupAddon>
@@ -81,6 +83,7 @@ export function DataTable({ data, roles, pageIndex, setPageIndex, totalPages, to
                             </InputGroupAddon>
                         </InputGroup>
 
+                        {/* Filter */}
                         <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
                             <SheetTrigger asChild>
                                 <Button variant="secondary" className="relative gap-1.5 lg:w-30">
@@ -102,10 +105,7 @@ export function DataTable({ data, roles, pageIndex, setPageIndex, totalPages, to
                                 <div className="space-y-4 px-4">
                                     <Field>
                                         <FieldLabel htmlFor="availability_status">Status Ketersediaan</FieldLabel>
-                                        <Select
-                                            value={filters.availability_status || ''}
-                                            onValueChange={(value) => updateFilter('availability_status', value || undefined)}
-                                        >
+                                        <Select value={filters.availability_status || ''} onValueChange={(value) => updateFilter('availability_status', value || undefined)}>
                                             <SelectTrigger className="w-full">
                                                 <SelectValue placeholder="Pilih status" />
                                             </SelectTrigger>
@@ -133,6 +133,7 @@ export function DataTable({ data, roles, pageIndex, setPageIndex, totalPages, to
                     </div>
 
                     <div className="flex w-full gap-2 md:w-auto">
+                        {/* Column */}
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" className="flex-1 gap-1.5 md:w-30">
@@ -151,12 +152,14 @@ export function DataTable({ data, roles, pageIndex, setPageIndex, totalPages, to
                             </DropdownMenuContent>
                         </DropdownMenu>
 
+                        {/* Add Staff */}
                         <HasPermission permission="create-staff">
                             <DrawerAdd roles={roles} />
                         </HasPermission>
                     </div>
                 </div>
 
+                {/* Filter Active */}
                 {activeFiltersCount > 0 && (
                     <div className="flex flex-wrap items-center gap-2">
                         <span className="text-sm text-muted-foreground">Filter aktif:</span>
@@ -183,6 +186,7 @@ export function DataTable({ data, roles, pageIndex, setPageIndex, totalPages, to
                 )}
             </div>
 
+            {/* ───────────────── Table Section ───────────────── */}
             <div className="overflow-hidden rounded-t-md border-b">
                 <Table>
                     <TableHeader>
@@ -214,6 +218,7 @@ export function DataTable({ data, roles, pageIndex, setPageIndex, totalPages, to
                 </Table>
             </div>
 
+            {/* ───────────────── Pagination Section ───────────────── */}
             <div className="flex items-center justify-between gap-8 pt-4">
                 <div className="hidden flex-1 text-sm md:flex">
                     Menampilkan {Math.min(pageIndex * perPage + 1, totalItems)} sampai {Math.min((pageIndex + 1) * perPage, totalItems)} dari {totalItems} hasil

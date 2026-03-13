@@ -21,7 +21,6 @@ export default function DocumentDetail({ document }: { document: ProjectDocument
                 </div>
             )}
 
-            {/* Details */}
             <div className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
                 <div className="space-y-1">
                     <p className="text-xs text-muted-foreground">Format</p>

@@ -81,9 +81,10 @@ export function LegalBasisCard({ legalBasis, index, totalItems, onChange, onDele
                         <SelectContent>
                             <SelectGroup>
                                 <SelectLabel>Jenis Dokumen</SelectLabel>
-                                {DOCUMENT_TYPES.map((type) => (
-                                    <SelectItem key={type} value={type}>
-                                        {type}
+                                {DOCUMENT_TYPES.map((t) => (
+                                    <SelectItem key={t.value} value={t.value}>
+                                        <span className={`mr-2 inline-block h-2 w-2 rounded-full ${t.classes.replace('text-white', '')}`} />
+                                        {t.label}
                                     </SelectItem>
                                 ))}
                             </SelectGroup>

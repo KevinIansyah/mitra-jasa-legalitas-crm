@@ -37,6 +37,11 @@ class RolePermissionSeeder extends Seeder
             'edit-services',
             'delete-services',
 
+            'view-service-city-pages',
+            'create-service-city-pages',
+            'edit-service-city-pages',
+            'delete-service-city-pages',
+
             'view-service-categories',
             'create-service-categories',
             'edit-service-categories',
@@ -140,6 +145,14 @@ class RolePermissionSeeder extends Seeder
             'delete-finance-journals',
 
             'view-finance-reports',
+
+            'view-master-cities',
+            'create-master-cities',
+            'edit-master-cities',
+            'delete-master-cities',
+
+            'view-site-settings',
+            'edit-site-settings',
         ];
 
         foreach ($permissions as $permission) {

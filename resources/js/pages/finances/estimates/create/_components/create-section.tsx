@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -38,6 +37,7 @@ export default function CreateSection({ selectedQuote, fromQuote }: CreateSectio
         setProcessing(true);
         const toastId = toast.loading('Menyimpan...', { description: 'Estimasi sedang ditambahkan.' });
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         router.post(finances.estimates.store().url, { ...data, from_quote: fromQuote } as any, {
             onSuccess: () => {
                 toast.success('Berhasil', { description: 'Estimasi berhasil ditambahkan.' });

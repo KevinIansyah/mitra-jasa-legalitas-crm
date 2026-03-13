@@ -166,7 +166,7 @@ export function DocumentUploadDrawer({ projectId, document, open, onOpenChange }
                 setFile(null);
             },
             onError: () => {
-                toast.error('Gagal', { description: 'Terjadi kesalahan saat menghapus file.' });
+                toast.error('Gagal', { description: 'Terjadi kesalahan saat menghapus file, coba lagi.' });
             },
             onFinish: () => {
                 setLoadingDelete(false);
@@ -238,7 +238,6 @@ export function DocumentUploadDrawer({ projectId, document, open, onOpenChange }
                                 </>
                             ) : (
                                 <div className="relative overflow-visible">
-                                    {/* Image preview */}
                                     {filePreview.isImage && filePreview.src && (
                                         <div className="relative mb-2">
                                             {imgLoading && <Skeleton className="aspect-video w-full rounded-lg border border-border" />}

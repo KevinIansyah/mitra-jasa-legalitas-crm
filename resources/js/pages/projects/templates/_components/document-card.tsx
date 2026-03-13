@@ -41,7 +41,6 @@ export function DocumentCard({ document, index, totalItems, onChange, onDelete, 
 
     return (
         <div className="space-y-4 rounded-xl border border-primary/30 bg-input/30 p-4 dark:border-none">
-            {/* Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-muted-foreground">
                     <GripVertical className="size-4 cursor-grab" />

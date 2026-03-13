@@ -1,15 +1,15 @@
 <?php
 
-use App\Http\Controllers\EstimateController;
-use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\Finances\EstimateController;
+use App\Http\Controllers\Finances\ExpenseController;
 use App\Http\Controllers\Finances\AccountController;
 use App\Http\Controllers\Finances\ManualJournalController;
 use App\Http\Controllers\Finances\OpeningBalanceController;
 use App\Http\Controllers\Finances\FinancialReportController;
 use App\Http\Controllers\Projects\ProjectInvoiceController;
 use App\Http\Controllers\Projects\ProjectPaymentController;
-use App\Http\Controllers\QuoteController;
-use App\Http\Controllers\VendorController;
+use App\Http\Controllers\Finances\QuoteController;
+use App\Http\Controllers\Finances\VendorController;
 use Illuminate\Support\Facades\Route;
 
 /*

@@ -7,8 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
-// ── Period filter (Laba Rugi & Cash Flow) ─────────────────────────────────────
 
+{/* ───────────────── Search & Filter Sheet (Period) ───────────────── */}
 interface PeriodFilterSheetProps {
     from: string;
     to: string;
@@ -64,8 +64,7 @@ export function PeriodFilterSheet({ from, to, routeUrl }: PeriodFilterSheetProps
     );
 }
 
-// ── As-of filter (Neraca) ─────────────────────────────────────────────────────
-
+{/* ───────────────── Search & Filter Sheet (As Of) ───────────────── */}
 interface AsOfFilterSheetProps {
     asOf: string;
     routeUrl: string;

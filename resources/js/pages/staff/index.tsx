@@ -28,6 +28,7 @@ export default function Page() {
             <Head title="Manajemen Staff" />
             <div className="p-4 md:p-6">
                 <Heading title="Manajemen Staff" description="Kelola data dan informasi staff secara terpusat" />
+                
                 <StaffSection staffList={staffList} summary={summary} roles={roles} filters={filters} />
             </div>
         </AppLayout>

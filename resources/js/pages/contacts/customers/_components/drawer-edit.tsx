@@ -73,7 +73,6 @@ export function DrawerEdit({ customer, open, onOpenChange }: DrawerEditProps) {
                     </DrawerHeader>
 
                     <form onSubmit={handleSubmit} className="flex flex-1 flex-col px-4">
-                        {/* Content */}
                         <div className="grid gap-4">
                             <div className="gird-cols-1 grid gap-4 lg:grid-cols-2">
                                 <Field>
@@ -183,7 +182,6 @@ export function DrawerEdit({ customer, open, onOpenChange }: DrawerEditProps) {
                             </Field>
                         </div>
 
-                        {/* Footer */}
                         <DrawerFooter className="mt-auto px-0">
                             <Button type="submit" disabled={processing}>
                                 {processing ? (

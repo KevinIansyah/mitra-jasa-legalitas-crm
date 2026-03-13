@@ -65,63 +65,63 @@ export function DetailSection({ project, tab, services, activities, canApproveDo
                 </TabsList>
             </div>
 
-            {/* TAB: OVERVIEW */}
+            {/* ───────────────── Tab: Overview ───────────────── */}
             {tab === 'overview' && (
                 <TabsContent value="overview">
                     <Overviews project={project} services={services ?? []} />
                 </TabsContent>
             )}
 
-            {/* TAB: FINANCE */}
+            {/* ───────────────── Tab: Finance ───────────────── */}
             {tab === 'finance' && (
                 <TabsContent value="finance" className="space-y-4">
                     <Finances project={project} />
                 </TabsContent>
             )}
 
-            {/* TAB: TEAM */}
+            {/* ───────────────── Tab: Team ───────────────── */}
             {tab === 'team' && (
                 <TabsContent value="team">
                     <Teams project={project} />
                 </TabsContent>
             )}
 
-            {/* TAB: TASKS */}
+            {/* ───────────────── Tab: Tasks ───────────────── */}
             {tab === 'tasks' && (
                 <TabsContent value="tasks">
                     <Tasks project={project} />
                 </TabsContent>
             )}
 
-            {/* TAB: MILESTONES */}
+            {/* ───────────────── Tab: Milestones ───────────────── */}
             {tab === 'milestones' && (
                 <TabsContent value="milestones">
                     <Milestones project={project} />
                 </TabsContent>
             )}
 
-            {/* TAB: DOCUMENTS */}
+            {/* ───────────────── Tab: Documents ───────────────── */}
             {tab === 'documents' && (
                 <TabsContent value="documents">
                     <Documents project={project} canApproveDocuments={canApproveDocuments} />
                 </TabsContent>
             )}
 
-            {/* TAB: DELIVERABLES */}
+            {/* ───────────────── Tab: Deliverables ───────────────── */}
             {tab === 'deliverables' && (
                 <TabsContent value="deliverables">
                     <Deliverables project={project} />
                 </TabsContent>
             )}
 
-            {/* TAB: DISCUSSIONS */}
+            {/* ───────────────── Tab: Discussions ───────────────── */}
             {tab === 'discussions' && (
                 <TabsContent value="discussions">
                     <Discussions project={project} />
                 </TabsContent>
             )}
 
-            {/* TAB: ACTIVITIES */}
+            {/* ───────────────── Tab: Activities ───────────────── */}
             {tab === 'activities' && (
                 <TabsContent value="activities">
                     <Activities activities={activities!} />

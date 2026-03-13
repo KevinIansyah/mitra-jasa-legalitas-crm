@@ -33,6 +33,7 @@ export function CommentComposer({
     onCancel,
     autoFocus = false,
 }: CommentComposerProps) {
+    const R2_PUBLIC_URL = import.meta.env.VITE_R2_PUBLIC_URL;
     const [value, setValue] = React.useState(initialValue);
     const [mentionQuery, setMentionQuery] = React.useState<string | null>(null);
     const [mentionStart, setMentionStart] = React.useState<number>(0);
@@ -46,7 +47,6 @@ export function CommentComposer({
 
     const showMentionDropdown = mentionQuery !== null && mentionResults.length > 0;
 
-    // Auto-resize textarea
     React.useEffect(() => {
         const el = textareaRef.current;
         if (!el) return;
@@ -147,7 +147,7 @@ export function CommentComposer({
                             }}
                         >
                             <Avatar className="h-6 w-6 rounded-full">
-                                <AvatarImage src={user.avatar ?? undefined} />
+                                <AvatarImage src={`${R2_PUBLIC_URL}/${user.avatar}`} alt={user.name} />
                                 <AvatarFallback className="bg-primary/10 pt-0.5 text-[12px] text-primary">{getInitials(user.name)}</AvatarFallback>
                             </Avatar>
                             <span>{user.name}</span>

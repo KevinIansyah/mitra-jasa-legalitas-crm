@@ -20,6 +20,7 @@ import type { ProjectTask, TaskStatus } from '@/types/project';
 import { TASK_PRIORITIES_MAP, TASK_STATUSES, TASK_STATUSES_MAP } from '@/types/project';
 
 export default function Page() {
+    const R2_PUBLIC_URL = import.meta.env.VITE_CLOUDFLARE_R2_PUBLIC_URL;
     const { staff, tasks } = usePage<{
         staff: { id: number; name: string };
         tasks: ProjectTask[];
@@ -34,10 +35,10 @@ export default function Page() {
 
     const summary = {
         total: tasks.length,
-        todo: tasks.filter((t) => t.status === 'todo').length,
-        in_progress: tasks.filter((t) => t.status === 'in_progress').length,
-        completed: tasks.filter((t) => t.status === 'completed').length,
-        overdue: tasks.filter((t) => t.due_date && new Date(t.due_date) < new Date() && t.status !== 'completed' && t.status !== 'cancelled').length,
+        todo: tasks.filter((task) => task.status === 'todo').length,
+        in_progress: tasks.filter((task) => task.status === 'in_progress').length,
+        completed: tasks.filter((task) => task.status === 'completed').length,
+        overdue: tasks.filter((task) => task.due_date && new Date(task.due_date) < new Date() && task.status !== 'completed' && task.status !== 'cancelled').length,
     };
 
     const STATS = [
@@ -91,9 +92,9 @@ export default function Page() {
         );
     }
 
-    const grouped = TASK_STATUSES.map((s) => ({
-        ...s,
-        tasks: tasks.filter((t) => t.status === s.value),
+    const grouped = TASK_STATUSES.map((item) => ({
+        ...item,
+        tasks: tasks.filter((task) => task.status === item.value),
     }));
 
     return (
@@ -102,7 +103,7 @@ export default function Page() {
                 <Heading title="My Tasks" description={`Daftar tugas yang ditugaskan kepada ${staff.name}`} />
 
                 <div className="mt-4 space-y-4">
-                    {/* Stats */}
+             
                     <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:border-none *:data-[slot=card]:bg-sidebar *:data-[slot=card]:shadow md:grid-cols-4 *:data-[slot=card]:dark:shadow-none">
                         {STATS.map(({ label, value, badge, icon }) => (
                             <Card key={label}>
@@ -119,7 +120,6 @@ export default function Page() {
                         ))}
                     </div>
 
-                    {/* Task List */}
                     {tasks.length === 0 ? (
                         <div className="flex min-h-40 flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border p-8 text-muted-foreground">
                             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
@@ -155,13 +155,13 @@ export default function Page() {
                                                     className={`rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none ${isDone ? 'opacity-60' : ''}`}
                                                 >
                                                     <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-start">
-                                                        {/* Left */}
+                                                 
                                                         <div className="flex-1 space-y-2">
                                                             <p className={`font-semibold leading-snug ${isDone ? 'text-muted-foreground line-through' : ''}`}>
                                                                 {task.title}
                                                             </p>
 
-                                                            {/* Meta badges */}
+                                                           
                                                             <div className="flex flex-wrap items-center gap-2">
                                                                 <Badge className={`${priorityInfo.classes}`}>
                                                                     {priorityInfo.label}
@@ -191,7 +191,7 @@ export default function Page() {
                                                                 {task.assignee && (
                                                                     <span className="flex items-center gap-1 text-xs text-foreground">
                                                                         <Avatar className="h-5 w-5">
-                                                                            <AvatarImage src={task.assignee.avatar ?? undefined} />
+                                                                            <AvatarImage src={`${R2_PUBLIC_URL}/${task.assignee.avatar}`} alt={task.assignee.name} />
                                                                             <AvatarFallback className="bg-primary/10 text-[10px] text-primary">
                                                                                 {getInitials(task.assignee.name)}
                                                                             </AvatarFallback>
@@ -205,7 +205,7 @@ export default function Page() {
                                                                 <p className="text-sm text-muted-foreground">{task.description}</p>
                                                             )}
 
-                                                            {/* Project link */}
+                                                        
                                                             {task.project && (
                                                                 <div className="pt-1">
                                                                     <Button asChild variant="ghost" size="sm" className="h-7 gap-1.5 px-2 text-xs">
@@ -218,7 +218,7 @@ export default function Page() {
                                                             )}
                                                         </div>
 
-                                                        {/* Right — status dropdown */}
+                                                      
                                                         <div className="shrink-0">
                                                             <DropdownMenu>
                                                                 <DropdownMenuTrigger asChild>

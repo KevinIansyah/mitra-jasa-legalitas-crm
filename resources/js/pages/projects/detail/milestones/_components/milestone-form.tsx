@@ -60,6 +60,7 @@ export function MilestoneForm({ initial, submitUrl, method, onSuccess, onCancel 
     return (
         <div className="space-y-4 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                {/* Title */}
                 <Field className="md:col-span-3">
                     <FieldLabel>
                         Judul Milestone <span className="text-destructive">*</span>
@@ -67,6 +68,7 @@ export function MilestoneForm({ initial, submitUrl, method, onSuccess, onCancel 
                     <Input value={data.title} onChange={(e) => set({ title: e.target.value })} placeholder="Contoh: Persiapan Dokumen" />
                 </Field>
 
+                {/* Description */}
                 <Field className="md:col-span-3">
                     <FieldLabel>Deskripsi</FieldLabel>
                     <Textarea
@@ -78,6 +80,7 @@ export function MilestoneForm({ initial, submitUrl, method, onSuccess, onCancel 
                     />
                 </Field>
 
+                {/* Start Date */}
                 <Field>
                     <FieldLabel>
                         Tanggal Mulai <span className="text-destructive">*</span>
@@ -85,6 +88,7 @@ export function MilestoneForm({ initial, submitUrl, method, onSuccess, onCancel 
                     <DatePicker value={data.start_date} onChange={(val) => setData('start_date', val)} fromYear={2020} toYear={2040} />
                 </Field>
 
+                {/* Planned End Date */}
                 <Field>
                     <FieldLabel>
                         Rencana Selesai <span className="text-destructive">*</span>
@@ -92,6 +96,7 @@ export function MilestoneForm({ initial, submitUrl, method, onSuccess, onCancel 
                     <DatePicker value={data.planned_end_date} onChange={(val) => setData('planned_end_date', val)} fromYear={2020} toYear={2040} />
                 </Field>
 
+                {/* Estimated Duration */}
                 <Field>
                     <FieldLabel>
                         Estimasi Durasi (hari) <span className="text-destructive">*</span>

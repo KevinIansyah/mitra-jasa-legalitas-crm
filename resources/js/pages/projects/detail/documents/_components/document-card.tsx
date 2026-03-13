@@ -154,7 +154,6 @@ export function DocumentCard({ document, index, projectId, isFirst, isLast, onRe
                     {!isLast && <div className="w-px flex-1 bg-border" />}
                 </div>
 
-                {/* Content */}
                 <div className={`${!isLast ? 'mb-4' : ''} flex-1`}>
                     {mode === 'edit' ? (
                         <DocumentForm
@@ -173,7 +172,6 @@ export function DocumentCard({ document, index, projectId, isFirst, isLast, onRe
                         />
                     ) : (
                         <div className="space-y-4 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                            {/* Header */}
                             <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
                                 <div className="order-2 space-y-2 lg:order-1">
                                     <div className="flex items-center gap-3">
@@ -262,7 +260,6 @@ export function DocumentCard({ document, index, projectId, isFirst, isLast, onRe
                                         />
                                     </HasPermission>
 
-                                    {/* Status dropdown */}
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
                                             <button>
@@ -301,12 +298,10 @@ export function DocumentCard({ document, index, projectId, isFirst, isLast, onRe
                                 </div>
                             </div>
 
-                            {/* Description */}
                             {document.description && <p className="text-sm whitespace-normal text-muted-foreground">{document.description}</p>}
 
                             <hr />
 
-                            {/* Details */}
                             <div className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-6">
                                 <div className="space-y-1">
                                     <p className="text-xs text-muted-foreground">Format</p>
@@ -334,7 +329,6 @@ export function DocumentCard({ document, index, projectId, isFirst, isLast, onRe
                                 </div>
                             </div>
 
-                            {/* Rejection reason */}
                             {document.status === 'rejected' && document.rejection_reason && (
                                 <Alert className="border-destructive bg-destructive/10 text-destructive">
                                     <AlertTriangle />
@@ -343,7 +337,6 @@ export function DocumentCard({ document, index, projectId, isFirst, isLast, onRe
                                 </Alert>
                             )}
 
-                            {/* Notes */}
                             {document.notes && (
                                 <div className="space-y-1 text-sm whitespace-normal text-foreground">
                                     <p className="text-xs text-muted-foreground">Catatan</p>
@@ -355,7 +348,7 @@ export function DocumentCard({ document, index, projectId, isFirst, isLast, onRe
                 </div>
             </div>
 
-            {/* Confirm Status Modal */}
+            {/* ───────────────── Dialog: Confirm Status ───────────────── */}
             <Dialog
                 open={!!confirmStatus}
                 onOpenChange={(open) => {
@@ -416,7 +409,7 @@ export function DocumentCard({ document, index, projectId, isFirst, isLast, onRe
                 </DialogContent>
             </Dialog>
 
-            {/* Confirm Encrypt Modal */}
+            {/* ───────────────── Dialog: Confirm Encrypt ───────────────── */}
             <Dialog open={confirmEncrypt !== null} onOpenChange={() => setConfirmEncrypt(null)}>
                 <DialogContent>
                     <DialogHeader>

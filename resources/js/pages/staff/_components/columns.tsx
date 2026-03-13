@@ -10,6 +10,8 @@ import { AVAILABILITY_STATUSES_MAP } from '@/types/staff';
 import Actions from './actions';
 
 export default function getColumns(roles: Role[]): ColumnDef<Staff>[] {
+    const R2_PUBLIC_URL = import.meta.env.VITE_CLOUDFLARE_R2_PUBLIC_URL;
+    
     return [
         {
             accessorKey: 'name',
@@ -19,7 +21,7 @@ export default function getColumns(roles: Role[]): ColumnDef<Staff>[] {
                 return (
                     <div className="flex items-center gap-3">
                         <Avatar className="size-8">
-                            <AvatarImage src={avatar ?? undefined} />
+                            <AvatarImage src={`${R2_PUBLIC_URL}/${avatar}`} alt={name} />
                             <AvatarFallback className="bg-primary/10 text-xs text-primary">{getInitials(name)}</AvatarFallback>
                         </Avatar>
                         <div className="space-y-0.5">

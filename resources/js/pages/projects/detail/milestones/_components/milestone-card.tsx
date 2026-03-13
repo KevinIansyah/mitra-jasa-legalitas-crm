@@ -81,7 +81,6 @@ export function MilestoneCard({ milestone, index, projectId, isFirst, isLast, on
                     {!isLast && <div className="w-px flex-1 bg-border" />}
                 </div>
 
-                {/* Content */}
                 <div className="mb-4 flex-1">
                     {mode === 'edit' ? (
                         <MilestoneForm
@@ -100,7 +99,6 @@ export function MilestoneCard({ milestone, index, projectId, isFirst, isLast, on
                         />
                     ) : (
                         <div className="space-y-4 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                            {/* Header */}
                             <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
                                 <div className="order-2 space-y-2 lg:order-1">
                                     <div className="flex items-center gap-3">
@@ -236,7 +234,7 @@ export function MilestoneCard({ milestone, index, projectId, isFirst, isLast, on
                 </div>
             </div>
 
-            {/* Confirm Status Modal */}
+            {/* ───────────────── Dialog: Confirm Status ───────────────── */}
             <Dialog open={!!confirmStatus} onOpenChange={() => setConfirmStatus(null)}>
                 <DialogContent>
                     <DialogHeader>

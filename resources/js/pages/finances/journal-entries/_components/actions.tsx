@@ -8,8 +8,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 import finances from '@/routes/finances';
 import type { Account } from '@/types/account';
-import { JournalEditDrawer } from './journal-edit-drawer';
 import type { JournalEntry } from '@/types/journal-entries';
+import { JournalEditDrawer } from './journal-edit-drawer';
 
 interface ActionsProps {
     entry: JournalEntry;

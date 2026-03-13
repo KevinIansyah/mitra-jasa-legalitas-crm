@@ -2,9 +2,9 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
 import { formatRupiah } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
-import Actions from './actions';
 import type { JournalEntry } from '@/types/journal-entries';
 import { JOURNAL_REFERENCE_TYPES_MAP } from '@/types/journal-entries';
+import Actions from './actions';
 
 export default function getColumns(expandedRow: string | null, setExpandedRow: (id: string | null) => void): ColumnDef<JournalEntry>[] {
     return [

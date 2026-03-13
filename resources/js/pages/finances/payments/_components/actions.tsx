@@ -147,7 +147,19 @@ export default function Actions({ payment, isExpanded, onToggleExpand }: Actions
 
                 {(isVerified || isRejected) && <Badge className={`${statusInfo?.classes} px-3 py-1`}>{statusInfo?.label}</Badge>}
             </div>
+            
+            {editingPayment && (
+                <PaymentEditDrawer
+                    invoice={payment.invoice!}
+                    payment={editingPayment}
+                    open={!!editingPayment}
+                    onOpenChange={(open) => {
+                        if (!open) setEditingPayment(null);
+                    }}
+                />
+            )}
 
+            {/* ───────────────── Confirm Status Modal ───────────────── */}
             <Dialog
                 open={!!confirmStatus}
                 onOpenChange={(open) => {
@@ -205,17 +217,6 @@ export default function Actions({ payment, isExpanded, onToggleExpand }: Actions
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-
-            {editingPayment && (
-                <PaymentEditDrawer
-                    invoice={payment.invoice!}
-                    payment={editingPayment}
-                    open={!!editingPayment}
-                    onOpenChange={(open) => {
-                        if (!open) setEditingPayment(null);
-                    }}
-                />
-            )}
         </>
     );
 }

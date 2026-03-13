@@ -1,13 +1,12 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
 import { toast } from 'sonner';
-
+import finances from '@/routes/finances';
 import type { Project, ProjectInvoice, ProjectInvoiceFormData } from '@/types/project';
 import { InvoiceForm } from '../../_components/invoice-form';
 import { InvoiceSummary } from '../../_components/invoice-summary';
 import type { InvoiceFormErrors } from '../../create/_components/create-section';
-import invoices from '@/routes/finances/invoices';
 
 type EditSectionProps = {
     invoice: ProjectInvoice;
@@ -52,7 +51,8 @@ export default function EditSection({ invoice, selectedProject, fromProject, isE
         setProcessing(true);
         const toastId = toast.loading('Menyimpan...', { description: 'Invoice sedang diperbarui.' });
 
-        router.put(invoices.update(invoice.id).url, { ...data, from_project: fromProject } as any, {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        router.put(finances.invoices.update(invoice.id).url, { ...data, from_project: fromProject } as any, {
             onSuccess: () => {
                 toast.success('Berhasil', { description: 'Invoice berhasil diperbarui.' });
             },

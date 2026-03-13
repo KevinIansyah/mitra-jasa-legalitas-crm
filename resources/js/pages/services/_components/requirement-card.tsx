@@ -191,9 +191,10 @@ export function RequirementCard({ category, index, totalItems, onChange, onDelet
                                             <SelectContent>
                                                 <SelectGroup>
                                                     <SelectLabel>Format Dokumen</SelectLabel>
-                                                    {DOCUMENT_FORMAT_OPTIONS.map((format) => (
-                                                        <SelectItem key={format.value} value={format.value}>
-                                                            {format.label}
+                                                    {DOCUMENT_FORMAT_OPTIONS.map((f) => (
+                                                        <SelectItem key={f.value} value={f.value}>
+                                                            <span className={`mr-2 inline-block h-2 w-2 rounded-full ${f.classes.replace('text-white', '')}`} />
+                                                            {f.label}
                                                         </SelectItem>
                                                     ))}
                                                 </SelectGroup>

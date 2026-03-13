@@ -16,11 +16,11 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 import { formatRupiah } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
+import invoices from '@/routes/finances/invoices';
 import type { PaymentStatus, ProjectInvoice, ProjectPayment } from '@/types/project';
 import { PAYMENT_METHODS_MAP, PAYMENT_STATUSES, PAYMENT_STATUSES_MAP } from '@/types/project';
 import { PaymentAddDrawer } from './payment-add-drawer';
 import { PaymentEditDrawer } from './payment-edit-drawer';
-import invoices from '@/routes/finances/invoices';
 
 type PaymentCardProps = {
     invoice: ProjectInvoice;
@@ -121,13 +121,11 @@ export function PaymentCard({ invoice }: PaymentCardProps) {
                                     <div key={payment.id} className={`space-y-4 rounded-lg bg-primary/10 p-4 text-sm dark:bg-muted/40 ${index !== payments.length - 1 ? '' : ''}`}>
                                         <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
                                             <div className="order-2 space-y-2 lg:order-1">
-                                                {/* Amount & Status */}
                                                 <div className="flex items-center gap-2">
                                                     <p className="text-sm font-medium tabular-nums">{formatRupiah(Number(payment.amount))}</p>
                                                     <Badge className={status.classes}>{status.label}</Badge>
                                                 </div>
 
-                                                {/* Meta */}
                                                 <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                                                     <span>
                                                         Tgl Bayar: <span className="text-foreground">{formatDate(payment.payment_date)}</span>
@@ -155,9 +153,7 @@ export function PaymentCard({ invoice }: PaymentCardProps) {
                                                 </div>
                                             </div>
 
-                                            {/* Actions */}
                                             <div className="order-1 flex shrink-0 flex-wrap items-center gap-1 lg:order-2">
-                                                {/* Proof file */}
                                                 {payment.proof_file && (
                                                     <HasPermission permission="view-finance-payments">
                                                         <Tooltip>
@@ -179,7 +175,6 @@ export function PaymentCard({ invoice }: PaymentCardProps) {
                                                     </HasPermission>
                                                 )}
 
-                                                {/* Edit */}
                                                 <HasPermission permission="edit-finance-payments">
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
@@ -197,7 +192,6 @@ export function PaymentCard({ invoice }: PaymentCardProps) {
                                                     </Tooltip>
                                                 </HasPermission>
 
-                                                {/* Delete */}
                                                 <HasPermission permission="delete-finance-payments">
                                                     <DialogDelete
                                                         description={`Pembayaran sebesar ${formatRupiah(Number(payment.amount))} akan dihapus secara permanen.`}
@@ -207,7 +201,6 @@ export function PaymentCard({ invoice }: PaymentCardProps) {
                                                     />
                                                 </HasPermission>
 
-                                                {/* Status */}
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
                                                         <button>
@@ -244,7 +237,6 @@ export function PaymentCard({ invoice }: PaymentCardProps) {
                                             </div>
                                         </div>
 
-                                        {/* Rejection reason */}
                                         {payment.status === 'rejected' && payment.rejection_reason && (
                                             <Alert className="border-destructive bg-destructive/10 text-destructive">
                                                 <AlertTriangle />
@@ -253,7 +245,6 @@ export function PaymentCard({ invoice }: PaymentCardProps) {
                                             </Alert>
                                         )}
 
-                                        {/* Notes */}
                                         {payment.notes && (
                                             <div className="space-y-1 text-sm text-foreground">
                                                 <p className="text-xs text-muted-foreground">Catatan</p>
@@ -268,10 +259,8 @@ export function PaymentCard({ invoice }: PaymentCardProps) {
                 )}
             </div>
 
-            {/* Add Drawer */}
             {addingPayment && <PaymentAddDrawer invoice={invoice} open={addingPayment} onOpenChange={setAddingPayment} />}
 
-            {/* Edit Drawer */}
             {editingPayment && (
                 <PaymentEditDrawer
                     invoice={invoice}
@@ -283,7 +272,7 @@ export function PaymentCard({ invoice }: PaymentCardProps) {
                 />
             )}
 
-            {/* Confirm Status Modal */}
+            {/* ───────────────── Confirm Status Modal ───────────────── */}
             <Dialog
                 open={!!confirmStatus}
                 onOpenChange={(open) => {

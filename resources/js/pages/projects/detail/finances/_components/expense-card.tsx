@@ -35,7 +35,6 @@ export function ExpenseCard({ project, onEdit }: ExpenseCardProps) {
                     <div key={expense.id} className={`py-4 md:py-6 ${index !== expenseList.length - 1 ? 'border-b border-border' : ''}`}>
                         <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-start">
                             <div className="space-y-2">
-                                {/* Category & billable badge */}
                                 <div className="flex flex-wrap items-center gap-2">
                                     {categoryInfo && <Badge className={categoryInfo.classes}>{categoryInfo.label}</Badge>}
                                     {isBillable ? (
@@ -49,13 +48,10 @@ export function ExpenseCard({ project, onEdit }: ExpenseCardProps) {
                                     )}
                                 </div>
 
-                                {/* Description */}
                                 <p className="text-sm font-medium">{expense.description}</p>
 
-                                {/* Amount */}
                                 <p className="text-base font-semibold tabular-nums">{formatRupiah(Number(expense.amount))}</p>
 
-                                {/* Meta */}
                                 <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                                     <span>
                                         Tanggal: <span className="text-foreground">{formatDate(expense.expense_date)}</span>
@@ -68,9 +64,7 @@ export function ExpenseCard({ project, onEdit }: ExpenseCardProps) {
                                 </div>
                             </div>
 
-                            {/* Actions */}
                             <div className="flex shrink-0 items-center gap-1">
-                                {/* Receipt */}
                                 {expense.receipt_file && (
                                     <HasPermission permission="view-finance-expenses">
                                         <Tooltip>

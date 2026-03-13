@@ -80,7 +80,6 @@ export function DrawerEdit({ company, open, onOpenChange }: DrawerEditProps) {
                     </DrawerHeader>
 
                     <form onSubmit={handleSubmit} className="flex flex-1 flex-col px-4">
-                        {/* Content */}
                         <div className="grid gap-4">
                             <div className="gird-cols-1 grid gap-4 lg:grid-cols-2">
                                 <Field>
@@ -187,7 +186,7 @@ export function DrawerEdit({ company, open, onOpenChange }: DrawerEditProps) {
                                     </FieldLabel>
                                     <Select required value={data.status_legal} onValueChange={(value) => setData('status_legal', value)}>
                                         <SelectTrigger id="status_legal">
-                                            <SelectValue placeholder="Pilih status legal" />
+                                            <SelectValue placeholder="Pilih status legal..." />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
@@ -210,7 +209,7 @@ export function DrawerEdit({ company, open, onOpenChange }: DrawerEditProps) {
                                     </FieldLabel>
                                     <Select required value={data.category_business} onValueChange={(value) => setData('category_business', value)}>
                                         <SelectTrigger id="category_business">
-                                            <SelectValue placeholder="Pilih kategori bisnis" />
+                                            <SelectValue placeholder="Pilih kategori bisnis..." />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
@@ -241,7 +240,6 @@ export function DrawerEdit({ company, open, onOpenChange }: DrawerEditProps) {
                             </Field>
                         </div>
 
-                        {/* Footer */}
                         <DrawerFooter className="mt-auto px-0">
                             <Button type="submit" disabled={processing}>
                                 {processing ? (

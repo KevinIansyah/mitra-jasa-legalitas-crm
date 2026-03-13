@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 
 class Service extends Model
@@ -121,6 +122,16 @@ class Service extends Model
         return $this->hasMany(ProjectTemplate::class)->active();
     }
 
+    public function seo(): HasOne
+    {
+        return $this->hasOne(ServiceSeo::class);
+    }
+
+    public function cityPages(): HasMany
+    {
+        return $this->hasMany(ServiceCityPage::class);
+    }
+
     /*
     |--------------------------------------------------------------------------
     | SCOPES
@@ -190,5 +201,20 @@ class Service extends Model
             $this->packages()->exists() &&
             $this->faqs()->exists() &&
             $this->processSteps()->exists();
+    }
+
+    public function getSeoOrCreate(): ServiceSeo
+    {
+        return $this->seo ?? $this->seo()->create([]);
+    }
+
+    public function hasSeo(): bool
+    {
+        return $this->seo !== null && $this->seo->meta_title !== null;
+    }
+
+    public function publishedCityPages(): HasMany
+    {
+        return $this->hasMany(ServiceCityPage::class)->where('is_published', true);
     }
 }

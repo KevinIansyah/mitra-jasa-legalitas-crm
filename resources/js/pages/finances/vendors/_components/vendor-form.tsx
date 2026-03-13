@@ -56,7 +56,7 @@ export function VendorForm({ data, errors, onChange, isEdit }: VendorFormProps) 
 
     return (
         <div className="space-y-4">
-            {/* Info Dasar */}
+            {/* ───────────────── Vendor Information Section ───────────────── */}
             <div className="rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div>
@@ -65,12 +65,13 @@ export function VendorForm({ data, errors, onChange, isEdit }: VendorFormProps) 
                     </div>
 
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        {/* Status */}
                         {isEdit && (
                             <Field>
                                 <FieldLabel>Status</FieldLabel>
                                 <Select value={data.status} onValueChange={(v) => onChange({ status: v as VendorStatus })}>
                                     <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="Pilih status" />
+                                        <SelectValue placeholder="Pilih status..." />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
@@ -83,6 +84,7 @@ export function VendorForm({ data, errors, onChange, isEdit }: VendorFormProps) 
                             </Field>
                         )}
 
+                        {/* Name */}
                         <Field className={`${isEdit ? 'col-span-1' : 'col-span-2'}`}>
                             <FieldLabel>
                                 Nama Vendor <span className="text-destructive">*</span>
@@ -96,6 +98,7 @@ export function VendorForm({ data, errors, onChange, isEdit }: VendorFormProps) 
                             {errors.name && <FieldError>{errors.name}</FieldError>}
                         </Field>
 
+                        {/* Category */}
                         <Field>
                             <FieldLabel>Kategori</FieldLabel>
                             <Select value={data.category} onValueChange={(v) => onChange({ category: v })}>
@@ -103,26 +106,29 @@ export function VendorForm({ data, errors, onChange, isEdit }: VendorFormProps) 
                                     <SelectValue placeholder="Pilih kategori..." />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {VENDOR_CATEGORIES.map((c) => (
-                                        <SelectItem key={c.value} value={c.value}>
-                                            <span className={`mr-2 inline-block h-2 w-2 rounded-full ${c.classes.replace('text-white', '')}`} />
-                                            {c.label}
+                                    {VENDOR_CATEGORIES.map((item) => (
+                                        <SelectItem key={item.value} value={item.value}>
+                                            <span className={`mr-2 inline-block h-2 w-2 rounded-full ${item.classes.replace('text-white', '')}`} />
+                                            {item.label}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
                         </Field>
 
+                        {/* NPWP */}
                         <Field>
                             <FieldLabel>NPWP</FieldLabel>
                             <Input value={data.npwp} onChange={(e) => onChange({ npwp: e.target.value })} placeholder="00.000.000.0-000.000" />
                         </Field>
 
+                        {/* Phone */}
                         <Field>
                             <FieldLabel>Telepon</FieldLabel>
                             <Input value={data.phone} onChange={(e) => onChange({ phone: e.target.value })} placeholder="628xxxxxxxxxx" />
                         </Field>
 
+                        {/* Email */}
                         <Field>
                             <FieldLabel>Email</FieldLabel>
                             <Input
@@ -135,6 +141,7 @@ export function VendorForm({ data, errors, onChange, isEdit }: VendorFormProps) 
                             {errors.email && <FieldError>{errors.email}</FieldError>}
                         </Field>
 
+                        {/* Address */}
                         <Field className="col-span-2">
                             <FieldLabel>Alamat</FieldLabel>
                             <Textarea
@@ -146,6 +153,7 @@ export function VendorForm({ data, errors, onChange, isEdit }: VendorFormProps) 
                             />
                         </Field>
 
+                        {/* Notes */}
                         <Field className="col-span-2">
                             <FieldLabel>Catatan</FieldLabel>
                             <Textarea
@@ -160,7 +168,7 @@ export function VendorForm({ data, errors, onChange, isEdit }: VendorFormProps) 
                 </div>
             </div>
 
-            {/* Rekening Bank */}
+            {/* ───────────────── Bank Account Section ───────────────── */}
             <div className="rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-4">
                     <div className="flex items-start justify-between gap-4">
@@ -221,6 +229,7 @@ export function VendorForm({ data, errors, onChange, isEdit }: VendorFormProps) 
                                     </div>
 
                                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                                        {/* Bank Name */}
                                         <Field>
                                             <FieldLabel>
                                                 Nama Bank <span className="text-destructive">*</span>
@@ -231,6 +240,8 @@ export function VendorForm({ data, errors, onChange, isEdit }: VendorFormProps) 
                                                 placeholder="BCA, BRI, Mandiri..."
                                             />
                                         </Field>
+
+                                        {/* Account Number */}
                                         <Field>
                                             <FieldLabel>
                                                 Nomor Rekening <span className="text-destructive">*</span>
@@ -241,6 +252,8 @@ export function VendorForm({ data, errors, onChange, isEdit }: VendorFormProps) 
                                                 placeholder="1234567890"
                                             />
                                         </Field>
+
+                                        {/* Account Holder */}
                                         <Field>
                                             <FieldLabel>
                                                 Atas Nama <span className="text-destructive">*</span>

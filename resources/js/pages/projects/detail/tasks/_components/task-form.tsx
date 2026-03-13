@@ -41,7 +41,6 @@ export function TaskForm({ data, processing, members, milestones, onChange, onSu
                         Judul <span className="text-destructive">*</span>
                     </FieldLabel>
                     <Input value={data.title} onChange={(e) => onChange({ title: e.target.value })} placeholder="Contoh: Persiapan dokumen notaris" />
-                    {/* {errors.expense_date && <FieldError>{errors.expense_date}</FieldError>} */}
                 </Field>
 
                 {/* Priority */}
@@ -49,7 +48,7 @@ export function TaskForm({ data, processing, members, milestones, onChange, onSu
                     <FieldLabel>Prioritas</FieldLabel>
                     <Select value={data.priority} onValueChange={(v) => onChange({ priority: v })}>
                         <SelectTrigger>
-                            <SelectValue placeholder="Pilih prioritas" />
+                            <SelectValue placeholder="Pilih prioritas..." />
                         </SelectTrigger>
                         <SelectContent>
                             {TASK_PRIORITIES.map((p) => (

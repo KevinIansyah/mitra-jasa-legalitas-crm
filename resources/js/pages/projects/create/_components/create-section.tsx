@@ -75,6 +75,7 @@ type CreateSectionProps = {
 };
 
 export function CreateSection({ services, quote }: CreateSectionProps) {
+    const R2_PUBLIC_URL = import.meta.env.VITE_CLOUDFLARE_R2_PUBLIC_URL;
     const isConvertMode = !!quote;
     const existingCustomer = quote?.customer ?? quote?.user?.customer ?? null;
     const hasExistingCustomer = !!existingCustomer;
@@ -173,7 +174,6 @@ export function CreateSection({ services, quote }: CreateSectionProps) {
     // ============================================================
     // COMPANY HANDLERS
     // ============================================================
-
     const [companies, setCompanies] = useState<Company[]>([]);
     const [isLoadingCompanies, setIsLoadingCompanies] = useState(false);
 
@@ -378,7 +378,7 @@ export function CreateSection({ services, quote }: CreateSectionProps) {
                     {isConvertMode && hasExistingCustomer && (
                         <div className="flex items-center gap-3 rounded-lg bg-primary/10 p-3 dark:bg-muted/40">
                             <Avatar className="rounded-full">
-                                <AvatarImage src={existingCustomer?.user?.avatar ?? undefined} />
+                                <AvatarImage src={`${R2_PUBLIC_URL}/${existingCustomer?.user?.avatar}`} alt={existingCustomer!.name} />
                                 <AvatarFallback className="bg-primary/10 text-xs text-primary">{getInitials(existingCustomer!.name)}</AvatarFallback>
                             </Avatar>
                             <div className="flex-1">
@@ -471,7 +471,7 @@ export function CreateSection({ services, quote }: CreateSectionProps) {
                                 <div className="flex items-center justify-between rounded-md bg-primary/10 p-3 dark:bg-muted/40">
                                     <div className="flex items-center gap-3">
                                         <Avatar className="rounded-full">
-                                            <AvatarImage src={selectedCustomer.user?.avatar ?? undefined} />
+                                            <AvatarImage src={`${R2_PUBLIC_URL}/${selectedCustomer.user?.avatar}`} alt={selectedCustomer.name} />
                                             <AvatarFallback className="bg-primary/10 text-xs text-primary">{getInitials(selectedCustomer.name)}</AvatarFallback>
                                         </Avatar>
                                         <div className="flex-1">
@@ -503,23 +503,25 @@ export function CreateSection({ services, quote }: CreateSectionProps) {
 
                                     {customerResults.length > 0 && (
                                         <div className="-mt-2 max-h-64 space-y-1 overflow-y-auto">
-                                            {customerResults.map((c) => (
+                                            {customerResults.map((item) => (
                                                 <button
-                                                    key={c.id}
+                                                    key={item.id}
                                                     type="button"
-                                                    onClick={() => handleSelectCustomer(c)}
+                                                    onClick={() => handleSelectCustomer(item)}
                                                     className="flex w-full items-center gap-3 rounded-lg bg-primary/10 p-3 text-left hover:bg-primary/20 dark:bg-muted/40 dark:hover:bg-muted/50"
                                                 >
                                                     <Avatar className="rounded-full">
-                                                        <AvatarImage src={c.user?.avatar ?? undefined} />
-                                                        <AvatarFallback className="bg-primary/10 text-sm text-primary">{getInitials(c.name)}</AvatarFallback>
+                                                        <AvatarImage src={`${R2_PUBLIC_URL}/${item.user?.avatar}`} alt={item.name} />
+                                                        <AvatarFallback className="bg-primary/10 text-sm text-primary">{getInitials(item.name)}</AvatarFallback>
                                                     </Avatar>
                                                     <div className="flex-1">
-                                                        <p className="text-sm font-medium">{c.name}</p>
-                                                        <p className="text-xs text-muted-foreground">{c.email || c.phone || 'Tidak ada info kontak'}</p>
+                                                        <p className="text-sm font-medium">{item.name}</p>
+                                                        <p className="text-xs text-muted-foreground">{item.email || item.phone || 'Tidak ada info kontak'}</p>
                                                     </div>
-                                                    {c.tier && (
-                                                        <Badge className={TIER_MAP[c.tier]?.classes ?? 'bg-muted text-muted-foreground'}>{TIER_MAP[c.tier]?.label ?? c.tier}</Badge>
+                                                    {item.tier && (
+                                                        <Badge className={TIER_MAP[item.tier]?.classes ?? 'bg-muted text-muted-foreground'}>
+                                                            {TIER_MAP[item.tier]?.label ?? item.tier}
+                                                        </Badge>
                                                     )}
                                                 </button>
                                             ))}
@@ -570,9 +572,9 @@ export function CreateSection({ services, quote }: CreateSectionProps) {
                                                     Tidak ada perusahaan terhubung
                                                 </SelectItem>
                                             ) : (
-                                                companies.map((company) => (
-                                                    <SelectItem key={company.id} value={String(company.id)}>
-                                                        {company.name}
+                                                companies.map((item) => (
+                                                    <SelectItem key={item.id} value={String(item.id)}>
+                                                        {item.name}
                                                     </SelectItem>
                                                 ))
                                             )}
@@ -618,20 +620,8 @@ export function CreateSection({ services, quote }: CreateSectionProps) {
                                             <div className="flex items-center justify-between rounded-lg bg-primary/10 p-3 dark:bg-muted/40">
                                                 <div>
                                                     <p className="text-sm font-medium">{selectedCompany.name}</p>
-                                                    <p className="text-xs text-muted-foreground">{selectedCompany.email ?? selectedCompany.phone ?? '-'}</p>
+                                                            <p className="text-xs text-muted-foreground">{selectedCompany.email ?? selectedCompany.phone ?? '-'}</p>
                                                 </div>
-                                                <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="h-7 w-7"
-                                                    onClick={() => {
-                                                        setSelectedCompany(null);
-                                                        setData('company_id', null);
-                                                    }}
-                                                >
-                                                    <X className="size-3.5" />
-                                                </Button>
                                             </div>
                                         ) : (
                                             <>
@@ -646,16 +636,16 @@ export function CreateSection({ services, quote }: CreateSectionProps) {
                                                 </InputGroup>
                                                 {companyResults.length > 0 && (
                                                     <div className="-mt-1 max-h-52 space-y-1 overflow-y-auto">
-                                                        {companyResults.map((c) => (
+                                                        {companyResults.map((item) => (
                                                             <button
-                                                                key={c.id}
+                                                                key={item.id}
                                                                 type="button"
-                                                                onClick={() => handleSelectCompany(c)}
+                                                                onClick={() => handleSelectCompany(item)}
                                                                 className="flex w-full items-center gap-3 rounded-lg bg-primary/10 p-3 text-left text-sm hover:bg-primary/20 dark:bg-muted/40 dark:hover:bg-muted/50"
                                                             >
                                                                 <div className="flex-1">
-                                                                    <p className="font-medium">{c.name}</p>
-                                                                    <p className="text-xs text-muted-foreground">{c.email ?? c.phone ?? '-'}</p>
+                                                                    <p className="font-medium">{item.name}</p>
+                                                                    <p className="text-xs text-muted-foreground">{item.email ?? item.phone ?? '-'}</p>
                                                                 </div>
                                                             </button>
                                                         ))}

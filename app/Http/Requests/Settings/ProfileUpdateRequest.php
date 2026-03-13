@@ -10,13 +10,17 @@ class ProfileUpdateRequest extends FormRequest
 {
     use ProfileValidationRules;
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return $this->profileRules($this->user()->id);
+    }
+
+    public function messages(): array
+    {
+        return [
+            'avatar.image' => 'File avatar harus berupa gambar.',
+            'avatar.max' => 'Ukuran avatar maksimal 5MB.',
+            'avatar.mimes' => 'Format avatar harus berupa JPG, PNG, atau WEBP.',
+        ];
     }
 }

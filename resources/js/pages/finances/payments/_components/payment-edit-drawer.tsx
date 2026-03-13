@@ -17,9 +17,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import { formatRupiah, formatSize, readImageAsDataURL, validateFile, validateImageFile } from '@/lib/service';
+import finances from '@/routes/finances';
 import type { ProjectInvoice, ProjectPayment, ProjectPaymentFormData } from '@/types/project';
 import { PAYMENT_METHODS } from '@/types/project';
-import finances from '@/routes/finances';
 
 type PaymentEditDrawerProps = {
     invoice: ProjectInvoice;
@@ -76,8 +76,11 @@ export function PaymentEditDrawer({ invoice, payment, open, onOpenChange }: Paym
             if (fileInputRef.current) fileInputRef.current.value = '';
             return;
         }
+
         setImageError(null);
+
         setData('proof_file', file);
+
         if (isImage) {
             const preview = await readImageAsDataURL(file);
             setFilePreview({ src: preview, name: file.name, size: file.size, isImage: true });
@@ -85,20 +88,24 @@ export function PaymentEditDrawer({ invoice, payment, open, onOpenChange }: Paym
             setFilePreview({ name: file.name, size: file.size, isImage: false });
         }
     };
+
     const handleDragEnter = React.useCallback((e: React.DragEvent) => {
         e.preventDefault();
         setIsDragging(true);
     }, []);
+
     const handleDragLeave = React.useCallback((e: React.DragEvent) => {
         e.preventDefault();
         if (!e.currentTarget.contains(e.relatedTarget as Node)) setIsDragging(false);
     }, []);
+
     const handleDragOver = (e: React.DragEvent) => e.preventDefault();
     const handleDrop = (e: React.DragEvent) => {
         e.preventDefault();
         setIsDragging(false);
         handleFile(e.dataTransfer.files[0]);
     };
+
     const handleRemoveFile = () => {
         setFilePreview(null);
         setImageError(null);
@@ -108,7 +115,7 @@ export function PaymentEditDrawer({ invoice, payment, open, onOpenChange }: Paym
     };
 
     // ============================================================
-    // SUBMIT
+    // SUBMIT HANDLER
     // ============================================================
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -148,6 +155,7 @@ export function PaymentEditDrawer({ invoice, payment, open, onOpenChange }: Paym
 
                     <form onSubmit={handleSubmit} className="flex flex-1 flex-col px-4">
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            {/* Invoice */}
                             <Field className="col-span-2 gap-0">
                                 <FieldLabel className="mb-3">
                                     Invoice <span className="text-destructive">*</span>
@@ -170,7 +178,7 @@ export function PaymentEditDrawer({ invoice, payment, open, onOpenChange }: Paym
                                 </div>
                             </Field>
 
-                            {/* Resubmit switch — hanya muncul kalau rejected */}
+                            {/* Resubmit Switch — Only visible if rejected */}
                             {isRejected && (
                                 <div className="col-span-2 flex items-center gap-4 rounded-lg border border-destructive/40 bg-destructive/5 p-4">
                                     <Switch id="resubmit" checked={resubmit} onCheckedChange={handleResubmitToggle} />
@@ -206,7 +214,7 @@ export function PaymentEditDrawer({ invoice, payment, open, onOpenChange }: Paym
                                 {errors.payment_date && <FieldError>{errors.payment_date}</FieldError>}
                             </Field>
 
-                            {/* Payment Method */}
+                            {/* Payment */}
                             <Field className="col-span-2 md:col-span-1">
                                 <FieldLabel>Metode Pembayaran</FieldLabel>
                                 <Select value={data.payment_method ?? ''} onValueChange={(v) => setData('payment_method', v)}>
@@ -216,10 +224,10 @@ export function PaymentEditDrawer({ invoice, payment, open, onOpenChange }: Paym
                                     <SelectContent>
                                         <SelectGroup>
                                             <SelectLabel>Metode</SelectLabel>
-                                            {PAYMENT_METHODS.map((method) => (
-                                                <SelectItem key={method.value} value={method.value}>
-                                                    <span className={`mr-2 inline-block h-2 w-2 rounded-full ${method.classes.replace('text-white', '')}`} />
-                                                    {method.label}
+                                            {PAYMENT_METHODS.map((item) => (
+                                                <SelectItem key={item.value} value={item.value}>
+                                                    <span className={`mr-2 inline-block h-2 w-2 rounded-full ${item.classes.replace('text-white', '')}`} />
+                                                    {item.label}
                                                 </SelectItem>
                                             ))}
                                         </SelectGroup>

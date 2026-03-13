@@ -180,16 +180,20 @@ export function ExpenseAddDrawer({ fromProject = false, initialProject, open, on
         e.preventDefault();
         setIsDragging(true);
     }, []);
+
     const handleDragLeave = React.useCallback((e: React.DragEvent) => {
         e.preventDefault();
         if (!e.currentTarget.contains(e.relatedTarget as Node)) setIsDragging(false);
     }, []);
+
     const handleDragOver = (e: React.DragEvent) => e.preventDefault();
+
     const handleDrop = (e: React.DragEvent) => {
         e.preventDefault();
         setIsDragging(false);
         handleFile(e.dataTransfer.files[0]);
     };
+
     const handleRemoveFile = () => {
         setFilePreview(null);
         setImageError(null);
@@ -198,7 +202,7 @@ export function ExpenseAddDrawer({ fromProject = false, initialProject, open, on
     };
 
     // ============================================================
-    // SUBMIT
+    // SUBMIT HANDLER
     // ============================================================
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -390,15 +394,15 @@ export function ExpenseAddDrawer({ fromProject = false, initialProject, open, on
                                 </FieldLabel>
                                 <Select value={data.category} onValueChange={(v) => setData('category', v)}>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Pilih kategori" />
+                                        <SelectValue placeholder="Pilih kategori..." />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
                                             <SelectLabel>Kategori</SelectLabel>
-                                            {EXPENSE_CATEGORIES.map((cat) => (
-                                                <SelectItem key={cat.value} value={cat.value}>
-                                                    <span className={`mr-2 inline-block h-2 w-2 rounded-full ${cat.classes.replace('text-white', '')}`} />
-                                                    {cat.label}
+                                            {EXPENSE_CATEGORIES.map((item) => (
+                                                <SelectItem key={item.value} value={item.value}>
+                                                    <span className={`mr-2 inline-block h-2 w-2 rounded-full ${item.classes.replace('text-white', '')}`} />
+                                                    {item.label}
                                                 </SelectItem>
                                             ))}
                                         </SelectGroup>

@@ -12,6 +12,7 @@ use App\Http\Requests\Services\UpdateLegalBasesRequest;
 use App\Http\Requests\Services\UpdatePackagesRequest;
 use App\Http\Requests\Services\UpdateProcessStepsRequest;
 use App\Http\Requests\Services\UpdateRequirementsRequest;
+use App\Http\Requests\Services\UpdateSeoRequest;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\ServiceFaq;
@@ -706,6 +707,23 @@ class ServiceController extends Controller
         });
 
         return back()->with('success', 'Alur proses berhasil diperbarui.');
+    }
+
+    /**
+     * Update service SEO.
+     *
+     * Updates or creates SEO record for the service.
+     */
+    public function updateSeo(UpdateSeoRequest $request, Service $service)
+    {
+        $validated = $request->validated();
+
+        $service->seo()->updateOrCreate(
+            ['service_id' => $service->id],
+            $validated
+        );
+
+        return back()->with('success', 'SEO layanan berhasil diperbarui.');
     }
 
     /**

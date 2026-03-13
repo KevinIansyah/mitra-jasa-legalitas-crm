@@ -114,7 +114,6 @@ export default function Tasks({ project }: TasksProps) {
 
     return (
         <div className="space-y-4">
-            {/* Header + stats */}
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <h2 className="text-xl font-semibold">Tugas</h2>
                 <p className="mt-0.5 text-sm text-muted-foreground">Kelola dan pantau tugas-tugas dalam project ini.</p>
@@ -137,7 +136,6 @@ export default function Tasks({ project }: TasksProps) {
                 ))}
             </div>
 
-            {/* Add button */}
             {!showAddForm && tasks.length > 0 && (
                 <HasPermission permission="create-project-tasks">
                     <div className="flex w-full justify-end">
@@ -149,7 +147,6 @@ export default function Tasks({ project }: TasksProps) {
                 </HasPermission>
             )}
 
-            {/* Add form */}
             {showAddForm && (
                 <div className="rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                     <h3 className="mb-4 font-semibold">Tugas Baru</h3>
@@ -168,7 +165,6 @@ export default function Tasks({ project }: TasksProps) {
                 </div>
             )}
 
-            {/* Grouped list */}
             {tasks.length === 0 && !showAddForm ? (
                 <div className="min-h-40 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                     <div className="flex w-full flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
@@ -191,14 +187,14 @@ export default function Tasks({ project }: TasksProps) {
 
                         return (
                             <div key={group.value} className="space-y-4">
-                                {/* Group header */}
+                             
                                 <div className="flex items-center gap-4">
                                     <Badge className={group.classes}>{group.label}</Badge>
                                     <span className="text-xs text-muted-foreground">{group.tasks.length} tugas</span>
                                     <div className="flex-1 border-t border-border" />
                                 </div>
 
-                                {/* Task cards */}
+                         
                                 {group.tasks.map((task) => (
                                     <TaskCard key={task.id} task={task} projectId={project.id} members={members} milestones={milestones} />
                                 ))}

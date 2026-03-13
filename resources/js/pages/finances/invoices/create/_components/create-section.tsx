@@ -1,12 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
 import { toast } from 'sonner';
-
+import finances from '@/routes/finances';
 import type { Project, ProjectInvoiceFormData } from '@/types/project';
 import { InvoiceForm } from '../../_components/invoice-form';
 import { InvoiceSummary } from '../../_components/invoice-summary';
-import invoices from '@/routes/finances/invoices';
 
 export type InvoiceFormErrors = Partial<Record<string, string>>;
 
@@ -45,7 +43,8 @@ export default function CreateSection({ selectedProject, fromProject }: CreateSe
         setProcessing(true);
         const toastId = toast.loading('Menyimpan...', { description: 'Invoice sedang ditambahkan.' });
 
-        router.post(invoices.store().url, { ...data, from_project: fromProject } as any, {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        router.post(finances.invoices.store().url, { ...data, from_project: fromProject } as any, {
             onSuccess: () => {
                 toast.success('Berhasil', { description: 'Invoice berhasil ditambahkan.' });
             },

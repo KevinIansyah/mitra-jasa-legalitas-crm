@@ -59,6 +59,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
 
     return (
         <>
+            {/* ───────────────── Filter & Search Section ───────────────── */}
             <div className="flex flex-col items-center justify-between gap-2 pb-4 md:flex-row">
                 <InputGroup className="max-w-sm">
                     <InputGroupInput placeholder="Cari nama..." value={searchValue} onChange={handleSearchChange} />
@@ -66,7 +67,9 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                         <Search />
                     </InputGroupAddon>
                 </InputGroup>
+
                 <div className="flex w-full gap-2 md:w-auto">
+                    {/* Column Visibility */}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="outline" className="flex-1 md:w-30">
@@ -85,22 +88,21 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                         </DropdownMenuContent>
                     </DropdownMenu>
 
+                    {/* Add Role */}
                     <HasPermission permission="create-roles">
                         <DrawerAdd />
                     </HasPermission>
                 </div>
             </div>
+
+            {/* ───────────────── Table Section ───────────────── */}
             <div className="overflow-hidden rounded-t-md border-b">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id} className="border-none">
                                 {headerGroup.headers.map((header) => {
-                                    return (
-                                        <TableHead key={header.id}>
-                                            {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                                        </TableHead>
-                                    );
+                                    return <TableHead key={header.id}>{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}</TableHead>;
                                 })}
                             </TableRow>
                         ))}
@@ -124,6 +126,8 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                     </TableBody>
                 </Table>
             </div>
+
+            {/* ───────────────── Pagination Section ───────────────── */}
             <div className="flex items-center justify-between gap-8 pt-4">
                 <div className="hidden flex-1 text-sm md:flex">
                     Menampilkan {Math.min(pageIndex * perPage + 1, totalItems)} sampai {Math.min((pageIndex + 1) * perPage, totalItems)} dari {totalItems} hasil

@@ -143,11 +143,11 @@ export function JournalEditDrawer({ entry, open, onOpenChange, accounts }: Props
                                                 <SelectValue placeholder="Pilih akun..." />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {accounts.map((a) => (
-                                                    <SelectItem key={a.id} value={String(a.id)}>
-                                                        <span className="mr-2">{a.code}</span>
+                                                {accounts.map((item) => (
+                                                    <SelectItem key={item.id} value={String(item.id)}>
+                                                        <span className="mr-2">{item.code}</span>
                                                         <span className="mr-2">-</span>
-                                                        {a.name}
+                                                        {item.name}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>

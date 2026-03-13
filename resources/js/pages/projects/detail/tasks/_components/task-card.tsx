@@ -29,6 +29,7 @@ type TaskCardProps = {
 };
 
 export function TaskCard({ task, projectId, members, milestones }: TaskCardProps) {
+    const R2_PUBLIC_URL = import.meta.env.VITE_CLOUDFLARE_R2_PUBLIC_URL;
     const [mode, setMode] = useState<'view' | 'edit'>('view');
     const [loading, setLoading] = useState(false);
 
@@ -210,7 +211,7 @@ export function TaskCard({ task, projectId, members, milestones }: TaskCardProps
                                     {task.assignee && (
                                         <span className="flex items-center gap-1 text-xs text-foreground">
                                             <Avatar className="h-5 w-5">
-                                                <AvatarImage src={task.assignee.avatar ?? undefined} />
+                                                <AvatarImage src={`${R2_PUBLIC_URL}/${task.assignee.avatar}`} alt={task.assignee.name} />
                                                 <AvatarFallback className="bg-primary/10 text-[10px] text-primary">{getInitials(task.assignee.name)}</AvatarFallback>
                                             </Avatar>
                                             {task.assignee.name}

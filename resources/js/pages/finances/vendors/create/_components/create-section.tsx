@@ -3,9 +3,9 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
+import finances from '@/routes/finances';
 import type { VendorFormData } from '@/types/vendors';
 import { VendorForm } from '../../_components/vendor-form';
-import finances from '@/routes/finances';
 
 type VendorFormErrors = Partial<Record<string, string>>;
 

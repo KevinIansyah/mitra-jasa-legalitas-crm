@@ -21,6 +21,7 @@ type TeamCardProps = {
 };
 
 export function TeamCard({ project }: TeamCardProps) {
+    const R2_PUBLIC_URL = import.meta.env.VITE_CLOUDFLARE_R2_PUBLIC_URL;
     const [confirmRole, setConfirmRole] = useState<MemberRole | null>(null);
     // const [confirmApprove, setConfirmApprove] = useState<boolean | null>(null);
     const [selectedMember, setSelectedMember] = useState<ProjectMember | null>(null);
@@ -85,17 +86,16 @@ export function TeamCard({ project }: TeamCardProps) {
                         >
                             <div className="order-2 flex items-center gap-3 md:order-1">
                                 <Avatar className="h-8 w-8 rounded-full">
-                                    <AvatarImage src={member.user?.avatar} alt={member.user?.name} />
+                                    <AvatarImage src={`${R2_PUBLIC_URL}/${member.user?.avatar}`} alt={member.user?.name} />
                                     <AvatarFallback className="bg-primary/10 text-primary">{getInitials(member.user?.name)}</AvatarFallback>
                                 </Avatar>
                                 <div>
                                     <p className="text-sm leading-tight">{member.user?.name ?? '-'}</p>
                                     {member.user?.email && <p className="text-xs text-muted-foreground">{member.user.email}</p>}
                                 </div>
-                            </div>
+                            </div>  
 
                             <div className="order-1 flex flex-wrap items-center gap-1 md:order-2">
-                                {/* Can approve documents */}
                                 {/* <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <button>
@@ -142,7 +142,6 @@ export function TeamCard({ project }: TeamCardProps) {
                                     </HasPermission>
                                 </DropdownMenu> */}
 
-                                {/* Role badge */}
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <button>
@@ -173,7 +172,6 @@ export function TeamCard({ project }: TeamCardProps) {
                                     </HasPermission>
                                 </DropdownMenu>
 
-                                {/* Delete */}
                                 <HasPermission permission="delete-project-members">
                                     <DialogDelete
                                         description={`Tindakan ini tidak dapat dibatalkan. Data anggota tim "${member.user?.name}" akan dihapus secara permanen dari sistem.`}
@@ -188,7 +186,7 @@ export function TeamCard({ project }: TeamCardProps) {
                 })}
             </div>
 
-            {/* Confirm Role Dialog */}
+            {/* ───────────────── Dialog: Confirm Role ───────────────── */}
             <Dialog
                 open={!!confirmRole && !!selectedMember}
                 onOpenChange={() => {
@@ -229,7 +227,7 @@ export function TeamCard({ project }: TeamCardProps) {
                 </DialogContent>
             </Dialog>
 
-            {/* Confirm Approve Document Dialog */}
+            {/* ───────────────── Dialog: Confirm Approve Document ───────────────── */}
             {/* <Dialog
                 open={confirmApprove !== null && !!selectedMember}
                 onOpenChange={() => {

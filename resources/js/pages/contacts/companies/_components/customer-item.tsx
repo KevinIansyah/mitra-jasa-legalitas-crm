@@ -23,6 +23,7 @@ type CustomerItemProps = {
 };
 
 export function CustomerItem({ customer, companyId }: CustomerItemProps) {
+    const R2_PUBLIC_URL = import.meta.env.VITE_CLOUDFLARE_R2_PUBLIC_URL;
     const [isEditing, setIsEditing] = useState(false);
 
     const { data, setData, patch, processing } = useForm({
@@ -102,7 +103,7 @@ export function CustomerItem({ customer, companyId }: CustomerItemProps) {
 
             <div className="flex items-center gap-2">
                 <Avatar className="rounded-full">
-                    <AvatarImage src={customer.user?.avatar ?? undefined} />
+                    <AvatarImage src={`${R2_PUBLIC_URL}/${customer.user?.avatar}`} alt={customer.name} />
                     <AvatarFallback className="bg-primary/10 text-sm text-primary">{getInitials(customer.name)}</AvatarFallback>
                 </Avatar>
 
