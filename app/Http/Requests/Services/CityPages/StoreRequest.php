@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Services\CityPages;
 
+use App\Models\ServiceCityPage;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRequest extends FormRequest
@@ -15,7 +16,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'service_id' => 'required|exists:services,id',
-            'city_id'    => 'required|exists:cities,id|unique_combination',
+            'city_id' => 'required|exists:cities,id',
         ];
     }
 
@@ -26,7 +27,7 @@ class StoreRequest extends FormRequest
             $cityId    = $this->input('city_id');
 
             if ($serviceId && $cityId) {
-                $exists = \App\Models\ServiceCityPage::where('service_id', $serviceId)
+                $exists = ServiceCityPage::where('service_id', $serviceId)
                     ->where('city_id', $cityId)
                     ->exists();
 

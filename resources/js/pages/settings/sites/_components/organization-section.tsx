@@ -19,7 +19,7 @@ export function OrganizationSection({ settings }: { settings: SiteSetting }) {
         org_logo_url: settings.org_logo_url ?? '',
         org_founding_year: settings.org_founding_year ?? '',
         org_area_served: settings.org_area_served ?? '',
-        org_service_types: settings.org_service_types?.join(', ') ?? '',
+        org_service_types: settings.org_service_types ?? '',
     });
 
     const handleSubmit = (e: React.FormEvent) => {

@@ -56,13 +56,7 @@ class SiteSettingSeeder extends Seeder
             'org_logo_url'      => null,
             'org_founding_year' => null,
             'org_area_served'   => 'Surabaya, Jawa Timur, Indonesia',
-            'org_service_types' => [
-                'Pendirian PT',
-                'Pendirian CV',
-                'Perizinan Usaha',
-                'SIUP',
-                'Konsultasi Legalitas',
-            ],
+            'org_service_types' => 'Pendirian PT, Pendirian CV, Perizinan Usaha, SIUP, Konsultasi Legalitas',
 
             // Statisti
             'stat_total_clients'    => 780,

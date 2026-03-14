@@ -153,6 +153,8 @@ class RolePermissionSeeder extends Seeder
 
             'view-site-settings',
             'edit-site-settings',
+
+            'create-ai-generate',
         ];
 
         foreach ($permissions as $permission) {

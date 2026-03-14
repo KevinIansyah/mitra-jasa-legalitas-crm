@@ -62,7 +62,7 @@ class ServiceCityPage extends Model
     | COMPUTED
     |--------------------------------------------------------------------------
     */
-    
+
     public function isAiGenerated(): bool
     {
         return $this->content_status === 'ai_generated';
@@ -71,7 +71,9 @@ class ServiceCityPage extends Model
     public function isReadyToPublish(): bool
     {
         return in_array($this->content_status, ['ai_generated', 'reviewed'])
-            && $this->meta_title !== null;
+            && $this->meta_title !== null
+            && $this->heading !== null
+            && $this->introduction !== null;
     }
 
     public function markAsPublished(): void

@@ -36,11 +36,15 @@ export function NavMain({ section }: { section: NavSection }) {
         // =========================
 
         if (itemPath === '/services') {
-            return currentPath === '/services' || (currentPath.startsWith('/services/') && !currentPath.startsWith('/services/categories'));
+            return currentPath === '/services' || (currentPath.startsWith('/services/') && !currentPath.startsWith('/services/categories') && !currentPath.startsWith('/services/city-pages'));
         }
 
         if (itemPath === '/services/categories') {
             return currentPath.startsWith('/services/categories');
+        }
+
+        if (itemPath === '/services/city-pages') {
+            return currentPath.startsWith('/services/city-pages');
         }
 
         // =========================

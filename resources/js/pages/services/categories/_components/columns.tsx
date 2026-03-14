@@ -7,7 +7,15 @@ export default function getColumns(): ColumnDef<ServiceCategory>[] {
         {
             accessorKey: 'name',
             header: 'Nama',
-            cell: ({ row }) => <div>{row.getValue('name') || '-'}</div>,
+            cell: ({ row }) => {
+                const { name, slug } = row.original;
+                return (
+                    <div className="space-y-0.5">
+                        <p className="text-sm">{name || '-'}</p>
+                        <p className="text-xs text-muted-foreground">{slug || '-'}</p>
+                    </div>
+                );
+            },
         },
         {
             accessorKey: 'action',

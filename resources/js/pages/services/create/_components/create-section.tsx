@@ -37,6 +37,7 @@ import { LegalBasisCard, type LocalLegalBasis } from '../../_components/legal-ba
 import { PackageCard, type LocalPackage } from '../../_components/package-card';
 import { ProcessStepCard, type LocalProcessStep } from '../../_components/process-step-card';
 import { RequirementCard, type LocalRequirementCategory } from '../../_components/requirement-card';
+import { SeoCard, defaultSeo, type LocalServiceSeo } from '../../_components/seo-card';
 
 type FormData = {
     service_category_id: number | '';
@@ -54,6 +55,7 @@ type FormData = {
     legal_bases: LocalLegalBasis[];
     requirement_categories: LocalRequirementCategory[];
     process_steps: LocalProcessStep[];
+    seo: LocalServiceSeo;
 };
 
 type CreateSectionProps = {
@@ -82,6 +84,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
         legal_bases: [],
         requirement_categories: [],
         process_steps: [],
+        seo: defaultSeo(),
     });
 
     // ============================================================
@@ -233,9 +236,11 @@ export function CreateSection({ categories }: CreateSectionProps) {
 
                 handleCancel();
             },
-            onError: () => {
+            onError: (errors) => {
+                console.log(errors);
+                const msg = Object.values(errors)[0] ?? 'Terjadi kesalahan saat menambahkan layanan, coba lagi.';
                 toast.error('Gagal', {
-                    description: 'Gagal menambahkan data layanan. Silakan periksa kembali data layanan yang diisi.',
+                    description: String(msg),
                 });
             },
             onFinish: () => {
@@ -519,7 +524,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
 
                             {/* Content */}
                             <Field>
-                                <FieldLabel>Konten Pilar</FieldLabel>
+                                <FieldLabel>Konten Utama</FieldLabel>
                                 <Alert className="border-primary bg-primary/20">
                                     <TableOfContents />
                                     <AlertTitle>Panduan Penulisan Ideal</AlertTitle>
@@ -841,69 +846,9 @@ export function CreateSection({ categories }: CreateSectionProps) {
                         <div className="space-y-6">
                             <div>
                                 <h2 className="text-xl font-semibold">Pengaturan SEO</h2>
-                                <p className="mt-0.5 text-sm text-muted-foreground">Kelola pengaturan SEO untuk halaman layanan.</p>
+                                <p className="mt-0.5 text-sm text-muted-foreground">Kelola meta tags, open graph, dan sitemap untuk halaman layanan ini.</p>
                             </div>
-
-                            <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-                                {/* Name */}
-                                <Field>
-                                    <FieldLabel htmlFor="name">
-                                        Nama <span className="text-destructive">*</span>
-                                    </FieldLabel>
-                                    <Input
-                                        id="name"
-                                        type="text"
-                                        name="name"
-                                        required
-                                        autoFocus
-                                        placeholder="Masukkan nama layanan"
-                                        value={data.name}
-                                        onChange={(e) => setData('name', e.target.value)}
-                                    />
-                                    {errors.name && <FieldError>{errors.name}</FieldError>}
-                                </Field>
-
-                                {/* Slug */}
-                                <Field>
-                                    <FieldLabel htmlFor="slug">Slug</FieldLabel>
-                                    <Input
-                                        id="slug"
-                                        type="text"
-                                        name="slug"
-                                        placeholder="Masukkan slug, contoh: slug-kategori-layanan"
-                                        value={data.slug}
-                                        onChange={(e) => setData('slug', e.target.value)}
-                                    />
-                                    {errors.slug && <FieldError>{errors.slug}</FieldError>}
-                                </Field>
-
-                                {/* Category */}
-                                <Field>
-                                    <FieldLabel htmlFor="category">
-                                        Kategori <span className="text-destructive">*</span>
-                                    </FieldLabel>
-                                    <Select
-                                        value={data.service_category_id ? String(data.service_category_id) : ''}
-                                        required
-                                        onValueChange={(val) => setData('service_category_id', Number(val))}
-                                    >
-                                        <SelectTrigger id="category">
-                                            <SelectValue placeholder="Pilih kategori" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                <SelectLabel>Kategori</SelectLabel>
-                                                {categories.map((category) => (
-                                                    <SelectItem key={category.id} value={String(category.id)}>
-                                                        {category.name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                    {errors.service_category_id && <FieldError>{errors.service_category_id}</FieldError>}
-                                </Field>
-                            </div>
+                            <SeoCard seo={data.seo} onChange={(seo) => setData('seo', seo)} errors={errors} />
                         </div>
                     </div>
                 </TabsContent>

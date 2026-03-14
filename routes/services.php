@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Services\ServiceAiGenerateController;
 use App\Http\Controllers\Services\ServiceCategoryController;
 use App\Http\Controllers\Services\ServiceCityPageController;
 use App\Http\Controllers\Services\ServiceController;
@@ -37,6 +38,15 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
     | PATCH  /services/{service}/legal-bases        -> Update legal bases
     | PATCH  /services/{service}/requirements       -> Update requirements
     | PATCH  /services/{service}/process-steps      -> Update process steps
+    |
+    | AI Generate
+    | POST   /services/{service}/ai/generate/content  -> Generate content
+    | POST   /services/{service}/ai/generate/faq      -> Generate FAQs
+    | POST   /services/{service}/ai/generate/seo      -> Generate SEO
+    | POST   /services/{service}/ai/generate/packages -> Generate packages
+    | POST   /services/{service}/ai/generate/process-steps -> Generate process steps
+    | POST   /services/{service}/ai/generate/requirements -> Generate requirements
+    | POST   /services/{service}/ai/generate/legal-bases -> Generate legal bases
     |--------------------------------------------------------------------------
     */
 
@@ -85,8 +95,22 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
       Route::patch('/process-steps', [ServiceController::class, 'updateProcessSteps'])
         ->name('update.process-steps');
 
-      Route::patch('/seo', [ServiceController::class, 'updateSeo'])
+      Route::post('/seo', [ServiceController::class, 'updateSeo'])
         ->name('update.seo');
+
+
+      Route::prefix('ai/generate')
+        ->middleware('permission:create-ai-generate')
+        ->name('ai.generate.')
+        ->group(function () {
+          Route::post('/content', [ServiceAiGenerateController::class, 'content'])->name('content');
+          Route::post('/faq', [ServiceAiGenerateController::class, 'faq'])->name('faq');
+          Route::post('/seo', [ServiceAiGenerateController::class, 'seo'])->name('seo');
+          Route::post('/packages', [ServiceAiGenerateController::class, 'packages'])->name('packages');
+          Route::post('/process-steps', [ServiceAiGenerateController::class, 'processSteps'])->name('process-steps');
+          Route::post('/requirements', [ServiceAiGenerateController::class, 'requirements'])->name('requirements');
+          Route::post('/legal-bases', [ServiceAiGenerateController::class, 'legalBases'])->name('legal-bases');
+        });
     });
 
     /*
@@ -120,27 +144,18 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
         ->middleware('permission:create-service-city-pages')
         ->name('store');
 
-      Route::get('/{cityPage}/edit', [ServiceCityPageController::class, 'edit'])
-        ->middleware('permission:edit-service-city-pages')
-        ->name('edit');
-
-      Route::delete('/{cityPage}', [ServiceCityPageController::class, 'destroy'])
-        ->middleware('permission:delete-service-city-pages')
-        ->name('destroy');
-
       Route::prefix('{cityPage}')->middleware('permission:edit-service-city-pages')->group(function () {
+        Route::get('/edit', [ServiceCityPageController::class, 'edit'])
+          ->name('edit');
 
-        Route::patch('/content', [ServiceCityPageController::class, 'updateContent'])
-          ->name('update.content');
+        Route::patch('/', [ServiceCityPageController::class, 'update'])
+          ->name('update');
 
-        Route::patch('/seo', [ServiceCityPageController::class, 'updateSeo'])
-          ->name('update.seo');
-
-        Route::patch('/publish', [ServiceCityPageController::class, 'publish'])
-          ->name('publish');
+        Route::delete('/', [ServiceCityPageController::class, 'destroy'])
+          ->name('destroy');
 
         Route::post('/generate-ai', [ServiceCityPageController::class, 'generateAi'])
-          ->middleware('permission:generate-ai-content')
+          ->middleware('permission:create-ai-generate')
           ->name('generate-ai');
       });
     });

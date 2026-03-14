@@ -5,13 +5,19 @@ namespace App\Http\Controllers\Services;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Services\CityPages\StoreRequest;
 use App\Http\Requests\Services\CityPages\UpdateContentRequest;
+use App\Http\Requests\Services\CityPages\UpdateRequest;
 use App\Http\Requests\Services\CityPages\UpdateSeoRequest;
 use App\Models\City;
 use App\Models\Service;
 use App\Models\ServiceCityPage;
+use App\Models\SiteSetting;
+use App\Services\AI\AiContentService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+use Throwable;
 
 class ServiceCityPageController extends Controller
 {
@@ -94,7 +100,7 @@ class ServiceCityPageController extends Controller
         }
 
         $city    = City::findOrFail($validated['city_id']);
-        $slug    = Str::slug("{$service->name}-di-{$city->name}");
+        $slug     = Str::slug("{$service->name}-{$city->name}");
         $original = $slug;
         $counter  = 1;
         while (ServiceCityPage::where('slug', $slug)->exists()) {
@@ -117,42 +123,40 @@ class ServiceCityPageController extends Controller
     {
         $cityPage->load(['service.seo', 'city']);
 
-        return Inertia::render('services/city-pages/edit', [
+        return Inertia::render('services/city-pages/edit/index', [
             'cityPage' => $cityPage,
         ]);
     }
 
-    public function updateContent(UpdateContentRequest $request, ServiceCityPage $cityPage)
+    public function update(UpdateRequest $request, ServiceCityPage $cityPage)
     {
         $validated = $request->validated();
+
+        $isPublished = $validated['is_published'] ?? $cityPage->is_published;
+        $heading     = $validated['heading']      ?? $cityPage->heading;
+        $metaTitle   = $validated['meta_title']   ?? $cityPage->meta_title;
+
+        if ($isPublished && (empty($heading) || empty($metaTitle))) {
+            return back()->withErrors([
+                'publish' => 'Pastikan heading dan meta title sudah terisi sebelum publish.',
+            ]);
+        }
+
+        $contentStatus = match (true) {
+            $isPublished                              => 'published',
+            $cityPage->content_status === 'draft'     => 'reviewed',
+            $cityPage->content_status === 'published' => 'reviewed',
+            default                                   => $cityPage->content_status,
+        };
 
         $cityPage->update([
             ...$validated,
             'is_manually_edited' => true,
-            'content_status'     => $cityPage->content_status === 'draft' ? 'reviewed' : $cityPage->content_status,
+            'content_status'     => $contentStatus,
+            'published_at'       => $isPublished && !$cityPage->is_published ? now() : $cityPage->published_at,
         ]);
 
-        return back()->with('success', 'Konten halaman kota berhasil diperbarui.');
-    }
-
-    public function updateSeo(UpdateSeoRequest $request, ServiceCityPage $cityPage)
-    {
-        $cityPage->update($request->validated());
-
-        return back()->with('success', 'SEO halaman kota berhasil diperbarui.');
-    }
-
-    public function publish(ServiceCityPage $cityPage)
-    {
-        if (!$cityPage->isReadyToPublish()) {
-            return back()->withErrors([
-                'publish' => 'Pastikan konten dan meta title sudah terisi sebelum publish.'
-            ]);
-        }
-
-        $cityPage->markAsPublished();
-
-        return back()->with('success', 'Halaman kota berhasil dipublish.');
+        return back()->with('success', 'Halaman kota berhasil diperbarui.');
     }
 
     public function destroy(ServiceCityPage $cityPage)
@@ -160,5 +164,45 @@ class ServiceCityPageController extends Controller
         $cityPage->delete();
 
         return back()->with('success', 'Halaman kota berhasil dihapus.');
+    }
+
+    public function generateAi(Request $request, ServiceCityPage $cityPage): JsonResponse
+    {
+        $cityPage->load(['service.seo', 'service.category', 'city']);
+
+        $settings = SiteSetting::get();
+
+        $context = [
+            'service_name'        => $cityPage->service->name,
+            'service_category'    => $cityPage->service->category?->name ?? '',
+            'service_description' => $cityPage->service->short_description ?? '',
+            'focus_keyword'       => $cityPage->service->seo?->focus_keyword ?? '',
+            'city_name'           => $cityPage->city->name,
+            'province_name'       => $cityPage->city->province ?? '',
+            'company_name'        => $settings->company_name ?? 'CV. Mitra Jasa Legalitas',
+            'faq_count'           => $request->integer('faq_count', 5),
+        ];
+
+        try {
+            $result = app(AiContentService::class)
+                ->generateCityPageContent(Auth::user(), $context);
+
+            return response()->json([
+                'success'     => true,
+                'data'        => $result,
+                'tokens_used' => $result['tokens_used'],
+            ]);
+        } catch (Throwable $exception) {
+            $status = match (true) {
+                str_contains($exception->getMessage(), 'Kuota token')   => 429,
+                str_contains($exception->getMessage(), 'Staff profile') => 403,
+                default                                                 => 500,
+            };
+
+            return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage(),
+            ], $status);
+        }
     }
 }

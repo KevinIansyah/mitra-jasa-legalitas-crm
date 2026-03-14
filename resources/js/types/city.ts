@@ -31,6 +31,18 @@ export interface City {
 }
 
 // ============================================================
+// SUMMARY TYPES
+// ============================================================
+
+export interface CitySummary {
+    total: number;
+    active: number;
+    inactive: number;
+    with_city_pages: number;
+    total_provinces: number;
+}
+
+// ============================================================
 // FORM DATA TYPES
 // ============================================================
 

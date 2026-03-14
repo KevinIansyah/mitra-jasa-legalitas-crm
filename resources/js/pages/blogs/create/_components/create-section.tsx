@@ -526,7 +526,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
 
                             {/* Content */}
                             <Field>
-                                <FieldLabel>Konten Pilar</FieldLabel>
+                                <FieldLabel>Konten Utama</FieldLabel>
                                 <Alert className="border-primary bg-primary/20">
                                     <TableOfContents />
                                     <AlertTitle>Panduan Penulisan Ideal</AlertTitle>

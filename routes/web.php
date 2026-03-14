@@ -213,3 +213,4 @@ require __DIR__ . '/services.php';
 require __DIR__ . '/projects.php';
 require __DIR__ . '/finances.php';
 require __DIR__ . '/staff.php';
+require __DIR__ . '/master-data.php';

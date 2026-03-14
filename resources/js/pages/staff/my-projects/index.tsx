@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { Eye, FolderOpen } from 'lucide-react';
+import { FolderOpen } from 'lucide-react';
 
 import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
@@ -44,6 +44,7 @@ export default function Page() {
                             </p>
                         )}
                     </div>
+                    
 
                     {data.length === 0 ? (
                         <div className="flex min-h-40 flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border p-8 text-muted-foreground">
@@ -61,14 +62,10 @@ export default function Page() {
                                         <CardHeader className="pb-2">
                                             <div className="flex items-start justify-between gap-2">
                                                 <div className="space-y-1">
-                                                    <p className="font-semibold leading-snug">{project.name}</p>
-                                                    {project.customer && (
-                                                        <p className="text-xs text-muted-foreground">{project.customer.name}</p>
-                                                    )}
+                                                    <p className="leading-snug font-semibold">{project.name}</p>
+                                                    {project.customer && <p className="text-xs text-muted-foreground">{project.customer.name}</p>}
                                                 </div>
-                                                <Badge className={statusInfo?.classes ?? 'bg-muted text-muted-foreground'}>
-                                                    {statusInfo?.label ?? project.status}
-                                                </Badge>
+                                                <Badge className={statusInfo?.classes ?? 'bg-muted text-muted-foreground'}>{statusInfo?.label ?? project.status}</Badge>
                                             </div>
                                         </CardHeader>
                                         <CardContent className="space-y-3">
@@ -87,20 +84,14 @@ export default function Page() {
                                                         <span className="text-muted-foreground">Progress</span>
                                                         <span className="font-medium">{project.progress_percentage}%</span>
                                                     </div>
-                                                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                                                        <div
-                                                            className="h-full rounded-full bg-primary transition-all"
-                                                            style={{ width: `${project.progress_percentage}%` }}
-                                                        />
+                                                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-primary/10 dark:bg-muted/40">
+                                                        <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${project.progress_percentage}%` }} />
                                                     </div>
                                                 </div>
                                             )}
                                             <div className="pt-1">
-                                                <Button asChild variant="secondary" size="sm" className="w-full gap-1.5">
-                                                    <Link href={projects.show(project.id).url}>
-                                                        <Eye className="size-3.5" />
-                                                        Lihat Detail
-                                                    </Link>
+                                                <Button asChild variant="secondary" className="w-full">
+                                                    <Link href={projects.show(project.id).url}>Lihat Detail</Link>
                                                 </Button>
                                             </div>
                                         </CardContent>
@@ -114,16 +105,12 @@ export default function Page() {
                         <div className="flex items-center justify-center gap-2 pt-4">
                             {current_page > 1 && (
                                 <Button asChild variant="secondary" size="sm">
-                                    <Link href={staffRoutes.myProjects(staff.id).url + `?page=${current_page - 1}`}>
-                                        Sebelumnya
-                                    </Link>
+                                    <Link href={staffRoutes.myProjects(staff.id).url + `?page=${current_page - 1}`}>Sebelumnya</Link>
                                 </Button>
                             )}
                             {current_page < last_page && (
                                 <Button asChild variant="secondary" size="sm">
-                                    <Link href={staffRoutes.myProjects(staff.id).url + `?page=${current_page + 1}`}>
-                                        Selanjutnya
-                                    </Link>
+                                    <Link href={staffRoutes.myProjects(staff.id).url + `?page=${current_page + 1}`}>Selanjutnya</Link>
                                 </Button>
                             )}
                         </div>

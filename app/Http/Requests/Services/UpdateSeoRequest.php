@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Services;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateSeoRequest extends FormRequest
 {
@@ -27,7 +28,7 @@ class UpdateSeoRequest extends FormRequest
             'twitter_title'     => 'nullable|string|max:255',
             'twitter_description' => 'nullable|string',
             'twitter_image'     => 'nullable|string|max:255',
-            'robots'            => 'nullable|in:index,follow,noindex,follow,index,nofollow,noindex,nofollow',
+            'seo.robots' => ['nullable', Rule::in(['index,follow', 'noindex,follow', 'index,nofollow', 'noindex,nofollow'])],
             'schema_markup'     => 'nullable|array',
             'in_sitemap'        => 'boolean',
             'sitemap_priority'  => 'nullable|in:0.1,0.3,0.5,0.7,0.9,1.0',

@@ -44,6 +44,7 @@ class ManualJournalController extends Controller
                 ->whereMonth('date', $now->month)
                 ->count(),
             'manual_count' => JournalEntry::where('reference_type', 'manual')->count(),
+            'auto_count'   => JournalEntry::where('reference_type', '!=', 'manual')->count(),
         ];
 
         return Inertia::render('finances/journal-entries/index', [

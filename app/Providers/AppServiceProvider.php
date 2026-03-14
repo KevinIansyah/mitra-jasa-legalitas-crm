@@ -2,18 +2,34 @@
 
 namespace App\Providers;
 
+use App\Models\City;
 use App\Models\Expense;
-use App\Models\ProjectDocument;
 use App\Models\ProjectInvoice;
 use App\Models\ProjectPayment;
+use App\Models\Service;
+use App\Models\ServiceCategory;
+use App\Models\ServiceCityPage;
+use App\Models\ServiceFaq;
+use App\Models\ServicePackage;
+use App\Models\ServiceProcessStep;
+use App\Models\SiteSetting;
+use App\Observers\CityObserver as ObserversCityObserver;
 use App\Observers\ExpenseObserver;
 use App\Observers\ProjectInvoiceObserver;
 use App\Observers\ProjectPaymentObserver;
-use App\Policies\ProjectDocumentPolicy;
+use App\Observers\ServiceCategoryObserver;
+use App\Observers\ServiceCityPageObserver;
+use App\Observers\ServiceFaqObserver;
+use App\Observers\ServiceObserver;
+use App\Observers\ServicePackageObserver;
+use App\Observers\ServiceProcessStepObserver;
+use App\Observers\SiteSettingObserver;
+use App\Services\AI\AiServiceInterface;
+use App\Services\AI\GeminiAiService;
+use App\Services\AI\LovableAiService;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -24,7 +40,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(AiServiceInterface::class, function () {
+            return match (config('ai.provider', 'gemini')) {
+                'lovable' => new LovableAiService(),
+                default   => new GeminiAiService(),
+            };
+        });
     }
 
     /**
@@ -37,6 +58,14 @@ class AppServiceProvider extends ServiceProvider
         ProjectInvoice::observe(ProjectInvoiceObserver::class);
         ProjectPayment::observe(ProjectPaymentObserver::class);
         Expense::observe(ExpenseObserver::class);
+        ServiceFaq::observe(ServiceFaqObserver::class);
+        ServiceProcessStep::observe(ServiceProcessStepObserver::class);
+        ServicePackage::observe(ServicePackageObserver::class);
+        ServiceCityPage::observe(ServiceCityPageObserver::class);
+        City::observe(ObserversCityObserver::class);
+        SiteSetting::observe(SiteSettingObserver::class);
+        Service::observe(ServiceObserver::class);
+        ServiceCategory::observe(ServiceCategoryObserver::class);
     }
 
     protected function configureDefaults(): void

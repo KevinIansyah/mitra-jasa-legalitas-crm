@@ -1,4 +1,4 @@
-import { BookOpen, CalendarDays, PenLine } from 'lucide-react';
+import { BookOpen, CalendarDays, PenLine, Zap } from 'lucide-react';
 import { useState } from 'react';
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Account } from '@/types/account';
@@ -54,11 +54,23 @@ export function JournalSection({ entries, accounts, summary, filters }: JournalS
                 </>
             ),
         },
+        {
+            label: 'Jurnal Otomatis',
+            value: summary.auto_count,
+            badge: 'bg-emerald-500 text-white',
+            icon: <Zap className="size-3.5" />,
+            footer: (
+                <>
+                    <p className="font-medium">Dibuat otomatis oleh sistem</p>
+                    <p className="text-muted-foreground">Invoice, pembayaran, pengeluaran</p>
+                </>
+            ),
+        },
     ];
 
     return (
         <div className="space-y-4">
-            <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:border-none *:data-[slot=card]:bg-sidebar *:data-[slot=card]:shadow md:grid-cols-3 *:data-[slot=card]:dark:shadow-none">
+            <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:border-none *:data-[slot=card]:bg-sidebar *:data-[slot=card]:shadow md:grid-cols-2 lg:grid-cols-4 *:data-[slot=card]:dark:shadow-none">
                 {STATS.map(({ label, value, badge, icon, footer }) => (
                     <Card key={label}>
                         <CardHeader>

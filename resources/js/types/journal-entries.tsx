@@ -39,6 +39,7 @@ export interface JournalSummary {
     total: number;
     this_month: number;
     manual_count: number;
+    auto_count: number;
 }
 
 // ============================================================

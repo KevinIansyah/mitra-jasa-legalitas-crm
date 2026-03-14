@@ -1,5 +1,5 @@
 import { usePage } from '@inertiajs/react';
-import { ChartBar, Clock, Command, DollarSign, LayoutGrid, MessageSquare, Newspaper, Settings, Settings2, Table2, Toolbox, Users } from 'lucide-react';
+import { ChartBar, Clock, Command, Database, DollarSign, LayoutGrid, MessageSquare, Newspaper, Settings, Settings2, Table2, Toolbox, Users } from 'lucide-react';
 import * as React from 'react';
 
 import { NavMain } from '@/components/nav-main';
@@ -19,6 +19,8 @@ import siteSettings from '@/routes/site-settings';
 import staffRoutes from '@/routes/staff';
 import type { NavItem, NavSection } from '@/types';
 import type { SharedData } from '@/types';
+import masterData from '@/routes/master-data';
+
 
 function buildNavData(userId: number): {
     navMain: NavSection;
@@ -220,6 +222,11 @@ function buildNavData(userId: number): {
                             permission: 'view-services',
                         },
                         {
+                            title: 'Layanan per Kota',
+                            url: services.cityPages.index().url,
+                            permission: 'view-service-city-pages',
+                        },
+                        {
                             title: 'Kategori',
                             url: services.categories.index().url,
                             permission: 'view-service-categories',
@@ -286,6 +293,19 @@ function buildNavData(userId: number): {
         navSettings: {
             title: 'Pengaturan',
             items: [
+                {
+                    title: 'Master Data',
+                    url: '#',
+                    icon: Database,
+                    permission: 'view-master-cities',
+                    items: [
+                        {
+                            title: 'Kota',
+                            url: masterData.cities.index().url,
+                            permission: 'view-master-cities',
+                        },
+                    ],
+                },
                 {
                     title: 'Pengaturan',
                     url: '#',

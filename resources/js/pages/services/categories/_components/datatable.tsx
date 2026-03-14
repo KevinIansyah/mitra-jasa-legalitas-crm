@@ -61,6 +61,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
         <>
             {/* ───────────────── Filter & Search Section ───────────────── */}
             <div className="flex flex-col items-center justify-between gap-2 pb-4 md:flex-row">
+                {/* Search */}
                 <InputGroup className="max-w-sm">
                     <InputGroupInput placeholder="Cari nama kategori layanan..." value={searchValue} onChange={handleSearchChange} />
                     <InputGroupAddon>

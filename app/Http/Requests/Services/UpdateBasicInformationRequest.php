@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Services;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class UpdateBasicInformationRequest extends FormRequest
 {
@@ -15,17 +14,9 @@ class UpdateBasicInformationRequest extends FormRequest
 
     public function rules(): array
     {
-        $service = $this->route('service');
-
         return [
             'service_category_id' => 'required|exists:service_categories,id',
             'name'                => 'required|string|max:255',
-            'slug' => [
-                'nullable',
-                'string',
-                'max:255',
-                Rule::unique('services', 'slug')->ignore($service?->id),
-            ],
             'short_description'   => 'nullable|string',
             'featured_image'      => 'nullable|image|mimes:jpg,jpeg,png,webp,gif,svg|max:5120',
             'remove_image'        => 'boolean',
@@ -45,10 +36,6 @@ class UpdateBasicInformationRequest extends FormRequest
             'name.required' => 'Nama layanan wajib diisi.',
             'name.string'   => 'Nama layanan harus berupa teks.',
             'name.max'      => 'Nama layanan maksimal 255 karakter.',
-
-            'slug.string' => 'Slug harus berupa teks.',
-            'slug.max'    => 'Slug maksimal 255 karakter.',
-            'slug.unique' => 'Slug sudah digunakan, silakan gunakan slug lain.',
 
             'short_description.string' => 'Deskripsi singkat harus berupa teks.',
 

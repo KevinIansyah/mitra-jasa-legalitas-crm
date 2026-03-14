@@ -36,11 +36,13 @@ import { LegalBasisCard, type LocalLegalBasis } from '../../_components/legal-ba
 import { PackageCard, type LocalPackage } from '../../_components/package-card';
 import { ProcessStepCard, type LocalProcessStep } from '../../_components/process-step-card';
 import { RequirementCard, type LocalRequirementCategory } from '../../_components/requirement-card';
+import { SeoCard } from '../../_components/seo-card';
+import type { AiDrawerType } from './ai-generate-drawer';
+import { AiGenerateDrawer } from './ai-generate-drawer';
 
 type BasicInfoFormData = {
     service_category_id: number;
     name: string;
-    slug: string;
     short_description: string;
     featured_image: File | null;
     remove_image: boolean;
@@ -74,7 +76,7 @@ type ProcessStepFormData = {
     process_steps: LocalProcessStep[];
 };
 
-type TabId = 'basic-information' | 'content' | 'package' | 'faq' | 'legal-basis' | 'requirement' | 'timeline';
+type TabId = 'basic-information' | 'content' | 'package' | 'faq' | 'legal-basis' | 'requirement' | 'timeline' | 'seo';
 
 type EditSectionProps = {
     service: Service;
@@ -97,6 +99,11 @@ export function EditSection({ service, categories }: EditSectionProps) {
     const [imageError, setImageError] = useState<string | null>(null);
     const [isDragging, setIsDragging] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [aiDrawer, setAiDrawer] = useState<{ open: boolean; type: AiDrawerType }>({
+        open: false,
+        type: 'content',
+    });
+    const openAiDrawer = (type: AiDrawerType) => setAiDrawer({ open: true, type });
 
     // ============================================================
     // FORMS
@@ -104,7 +111,6 @@ export function EditSection({ service, categories }: EditSectionProps) {
     const basicInfoForm = useForm<BasicInfoFormData>({
         service_category_id: service.service_category_id,
         name: service.name,
-        slug: service.slug,
         short_description: service.short_description || '',
         featured_image: null,
         remove_image: false,
@@ -208,6 +214,29 @@ export function EditSection({ service, categories }: EditSectionProps) {
         })),
     });
 
+    const seoForm = useForm({
+        meta_title: service.seo?.meta_title ?? '',
+        meta_description: service.seo?.meta_description ?? '',
+        canonical_url: service.seo?.canonical_url ?? '',
+        focus_keyword: service.seo?.focus_keyword ?? '',
+        secondary_keywords: service.seo?.secondary_keywords ?? [],
+        og_title: service.seo?.og_title ?? '',
+        og_description: service.seo?.og_description ?? '',
+        og_image: null as File | null,
+        og_image_url: service.seo?.og_image ?? null,
+        remove_og_image: false,
+        twitter_card: service.seo?.twitter_card ?? 'summary_large_image',
+        twitter_title: service.seo?.twitter_title ?? '',
+        twitter_description: service.seo?.twitter_description ?? '',
+        twitter_image: null as File | null,
+        twitter_image_url: service.seo?.twitter_image ?? null,
+        remove_twitter_image: false,
+        robots: service.seo?.robots ?? 'index,follow',
+        in_sitemap: service.seo?.in_sitemap ?? true,
+        sitemap_priority: service.seo?.sitemap_priority ?? '0.7',
+        sitemap_changefreq: service.seo?.sitemap_changefreq ?? 'monthly',
+    });
+
     // ============================================================
     // TAB HANDLERS / TRACK UNSAVED CHANGES
     // ============================================================
@@ -219,6 +248,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
         'legal-basis': legalBasisForm.isDirty,
         requirement: requirementCategoriesForm.isDirty,
         timeline: processStepsForm.isDirty,
+        seo: seoForm.isDirty,
     } satisfies Record<TabId, boolean>;
 
     const handleTabChange = (value: string) => {
@@ -581,355 +611,406 @@ export function EditSection({ service, categories }: EditSectionProps) {
         });
     };
 
+    const handleSubmitSeo = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        const id = toast.loading('Memproses...', {
+            description: 'SEO sedang diperbarui.',
+        });
+
+        seoForm.post(services.update.seo(service.id).url, {
+            preserveScroll: true,
+            forceFormData: true,
+            onSuccess: () => {
+                toast.success('Berhasil', {
+                    description: 'SEO berhasil diperbarui.',
+                });
+                seoForm.clearErrors();
+            },
+            onError: () => {
+                toast.error('Gagal', {
+                    description: 'SEO gagal diperbarui. Silakan periksa kembali data SEO yang diisi.',
+                });
+            },
+            onFinish: () => toast.dismiss(id),
+        });
+    };
+
+    // ============================================================
+    // AI APPLY HANDLER
+    // ============================================================
+    const handleAiApply = (data: Record<string, unknown>) => {
+        if (data.introduction !== undefined) contentForm.setData('introduction', data.introduction as string);
+        if (data.content !== undefined) contentForm.setData('content', data.content as string);
+        if (data.meta_title !== undefined) seoForm.setData('meta_title', data.meta_title as string);
+        if (data.meta_description !== undefined) seoForm.setData('meta_description', data.meta_description as string);
+        if (data.focus_keyword !== undefined) seoForm.setData('focus_keyword', data.focus_keyword as string);
+        if (data.faqs !== undefined) faqForm.setData('faqs', data.faqs as LocalFaq[]);
+        if (data.packages !== undefined) packageForm.setData('packages', data.packages as LocalPackage[]);
+        if (data.process_steps !== undefined) processStepsForm.setData('process_steps', data.process_steps as LocalProcessStep[]);
+        if (data.requirement_categories !== undefined) requirementCategoriesForm.setData('requirement_categories', data.requirement_categories as LocalRequirementCategory[]);
+        if (data.legal_bases !== undefined) legalBasisForm.setData('legal_bases', data.legal_bases as LocalLegalBasis[]);
+    };
+
     return (
-        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-            <TabsList>
-                <TabsTrigger value="basic-information">
-                    Informasi Dasar
-                    {hasUnsavedChanges['basic-information'] && <div className="ml-1 h-2 w-2 rounded-full border border-destructive bg-destructive"></div>}
-                </TabsTrigger>
-                <TabsTrigger value="content">
-                    Konten
-                    {hasUnsavedChanges['content'] && <div className="ml-1 h-2 w-2 rounded-full border border-destructive bg-destructive"></div>}
-                </TabsTrigger>
-                <TabsTrigger value="package">
-                    Paket Harga
-                    {hasUnsavedChanges['package'] && <div className="ml-1 h-2 w-2 rounded-full border border-destructive bg-destructive"></div>}
-                </TabsTrigger>
-                <TabsTrigger value="faq">FAQ</TabsTrigger>
-                <TabsTrigger value="legal-basis">
-                    Dasar Hukum
-                    {hasUnsavedChanges['legal-basis'] && <div className="ml-1 h-2 w-2 rounded-full border border-destructive bg-destructive"></div>}
-                </TabsTrigger>
-                <TabsTrigger value="requirement">
-                    Persyaratan
-                    {hasUnsavedChanges['requirement'] && <div className="ml-1 h-2 w-2 rounded-full border border-destructive bg-destructive"></div>}
-                </TabsTrigger>
-                <TabsTrigger value="timeline">
-                    Tahapan
-                    {hasUnsavedChanges['timeline'] && <div className="ml-1 h-2 w-2 rounded-full border border-destructive bg-destructive"></div>}
-                </TabsTrigger>
-                <TabsTrigger value="seo">SEO</TabsTrigger>
-            </TabsList>
+        <>
+            <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+                <TabsList>
+                    <TabsTrigger value="basic-information">
+                        Informasi Dasar
+                        {hasUnsavedChanges['basic-information'] && <div className="ml-1 h-2 w-2 rounded-full border border-destructive bg-destructive"></div>}
+                    </TabsTrigger>
+                    <TabsTrigger value="content">
+                        Konten
+                        {hasUnsavedChanges['content'] && <div className="ml-1 h-2 w-2 rounded-full border border-destructive bg-destructive"></div>}
+                    </TabsTrigger>
+                    <TabsTrigger value="package">
+                        Paket Harga
+                        {hasUnsavedChanges['package'] && <div className="ml-1 h-2 w-2 rounded-full border border-destructive bg-destructive"></div>}
+                    </TabsTrigger>
+                    <TabsTrigger value="faq">FAQ</TabsTrigger>
+                    <TabsTrigger value="legal-basis">
+                        Dasar Hukum
+                        {hasUnsavedChanges['legal-basis'] && <div className="ml-1 h-2 w-2 rounded-full border border-destructive bg-destructive"></div>}
+                    </TabsTrigger>
+                    <TabsTrigger value="requirement">
+                        Persyaratan
+                        {hasUnsavedChanges['requirement'] && <div className="ml-1 h-2 w-2 rounded-full border border-destructive bg-destructive"></div>}
+                    </TabsTrigger>
+                    <TabsTrigger value="timeline">
+                        Tahapan
+                        {hasUnsavedChanges['timeline'] && <div className="ml-1 h-2 w-2 rounded-full border border-destructive bg-destructive"></div>}
+                    </TabsTrigger>
+                    <TabsTrigger value="seo">
+                        SEO
+                        {hasUnsavedChanges.seo && <div className="ml-1 h-2 w-2 rounded-full border border-destructive bg-destructive" />}
+                    </TabsTrigger>
+                </TabsList>
 
-            {/* ───────────────── Basic Information Section ───────────────── */}
-            <TabsContent value="basic-information">
-                <form onSubmit={handleSubmitBasicInfo}>
-                    <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <div className="space-y-4">
-                            <div>
-                                <h2 className="text-xl font-semibold">Informasi Dasar Layanan</h2>
-                                <p className="mt-0.5 text-sm text-muted-foreground">Kelola identitas, kategori, deskripsi singkat, dan pengaturan publikasi layanan.</p>
-                            </div>
+                {/* ───────────────── Basic Information Section ───────────────── */}
+                <TabsContent value="basic-information">
+                    <form onSubmit={handleSubmitBasicInfo}>
+                        <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+                            <div className="space-y-4">
+                                <div>
+                                    <h2 className="text-xl font-semibold">Informasi Dasar Layanan</h2>
+                                    <p className="mt-0.5 text-sm text-muted-foreground">Kelola identitas, kategori, deskripsi singkat, dan pengaturan publikasi layanan.</p>
+                                </div>
 
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                                {/* Name */}
-                                <Field>
-                                    <FieldLabel htmlFor="name">
-                                        Nama <span className="text-destructive">*</span>
-                                    </FieldLabel>
-                                    <Input
-                                        id="name"
-                                        type="text"
-                                        name="name"
-                                        required
-                                        placeholder="Masukkan nama layanan"
-                                        value={basicInfoForm.data.name}
-                                        onChange={(e) => basicInfoForm.setData('name', e.target.value)}
-                                    />
-                                    {basicInfoForm.errors.name && <FieldError>{basicInfoForm.errors.name}</FieldError>}
-                                </Field>
+                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                    {/* Name */}
+                                    <Field className="md:col-span-2 lg:col-span-1">
+                                        <FieldLabel htmlFor="name">
+                                            Nama <span className="text-destructive">*</span>
+                                        </FieldLabel>
+                                        <Input
+                                            id="name"
+                                            type="text"
+                                            name="name"
+                                            required
+                                            placeholder="Masukkan nama layanan"
+                                            value={basicInfoForm.data.name}
+                                            onChange={(e) => basicInfoForm.setData('name', e.target.value)}
+                                        />
+                                        {basicInfoForm.errors.name && <FieldError>{basicInfoForm.errors.name}</FieldError>}
+                                    </Field>
 
-                                {/* Slug */}
-                                <Field>
-                                    <FieldLabel htmlFor="slug">Slug</FieldLabel>
-                                    <Input
-                                        id="slug"
-                                        type="text"
-                                        name="slug"
-                                        placeholder="Masukkan slug, contoh: slug-kategori-layanan"
-                                        value={basicInfoForm.data.slug}
-                                        onChange={(e) => basicInfoForm.setData('slug', e.target.value)}
-                                    />
-                                    {basicInfoForm.errors.slug && <FieldError>{basicInfoForm.errors.slug}</FieldError>}
-                                </Field>
-
-                                {/* Category */}
-                                <Field>
-                                    <FieldLabel htmlFor="category">
-                                        Kategori <span className="text-destructive">*</span>
-                                    </FieldLabel>
-                                    <Select
-                                        required
-                                        value={String(basicInfoForm.data.service_category_id)}
-                                        onValueChange={(val) => basicInfoForm.setData('service_category_id', Number(val))}
-                                    >
-                                        <SelectTrigger id="category">
-                                            <SelectValue placeholder="Pilih kategori" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                <SelectLabel>Kategori</SelectLabel>
-                                                {categories.map((category) => (
-                                                    <SelectItem key={category.id} value={String(category.id)}>
-                                                        {category.name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                    {basicInfoForm.errors.service_category_id && <FieldError>{basicInfoForm.errors.service_category_id}</FieldError>}
-                                </Field>
-                            </div>
-
-                            {/* Short Description */}
-                            <Field>
-                                <FieldLabel htmlFor="short_description">Deskripsi Singkat</FieldLabel>
-                                <Textarea
-                                    id="short_description"
-                                    className="min-h-24"
-                                    placeholder="Tambahkan deskripsi singkat layanan"
-                                    value={basicInfoForm.data.short_description}
-                                    onChange={(e) => basicInfoForm.setData('short_description', e.target.value)}
-                                />
-                                {basicInfoForm.errors.short_description && <FieldError>{basicInfoForm.errors.short_description}</FieldError>}
-                            </Field>
-
-                            {/* Featured Image */}
-                            <Field>
-                                <FieldLabel htmlFor="featured_image">Gambar Utama</FieldLabel>
-                                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFile(e.target.files?.[0])} />
-
-                                {!imagePreview ? (
-                                    <>
-                                        <div
-                                            role="button"
-                                            tabIndex={0}
-                                            onClick={() => fileInputRef.current?.click()}
-                                            onKeyDown={(e) => e.key === 'Enter' && fileInputRef.current?.click()}
-                                            onDragEnter={handleDragEnter}
-                                            onDragLeave={handleDragLeave}
-                                            onDragOver={handleDragOver}
-                                            onDrop={handleDrop}
-                                            className={[
-                                                'flex cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed px-6 py-10 text-center transition-colors select-none',
-                                                imageError
-                                                    ? 'border-destructive bg-destructive/5'
-                                                    : isDragging
-                                                      ? 'border-border bg-muted/40'
-                                                      : 'border-border hover:border-border hover:bg-muted/40',
-                                            ].join(' ')}
+                                    {/* Category */}
+                                    <Field className="md:col-span-2 lg:col-span-1">
+                                        <FieldLabel htmlFor="category">
+                                            Kategori <span className="text-destructive">*</span>
+                                        </FieldLabel>
+                                        <Select
+                                            required
+                                            value={String(basicInfoForm.data.service_category_id)}
+                                            onValueChange={(val) => basicInfoForm.setData('service_category_id', Number(val))}
                                         >
-                                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                                                <ImagePlus className="size-5 text-primary" />
+                                            <SelectTrigger id="category">
+                                                <SelectValue placeholder="Pilih kategori" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    <SelectLabel>Kategori</SelectLabel>
+                                                    {categories.map((category) => (
+                                                        <SelectItem key={category.id} value={String(category.id)}>
+                                                            {category.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                        {basicInfoForm.errors.service_category_id && <FieldError>{basicInfoForm.errors.service_category_id}</FieldError>}
+                                    </Field>
+                                </div>
+
+                                {/* Short Description */}
+                                <Field>
+                                    <FieldLabel htmlFor="short_description">Deskripsi Singkat</FieldLabel>
+                                    <Textarea
+                                        id="short_description"
+                                        className="min-h-24"
+                                        placeholder="Tambahkan deskripsi singkat layanan"
+                                        value={basicInfoForm.data.short_description}
+                                        onChange={(e) => basicInfoForm.setData('short_description', e.target.value)}
+                                    />
+                                    {basicInfoForm.errors.short_description && <FieldError>{basicInfoForm.errors.short_description}</FieldError>}
+                                </Field>
+
+                                {/* Featured Image */}
+                                <Field>
+                                    <FieldLabel htmlFor="featured_image">Gambar Utama</FieldLabel>
+                                    <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFile(e.target.files?.[0])} />
+
+                                    {!imagePreview ? (
+                                        <>
+                                            <div
+                                                role="button"
+                                                tabIndex={0}
+                                                onClick={() => fileInputRef.current?.click()}
+                                                onKeyDown={(e) => e.key === 'Enter' && fileInputRef.current?.click()}
+                                                onDragEnter={handleDragEnter}
+                                                onDragLeave={handleDragLeave}
+                                                onDragOver={handleDragOver}
+                                                onDrop={handleDrop}
+                                                className={[
+                                                    'flex cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed px-6 py-10 text-center transition-colors select-none',
+                                                    imageError
+                                                        ? 'border-destructive bg-destructive/5'
+                                                        : isDragging
+                                                          ? 'border-border bg-muted/40'
+                                                          : 'border-border hover:border-border hover:bg-muted/40',
+                                                ].join(' ')}
+                                            >
+                                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                                    <ImagePlus className="size-5 text-primary" />
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-medium text-foreground">
+                                                        {isDragging ? 'Lepaskan untuk mengunggah!' : 'Seret & lepas gambar di sini'}
+                                                    </p>
+                                                    <p className="mt-1 text-xs text-muted-foreground">
+                                                        atau <span className="text-primary underline underline-offset-2">klik untuk memilih</span> dari perangkat Anda
+                                                    </p>
+                                                </div>
+                                                <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+                                                    JPG · PNG · WEBP · GIF · SVG · Maks. 5 MB
+                                                </span>
                                             </div>
-                                            <div>
-                                                <p className="text-sm font-medium text-foreground">{isDragging ? 'Lepaskan untuk mengunggah!' : 'Seret & lepas gambar di sini'}</p>
-                                                <p className="mt-1 text-xs text-muted-foreground">
-                                                    atau <span className="text-primary underline underline-offset-2">klik untuk memilih</span> dari perangkat Anda
+                                            {imageError && <FieldError>{imageError}</FieldError>}
+                                            {basicInfoForm.errors.featured_image && <FieldError>{basicInfoForm.errors.featured_image}</FieldError>}
+                                        </>
+                                    ) : (
+                                        <div className="relative overflow-visible">
+                                            <img src={imagePreview.src} alt={imagePreview.name} className="aspect-video w-full rounded-lg border border-border object-cover" />
+                                            <div className="mt-2 flex items-center gap-3 rounded-lg border border-primary bg-input/30 px-3 py-2">
+                                                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+                                                    <ImagePlus className="size-4 text-primary" />
+                                                </div>
+                                                <div className="min-w-0 flex-1">
+                                                    <p className="truncate text-sm font-medium text-foreground">{imagePreview.name}</p>
+                                                    {imagePreview.size > 0 && <p className="text-xs text-muted-foreground">{formatSize(imagePreview.size)}</p>}
+                                                </div>
+                                                <div className="space-x-1">
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <Button type="button" variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} className="h-8 w-8">
+                                                                <Pencil className="size-3.5" />
+                                                            </Button>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>Ganti File</TooltipContent>
+                                                    </Tooltip>
+
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <Button type="button" variant="destructive" size="sm" onClick={handleRemoveImage} className="h-8 w-8">
+                                                                <Trash className="size-3.5" />
+                                                            </Button>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>Hapus File</TooltipContent>
+                                                    </Tooltip>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </Field>
+
+                                {/* Display Settings */}
+                                <Field>
+                                    <FieldLabel>Pengaturan Tampilan</FieldLabel>
+                                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                                        <div className="flex items-start gap-4 rounded-lg border border-primary bg-transparent p-4 dark:bg-input/30">
+                                            <Switch
+                                                id="is_published"
+                                                checked={basicInfoForm.data.is_published}
+                                                onCheckedChange={(val) => basicInfoForm.setData('is_published', val)}
+                                            />
+                                            <div className="flex-1">
+                                                <Label htmlFor="is_published" className="cursor-pointer text-sm font-medium">
+                                                    Publikasikan Layanan
+                                                </Label>
+                                                <p className="text-sm text-muted-foreground">Jika aktif, layanan akan tampil dan dapat diakses oleh pengunjung website.</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-start gap-4 rounded-lg border border-primary bg-transparent p-4 dark:bg-input/30">
+                                            <Switch
+                                                id="is_featured"
+                                                checked={basicInfoForm.data.is_featured}
+                                                onCheckedChange={(val) => basicInfoForm.setData('is_featured', val)}
+                                            />
+                                            <div className="flex-1">
+                                                <Label htmlFor="is_featured" className="cursor-pointer text-sm font-medium">
+                                                    Jadikan Layanan Unggulan
+                                                </Label>
+                                                <p className="text-sm text-muted-foreground">
+                                                    Layanan akan ditampilkan di bagian khusus "Layanan Unggulan" dan diprioritaskan di halaman utama.
                                                 </p>
                                             </div>
-                                            <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-                                                JPG · PNG · WEBP · GIF · SVG · Maks. 5 MB
-                                            </span>
                                         </div>
-                                        {imageError && <FieldError>{imageError}</FieldError>}
-                                        {basicInfoForm.errors.featured_image && <FieldError>{basicInfoForm.errors.featured_image}</FieldError>}
+
+                                        <div className="flex items-start gap-4 rounded-lg border border-primary bg-transparent p-4 dark:bg-input/30">
+                                            <Switch id="is_popular" checked={basicInfoForm.data.is_popular} onCheckedChange={(val) => basicInfoForm.setData('is_popular', val)} />
+                                            <div className="flex-1">
+                                                <Label htmlFor="is_popular" className="cursor-pointer text-sm font-medium">
+                                                    Tandai sebagai Layanan Populer
+                                                </Label>
+                                                <p className="text-sm text-muted-foreground">Layanan akan diberi penanda populer dan diprioritaskan dalam urutan tampilan.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Field>
+                            </div>
+                        </div>
+
+                        <div className="mt-4 flex items-center gap-2">
+                            <Button type="submit" disabled={basicInfoForm.processing || !hasUnsavedChanges['basic-information']} className="flex-1 md:w-45 md:flex-none">
+                                {basicInfoForm.processing ? (
+                                    <>
+                                        <Spinner className="mr-2" />
+                                        Menyimpan...
                                     </>
                                 ) : (
-                                    <div className="relative overflow-visible">
-                                        <img src={imagePreview.src} alt={imagePreview.name} className="aspect-video w-full rounded-lg border border-border object-cover" />
-                                        <div className="mt-2 flex items-center gap-3 rounded-lg border border-primary bg-input/30 px-3 py-2">
-                                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary/10">
-                                                <ImagePlus className="size-4 text-primary" />
-                                            </div>
-                                            <div className="min-w-0 flex-1">
-                                                <p className="truncate text-sm font-medium text-foreground">{imagePreview.name}</p>
-                                                {imagePreview.size > 0 && <p className="text-xs text-muted-foreground">{formatSize(imagePreview.size)}</p>}
-                                            </div>
-                                            <div className="space-x-1">
-                                                <Tooltip>
-                                                    <TooltipTrigger asChild>
-                                                        <Button type="button" variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} className="h-8 w-8">
-                                                            <Pencil className="size-3.5" />
-                                                        </Button>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent>Ganti File</TooltipContent>
-                                                </Tooltip>
-
-                                                <Tooltip>
-                                                    <TooltipTrigger asChild>
-                                                        <Button type="button" variant="destructive" size="sm" onClick={handleRemoveImage} className="h-8 w-8">
-                                                            <Trash className="size-3.5" />
-                                                        </Button>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent>Hapus File</TooltipContent>
-                                                </Tooltip>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    'Simpan'
                                 )}
-                            </Field>
-
-                            {/* Display Settings */}
-                            <Field>
-                                <FieldLabel>Pengaturan Tampilan</FieldLabel>
-                                <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-                                    <div className="flex items-start gap-4 rounded-lg border border-primary bg-transparent p-4 dark:bg-input/30">
-                                        <Switch id="is_published" checked={basicInfoForm.data.is_published} onCheckedChange={(val) => basicInfoForm.setData('is_published', val)} />
-                                        <div className="flex-1">
-                                            <Label htmlFor="is_published" className="cursor-pointer text-sm font-medium">
-                                                Publikasikan Layanan
-                                            </Label>
-                                            <p className="text-sm text-muted-foreground">Jika aktif, layanan akan tampil dan dapat diakses oleh pengunjung website.</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-start gap-4 rounded-lg border border-primary bg-transparent p-4 dark:bg-input/30">
-                                        <Switch id="is_featured" checked={basicInfoForm.data.is_featured} onCheckedChange={(val) => basicInfoForm.setData('is_featured', val)} />
-                                        <div className="flex-1">
-                                            <Label htmlFor="is_featured" className="cursor-pointer text-sm font-medium">
-                                                Jadikan Layanan Unggulan
-                                            </Label>
-                                            <p className="text-sm text-muted-foreground">
-                                                Layanan akan ditampilkan di bagian khusus "Layanan Unggulan" dan diprioritaskan di halaman utama.
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-start gap-4 rounded-lg border border-primary bg-transparent p-4 dark:bg-input/30">
-                                        <Switch id="is_popular" checked={basicInfoForm.data.is_popular} onCheckedChange={(val) => basicInfoForm.setData('is_popular', val)} />
-                                        <div className="flex-1">
-                                            <Label htmlFor="is_popular" className="cursor-pointer text-sm font-medium">
-                                                Tandai sebagai Layanan Populer
-                                            </Label>
-                                            <p className="text-sm text-muted-foreground">Layanan akan diberi penanda populer dan diprioritaskan dalam urutan tampilan.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Field>
-                        </div>
-                    </div>
-
-                    <div className="mt-4 flex items-center gap-2">
-                        <Button type="submit" disabled={basicInfoForm.processing || !hasUnsavedChanges['basic-information']} className="flex-1 md:w-45 md:flex-none">
-                            {basicInfoForm.processing ? (
-                                <>
-                                    <Spinner className="mr-2" />
-                                    Menyimpan...
-                                </>
-                            ) : (
-                                'Simpan'
-                            )}
-                        </Button>
-                        <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
-                            Kembali
-                        </Button>
-                    </div>
-                </form>
-            </TabsContent>
-
-            {/* ───────────────── Content Section ───────────────── */}
-            <TabsContent value="content">
-                <form onSubmit={handleSubmitContent}>
-                    <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <div className="space-y-4">
-                            <div>
-                                <h2 className="text-xl font-semibold">Konten Layanan</h2>
-                                <p className="mt-0.5 text-sm text-muted-foreground">Kelola pengantar dan konten utama layanan untuk kebutuhan informasi dan optimasi SEO.</p>
-                            </div>
-
-                            {/* Introduction */}
-                            <Field>
-                                <FieldLabel>Pengantar Layanan</FieldLabel>
-                                <Tiptap content={contentForm.data.introduction} onChange={(html) => contentForm.setData('introduction', html)} />
-                                {contentForm.errors.introduction && <FieldError>{contentForm.errors.introduction}</FieldError>}
-                            </Field>
-
-                            {/* Content */}
-                            <Field>
-                                <FieldLabel>Konten Pilar</FieldLabel>
-                                <Tiptap content={contentForm.data.content} onChange={(html) => contentForm.setData('content', html)} />
-                                {contentForm.errors.content && <FieldError>{contentForm.errors.content}</FieldError>}
-                            </Field>
-                        </div>
-                    </div>
-
-                    <div className="mt-4 flex items-center gap-2">
-                        <Button type="submit" disabled={contentForm.processing || !hasUnsavedChanges.content} className="flex-1 md:w-45 md:flex-none">
-                            {contentForm.processing ? (
-                                <>
-                                    <Spinner className="mr-2" />
-                                    Menyimpan...
-                                </>
-                            ) : (
-                                'Simpan'
-                            )}
-                        </Button>
-                        <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
-                            Kembali
-                        </Button>
-                    </div>
-                </form>
-            </TabsContent>
-
-            {/* ───────────────── Package Section ───────────────── */}
-            <TabsContent value="package" className="space-y-4">
-                <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                    <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
-                        <div>
-                            <h2 className="text-xl font-semibold">Paket Harga</h2>
-                            <p className="mt-0.5 text-sm text-muted-foreground">Buat paket harga dengan dokumen/fitur yang berbeda untuk setiap paket</p>
-                        </div>
-                        <div className="flex w-full flex-col items-center gap-2 md:flex-row lg:w-auto">
-                            <Button variant="secondary" className="w-full md:flex-1 lg:min-w-30 lg:flex-0">
-                                <Sparkles className="size-4" />
-                                Generate AI
                             </Button>
-                            {packageForm.data.packages.length > 0 && (
-                                <Button type="button" onClick={addPackage} className="w-full md:flex-1 lg:min-w-30 lg:flex-0">
-                                    <Plus className="size-4" />
-                                    Tambah
-                                </Button>
-                            )}
+                            <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
+                                Kembali
+                            </Button>
                         </div>
-                    </div>
-                </div>
+                    </form>
+                </TabsContent>
 
-                <form onSubmit={handleSubmitPackages}>
-                    {packageForm.data.packages.length === 0 ? (
-                        <div className="rounded-xl bg-sidebar p-6 shadow md:p-6 dark:shadow-none">
-                            <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
-                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                                    <Package className="size-5 text-primary" />
+                {/* ───────────────── Content Section ───────────────── */}
+                <TabsContent value="content">
+                    <form onSubmit={handleSubmitContent}>
+                        <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+                            <div className="space-y-4">
+                                <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
+                                    <div>
+                                        <h2 className="text-xl font-semibold">Konten Layanan</h2>
+                                        <p className="mt-0.5 text-sm text-muted-foreground">
+                                            Kelola pengantar dan konten utama layanan untuk kebutuhan informasi dan optimasi SEO.
+                                        </p>
+                                    </div>
+                                    <div className="flex w-full flex-col items-center gap-2 md:w-auto md:flex-row">
+                                        <Button type="button" variant="secondary" className="w-full md:w-30" onClick={() => openAiDrawer('content')}>
+                                            <Sparkles className="size-4" />
+                                            Generate AI
+                                        </Button>
+                                    </div>
                                 </div>
-                                <p className="text-sm">Belum ada paket harga</p>
-                                <Button type="button" onClick={addPackage} className="gap-2">
-                                    <Plus className="size-4" />
-                                    Tambah Paket Pertama
-                                </Button>
+
+                                {/* Introduction */}
+                                <Field>
+                                    <FieldLabel>Pengantar Layanan</FieldLabel>
+                                    <Tiptap content={contentForm.data.introduction} onChange={(html) => contentForm.setData('introduction', html)} />
+                                    {contentForm.errors.introduction && <FieldError>{contentForm.errors.introduction}</FieldError>}
+                                </Field>
+
+                                {/* Content */}
+                                <Field>
+                                    <FieldLabel>Konten Utama</FieldLabel>
+                                    <Tiptap content={contentForm.data.content} onChange={(html) => contentForm.setData('content', html)} />
+                                    {contentForm.errors.content && <FieldError>{contentForm.errors.content}</FieldError>}
+                                </Field>
                             </div>
                         </div>
-                    ) : (
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-                            {packageForm.data.packages.map((pkg, i) => (
-                                <PackageCard
-                                    key={pkg._key}
-                                    pkg={pkg}
-                                    index={i}
-                                    onChange={(updated) => updatePackage(pkg._key, updated)}
-                                    onDelete={() => deletePackage(pkg._key)}
-                                    onMoveUp={() => packageHandlers.moveUp(i)}
-                                    onMoveDown={() => packageHandlers.moveDown(i)}
-                                    totalItems={packageForm.data.packages.length}
-                                    isEdit={true}
-                                    errors={packageForm.errors}
-                                />
-                            ))}
-                        </div>
-                    )}
 
-                    {/* {packageForm.data.packages.length > 0 && (
+                        <div className="mt-4 flex items-center gap-2">
+                            <Button type="submit" disabled={contentForm.processing || !hasUnsavedChanges.content} className="flex-1 md:w-45 md:flex-none">
+                                {contentForm.processing ? (
+                                    <>
+                                        <Spinner className="mr-2" />
+                                        Menyimpan...
+                                    </>
+                                ) : (
+                                    'Simpan'
+                                )}
+                            </Button>
+                            <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
+                                Kembali
+                            </Button>
+                        </div>
+                    </form>
+                </TabsContent>
+
+                {/* ───────────────── Package Section ───────────────── */}
+                <TabsContent value="package" className="space-y-4">
+                    <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+                        <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
+                            <div>
+                                <h2 className="text-xl font-semibold">Paket Harga</h2>
+                                <p className="mt-0.5 text-sm text-muted-foreground">Buat paket harga dengan dokumen/fitur yang berbeda untuk setiap paket</p>
+                            </div>
+                            <div className="flex w-full flex-col items-center gap-2 md:w-auto md:flex-row">
+                                <Button type="button" variant="secondary" className="w-full md:w-30" onClick={() => openAiDrawer('packages')}>
+                                    <Sparkles className="size-4" />
+                                    Generate AI
+                                </Button>
+                                {packageForm.data.packages.length > 0 && (
+                                    <Button type="button" onClick={addPackage} className="w-full md:w-30">
+                                        <Plus className="size-4" />
+                                        Tambah
+                                    </Button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    <form onSubmit={handleSubmitPackages}>
+                        {packageForm.data.packages.length === 0 ? (
+                            <div className="rounded-xl bg-sidebar p-6 shadow md:p-6 dark:shadow-none">
+                                <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                        <Package className="size-5 text-primary" />
+                                    </div>
+                                    <p className="text-sm">Belum ada paket harga</p>
+                                    <Button type="button" onClick={addPackage} className="gap-2">
+                                        <Plus className="size-4" />
+                                        Tambah Paket Pertama
+                                    </Button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                                {packageForm.data.packages.map((pkg, i) => (
+                                    <PackageCard
+                                        key={pkg._key}
+                                        pkg={pkg}
+                                        index={i}
+                                        onChange={(updated) => updatePackage(pkg._key, updated)}
+                                        onDelete={() => deletePackage(pkg._key)}
+                                        onMoveUp={() => packageHandlers.moveUp(i)}
+                                        onMoveDown={() => packageHandlers.moveDown(i)}
+                                        totalItems={packageForm.data.packages.length}
+                                        isEdit={true}
+                                        errors={packageForm.errors}
+                                    />
+                                ))}
+                            </div>
+                        )}
+
+                        {/* {packageForm.data.packages.length > 0 && (
                         <div className="flex w-full justify-end">
                             <Button type="button" onClick={addPackage} className="w-full gap-2 md:w-1/2 lg:w-30">
                                 <Plus className="size-4" />
@@ -938,81 +1019,81 @@ export function EditSection({ service, categories }: EditSectionProps) {
                         </div>
                     )} */}
 
-                    <div className="mt-4 flex items-center gap-2">
-                        <Button type="submit" disabled={packageForm.processing || !hasUnsavedChanges.package} className="flex-1 md:w-45 md:flex-none">
-                            {packageForm.processing ? (
-                                <>
-                                    <Spinner className="mr-2" />
-                                    Menyimpan...
-                                </>
-                            ) : (
-                                'Simpan'
-                            )}
-                        </Button>
-                        <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
-                            Kembali
-                        </Button>
-                    </div>
-                </form>
-            </TabsContent>
-
-            {/* ───────────────── FAQ Section ───────────────── */}
-            <TabsContent value="faq" className="space-y-4">
-                <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                    <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
-                        <div>
-                            <h2 className="text-xl font-semibold">FAQ (Frequently Asked Questions)</h2>
-                            <p className="mt-0.5 text-sm text-muted-foreground">Kelola pertanyaan yang sering diajukan terkait layanan ini.</p>
-                        </div>
-                        <div className="flex w-full flex-col items-center gap-2 md:flex-row lg:w-auto">
-                            <Button variant="secondary" className="w-full md:flex-1 lg:min-w-30 lg:flex-0">
-                                <Sparkles className="size-4" />
-                                Generate AI
+                        <div className="mt-4 flex items-center gap-2">
+                            <Button type="submit" disabled={packageForm.processing || !hasUnsavedChanges.package} className="flex-1 md:w-45 md:flex-none">
+                                {packageForm.processing ? (
+                                    <>
+                                        <Spinner className="mr-2" />
+                                        Menyimpan...
+                                    </>
+                                ) : (
+                                    'Simpan'
+                                )}
                             </Button>
-                            {faqForm.data.faqs.length > 0 && (
-                                <Button type="button" onClick={addFaq} className="w-full md:flex-1 lg:min-w-30 lg:flex-0">
-                                    <Plus className="size-4" />
-                                    Tambah
-                                </Button>
-                            )}
+                            <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
+                                Kembali
+                            </Button>
                         </div>
-                    </div>
-                </div>
+                    </form>
+                </TabsContent>
 
-                <form onSubmit={handleSubmitFaq}>
-                    {faqForm.data.faqs.length === 0 ? (
-                        <div className="rounded-xl bg-sidebar p-6 shadow md:p-6 dark:shadow-none">
-                            <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
-                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                                    <HelpCircle className="size-5 text-primary" />
-                                </div>
-                                <p className="text-sm">Belum ada FAQ</p>
-                                <Button type="button" onClick={addFaq} className="gap-2">
-                                    <Plus className="size-4" />
-                                    Tambah FAQ Pertama
+                {/* ───────────────── FAQ Section ───────────────── */}
+                <TabsContent value="faq" className="space-y-4">
+                    <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+                        <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
+                            <div>
+                                <h2 className="text-xl font-semibold">FAQ (Frequently Asked Questions)</h2>
+                                <p className="mt-0.5 text-sm text-muted-foreground">Kelola pertanyaan yang sering diajukan terkait layanan ini.</p>
+                            </div>
+                            <div className="flex w-full flex-col items-center gap-2 md:w-auto md:flex-row">
+                                <Button type="button" variant="secondary" className="w-full md:w-30" onClick={() => openAiDrawer('faq')}>
+                                    <Sparkles className="size-4" />
+                                    Generate AI
                                 </Button>
+                                {faqForm.data.faqs.length > 0 && (
+                                    <Button type="button" onClick={addFaq} className="w-full md:w-30">
+                                        <Plus className="size-4" />
+                                        Tambah
+                                    </Button>
+                                )}
                             </div>
                         </div>
-                    ) : (
-                        <div className="grid grid-cols-1 gap-4">
-                            {faqForm.data.faqs.map((faq, i) => (
-                                <FaqCard
-                                    key={faq._key}
-                                    faq={faq}
-                                    index={i}
-                                    onChange={(updated) => updateFaq(faq._key, updated)}
-                                    onDelete={() => deleteFaq(faq._key)}
-                                    onMoveUp={() => faqHandlers.moveUp(i)}
-                                    onMoveDown={() => faqHandlers.moveDown(i)}
-                                    totalItems={faqForm.data.faqs.length}
-                                    isEdit={true}
-                                    errors={faqForm.errors}
-                                />
-                            ))}
-                        </div>
-                    )}
+                    </div>
 
-                    {/* {faqForm.data.faqs.length > 0 && (
+                    <form onSubmit={handleSubmitFaq}>
+                        {faqForm.data.faqs.length === 0 ? (
+                            <div className="rounded-xl bg-sidebar p-6 shadow md:p-6 dark:shadow-none">
+                                <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                        <HelpCircle className="size-5 text-primary" />
+                                    </div>
+                                    <p className="text-sm">Belum ada FAQ</p>
+                                    <Button type="button" onClick={addFaq} className="gap-2">
+                                        <Plus className="size-4" />
+                                        Tambah FAQ Pertama
+                                    </Button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 gap-4">
+                                {faqForm.data.faqs.map((faq, i) => (
+                                    <FaqCard
+                                        key={faq._key}
+                                        faq={faq}
+                                        index={i}
+                                        onChange={(updated) => updateFaq(faq._key, updated)}
+                                        onDelete={() => deleteFaq(faq._key)}
+                                        onMoveUp={() => faqHandlers.moveUp(i)}
+                                        onMoveDown={() => faqHandlers.moveDown(i)}
+                                        totalItems={faqForm.data.faqs.length}
+                                        isEdit={true}
+                                        errors={faqForm.errors}
+                                    />
+                                ))}
+                            </div>
+                        )}
+
+                        {/* {faqForm.data.faqs.length > 0 && (
                         <div className="flex w-full justify-end">
                             <Button type="button" onClick={addFaq} className="w-full gap-2 md:w-1/2 lg:w-30">
                                 <Plus className="size-4" />
@@ -1021,81 +1102,81 @@ export function EditSection({ service, categories }: EditSectionProps) {
                         </div>
                     )} */}
 
-                    <div className="mt-4 flex items-center gap-2">
-                        <Button type="submit" disabled={faqForm.processing || !hasUnsavedChanges.faq} className="flex-1 md:w-45 md:flex-none">
-                            {faqForm.processing ? (
-                                <>
-                                    <Spinner className="mr-2" />
-                                    Menyimpan...
-                                </>
-                            ) : (
-                                'Simpan'
-                            )}
-                        </Button>
-                        <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
-                            Kembali
-                        </Button>
-                    </div>
-                </form>
-            </TabsContent>
-
-            {/* ───────────────── Legal Basis Section ───────────────── */}
-            <TabsContent value="legal-basis" className="space-y-4">
-                <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                    <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
-                        <div>
-                            <h2 className="text-xl font-semibold">Dasar Hukum</h2>
-                            <p className="mt-0.5 text-sm text-muted-foreground">Kelola referensi peraturan dan undang-undang yang menjadi dasar layanan.</p>
-                        </div>
-                        <div className="flex w-full flex-col items-center gap-2 md:flex-row lg:w-auto">
-                            <Button variant="secondary" className="w-full md:flex-1 lg:min-w-30 lg:flex-0">
-                                <Sparkles className="size-4" />
-                                Generate AI
+                        <div className="mt-4 flex items-center gap-2">
+                            <Button type="submit" disabled={faqForm.processing || !hasUnsavedChanges.faq} className="flex-1 md:w-45 md:flex-none">
+                                {faqForm.processing ? (
+                                    <>
+                                        <Spinner className="mr-2" />
+                                        Menyimpan...
+                                    </>
+                                ) : (
+                                    'Simpan'
+                                )}
                             </Button>
-                            {legalBasisForm.data.legal_bases.length > 0 && (
-                                <Button type="button" onClick={addLegalBasis} className="w-full md:flex-1 lg:min-w-30 lg:flex-0">
-                                    <Plus className="size-4" />
-                                    Tambah
-                                </Button>
-                            )}
+                            <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
+                                Kembali
+                            </Button>
                         </div>
-                    </div>
-                </div>
+                    </form>
+                </TabsContent>
 
-                <form onSubmit={handleSubmitLegalBasis}>
-                    {legalBasisForm.data.legal_bases.length === 0 ? (
-                        <div className="rounded-xl bg-sidebar p-6 shadow md:p-6 dark:shadow-none">
-                            <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
-                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                                    <Scale className="size-5 text-primary" />
-                                </div>
-                                <p className="text-sm">Belum ada dasar hukum</p>
-                                <Button type="button" onClick={addLegalBasis} className="gap-2">
-                                    <Plus className="size-4" />
-                                    Tambah Dasar Hukum Pertama
+                {/* ───────────────── Legal Basis Section ───────────────── */}
+                <TabsContent value="legal-basis" className="space-y-4">
+                    <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+                        <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
+                            <div>
+                                <h2 className="text-xl font-semibold">Dasar Hukum</h2>
+                                <p className="mt-0.5 text-sm text-muted-foreground">Kelola referensi peraturan dan undang-undang yang menjadi dasar layanan.</p>
+                            </div>
+                            <div className="flex w-full flex-col items-center gap-2 md:w-auto md:flex-row">
+                                <Button type="button" variant="secondary" className="w-full md:w-30" onClick={() => openAiDrawer('legal-bases')}>
+                                    <Sparkles className="size-4" />
+                                    Generate AI
                                 </Button>
+                                {legalBasisForm.data.legal_bases.length > 0 && (
+                                    <Button type="button" onClick={addLegalBasis} className="w-full md:w-30">
+                                        <Plus className="size-4" />
+                                        Tambah
+                                    </Button>
+                                )}
                             </div>
                         </div>
-                    ) : (
-                        <div className="grid grid-cols-1 gap-4">
-                            {legalBasisForm.data.legal_bases.map((legal, i) => (
-                                <LegalBasisCard
-                                    key={legal._key}
-                                    legalBasis={legal}
-                                    index={i}
-                                    onChange={(updated) => updateLegalBasis(legal._key, updated)}
-                                    onDelete={() => deleteLegalBasis(legal._key)}
-                                    onMoveUp={() => legalBasisHandlers.moveUp(i)}
-                                    onMoveDown={() => legalBasisHandlers.moveDown(i)}
-                                    totalItems={legalBasisForm.data.legal_bases.length}
-                                    isEdit={true}
-                                    errors={legalBasisForm.errors}
-                                />
-                            ))}
-                        </div>
-                    )}
+                    </div>
 
-                    {/* {legalBasisForm.data.legal_bases.length > 0 && (
+                    <form onSubmit={handleSubmitLegalBasis}>
+                        {legalBasisForm.data.legal_bases.length === 0 ? (
+                            <div className="rounded-xl bg-sidebar p-6 shadow md:p-6 dark:shadow-none">
+                                <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                        <Scale className="size-5 text-primary" />
+                                    </div>
+                                    <p className="text-sm">Belum ada dasar hukum</p>
+                                    <Button type="button" onClick={addLegalBasis} className="gap-2">
+                                        <Plus className="size-4" />
+                                        Tambah Dasar Hukum Pertama
+                                    </Button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 gap-4">
+                                {legalBasisForm.data.legal_bases.map((legal, i) => (
+                                    <LegalBasisCard
+                                        key={legal._key}
+                                        legalBasis={legal}
+                                        index={i}
+                                        onChange={(updated) => updateLegalBasis(legal._key, updated)}
+                                        onDelete={() => deleteLegalBasis(legal._key)}
+                                        onMoveUp={() => legalBasisHandlers.moveUp(i)}
+                                        onMoveDown={() => legalBasisHandlers.moveDown(i)}
+                                        totalItems={legalBasisForm.data.legal_bases.length}
+                                        isEdit={true}
+                                        errors={legalBasisForm.errors}
+                                    />
+                                ))}
+                            </div>
+                        )}
+
+                        {/* {legalBasisForm.data.legal_bases.length > 0 && (
                         <div className="flex w-full justify-end">
                             <Button type="button" onClick={addLegalBasis} className="w-full gap-2 md:w-1/2 lg:w-30">
                                 <Plus className="size-4" />
@@ -1104,81 +1185,81 @@ export function EditSection({ service, categories }: EditSectionProps) {
                         </div>
                     )} */}
 
-                    <div className="mt-4 flex items-center gap-2">
-                        <Button type="submit" disabled={legalBasisForm.processing || !hasUnsavedChanges['legal-basis']} className="flex-1 md:w-45 md:flex-none">
-                            {legalBasisForm.processing ? (
-                                <>
-                                    <Spinner className="mr-2" />
-                                    Menyimpan...
-                                </>
-                            ) : (
-                                'Simpan'
-                            )}
-                        </Button>
-                        <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
-                            Kembali
-                        </Button>
-                    </div>
-                </form>
-            </TabsContent>
-
-            {/* ───────────────── Requirement Section ───────────────── */}
-            <TabsContent value="requirement" className="space-y-4">
-                <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                    <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
-                        <div>
-                            <h2 className="text-xl font-semibold">Persyaratan</h2>
-                            <p className="mt-0.5 text-sm text-muted-foreground">Kelola kategori dan daftar persyaratan dokumen yang dibutuhkan.</p>
-                        </div>
-                        <div className="flex w-full flex-col items-center gap-2 md:flex-row lg:w-auto">
-                            <Button variant="secondary" className="w-full md:flex-1 lg:min-w-30 lg:flex-0">
-                                <Sparkles className="size-4" />
-                                Generate AI
+                        <div className="mt-4 flex items-center gap-2">
+                            <Button type="submit" disabled={legalBasisForm.processing || !hasUnsavedChanges['legal-basis']} className="flex-1 md:w-45 md:flex-none">
+                                {legalBasisForm.processing ? (
+                                    <>
+                                        <Spinner className="mr-2" />
+                                        Menyimpan...
+                                    </>
+                                ) : (
+                                    'Simpan'
+                                )}
                             </Button>
-                            {requirementCategoriesForm.data.requirement_categories.length > 0 && (
-                                <Button type="button" onClick={addRequirementCategory} className="w-full md:flex-1 lg:min-w-30 lg:flex-0">
-                                    <Plus className="size-4" />
-                                    Tambah
-                                </Button>
-                            )}
+                            <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
+                                Kembali
+                            </Button>
                         </div>
-                    </div>
-                </div>
+                    </form>
+                </TabsContent>
 
-                <form onSubmit={handleSubmitRequirement}>
-                    {requirementCategoriesForm.data.requirement_categories.length === 0 ? (
-                        <div className="rounded-xl bg-sidebar p-6 shadow md:p-6 dark:shadow-none">
-                            <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
-                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                                    <ClipboardList className="size-5 text-primary" />
-                                </div>
-                                <p className="text-sm">Belum ada kategori persyaratan</p>
-                                <Button type="button" onClick={addRequirementCategory} className="gap-2">
-                                    <Plus className="size-4" />
-                                    Tambah Kategori Pertama
+                {/* ───────────────── Requirement Section ───────────────── */}
+                <TabsContent value="requirement" className="space-y-4">
+                    <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+                        <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
+                            <div>
+                                <h2 className="text-xl font-semibold">Persyaratan</h2>
+                                <p className="mt-0.5 text-sm text-muted-foreground">Kelola kategori dan daftar persyaratan dokumen yang dibutuhkan.</p>
+                            </div>
+                            <div className="flex w-full flex-col items-center gap-2 md:w-auto md:flex-row">
+                                <Button type="button" variant="secondary" className="w-full md:w-30" onClick={() => openAiDrawer('requirements')}>
+                                    <Sparkles className="size-4" />
+                                    Generate AI
                                 </Button>
+                                {requirementCategoriesForm.data.requirement_categories.length > 0 && (
+                                    <Button type="button" onClick={addRequirementCategory} className="w-full md:w-30">
+                                        <Plus className="size-4" />
+                                        Tambah
+                                    </Button>
+                                )}
                             </div>
                         </div>
-                    ) : (
-                        <div className="grid grid-cols-1 gap-4">
-                            {requirementCategoriesForm.data.requirement_categories.map((cat, i) => (
-                                <RequirementCard
-                                    key={cat._key}
-                                    category={cat}
-                                    index={i}
-                                    onChange={(updated) => updateRequirementCategory(cat._key, updated)}
-                                    onDelete={() => deleteRequirementCategory(cat._key)}
-                                    onMoveUp={() => requirementCategoryHandlers.moveUp(i)}
-                                    onMoveDown={() => requirementCategoryHandlers.moveDown(i)}
-                                    totalItems={requirementCategoriesForm.data.requirement_categories.length}
-                                    isEdit={true}
-                                    errors={requirementCategoriesForm.errors}
-                                />
-                            ))}
-                        </div>
-                    )}
+                    </div>
 
-                    {/* {requirementCategoriesForm.data.requirement_categories.length > 0 && (
+                    <form onSubmit={handleSubmitRequirement}>
+                        {requirementCategoriesForm.data.requirement_categories.length === 0 ? (
+                            <div className="rounded-xl bg-sidebar p-6 shadow md:p-6 dark:shadow-none">
+                                <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                        <ClipboardList className="size-5 text-primary" />
+                                    </div>
+                                    <p className="text-sm">Belum ada kategori persyaratan</p>
+                                    <Button type="button" onClick={addRequirementCategory} className="gap-2">
+                                        <Plus className="size-4" />
+                                        Tambah Kategori Pertama
+                                    </Button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 gap-4">
+                                {requirementCategoriesForm.data.requirement_categories.map((cat, i) => (
+                                    <RequirementCard
+                                        key={cat._key}
+                                        category={cat}
+                                        index={i}
+                                        onChange={(updated) => updateRequirementCategory(cat._key, updated)}
+                                        onDelete={() => deleteRequirementCategory(cat._key)}
+                                        onMoveUp={() => requirementCategoryHandlers.moveUp(i)}
+                                        onMoveDown={() => requirementCategoryHandlers.moveDown(i)}
+                                        totalItems={requirementCategoriesForm.data.requirement_categories.length}
+                                        isEdit={true}
+                                        errors={requirementCategoriesForm.errors}
+                                    />
+                                ))}
+                            </div>
+                        )}
+
+                        {/* {requirementCategoriesForm.data.requirement_categories.length > 0 && (
                         <div className="flex w-full justify-end">
                             <Button type="button" onClick={addRequirementCategory} className="w-full gap-2 md:w-1/2 lg:w-30">
                                 <Plus className="size-4" />
@@ -1187,81 +1268,81 @@ export function EditSection({ service, categories }: EditSectionProps) {
                         </div>
                     )} */}
 
-                    <div className="mt-4 flex items-center gap-2">
-                        <Button type="submit" disabled={requirementCategoriesForm.processing || !hasUnsavedChanges.requirement} className="flex-1 md:w-45 md:flex-none">
-                            {requirementCategoriesForm.processing ? (
-                                <>
-                                    <Spinner className="mr-2" />
-                                    Menyimpan...
-                                </>
-                            ) : (
-                                'Simpan'
-                            )}
-                        </Button>
-                        <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
-                            Kembali
-                        </Button>
-                    </div>
-                </form>
-            </TabsContent>
-
-            {/* ───────────────── Timeline Section ───────────────── */}
-            <TabsContent value="timeline" className="space-y-4">
-                <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                    <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
-                        <div>
-                            <h2 className="text-xl font-semibold">Tahapan Proses</h2>
-                            <p className="mt-0.5 text-sm text-muted-foreground">Kelola langkah-langkah proses pengerjaan layanan secara berurutan.</p>
-                        </div>
-                        <div className="flex w-full flex-col items-center gap-2 md:flex-row lg:w-auto">
-                            <Button variant="secondary" className="w-full md:flex-1 lg:min-w-30 lg:flex-0">
-                                <Sparkles className="size-4" />
-                                Generate AI
+                        <div className="mt-4 flex items-center gap-2">
+                            <Button type="submit" disabled={requirementCategoriesForm.processing || !hasUnsavedChanges.requirement} className="flex-1 md:w-45 md:flex-none">
+                                {requirementCategoriesForm.processing ? (
+                                    <>
+                                        <Spinner className="mr-2" />
+                                        Menyimpan...
+                                    </>
+                                ) : (
+                                    'Simpan'
+                                )}
                             </Button>
-                            {processStepsForm.data.process_steps.length > 0 && (
-                                <Button type="button" onClick={addProcessStep} className="w-full md:flex-1 lg:min-w-30 lg:flex-0">
-                                    <Plus className="size-4" />
-                                    Tambah
-                                </Button>
-                            )}
+                            <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
+                                Kembali
+                            </Button>
                         </div>
-                    </div>
-                </div>
+                    </form>
+                </TabsContent>
 
-                <form onSubmit={handleSubmitProcessStep}>
-                    {processStepsForm.data.process_steps.length === 0 ? (
-                        <div className="rounded-xl bg-sidebar p-6 shadow md:p-6 dark:shadow-none">
-                            <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
-                                <p className="text-sm">Belum ada tahapan proses</p>
-                                <Button type="button" onClick={addProcessStep} className="gap-2">
-                                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                                        <ClipboardList className="size-5 text-primary" />
-                                    </div>
-                                    <Plus className="size-4" />
-                                    Tambah Tahap Pertama
+                {/* ───────────────── Timeline Section ───────────────── */}
+                <TabsContent value="timeline" className="space-y-4">
+                    <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+                        <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
+                            <div>
+                                <h2 className="text-xl font-semibold">Tahapan Proses</h2>
+                                <p className="mt-0.5 text-sm text-muted-foreground">Kelola langkah-langkah proses pengerjaan layanan secara berurutan.</p>
+                            </div>
+                            <div className="flex w-full flex-col items-center gap-2 md:w-auto md:flex-row">
+                                <Button type="button" variant="secondary" className="w-full md:w-30" onClick={() => openAiDrawer('process-steps')}>
+                                    <Sparkles className="size-4" />
+                                    Generate AI
                                 </Button>
+                                {processStepsForm.data.process_steps.length > 0 && (
+                                    <Button type="button" onClick={addProcessStep} className="w-full md:w-30">
+                                        <Plus className="size-4" />
+                                        Tambah
+                                    </Button>
+                                )}
                             </div>
                         </div>
-                    ) : (
-                        <div className="grid grid-cols-1 gap-4">
-                            {processStepsForm.data.process_steps.map((step, i) => (
-                                <ProcessStepCard
-                                    key={step._key}
-                                    step={step}
-                                    index={i}
-                                    onChange={(updated) => updateProcessStep(step._key, updated)}
-                                    onDelete={() => deleteProcessStep(step._key)}
-                                    onMoveUp={() => processStepHandlers.moveUp(i)}
-                                    onMoveDown={() => processStepHandlers.moveDown(i)}
-                                    totalItems={processStepsForm.data.process_steps.length}
-                                    isEdit={true}
-                                    errors={processStepsForm.errors}
-                                />
-                            ))}
-                        </div>
-                    )}
+                    </div>
 
-                    {/* {processStepsForm.data.process_steps.length > 0 && (
+                    <form onSubmit={handleSubmitProcessStep}>
+                        {processStepsForm.data.process_steps.length === 0 ? (
+                            <div className="rounded-xl bg-sidebar p-6 shadow md:p-6 dark:shadow-none">
+                                <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
+                                    <p className="text-sm">Belum ada tahapan proses</p>
+                                    <Button type="button" onClick={addProcessStep} className="gap-2">
+                                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                            <ClipboardList className="size-5 text-primary" />
+                                        </div>
+                                        <Plus className="size-4" />
+                                        Tambah Tahap Pertama
+                                    </Button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 gap-4">
+                                {processStepsForm.data.process_steps.map((step, i) => (
+                                    <ProcessStepCard
+                                        key={step._key}
+                                        step={step}
+                                        index={i}
+                                        onChange={(updated) => updateProcessStep(step._key, updated)}
+                                        onDelete={() => deleteProcessStep(step._key)}
+                                        onMoveUp={() => processStepHandlers.moveUp(i)}
+                                        onMoveDown={() => processStepHandlers.moveDown(i)}
+                                        totalItems={processStepsForm.data.process_steps.length}
+                                        isEdit={true}
+                                        errors={processStepsForm.errors}
+                                    />
+                                ))}
+                            </div>
+                        )}
+
+                        {/* {processStepsForm.data.process_steps.length > 0 && (
                         <div className="flex w-full justify-end">
                             <Button type="button" onClick={addProcessStep} className="w-full gap-2 md:w-1/2 lg:w-30">
                                 <Plus className="size-4" />
@@ -1270,23 +1351,78 @@ export function EditSection({ service, categories }: EditSectionProps) {
                         </div>
                     )} */}
 
-                    <div className="mt-4 flex items-center gap-2">
-                        <Button type="submit" disabled={processStepsForm.processing || !hasUnsavedChanges.timeline} className="flex-1 md:w-45 md:flex-none">
-                            {processStepsForm.processing ? (
-                                <>
-                                    <Spinner className="mr-2" />
-                                    Menyimpan...
-                                </>
-                            ) : (
-                                'Simpan'
-                            )}
-                        </Button>
-                        <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
-                            Kembali
-                        </Button>
-                    </div>
-                </form>
-            </TabsContent>
-        </Tabs>
+                        <div className="mt-4 flex items-center gap-2">
+                            <Button type="submit" disabled={processStepsForm.processing || !hasUnsavedChanges.timeline} className="flex-1 md:w-45 md:flex-none">
+                                {processStepsForm.processing ? (
+                                    <>
+                                        <Spinner className="mr-2" />
+                                        Menyimpan...
+                                    </>
+                                ) : (
+                                    'Simpan'
+                                )}
+                            </Button>
+                            <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
+                                Kembali
+                            </Button>
+                        </div>
+                    </form>
+                </TabsContent>
+
+                {/* ───────────────── SEO Section ───────────────── */}
+                <TabsContent value="seo">
+                    <form onSubmit={handleSubmitSeo}>
+                        <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+                            <div className="space-y-4">
+                                <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
+                                    <div>
+                                        <h2 className="text-xl font-semibold">Pengaturan SEO</h2>
+                                        <p className="mt-0.5 text-sm text-muted-foreground">Kelola meta tags, open graph, dan sitemap untuk halaman layanan ini.</p>
+                                    </div>
+
+                                    <div className="flex w-full flex-col items-center gap-2 md:w-auto md:flex-row">
+                                        <Button type="button" variant="secondary" className="w-full md:w-30" onClick={() => openAiDrawer('seo')}>
+                                            <Sparkles className="size-4" />
+                                            Generate AI
+                                        </Button>
+                                    </div>
+                                </div>
+
+                                <SeoCard
+                                    seo={seoForm.data}
+                                    onChange={(updated) => seoForm.setData(updated)}
+                                    errors={seoForm.errors}
+                                    schemaMarkup={service.seo?.schema_markup ?? null}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="mt-4 flex items-center gap-2">
+                            <Button type="submit" disabled={seoForm.processing || !hasUnsavedChanges.seo} className="flex-1 md:w-45 md:flex-none">
+                                {seoForm.processing ? (
+                                    <>
+                                        <Spinner className="mr-2" />
+                                        Menyimpan...
+                                    </>
+                                ) : (
+                                    'Simpan'
+                                )}
+                            </Button>
+                            <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={() => router.visit(services.index().url)}>
+                                Kembali
+                            </Button>
+                        </div>
+                    </form>
+                </TabsContent>
+            </Tabs>
+
+            <AiGenerateDrawer
+                open={aiDrawer.open}
+                onOpenChange={(open) => setAiDrawer((prev) => ({ ...prev, open }))}
+                type={aiDrawer.type}
+                serviceId={service.id}
+                onApply={handleAiApply}
+            />
+        </>
     );
 }

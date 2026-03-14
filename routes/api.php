@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\PublicServiceController;
 use App\Http\Controllers\Api\QuoteController;
 use Illuminate\Support\Facades\Route;
 
@@ -11,7 +12,6 @@ use Illuminate\Support\Facades\Route;
 | Entry point for all API routes.
 |--------------------------------------------------------------------------
 */
-
 
 /*
 |--------------------------------------------------------------------------
@@ -74,12 +74,33 @@ Route::prefix('auth')->name('auth.')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('quotes')->name('quotes.')->group(function () {
-    Route::post('/', [QuoteController::class, 'store'])->name('store');
-});
-
 // Route::middleware(['auth:sanctum'])->group(function () {
 //     Route::prefix('quotes')->name('quotes.')->group(function () {
 //         Route::post('/', [QuoteController::class, 'store'])->name('store');
 //     });
 // });
+
+Route::prefix('quotes')->name('quotes.')->group(function () {
+    Route::post('/', [QuoteController::class, 'store'])->name('store');
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| PUBLIC SERVICE API ROUTES
+|--------------------------------------------------------------------------
+| GET /layanan                          → List all services
+| GET /layanan/kategori/{categorySlug}  → List services by category
+| GET /layanan/kota/{citySlug}          → List services by city
+| GET /layanan/{serviceSlug}/{citySlug} → Service details for a specific city
+| GET /layanan/{serviceSlug}            → Service details 
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('layanan')->group(function () {
+    Route::get('/',                              [PublicServiceController::class, 'index']);
+    Route::get('/kategori/{categorySlug}',       [PublicServiceController::class, 'byCategory']);
+    Route::get('/kota/{citySlug}',               [PublicServiceController::class, 'byCity']);
+    Route::get('/{serviceSlug}/{citySlug}',      [PublicServiceController::class, 'showCityPage']);
+    Route::get('/{serviceSlug}',                 [PublicServiceController::class, 'show']);
+});

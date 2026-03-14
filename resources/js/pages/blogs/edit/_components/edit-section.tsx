@@ -873,7 +873,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
 
                             {/* Content */}
                             <Field>
-                                <FieldLabel>Konten Pilar</FieldLabel>
+                                <FieldLabel>Konten Utama</FieldLabel>
                                 <Tiptap content={contentForm.data.content} onChange={(html) => contentForm.setData('content', html)} />
                                 {contentForm.errors.content && <FieldError>{contentForm.errors.content}</FieldError>}
                             </Field>

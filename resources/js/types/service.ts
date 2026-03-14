@@ -22,6 +22,7 @@ export type ContentStatus = 'draft' | 'ai_generated' | 'reviewed' | 'published';
 export interface ServiceCategory {
     id: number;
     name: string;
+    slug: string;
     sort_order: number;
     status: ServiceStatus;
     created_at: string;
@@ -65,6 +66,7 @@ export interface Service {
     requirement_categories_count?: number;
     process_steps?: ServiceProcessStep[];
     process_steps_count?: number;
+    seo?: ServiceSeo;
 }
 
 // ============================================================
@@ -300,8 +302,8 @@ export interface ServiceCityPage {
 }
 
 export interface CityPageFaq {
-    q: string;
-    a: string;
+    question: string;
+    answer: string;
 }
 
 // ============================================================
@@ -332,10 +334,6 @@ export interface ServicePackageWithFeatures extends ServicePackage {
 
 export interface ServiceRequirementCategoryWithRequirements extends ServiceRequirementCategory {
     requirements: ServiceRequirement[];
-}
-
-export interface ServiceWithSeo extends Service {
-    seo: ServiceSeo | null;
 }
 
 export interface ServiceCityPageWithRelations extends ServiceCityPage {
@@ -588,3 +586,23 @@ export const CONTENT_STATUSES = [
 ] as const;
 
 export const CONTENT_STATUSES_MAP = Object.fromEntries(CONTENT_STATUSES.map((item) => [item.value, item]));
+
+export const TWITTER_CARD_OPTIONS = [
+    { value: 'summary', label: 'Summary', classes: 'bg-gray-500 text-white' },
+    { value: 'summary_large_image', label: 'Summary Large Image', classes: 'bg-blue-500 text-white' },
+    { value: 'app', label: 'App', classes: 'bg-purple-500 text-white' },
+    { value: 'player', label: 'Player', classes: 'bg-indigo-500 text-white' },
+] as const;
+
+export const TWITTER_CARD_OPTIONS_MAP = Object.fromEntries(TWITTER_CARD_OPTIONS.map((item) => [item.value, item]));
+
+export const SCHEMA_LABELS: Record<string, { title: string; description: string }> = {
+    service: { title: 'Service', description: 'Auto dari data layanan' },
+    breadcrumb: { title: 'BreadcrumbList', description: 'Auto dari URL & nama layanan' },
+    faq: { title: 'FAQPage', description: 'Auto dari FAQ layanan' },
+    howto: { title: 'HowTo', description: 'Auto dari Tahapan Proses' },
+    organization: { title: 'Organization', description: 'Auto dari Site Settings' },
+    webpage: { title: 'WebPage', description: 'Auto dari data halaman kota' },
+};
+
+export const SCHEMA_LABELS_MAP = Object.fromEntries(Object.entries(SCHEMA_LABELS).map(([key, value]) => [key, value.title]));

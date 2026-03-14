@@ -170,7 +170,10 @@ class StaffController extends Controller
             ->with(['customer:id,name', 'service:id,name'])
             ->withCount(['tasks', 'members'])
             ->latest()
-            ->paginate(12);
+            ->paginate(12)
+            ->through(fn($project) => $project->append([
+                'progress_percentage',
+            ]));
 
         return Inertia::render('staff/my-projects/index', [
             'staff'      => $staff->only('id', 'name'),

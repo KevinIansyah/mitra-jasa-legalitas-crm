@@ -60,7 +60,7 @@ export default function TwoFactor({ requiresConfirmation = false, twoFactorEnabl
                     ) : (
                         <div className="flex flex-col items-start justify-start space-y-4">
                             <Badge variant="destructive">Nonaktif</Badge>
-                            <p className="text-muted-foreground">
+                            <p className="text-sm text-muted-foreground">
                                 Ketika Anda mengaktifkan autentikasi dua faktor, Anda akan diminta untuk memasukkan pin yang aman saat login. Pin ini dapat Anda dapatkan dari
                                 aplikasi TOTP yang didukung application on your phone.
                             </p>

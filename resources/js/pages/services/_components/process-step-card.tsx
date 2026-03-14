@@ -142,9 +142,16 @@ export function ProcessStepCard({ step, index, totalItems, onChange, onDelete, o
                 {step.required_documents && step.required_documents.length > 0 && (
                     <div className="mb-2 space-y-2">
                         {step.required_documents.map((doc, docIndex) => (
-                            <div key={docIndex} className="flex items-center gap-4 rounded-lg bg-primary/10 px-3 py-2 dark:bg-muted/40">
-                                <FileText className="size-4 shrink-0 text-muted-foreground" />
-                                <span className="flex-1 text-sm">{doc}</span>
+                            <div key={docIndex} className="flex items-center justify-between gap-4 rounded-lg bg-primary/10 p-3 dark:bg-muted/40">
+                                <div className="flex items-center gap-3">
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10">
+                                        <FileText className="size-4 text-primary" />
+                                    </div>
+                                    <div>
+                                        <span className="flex-1 text-sm">{doc}</span>
+                                    </div>
+                                </div>
+
                                 <Tooltip>
                                     <TooltipTrigger asChild>
                                         <Button variant="destructive" className="h-8 w-8" onClick={() => deleteDocument(docIndex)}>

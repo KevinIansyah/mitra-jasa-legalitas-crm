@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Controllers\MasterData;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Cities\StoreRequest;
 use App\Http\Requests\Cities\UpdateRequest;
 use App\Models\City;
@@ -35,9 +34,18 @@ class CityController extends Controller
             ->filter()
             ->values();
 
+        $summary = [
+            'total'            => City::count(),
+            'active'           => City::where('status', 'active')->count(),
+            'inactive'         => City::where('status', 'inactive')->count(),
+            'with_city_pages'  => City::has('serviceCityPages')->count(),
+            'total_provinces'  => City::distinct('province')->whereNotNull('province')->count('province'),
+        ];
+
         return Inertia::render('master-data/cities/index', [
             'cities'    => $cities,
             'provinces' => $provinces,
+            'summary'   => $summary,
             'filters'   => [
                 'search'   => $search,
                 'per_page' => $perPage,
@@ -73,24 +81,11 @@ class CityController extends Controller
 
     public function update(UpdateRequest $request, City $city)
     {
-        $validated = $request->validated();
-
-        if (isset($validated['slug']) && $validated['slug'] !== $city->slug) {
-            $slug     = Str::slug($validated['slug']);
-            $original = $slug;
-            $counter  = 1;
-            while (City::where('slug', $slug)->where('id', '!=', $city->id)->exists()) {
-                $slug = "{$original}-{$counter}";
-                $counter++;
-            }
-            $validated['slug'] = $slug;
-        }
-
-        $city->update($validated);
+        $city->update($request->validated());
 
         return back()->with('success', 'Kota berhasil diperbarui.');
     }
-
+    
     public function destroy(City $city)
     {
         if ($city->serviceCityPages()->exists()) {

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class ServiceCategory extends Model
 {
@@ -12,6 +13,7 @@ class ServiceCategory extends Model
 
     protected $fillable = [
         'name',
+        'slug',
         'sort_order',
         'status',
     ];
@@ -19,6 +21,15 @@ class ServiceCategory extends Model
     protected $casts = [
         'sort_order' => 'integer',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (ServiceCategory $category) {
+            if (empty($category->slug)) {
+                $category->slug = Str::slug($category->name);
+            }
+        });
+    }
 
     /*
     |--------------------------------------------------------------------------

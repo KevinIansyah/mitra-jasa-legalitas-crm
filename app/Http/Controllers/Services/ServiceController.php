@@ -22,6 +22,8 @@ use App\Models\ServicePackageFeature;
 use App\Models\ServiceProcessStep;
 use App\Models\ServiceRequirement;
 use App\Models\ServiceRequirementCategory;
+use App\Models\ServiceSeo;
+use App\Services\SchemaBuilderService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -235,6 +237,49 @@ class ServiceController extends Controller
                     'status'             => 'active',
                 ]);
             }
+
+            // Create SEO
+            if (!empty($validated['seo'])) {
+                $seo = $validated['seo'];
+
+                $ogImagePath = null;
+                if ($request->hasFile('seo.og_image')) {
+                    $file = FileHelper::uploadToR2Public($request->file('seo.og_image'), 'services/seo');
+                    $ogImagePath = $file['path'];
+                }
+
+                $twitterImagePath = null;
+                if ($request->hasFile('seo.twitter_image')) {
+                    $file = FileHelper::uploadToR2Public($request->file('seo.twitter_image'), 'services/seo');
+                    $twitterImagePath = $file['path'];
+                }
+
+                ServiceSeo::create([
+                    'service_id'          => $service->id,
+                    'meta_title'          => $seo['meta_title'] ?? null,
+                    'meta_description'    => $seo['meta_description'] ?? null,
+                    'canonical_url'       => $seo['canonical_url'] ?? null,
+                    'focus_keyword'       => $seo['focus_keyword'] ?? null,
+                    'secondary_keywords'  => $seo['secondary_keywords'] ?? [],
+                    'og_title'            => $seo['og_title'] ?? null,
+                    'og_description'      => $seo['og_description'] ?? null,
+                    'og_image'            => $ogImagePath,
+                    'twitter_card'        => $seo['twitter_card'] ?? 'summary_large_image',
+                    'twitter_title'       => $seo['twitter_title'] ?? null,
+                    'twitter_description' => $seo['twitter_description'] ?? null,
+                    'twitter_image'       => $twitterImagePath,
+                    'robots'              => $seo['robots'] ?? 'index,follow',
+                    'in_sitemap'          => $seo['in_sitemap'] ?? true,
+                    'sitemap_priority'    => $seo['sitemap_priority'] ?? '0.7',
+                    'sitemap_changefreq'  => $seo['sitemap_changefreq'] ?? 'monthly',
+                ]);
+            }
+
+            $service->load(['faqs', 'processSteps', 'packages', 'category']);
+            $seo = $service->getSeoOrCreate();
+            $seo->update([
+                'schema_markup' => SchemaBuilderService::build($service->setRelation('seo', $seo)),
+            ]);
         });
 
         return to_route('services.index')->with('success', 'Layanan berhasil ditambahkan.');
@@ -257,6 +302,7 @@ class ServiceController extends Controller
                 ]);
             },
             'processSteps' => fn($query) => $query->orderBy('sort_order'),
+            'seo',
         ]);
 
         $categories = ServiceCategory::where('status', 'active')
@@ -290,19 +336,6 @@ class ServiceController extends Controller
         $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $request, $service) {
-            $slug = $validated['slug']
-                ? Str::slug($validated['slug'])
-                : Str::slug($validated['name']);
-
-            if ($slug !== $service->slug) {
-                $originalSlug = $slug;
-                $counter = 1;
-                while (Service::where('slug', $slug)->where('id', '!=', $service->id)->exists()) {
-                    $slug = "{$originalSlug}-{$counter}";
-                    $counter++;
-                }
-            }
-
             $featuredImagePath = $service->featured_image;
 
             if ($request->boolean('remove_image') && $service->featured_image) {
@@ -334,11 +367,9 @@ class ServiceController extends Controller
                 $status = 'inactive';
             }
 
-            // Update service
             $service->update([
                 'service_category_id' => $validated['service_category_id'],
                 'name'                => $validated['name'],
-                'slug'                => $slug,
                 'short_description'   => $validated['short_description'] ?? null,
                 'featured_image'      => $featuredImagePath,
                 'is_published'        => $isPublished,
@@ -718,10 +749,34 @@ class ServiceController extends Controller
     {
         $validated = $request->validated();
 
-        $service->seo()->updateOrCreate(
-            ['service_id' => $service->id],
-            $validated
-        );
+        $seo = $service->getSeoOrCreate();
+
+        if ($request->boolean('remove_og_image') && $seo->og_image) {
+            FileHelper::deleteFromR2($seo->og_image, isPublic: true);
+            $validated['og_image'] = null;
+        }
+
+        if ($request->hasFile('og_image')) {
+            if ($seo->og_image) FileHelper::deleteFromR2($seo->og_image, isPublic: true);
+            $validated['og_image'] = FileHelper::uploadToR2Public($request->file('og_image'), 'services/seo')['path'];
+        }
+
+        if ($request->boolean('remove_twitter_image') && $seo->twitter_image) {
+            FileHelper::deleteFromR2($seo->twitter_image, isPublic: true);
+            $validated['twitter_image'] = null;
+        }
+
+        if ($request->hasFile('twitter_image')) {
+            if ($seo->twitter_image) FileHelper::deleteFromR2($seo->twitter_image, isPublic: true);
+            $validated['twitter_image'] = FileHelper::uploadToR2Public($request->file('twitter_image'), 'services/seo')['path'];
+        }
+
+        $seo->update($validated);
+
+        $service->load(['seo', 'faqs', 'processSteps', 'packages', 'category']);
+        $seo->update([
+            'schema_markup' => SchemaBuilderService::build($service),
+        ]);
 
         return back()->with('success', 'SEO layanan berhasil diperbarui.');
     }

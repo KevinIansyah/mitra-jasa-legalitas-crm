@@ -147,6 +147,7 @@ export default function PermissionSection({ role, allPermissions }: PermissionSe
                     break;
                 }
 
+                // Finance Management
                 case resource.startsWith('finance'): {
                     groupName = 'Manajemen Keuangan';
 
@@ -233,6 +234,17 @@ export default function PermissionSection({ role, allPermissions }: PermissionSe
 
                     if (resource === 'site-settings') {
                         itemName = 'Pengaturan Website';
+                    }
+
+                    break;
+                }
+
+                // AI Generate
+                case resource.startsWith('ai-generate'): {
+                    groupName = 'Manajemen AI Generate';
+
+                    if (resource === 'ai-generate') {
+                        itemName = 'Semua AI Generate';
                     }
 
                     break;
