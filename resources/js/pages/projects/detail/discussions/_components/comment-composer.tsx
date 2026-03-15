@@ -33,7 +33,7 @@ export function CommentComposer({
     onCancel,
     autoFocus = false,
 }: CommentComposerProps) {
-    const R2_PUBLIC_URL = import.meta.env.VITE_R2_PUBLIC_URL;
+    const R2_PUBLIC_URL = import.meta.env.VITE_CLOUDFLARE_R2_PUBLIC_URL;
     const [value, setValue] = React.useState(initialValue);
     const [mentionQuery, setMentionQuery] = React.useState<string | null>(null);
     const [mentionStart, setMentionStart] = React.useState<number>(0);
@@ -134,12 +134,12 @@ export function CommentComposer({
             {/* Mention dropdown */}
             {showMentionDropdown && (
                 <div className="absolute bottom-full left-0 z-50 mb-1 w-56 overflow-hidden rounded-lg border border-border bg-popover shadow-lg">
-                    {mentionResults.map((user, idx) => (
+                    {mentionResults.map((user, index) => (
                         <button
                             key={user.id}
                             type="button"
                             className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:bg-muted ${
-                                idx === selectedMentionIdx ? 'bg-muted' : ''
+                                index === selectedMentionIdx ? 'bg-muted' : ''
                             }`}
                             onMouseDown={(e) => {
                                 e.preventDefault();

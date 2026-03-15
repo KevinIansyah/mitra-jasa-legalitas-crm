@@ -15,8 +15,8 @@ import { Spinner } from '@/components/ui/spinner';
 import projects from '@/routes/projects';
 import search from '@/routes/search';
 import type { User } from '@/types';
-import type { MemberRole, ProjectMemberFormData } from '@/types/project';
-import { MEMBER_ROLES } from '@/types/project';
+import type { MemberRole, ProjectMemberFormData } from '@/types/projects';
+import { MEMBER_ROLES } from '@/types/projects';
 
 type TeamAddDrawerProps = {
     projectId: number;
@@ -165,7 +165,7 @@ export function TeamAddDrawer({ projectId, open, onOpenChange }: TeamAddDrawerPr
                                                         key={user.id}
                                                         type="button"
                                                         onClick={() => handleSelectUser(user)}
-                                                        className="flex w-full items-center gap-2 rounded-md p-2 text-left bg-primary/10 dark:bg-muted/40 hover:bg-primary/20 dark:hover:bg-muted/50"
+                                                        className="flex w-full items-center gap-2 rounded-md bg-primary/10 p-2 text-left hover:bg-primary/20 dark:bg-muted/40 dark:hover:bg-muted/50"
                                                     >
                                                         <div className="flex-1">
                                                             <p className="text-sm font-medium">{user.name}</p>

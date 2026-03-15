@@ -10,13 +10,13 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
-import categories from '@/routes/services/categories';
-import type { ServiceCategory } from '@/types/service';
+import categories from '@/routes/blogs/categories';
+import type { BlogCategory } from '@/types/blogs';
 import getColumns from './columns';
 import { DrawerAdd } from './drawer-add';
 
 interface DataTableProps {
-    data: ServiceCategory[];
+    data: BlogCategory[];
     pageIndex: number;
     setPageIndex: React.Dispatch<React.SetStateAction<number>>;
     totalPages: number;
@@ -61,7 +61,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
         <>
             <div className="flex flex-col items-center justify-between gap-2 pb-4 md:flex-row">
                 <InputGroup className="max-w-sm">
-                    <InputGroupInput placeholder="Cari nama kategori layanan..." value={searchValue} onChange={handleSearchChange} />
+                    <InputGroupInput placeholder="Cari nama kategori blog..." value={searchValue} onChange={handleSearchChange} />
                     <InputGroupAddon>
                         <Search />
                     </InputGroupAddon>
@@ -86,7 +86,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                         </DropdownMenuContent>
                     </DropdownMenu>
 
-                    <HasPermission permission="create-service-categories">
+                    <HasPermission permission="create-blog-categories">
                         <DrawerAdd />
                     </HasPermission>
                 </div>
@@ -98,7 +98,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                             <TableRow key={headerGroup.id} className="border-none">
                                 {headerGroup.headers.map((header) => {
                                     return (
-                                        <TableHead key={header.id} className="font-medium text-background">
+                                        <TableHead key={header.id}>
                                             {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                         </TableHead>
                                     );
@@ -154,19 +154,19 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                     </div>
 
                     <div className="ml-auto flex items-center gap-2 lg:ml-0">
-                        <Button variant="outline" className="hidden h-8 w-8 p-0 lg:flex" onClick={() => goToPage(0)} disabled={!canPreviousPage}>
+                        <Button variant="secondary" className="hidden h-8 w-8 p-0 lg:flex" onClick={() => goToPage(0)} disabled={!canPreviousPage}>
                             <span className="sr-only">Go to first page</span>
                             <ChevronsLeftIcon />
                         </Button>
-                        <Button variant="outline" className="size-8" size="sm" onClick={() => goToPage(pageIndex - 1)} disabled={!canPreviousPage}>
+                        <Button variant="secondary" className="size-8" size="sm" onClick={() => goToPage(pageIndex - 1)} disabled={!canPreviousPage}>
                             <span className="sr-only">Go to previous page</span>
                             <ChevronLeftIcon />
                         </Button>
-                        <Button variant="outline" className="size-8" size="sm" onClick={() => goToPage(pageIndex + 1)} disabled={!canNextPage}>
+                        <Button variant="secondary" className="size-8" size="sm" onClick={() => goToPage(pageIndex + 1)} disabled={!canNextPage}>
                             <span className="sr-only">Go to next page</span>
                             <ChevronRightIcon />
                         </Button>
-                        <Button variant="outline" className="hidden size-8 lg:flex" size="sm" onClick={() => goToPage(totalPages - 1)} disabled={!canNextPage}>
+                        <Button variant="secondary" className="hidden size-8 lg:flex" size="sm" onClick={() => goToPage(totalPages - 1)} disabled={!canNextPage}>
                             <span className="sr-only">Go to last page</span>
                             <ChevronsRightIcon />
                         </Button>

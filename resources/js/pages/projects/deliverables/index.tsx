@@ -4,7 +4,7 @@ import AppLayout from '@/layouts/app-layout';
 import projects from '@/routes/projects';
 import type { BreadcrumbItem } from '@/types';
 import type { Paginator } from '@/types/paginator';
-import type { ProjectDeliverable, ProjectDeliverableSummary } from '@/types/project';
+import type { ProjectDeliverable, ProjectDeliverableSummary } from '@/types/projects';
 import { DeliverableSection } from './_components/deliverable-section';
 
 const breadcrumbs: BreadcrumbItem[] = [

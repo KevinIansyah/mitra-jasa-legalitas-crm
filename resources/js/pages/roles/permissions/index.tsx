@@ -3,7 +3,7 @@ import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
 import roles from '@/routes/roles';
 import type { BreadcrumbItem } from '@/types';
-import type { Permission, Role } from '@/types/role';
+import type { Permission, Role } from '@/types/roles';
 import PermissionSection from './_components/permission-section';
 
 const breadcrumbs: BreadcrumbItem[] = [

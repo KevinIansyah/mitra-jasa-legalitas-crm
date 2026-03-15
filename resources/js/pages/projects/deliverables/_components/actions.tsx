@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import projects from '@/routes/projects';
-import type { ProjectDeliverable } from '@/types/project';
+import type { ProjectDeliverable } from '@/types/projects';
 
 type ActionsProps = {
     deliverable: ProjectDeliverable;

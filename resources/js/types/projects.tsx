@@ -4,7 +4,7 @@
 
 import { Ban, CheckCircle2, Circle, Clock, FileCheck, FileQuestion, FileX, XCircle } from 'lucide-react';
 import type { User } from './auth';
-import type { Company, Customer } from './contact';
+import type { Company, Customer } from './contacts';
 import type { Expense } from './expenses';
 import type { Service, ServicePackage } from './service';
 
@@ -299,11 +299,7 @@ export type ProjectComment = {
     updated_at: string;
 
     // Relations
-    user?: {
-        id: number;
-        name: string;
-        avatar?: string | null;
-    };
+    user?: User;
     replies?: ProjectComment[];
 };
 
@@ -339,11 +335,7 @@ export interface ActivityLog {
     created_at: string;
 
     // Relations
-    causer?: {
-        id: number;
-        name: string;
-        email: string;
-    };
+    causer?: User;
 }
 
 // ============================================================
@@ -479,48 +471,6 @@ export interface ProjectCommentFormData {
 export interface ProjectMilestoneCommentFormData {
     project_milestone_id: number;
     comment: string;
-}
-
-// ============================================================
-// FILTER PARAMETERS
-// ============================================================
-
-export interface ProjectFilterParams {
-    search?: string;
-    customer_id?: number;
-    company_id?: number;
-    service_id?: number;
-    status?: ProjectStatus;
-    start_date_from?: string;
-    start_date_to?: string;
-    sort_by?: 'name' | 'start_date' | 'created_at' | 'budget';
-    sort_order?: 'asc' | 'desc';
-    page?: number;
-    per_page?: number;
-}
-
-export interface ProjectTaskFilterParams {
-    project_id?: number;
-    milestone_id?: number;
-    assigned_to?: number;
-    status?: TaskStatus;
-    priority?: TaskPriority;
-    overdue?: boolean;
-}
-
-export interface ProjectExpenseFilterParams {
-    project_id?: number;
-    category?: string;
-    is_billable?: boolean;
-    date_from?: string;
-    date_to?: string;
-}
-
-export interface ProjectInvoiceFilterParams {
-    project_id?: number;
-    type?: InvoiceType;
-    status?: InvoiceStatus;
-    overdue?: boolean;
 }
 
 // ============================================================

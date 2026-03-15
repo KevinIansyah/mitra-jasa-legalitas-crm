@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardAction, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 import projects from '@/routes/projects';
-import type { Project, ProjectMilestone } from '@/types/project';
+import type { Project, ProjectMilestone } from '@/types/projects';
 import { MilestoneCard } from './_components/milestone-card';
 import { MilestoneForm } from './_components/milestone-form';
 
@@ -98,7 +98,6 @@ export default function Milestones({ project }: MilestonesProps) {
                 </div>
             </div>
 
-    
             <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:border-none *:data-[slot=card]:bg-sidebar *:data-[slot=card]:shadow md:grid-cols-2 lg:grid-cols-4 *:data-[slot=card]:dark:shadow-none">
                 {STATS_BADGE.map(({ label, value, color, badge, icon }) => (
                     <Card key={label}>
@@ -128,7 +127,6 @@ export default function Milestones({ project }: MilestonesProps) {
                 </HasPermission>
             )}
 
-          
             <div className="mb-0 space-y-0">
                 {showAddForm && (
                     <div className="flex gap-4">
@@ -156,7 +154,6 @@ export default function Milestones({ project }: MilestonesProps) {
                     </div>
                 )}
 
-         
                 {milestones.length > 0
                     ? milestones.map((milestone, index) => (
                           <MilestoneCard

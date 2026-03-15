@@ -4,7 +4,7 @@ import AppLayout from '@/layouts/app-layout';
 
 import citiesRoute from '@/routes/master-data/cities';
 import type { BreadcrumbItem } from '@/types';
-import type { City, CitySummary } from '@/types/city';
+import type { City, CitySummary } from '@/types/cities';
 import type { Paginator } from '@/types/paginator';
 import { CitySection } from './_compnents/city-section';
 

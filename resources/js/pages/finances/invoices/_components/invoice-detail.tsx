@@ -1,5 +1,5 @@
 import { formatRupiah } from '@/lib/service';
-import type { ProjectInvoice } from '@/types/project';
+import type { ProjectInvoice } from '@/types/projects';
 import { PaymentCard } from '../../payments/_components/payment-card';
 
 export default function InvoiceDetail({ invoice }: { invoice: ProjectInvoice }) {

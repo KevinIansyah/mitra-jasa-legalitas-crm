@@ -107,7 +107,7 @@ class ProjectInvoiceController extends Controller
 
         $project = Project::find($validated['project_id']);
         if (!$project) {
-            return back()->withErrors(['project_id' => 'Project tidak ditemukan.']);
+            return back()->withErrors(['error' => 'Project tidak ditemukan.']);
         }
 
         $invoice = DB::transaction(function () use ($project, $request, $validated) {

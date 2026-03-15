@@ -15,8 +15,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
 import { index as documentsIndex } from '@/routes/projects/documents';
-import type { ProjectDocument } from '@/types/project';
-import { DOCUMENT_STATUSES } from '@/types/project';
+import type { ProjectDocument } from '@/types/projects';
+import { DOCUMENT_STATUSES } from '@/types/projects';
 import getColumns from './columns';
 import DocumentDetail from './document-detail';
 

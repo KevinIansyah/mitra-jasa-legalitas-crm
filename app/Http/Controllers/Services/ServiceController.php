@@ -51,7 +51,7 @@ class ServiceController extends Controller
             ->latest()
             ->paginate($perPage);
 
-        $categories = ServiceCategory::orderBy('sort_order')
+        $categories = ServiceCategory::orderBy('name')
             ->get(['id', 'name']);
 
         $summary = [
@@ -78,7 +78,7 @@ class ServiceController extends Controller
     public function create()
     {
         $categories = ServiceCategory::where('status', 'active')
-            ->orderBy('sort_order')
+            ->orderBy('name')
             ->get(['id', 'name']);
 
         return Inertia::render('services/create/index', [
@@ -306,7 +306,7 @@ class ServiceController extends Controller
         ]);
 
         $categories = ServiceCategory::where('status', 'active')
-            ->orderBy('sort_order')
+            ->orderBy('name')
             ->get(['id', 'name']);
 
         return Inertia::render('services/edit/index', [
@@ -750,6 +750,15 @@ class ServiceController extends Controller
         $validated = $request->validated();
 
         $seo = $service->getSeoOrCreate();
+
+        if (empty($validated['og_title']) && !empty($validated['meta_title'])) {
+            $validated['og_title'] = $validated['meta_title'];
+        }
+
+        if (empty($validated['twitter_title']) && !empty($validated['meta_title'])) {
+            $validated['twitter_title'] = $validated['meta_title'];
+        }
+
 
         if ($request->boolean('remove_og_image') && $seo->og_image) {
             FileHelper::deleteFromR2($seo->og_image, isPublic: true);

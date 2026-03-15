@@ -19,9 +19,9 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { formatRupiah } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
 import finances from '@/routes/finances';
-import { CATEGORY_BUSINESS_MAP, STATUS_LEGAL_MAP } from '@/types/contact';
-import type { Estimate, EstimateStatus, Quote, QuoteStatus } from '@/types/quote';
-import { QUOTE_STATUSES, QUOTE_STATUSES_MAP, QUOTE_TIMELINES_MAP, QUOTE_SOURCES_MAP, QUOTE_BUDGET_RANGES_MAP, ESTIMATE_STATUSES, ESTIMATE_STATUSES_MAP } from '@/types/quote';
+import { CATEGORY_BUSINESS_MAP, STATUS_LEGAL_MAP } from '@/types/contacts';
+import type { Estimate, EstimateStatus, Quote, QuoteStatus } from '@/types/quotes';
+import { QUOTE_STATUSES, QUOTE_STATUSES_MAP, QUOTE_TIMELINES_MAP, QUOTE_SOURCES_MAP, QUOTE_BUDGET_RANGES_MAP, ESTIMATE_STATUSES, ESTIMATE_STATUSES_MAP } from '@/types/quotes';
 
 function InfoRow({ label, value, children }: { label: string; value?: string | null; children?: React.ReactNode }) {
     return (

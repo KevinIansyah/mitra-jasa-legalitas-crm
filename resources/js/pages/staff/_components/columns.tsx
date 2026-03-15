@@ -4,14 +4,14 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 
 import { getInitials } from '@/lib/service';
-import type { Role } from '@/types/role';
+import type { Role } from '@/types/roles';
 import type { Staff } from '@/types/staff';
 import { AVAILABILITY_STATUSES_MAP } from '@/types/staff';
 import Actions from './actions';
 
 export default function getColumns(roles: Role[]): ColumnDef<Staff>[] {
     const R2_PUBLIC_URL = import.meta.env.VITE_CLOUDFLARE_R2_PUBLIC_URL;
-    
+
     return [
         {
             accessorKey: 'name',

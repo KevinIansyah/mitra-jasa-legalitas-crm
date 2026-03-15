@@ -38,6 +38,7 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
     | PATCH  /services/{service}/legal-bases        -> Update legal bases
     | PATCH  /services/{service}/requirements       -> Update requirements
     | PATCH  /services/{service}/process-steps      -> Update process steps
+    | POST   /services/{service}/seo                -> Update SEO
     |
     | AI Generate
     | POST   /services/{service}/ai/generate/content  -> Generate content
@@ -99,10 +100,7 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
         ->name('update.seo');
 
 
-      Route::prefix('ai/generate')
-        ->middleware('permission:create-ai-generate')
-        ->name('ai.generate.')
-        ->group(function () {
+      Route::prefix('ai/generate')->middleware('permission:create-ai-generate')->name('ai.generate.')->group(function () {
           Route::post('/content', [ServiceAiGenerateController::class, 'content'])->name('content');
           Route::post('/faq', [ServiceAiGenerateController::class, 'faq'])->name('faq');
           Route::post('/seo', [ServiceAiGenerateController::class, 'seo'])->name('seo');
@@ -166,7 +164,6 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
         |--------------------------------------------------------------------------
         | GET    /services/categories                  -> List categories
         | POST   /services/categories                  -> Store category
-        | GET    /services/categories/{category}/edit  -> Show edit form
         | PATCH  /services/categories/{category}       -> Update category
         | DELETE /services/categories/{category}       -> Delete category
         |--------------------------------------------------------------------------
@@ -181,10 +178,6 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
       Route::post('/', [ServiceCategoryController::class, 'store'])
         ->middleware('permission:create-service-categories')
         ->name('store');
-
-      Route::get('/{category}/edit', [ServiceCategoryController::class, 'edit'])
-        ->middleware('permission:edit-service-categories')
-        ->name('edit');
 
       Route::patch('/{category}', [ServiceCategoryController::class, 'update'])
         ->middleware('permission:edit-service-categories')

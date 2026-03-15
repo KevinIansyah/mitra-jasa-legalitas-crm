@@ -62,19 +62,19 @@ class ProjectCommentController extends Controller
 
         if (!$parent) {
             return back()->withErrors([
-                'parent_id' => 'Komentar tidak ditemukan.'
+                    'error' => 'Komentar tidak ditemukan.'
             ]);
         }
 
         if ($parent->parent_id !== null) {
             return back()->withErrors([
-                'parent_id' => 'Tidak bisa membalas sebuah reply.'
+                'error' => 'Tidak bisa membalas sebuah reply.'
             ]);
         }
 
         if ($parent->project_id !== $project->id) {
             return back()->withErrors([
-                'parent_id' => 'Komentar tidak ditemukan.'
+                'error' => 'Komentar tidak ditemukan.'
             ]);
         }
 
@@ -85,7 +85,7 @@ class ProjectCommentController extends Controller
     {
         if ($comment->project_id !== $project->id) {
             return back()->withErrors([
-                'comment' => 'Komentar tidak ditemukan.'
+                'error' => 'Komentar tidak ditemukan.'
             ]);
         }
 
@@ -96,7 +96,7 @@ class ProjectCommentController extends Controller
     {
         if (!$comment->isOwnedBy(Auth::id())) {
             return back()->withErrors([
-                'comment' => 'Anda hanya dapat mengubah komentar milik Anda sendiri.'
+                'error' => 'Anda hanya dapat mengubah komentar milik Anda sendiri.'
             ]);
         }
 

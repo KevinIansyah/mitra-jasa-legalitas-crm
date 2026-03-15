@@ -16,7 +16,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
 import companies from '@/routes/contacts/companies';
-import { CATEGORY_BUSINESS, STATUS_LEGAL, type CompanyWithCustomers } from '@/types/contact';
+import { CATEGORY_BUSINESS, STATUS_LEGAL, type CompanyWithCustomers } from '@/types/contacts';
 import getColumns from './columns';
 import CompanyDetail from './company-detail';
 import { DrawerAdd } from './drawer-add';

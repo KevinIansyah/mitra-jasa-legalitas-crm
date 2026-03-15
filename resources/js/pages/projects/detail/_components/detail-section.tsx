@@ -2,7 +2,7 @@ import { Link } from '@inertiajs/react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { usePermission } from '@/hooks/use-permission';
 import projects from '@/routes/projects';
-import type { ActivityLog, Project } from '@/types/project';
+import type { ActivityLog, Project } from '@/types/projects';
 import type { Service } from '@/types/service';
 import Activities from '../activities';
 import Deliverables from '../deliverables';

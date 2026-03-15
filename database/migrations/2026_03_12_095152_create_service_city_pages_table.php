@@ -15,14 +15,14 @@ return new class extends Migration
             $table->unique(['service_id', 'city_id']);
 
             // URL
-            $table->string('slug')->unique(); // "jasa-desain-logo-di-jakarta-selatan"
+            $table->string('slug')->unique();
 
             // Konten (di-generate Gemini)
-            $table->string('heading')->nullable();          // H1
-            $table->text('introduction')->nullable();       // Paragraf pembuka
-            $table->longText('content')->nullable();        // Konten utama
-            $table->text('closing')->nullable();            // Paragraf penutup
-            $table->json('faq')->nullable();                // [{"q": "...", "a": "..."}]
+            $table->string('heading')->nullable();
+            $table->text('introduction')->nullable();
+            $table->longText('content')->nullable();
+            $table->text('closing')->nullable();
+            $table->json('faq')->nullable();
 
             // AI Tracking
             $table->enum('content_status', [

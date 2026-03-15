@@ -1,7 +1,7 @@
 import { Building2, CheckCircle2, UserCheck, Users } from 'lucide-react';
 import { useState } from 'react';
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import type { Customer, CustomerSummary } from '@/types/contact';
+import type { Customer, CustomerSummary } from '@/types/contacts';
 import type { Paginator } from '@/types/paginator';
 import { DataTable } from './datatable';
 

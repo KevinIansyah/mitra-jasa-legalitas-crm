@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getInitials } from '@/lib/service';
 import projects from '@/routes/projects';
 import type { SharedData } from '@/types';
-import type { Project } from '@/types/project';
+import type { Project } from '@/types/projects';
 import { CommentComposer } from './_components/comment-composer';
 import { CommentItem } from './_components/comment-item';
 

@@ -12,7 +12,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 
 import companies from '@/routes/contacts/companies';
-import { CATEGORY_BUSINESS, STATUS_LEGAL, type CompanyFormData } from '@/types/contact';
+import { CATEGORY_BUSINESS, STATUS_LEGAL, type CompanyFormData } from '@/types/contacts';
 
 export function DrawerAdd() {
     const [open, setOpen] = React.useState(false);
@@ -172,6 +172,34 @@ export function DrawerAdd() {
                                     <FieldLabel htmlFor="city">Kabupaten / Kota</FieldLabel>
                                     <Input id="city" type="text" name="city" placeholder="Contoh: Surabaya" value={data.city} onChange={(e) => setData('city', e.target.value)} />
                                     {errors.city && <FieldError>{errors.city}</FieldError>}
+                                </Field>
+                            </div>
+
+                            <div className="gird-cols-1 grid gap-4 lg:grid-cols-2">
+                                <Field>
+                                    <FieldLabel htmlFor="postal_code">Kode Pos</FieldLabel>
+                                    <Input
+                                        id="postal_code"
+                                        type="text"
+                                        name="postal_code"
+                                        placeholder="Contoh: 60111"
+                                        value={data.postal_code}
+                                        onChange={(e) => setData('postal_code', e.target.value)}
+                                    />
+                                    {errors.postal_code && <FieldError>{errors.postal_code}</FieldError>}
+                                </Field>
+
+                                <Field>
+                                    <FieldLabel htmlFor="npwp">NPWP</FieldLabel>
+                                    <Input
+                                        id="npwp"
+                                        type="text"
+                                        name="npwp"
+                                        placeholder="Contoh: 12.345.678.9-012.345"
+                                        value={data.npwp}
+                                        onChange={(e) => setData('npwp', e.target.value)}
+                                    />
+                                    {errors.npwp && <FieldError>{errors.npwp}</FieldError>}
                                 </Field>
                             </div>
 

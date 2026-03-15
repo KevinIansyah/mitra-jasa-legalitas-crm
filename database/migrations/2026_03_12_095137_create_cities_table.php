@@ -10,12 +10,11 @@ return new class extends Migration
     {
         Schema::create('cities', function (Blueprint $table) {
             $table->id();
-            $table->string('name');                     // "Jakarta Selatan"
-            $table->string('slug')->unique();           // "jakarta-selatan"
-            $table->string('province')->nullable();     // "DKI Jakarta"
-            $table->text('description')->nullable();    // Deskripsi singkat kota, untuk konten AI
+            $table->string('name');
+            $table->string('slug')->unique();
+            $table->string('province')->nullable();
+            $table->text('description')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');
-            $table->integer('sort_order')->default(0);
             $table->timestamps();
         });
     }

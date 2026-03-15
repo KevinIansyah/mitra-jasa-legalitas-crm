@@ -1,9 +1,8 @@
-
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import finances from '@/routes/finances';
-import type { Project, ProjectInvoice, ProjectInvoiceFormData } from '@/types/project';
+import type { Project, ProjectInvoice, ProjectInvoiceFormData } from '@/types/projects';
 import { InvoiceForm } from '../../_components/invoice-form';
 import { InvoiceSummary } from '../../_components/invoice-summary';
 import type { InvoiceFormErrors } from '../../create/_components/create-section';

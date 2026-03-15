@@ -1,5 +1,5 @@
 import type { ColumnDef } from '@tanstack/react-table';
-import type { Role } from '@/types/role';
+import type { Role } from '@/types/roles';
 import Actions from './actions';
 
 export default function getColumns(): ColumnDef<Role>[] {

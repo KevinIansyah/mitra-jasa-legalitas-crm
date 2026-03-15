@@ -6,7 +6,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import roles from '@/routes/roles';
-import type { Permission, Role } from '@/types/role';
+import type { Permission, Role } from '@/types/roles';
 
 type PermissionSectionProps = {
     role: Role;
@@ -217,6 +217,24 @@ export default function PermissionSection({ role, allPermissions }: PermissionSe
                     break;
                 }
 
+                // Blog Management
+                case resource.startsWith('blog'): {
+                    groupName = 'Manajemen Blog';
+                    if (resource === 'blogs') {
+                        itemName = 'Semua Blog';
+                    }
+                    
+                    if (resource === 'blog-categories') {
+                        itemName = 'Kategori';
+                    }
+
+                    if (resource === 'blog-tags') {
+                        itemName = 'Tag';
+                    }
+
+                    break;
+                }
+
                 // Master Management
                 case resource.startsWith('master'): {
                     groupName = 'Manajemen Master Data';
@@ -392,7 +410,7 @@ export default function PermissionSection({ role, allPermissions }: PermissionSe
 
                                     {/* Group Items */}
                                     {group.items.map((item, itemIndex) => (
-                                        <TableRow key={`item-${groupIndex}-${itemIndex}`} className={itemIndex === group.items.length - 1 ? '' : 'border-b-0'}>
+                                        <TableRow key={`item-${groupIndex}-${itemIndex}`} className={itemIndex === group.items.length - 1 ? 'text-muted-foreground' : 'text-muted-foreground border-b-0'}>
                                             <TableCell>{item.name}</TableCell>
 
                                             {/* Toggle All */}

@@ -13,9 +13,9 @@ class AiContentService
     private readonly AiServiceInterface $ai,
   ) {}
 
-  // ─────────────────────────────────────────────────────────────────────────
+  // ------------------------------------------------------------------------
   // TOKEN GUARD
-  // ─────────────────────────────────────────────────────────────────────────
+  // ------------------------------------------------------------------------
 
   /**
    * Cek quota token staff sebelum generate.
@@ -55,9 +55,9 @@ class AiContentService
     return $result;
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
+  // ------------------------------------------------------------------------
   // SYSTEM PROMPTS
-  // ─────────────────────────────────────────────────────────────────────────
+  // ------------------------------------------------------------------------
 
   private function systemPrompt(): string
   {
@@ -68,9 +68,9 @@ class AiContentService
       . 'Jangan tambahkan penjelasan atau catatan di luar konten yang diminta.';
   }
 
-    // ─────────────────────────────────────────────────────────────────────────
+    // ------------------------------------------------------------------------
     // GENERATE METHODS
-    // ─────────────────────────────────────────────────────────────────────────
+    // ------------------------------------------------------------------------
 
   /**
    * Generate introduction and content of the service.
@@ -254,9 +254,55 @@ class AiContentService
     ];
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
+  /**
+   * Generate short description and content of the blog.
+   *
+   * @return array{ short_description: string, content: string, tokens_used: int }
+   */
+  public function generateBlogContent(User $user, array $context): array
+  {
+    $prompt = require __DIR__ . '/Prompts/BlogContentPrompt.php';
+    $prompt = $prompt($context);
+
+    $result = $this->generateWithQuota($user, $prompt, $this->systemPrompt(), 5000);
+
+    Log::info('AI blog content raw response', ['content' => $result['content']]);
+
+    $parsed = $this->parseJson($result['content']);
+
+    return [
+      'short_description' => $parsed['short_description'] ?? '',
+      'content'           => $parsed['content'] ?? '',
+      'tokens_used'       => $result['tokens_used'],
+    ];
+  }
+
+  /**
+   * Generate SEO meta tags for the blog.
+   *
+   * @return array{ meta_title: string, meta_description: string, focus_keyword: string, tokens_used: int }
+   */
+  public function generateBlogSeo(User $user, array $context): array
+  {
+    $prompt = require __DIR__ . '/Prompts/BlogSeoPrompt.php';
+    $prompt = $prompt($context);
+
+    $result = $this->generateWithQuota($user, $prompt, $this->systemPrompt(), 2000);
+
+    $parsed = $this->parseJson($result['content']);
+
+    return [
+      'meta_title'       => $parsed['meta_title'] ?? '',
+      'meta_description' => $parsed['meta_description'] ?? '',
+      'focus_keyword'    => $parsed['focus_keyword'] ?? '',
+      'tokens_used'      => $result['tokens_used'],
+    ];
+  }
+
+
+  // ------------------------------------------------------------------------
   // HELPERS
-  // ─────────────────────────────────────────────────────────────────────────
+  // ------------------------------------------------------------------------
 
   private function parseJson(string $content): array
   {

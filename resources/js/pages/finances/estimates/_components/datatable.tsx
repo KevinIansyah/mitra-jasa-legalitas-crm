@@ -17,8 +17,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
 import finances from '@/routes/finances';
-import type { Estimate } from '@/types/quote';
-import { ESTIMATE_STATUSES } from '@/types/quote';
+import type { Estimate } from '@/types/quotes';
+import { ESTIMATE_STATUSES } from '@/types/quotes';
 import getColumns from './columns';
 import EstimateDetail from './estimate-detail';
 

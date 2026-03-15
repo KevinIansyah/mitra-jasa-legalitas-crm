@@ -3,7 +3,7 @@ import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
 import projects from '@/routes/projects';
 import type { BreadcrumbItem } from '@/types';
-import type { Quote } from '@/types/quote';
+import type { Quote } from '@/types/quotes';
 import type { Service } from '@/types/service';
 import { CreateSection } from './_components/create-section';
 

@@ -137,7 +137,11 @@ class Expense extends Model
     public function getReceiptUrlAttribute(): ?string
     {
         if (!$this->receipt_file) return null;
-        return Storage::disk('r2')->temporaryUrl($this->receipt_file, now()->addMinutes(30));
+
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+        $disk = Storage::disk('r2');
+
+        return $disk->temporaryUrl($this->receipt_file, now()->addMinutes(30));
     }
 
     public function hasReceipt(): bool

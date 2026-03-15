@@ -24,9 +24,8 @@ export default function Page() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Jurnal" />
             <div className="p-4 md:p-6">
-                
                 <Heading title="Jurnal" description="Seluruh entri jurnal dari invoice, pembayaran, pengeluaran, dan penyesuaian manual" />
-                
+
                 <JournalSection entries={entries} accounts={accounts} summary={summary} filters={filters} />
             </div>
         </AppLayout>

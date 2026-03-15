@@ -107,7 +107,10 @@ class ProjectDocument extends Model
             return null;
         }
 
-        return Storage::disk('r2')->url($this->file_path);
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+        $disk = Storage::disk('r2');
+
+        return $disk->url($this->file_path);
     }
 
     public function getFormattedFileSizeAttribute(): ?string

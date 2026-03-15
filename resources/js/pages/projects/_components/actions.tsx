@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import projects from '@/routes/projects';
-import type { Project } from '@/types/project';
+import type { Project } from '@/types/projects';
 
 type ActionsProps = {
     project: Project;

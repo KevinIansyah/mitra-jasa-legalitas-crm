@@ -7,10 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import staffRoutes from '@/routes/staff';
-import type { Role } from '@/types/role';
+import type { Role } from '@/types/roles';
 import type { Staff } from '@/types/staff';
 import { DrawerEdit } from './drawer-edit';
-
 
 type ActionsProps = {
     staff: Staff;

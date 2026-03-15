@@ -51,8 +51,14 @@ class ServiceCityPageController extends Controller
             'draft'        => ServiceCityPage::where('content_status', 'draft')->count(),
         ];
 
-        $services = Service::where('status', 'active')->orderBy('name')->get(['id', 'name']);
-        $cities   = City::where('status', 'active')->orderBy('sort_order')->get(['id', 'name']);
+        $services = Service::where('status', 'active')
+            ->where('is_published', true)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        $cities   = City::where('status', 'active')
+            ->orderBy('name')
+            ->get(['id', 'name']);
 
         return Inertia::render('services/city-pages/index', [
             'cityPages' => $cityPages,
@@ -70,36 +76,30 @@ class ServiceCityPageController extends Controller
         ]);
     }
 
-    public function create()
-    {
-        $services = Service::where('status', 'active')
-            ->whereHas('seo', fn($q) => $q->whereNotNull('meta_title'))
-            ->orderBy('name')
-            ->get(['id', 'name']);
-
-        $cities = City::where('status', 'active')
-            ->orderBy('sort_order')
-            ->get(['id', 'name', 'province']);
-
-        return Inertia::render('services/city-pages/create', [
-            'services' => $services,
-            'cities'   => $cities,
-        ]);
-    }
-
     public function store(StoreRequest $request)
     {
         $validated = $request->validated();
 
-        $service = Service::findOrFail($validated['service_id']);
-
-        if (!$service->hasSeo()) {
+        $service = Service::find($validated['service_id']);
+        if (!$service) {
             return back()->withErrors([
-                'service_id' => 'Lengkapi SEO halaman utama layanan ini terlebih dahulu.'
+                'error' => 'Layanan tidak ditemukan.'
             ]);
         }
 
-        $city    = City::findOrFail($validated['city_id']);
+        if (!$service->hasSeo()) {
+            return back()->withErrors([
+                'error' => 'Lengkapi SEO halaman utama layanan ini terlebih dahulu.'
+            ]);
+        }
+
+        $city    = City::find($validated['city_id']);
+        if (!$city) {
+            return back()->withErrors([
+                'error' => 'Kota tidak ditemukan.'
+            ]);
+        }
+
         $slug     = Str::slug("{$service->name}-{$city->name}");
         $original = $slug;
         $counter  = 1;
@@ -138,7 +138,7 @@ class ServiceCityPageController extends Controller
 
         if ($isPublished && (empty($heading) || empty($metaTitle))) {
             return back()->withErrors([
-                'publish' => 'Pastikan heading dan meta title sudah terisi sebelum publish.',
+                'error' => 'Pastikan heading dan meta title sudah terisi sebelum publish.',
             ]);
         }
 

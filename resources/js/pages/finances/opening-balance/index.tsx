@@ -231,7 +231,6 @@ export default function Page() {
 
                                         <InputError message={fieldErrors.balances} />
 
-                                        
                                         <div className="flex flex-col gap-2 md:flex-row">
                                             {/* Account Select */}
                                             <Select value={draftAccountId ? String(draftAccountId) : ''} onValueChange={(v) => setDraftAccountId(Number(v))}>

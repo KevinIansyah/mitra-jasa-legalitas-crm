@@ -9,7 +9,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import templates from '@/routes/projects/templates';
-import type { ProjectTemplate } from '@/types/project-template';
+import type { ProjectTemplate } from '@/types/project-templates';
 
 type ActionsProps = {
     template: ProjectTemplate;

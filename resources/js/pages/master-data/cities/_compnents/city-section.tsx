@@ -1,7 +1,7 @@
 import { CheckCircle2, Globe, MapPin, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import type { City, CitySummary } from '@/types/city';
+import type { City, CitySummary } from '@/types/cities';
 import type { Paginator } from '@/types/paginator';
 import { DataTable } from './datatable';
 

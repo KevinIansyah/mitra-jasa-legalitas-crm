@@ -93,7 +93,7 @@ class ProjectTaskController extends Controller
     private function validateTask(Project $project, ProjectTask $task)
     {
         if ($task->project_id !== $project->id) {
-            return back()->withErrors(['task' => 'Tugas tidak ditemukan.']);
+            return back()->withErrors(['error' => 'Tugas tidak ditemukan.']);
         }
 
         return null;

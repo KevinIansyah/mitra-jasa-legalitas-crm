@@ -16,7 +16,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
 import services from '@/routes/services';
-import type { City } from '@/types/city';
+import type { City } from '@/types/cities';
 import type { Service, ServiceCityPage } from '@/types/service';
 import { CityPageAddDrawer } from './city-pages-add-drawer';
 import getColumns from './columns';
@@ -155,7 +155,7 @@ export function DataTable({ data, services: serviceList, cities, pageIndex, setP
                                             </Select>
                                         </Field>
 
-                                        <Field>
+                                        {/* <Field>
                                             <FieldLabel>Publikasi</FieldLabel>
                                             <Select value={filters.is_published || ''} onValueChange={(value) => updateFilter('is_published', value || undefined)}>
                                                 <SelectTrigger className="w-full">
@@ -169,7 +169,7 @@ export function DataTable({ data, services: serviceList, cities, pageIndex, setP
                                                     </SelectGroup>
                                                 </SelectContent>
                                             </Select>
-                                        </Field>
+                                        </Field> */}
 
                                         {activeFiltersCount > 0 && (
                                             <Button className="w-full" onClick={resetFilters}>
@@ -245,14 +245,14 @@ export function DataTable({ data, services: serviceList, cities, pageIndex, setP
                                 </Button>
                             </Badge>
                         )}
-                        {filters.is_published && (
+                        {/* {filters.is_published && (
                             <Badge variant="secondary" className="gap-2">
                                 Publikasi: {filters.is_published === 'published' ? 'Published' : 'Unpublished'}
                                 <Button variant="ghost" size="sm" className="h-6 w-6 text-xs" onClick={() => updateFilter('is_published', undefined)}>
                                     <X className="size-3" />
                                 </Button>
                             </Badge>
-                        )}
+                        )} */}
                         <Button variant="ghost" size="sm" className="h-7.5 text-xs" onClick={resetFilters}>
                             Reset semua
                         </Button>

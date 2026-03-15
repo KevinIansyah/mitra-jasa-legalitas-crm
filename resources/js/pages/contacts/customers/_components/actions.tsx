@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import customers from '@/routes/contacts/customers';
-import type { Customer } from '@/types/contact';
+import type { Customer } from '@/types/contacts';
 import { DialogManageAccount } from './dialog-manage-account';
 import { DrawerEdit } from './drawer-edit';
 

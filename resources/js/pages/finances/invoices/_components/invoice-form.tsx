@@ -15,8 +15,8 @@ import { Textarea } from '@/components/ui/textarea';
 
 import { formatRupiah } from '@/lib/service';
 import search from '@/routes/search';
-import type { Project, ProjectInvoiceFormData } from '@/types/project';
-import { INVOICE_TYPES, PROJECT_STATUSES_MAP, type InvoiceType } from '@/types/project';
+import type { Project, ProjectInvoiceFormData } from '@/types/projects';
+import { INVOICE_TYPES, PROJECT_STATUSES_MAP, type InvoiceType } from '@/types/projects';
 import type { InvoiceFormErrors } from '../create/_components/create-section';
 import { BillableExpensePicker } from './billable-expense-picker';
 import { InvoiceItemsEditor } from './invoice-item-editor';

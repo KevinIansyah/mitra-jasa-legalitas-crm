@@ -3,7 +3,7 @@ import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
 import projects from '@/routes/projects';
 import type { BreadcrumbItem } from '@/types';
-import type { ActivityLog, Project } from '@/types/project';
+import type { ActivityLog, Project } from '@/types/projects';
 import type { Service } from '@/types/service';
 import { DetailSection } from './_components/detail-section';
 

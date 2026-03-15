@@ -13,8 +13,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 
 import { getInitials } from '@/lib/service';
 import projects from '@/routes/projects';
-import type { MemberRole, ProjectMember } from '@/types/project';
-import { MEMBER_ROLES, MEMBER_ROLES_MAP, type Project } from '@/types/project';
+import type { MemberRole, ProjectMember } from '@/types/projects';
+import { MEMBER_ROLES, MEMBER_ROLES_MAP, type Project } from '@/types/projects';
 
 type TeamCardProps = {
     project: Project;
@@ -93,7 +93,7 @@ export function TeamCard({ project }: TeamCardProps) {
                                     <p className="text-sm leading-tight">{member.user?.name ?? '-'}</p>
                                     {member.user?.email && <p className="text-xs text-muted-foreground">{member.user.email}</p>}
                                 </div>
-                            </div>  
+                            </div>
 
                             <div className="order-1 flex flex-wrap items-center gap-1 md:order-2">
                                 {/* <DropdownMenu>

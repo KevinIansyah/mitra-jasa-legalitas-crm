@@ -9,7 +9,7 @@ import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import services from '@/routes/services';
-import type { City } from '@/types/city';
+import type { City } from '@/types/cities';
 import type { Service } from '@/types/service';
 
 type CityPageAddDrawerProps = {

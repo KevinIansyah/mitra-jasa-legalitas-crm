@@ -2,7 +2,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
 import { formatRupiah } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
-import { INVOICE_TYPES_MAP, type ProjectInvoice } from '@/types/project';
+import { INVOICE_TYPES_MAP, type ProjectInvoice } from '@/types/projects';
 import Actions from './actions';
 
 export default function getColumns(expandedRow: string | null, setExpandedRow: (id: string | null) => void): ColumnDef<ProjectInvoice>[] {

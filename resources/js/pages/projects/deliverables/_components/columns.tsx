@@ -1,6 +1,6 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
-import type { ProjectDeliverable } from '@/types/project';
+import type { ProjectDeliverable } from '@/types/projects';
 import Actions from './actions';
 
 export default function getColumns(expandedRow: string | null, setExpandedRow: (id: string | null) => void): ColumnDef<ProjectDeliverable>[] {

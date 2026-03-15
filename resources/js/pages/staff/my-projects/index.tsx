@@ -12,8 +12,8 @@ import projects from '@/routes/projects';
 import staffRoutes from '@/routes/staff';
 import type { BreadcrumbItem } from '@/types';
 import type { Paginator } from '@/types/paginator';
-import type { Project } from '@/types/project';
-import { PROJECT_STATUSES_MAP } from '@/types/project';
+import type { Project } from '@/types/projects';
+import { PROJECT_STATUSES_MAP } from '@/types/projects';
 
 export default function Page() {
     const { staff, myProjects } = usePage<{
@@ -44,7 +44,6 @@ export default function Page() {
                             </p>
                         )}
                     </div>
-                    
 
                     {data.length === 0 ? (
                         <div className="flex min-h-40 flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-border p-8 text-muted-foreground">
@@ -58,44 +57,41 @@ export default function Page() {
                             {data.map((project) => {
                                 const statusInfo = PROJECT_STATUSES_MAP[project.status];
                                 return (
-                                    <Card key={project.id} className="border-none bg-sidebar shadow dark:shadow-none">
-                                        <CardHeader className="pb-2">
-                                            <div className="flex items-start justify-between gap-2">
-                                                <div className="space-y-1">
-                                                    <p className="leading-snug font-semibold">{project.name}</p>
-                                                    {project.customer && <p className="text-xs text-muted-foreground">{project.customer.name}</p>}
-                                                </div>
-                                                <Badge className={statusInfo?.classes ?? 'bg-muted text-muted-foreground'}>{statusInfo?.label ?? project.status}</Badge>
-                                            </div>
-                                        </CardHeader>
-                                        <CardContent className="space-y-3">
-                                            {project.service && (
-                                                <p className="text-xs text-muted-foreground">
-                                                    Layanan: <span className="text-foreground">{project.service.name}</span>
-                                                </p>
-                                            )}
-                                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                                                <span>Mulai: {formatDate(project.start_date)}</span>
-                                                <span>Selesai: {formatDate(project.planned_end_date)}</span>
-                                            </div>
-                                            {project.progress_percentage !== undefined && (
-                                                <div className="space-y-1">
-                                                    <div className="flex justify-between text-xs">
-                                                        <span className="text-muted-foreground">Progress</span>
-                                                        <span className="font-medium">{project.progress_percentage}%</span>
+                                    <Link href={projects.show(project.id).url}>
+                                        <Card key={project.id} className="border-none bg-sidebar shadow dark:shadow-none">
+                                            <CardHeader className="gap-0">
+                                                <div className="flex items-start justify-between gap-2">
+                                                    <div className="space-y-1">
+                                                        <p className="leading-snug font-semibold">{project.name}</p>
+                                                        {project.customer && <p className="text-xs text-muted-foreground">{project.customer.name}</p>}
                                                     </div>
-                                                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-primary/10 dark:bg-muted/40">
-                                                        <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${project.progress_percentage}%` }} />
-                                                    </div>
+                                                    <Badge className={statusInfo?.classes ?? 'bg-muted text-muted-foreground'}>{statusInfo?.label ?? project.status}</Badge>
                                                 </div>
-                                            )}
-                                            <div className="pt-1">
-                                                <Button asChild variant="secondary" className="w-full">
-                                                    <Link href={projects.show(project.id).url}>Lihat Detail</Link>
-                                                </Button>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
+                                            </CardHeader>
+                                            <CardContent className="space-y-3">
+                                                {project.service && (
+                                                    <p className="text-xs text-muted-foreground">
+                                                        Layanan: <span className="text-foreground">{project.service.name}</span>
+                                                    </p>
+                                                )}
+                                                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                                                    <span>Mulai: {formatDate(project.start_date)}</span>
+                                                    <span>Selesai: {formatDate(project.planned_end_date)}</span>
+                                                </div>
+                                                {project.progress_percentage !== undefined && (
+                                                    <div className="space-y-1">
+                                                        <div className="flex justify-between text-xs">
+                                                            <span className="text-muted-foreground">Progress</span>
+                                                            <span className="font-medium">{project.progress_percentage}%</span>
+                                                        </div>
+                                                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-primary/10 dark:bg-muted/40">
+                                                            <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${project.progress_percentage}%` }} />
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </CardContent>
+                                        </Card>
+                                    </Link>
                                 );
                             })}
                         </div>

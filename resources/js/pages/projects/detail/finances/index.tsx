@@ -12,7 +12,7 @@ import { ExpenseAddDrawer } from '@/pages/finances/expenses/_components/expense-
 import { ExpenseEditDrawer } from '@/pages/finances/expenses/_components/expense-edit-drawer';
 import finances from '@/routes/finances';
 import type { Expense } from '@/types/expenses';
-import type { Project } from '@/types/project';
+import type { Project } from '@/types/projects';
 import { ExpenseCard } from './_components/expense-card';
 import { InvoiceCard } from './_components/invoice-card';
 

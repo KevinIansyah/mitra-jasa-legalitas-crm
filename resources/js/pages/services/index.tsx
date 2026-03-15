@@ -31,6 +31,5 @@ export default function Page() {
                 <ServiceSection services={services} categories={categories} summary={summary} filters={filters} />
             </div>
         </AppLayout>
-
     );
 }

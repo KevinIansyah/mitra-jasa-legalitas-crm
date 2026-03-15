@@ -12,8 +12,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 import projects from '@/routes/projects';
-import type { MemberRole, ProjectMember } from '@/types/project';
-import { MEMBER_ROLES, MEMBER_ROLES_MAP, type Project } from '@/types/project';
+import type { MemberRole, ProjectMember } from '@/types/projects';
+import { MEMBER_ROLES, MEMBER_ROLES_MAP, type Project } from '@/types/projects';
 
 type TeamTableProps = {
     project: Project;

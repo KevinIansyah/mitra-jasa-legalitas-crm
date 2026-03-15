@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 
 import { deleteItemAndReindex, moveItemDown, moveItemUp } from '@/lib/service';
 import templates from '@/routes/projects/templates';
-import type { ProjectTemplateStatus } from '@/types/project-template';
+import type { ProjectTemplateStatus } from '@/types/project-templates';
 import type { Service } from '@/types/service';
 import type { LocalDocument } from '../../_components/document-card';
 import { DocumentCard } from '../../_components/document-card';
@@ -173,7 +173,7 @@ export function EditSection({ services, template }: EditSectionProps) {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            {/* ───────────────── Basic Information Section ───────────────── */}   
+            {/* ───────────────── Basic Information Section ───────────────── */}
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-6">
                     <div>
@@ -360,7 +360,6 @@ export function EditSection({ services, template }: EditSectionProps) {
                 </div>
             </div>
 
-         
             <div className="flex items-center gap-2">
                 <Button type="submit" className="flex-1 md:w-45 md:flex-none" disabled={processing}>
                     {processing ? (

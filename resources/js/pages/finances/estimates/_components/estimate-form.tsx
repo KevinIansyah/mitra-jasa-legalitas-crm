@@ -12,8 +12,8 @@ import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 
 import search from '@/routes/search';
-import type { EstimateFormData, Quote } from '@/types/quote';
-import { QUOTE_STATUSES_MAP } from '@/types/quote';
+import type { EstimateFormData, Quote } from '@/types/quotes';
+import { QUOTE_STATUSES_MAP } from '@/types/quotes';
 import { EstimateItemsEditor } from './estimate-item-editor';
 
 export type EstimateFormErrors = Partial<Record<string, string>>;

@@ -217,7 +217,13 @@ class CustomerController extends Controller
             'user_id' => 'required|integer|exists:users,id',
         ]);
 
-        $user = User::findOrFail($validated['user_id']);
+        $user = User::find($validated['user_id']);
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Akun tidak ditemukan.'
+            ], 422);
+        }
 
         if (!$user->hasRole('user')) {
             return response()->json([

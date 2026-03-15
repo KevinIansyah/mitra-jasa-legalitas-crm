@@ -4,24 +4,24 @@ import { DialogDelete } from '@/components/dialog-delete';
 import { HasPermission } from '@/components/has-permission';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import categories from '@/routes/services/categories';
-import type { ServiceCategory } from '@/types/service';
+import categories from '@/routes/blogs/categories';
+import type { BlogCategory } from '@/types/blogs';
 import { DrawerEdit } from './drawer-edit';
 
 type ActionsProps = {
-    category: ServiceCategory;
+    category: BlogCategory;
 };
 
 export default function Actions({ category }: ActionsProps) {
-    const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null);
+    const [editingCategory, setEditingCategory] = useState<BlogCategory | null>(null);
 
     return (
         <>
             <div className="flex items-center gap-1">
-                <HasPermission permission="edit-service-categories">
+                <HasPermission permission="edit-blog-categories">
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="secondary" size="sm" className="h-8 w-8" onClick={() => setEditingCategoryId(category.id)}>
+                            <Button variant="secondary" size="sm" className="h-8 w-8" onClick={() => setEditingCategory(category)}>
                                 <Pencil className="size-3.5" />
                             </Button>
                         </TooltipTrigger>
@@ -31,21 +31,21 @@ export default function Actions({ category }: ActionsProps) {
                     </Tooltip>
                 </HasPermission>
 
-                <HasPermission permission="delete-service-categories">
+                <HasPermission permission="delete-blog-categories">
                     <DialogDelete
-                        description={`Tindakan ini tidak dapat dibatalkan. Data kategori layanan "${category.name}" akan dihapus secara permanen dari sistem.`}
+                        description={`Tindakan ini tidak dapat dibatalkan. Data kategori blog "${category.name}" akan dihapus secara permanen dari sistem.`}
                         deleteUrl={categories.destroy(category.id).url}
                         tooltipText="Hapus Kategori"
                     />
                 </HasPermission>
             </div>
 
-            {editingCategoryId && (
+            {editingCategory && (
                 <DrawerEdit
-                    categoryId={editingCategoryId}
-                    open={!!editingCategoryId}
+                    category={editingCategory}
+                    open={!!editingCategory}
                     onOpenChange={(open) => {
-                        if (!open) setEditingCategoryId(null);
+                        if (!open) setEditingCategory(null);
                     }}
                 />
             )}

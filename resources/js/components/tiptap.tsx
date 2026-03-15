@@ -89,9 +89,7 @@ const Tiptap = ({ content = '', onChange, uploadUrl = tiptap.imageUpload().url }
                 underline: false,
                 codeBlock: false,
             }),
-            CharacterCount.configure({
-                limit: 5000,
-            }),
+            CharacterCount,
             CodeBlockLowlight.configure({
                 lowlight,
                 defaultLanguage: 'javascript',

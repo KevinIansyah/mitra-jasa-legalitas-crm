@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardAction, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 import projects from '@/routes/projects';
-import type { Project } from '@/types/project';
+import type { Project } from '@/types/projects';
 import { DeliverableAddForm } from './_components/deliverable-add-form';
 import { DeliverableCard } from './_components/deliverable-card';
 

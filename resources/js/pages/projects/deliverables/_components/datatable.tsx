@@ -13,7 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
 import { index as deliverablesIndex } from '@/routes/projects/deliverables';
-import type { ProjectDeliverable } from '@/types/project';
+import type { ProjectDeliverable } from '@/types/projects';
 import getColumns from './columns';
 import DeliverableDetail from './deliverable-detail';
 

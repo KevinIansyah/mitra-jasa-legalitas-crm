@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { formatRupiah } from '@/lib/service';
-import type { EstimateItemFormData } from '@/types/quote';
+import type { EstimateItemFormData } from '@/types/quotes';
 
 type EstimateSummaryProps = {
     items: EstimateItemFormData[];

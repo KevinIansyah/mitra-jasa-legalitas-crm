@@ -19,9 +19,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { formatRupiah, getInitials } from '@/lib/service';
 import projects from '@/routes/projects';
 import search from '@/routes/search';
-import { CATEGORY_BUSINESS, STATUS_LEGAL, TIER, TIER_MAP, type Company, type Customer } from '@/types/contact';
-import type { ProjectTemplate } from '@/types/project-template';
-import type { Quote } from '@/types/quote';
+import { CATEGORY_BUSINESS, STATUS_LEGAL, TIER, TIER_MAP, type Company, type Customer } from '@/types/contacts';
+import type { ProjectTemplate } from '@/types/project-templates';
+import type { Quote } from '@/types/quotes';
 import type { Service, ServicePackage } from '@/types/service';
 
 type CompanyMode = 'none' | 'search' | 'create';
@@ -620,7 +620,7 @@ export function CreateSection({ services, quote }: CreateSectionProps) {
                                             <div className="flex items-center justify-between rounded-lg bg-primary/10 p-3 dark:bg-muted/40">
                                                 <div>
                                                     <p className="text-sm font-medium">{selectedCompany.name}</p>
-                                                            <p className="text-xs text-muted-foreground">{selectedCompany.email ?? selectedCompany.phone ?? '-'}</p>
+                                                    <p className="text-xs text-muted-foreground">{selectedCompany.email ?? selectedCompany.phone ?? '-'}</p>
                                                 </div>
                                             </div>
                                         ) : (

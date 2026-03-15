@@ -5,7 +5,7 @@ import { HasPermission } from '@/components/has-permission';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import companies from '@/routes/contacts/companies';
-import type { Company, CompanyWithCustomers } from '@/types/contact';
+import type { Company, CompanyWithCustomers } from '@/types/contacts';
 import { DrawerEdit } from './drawer-edit';
 import { DrawerManageCustomers } from './drawer-manage-customer';
 

@@ -1,4 +1,4 @@
-import type { ProjectTemplate } from '@/types/project-template';
+import type { ProjectTemplate } from '@/types/project-templates';
 
 export default function TemplateDetail({ template }: { template: ProjectTemplate }) {
     const hasContent = template.description || template.notes;

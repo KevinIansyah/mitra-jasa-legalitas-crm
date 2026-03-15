@@ -1,7 +1,7 @@
 import { FileSearch, Globe, PenLine, Rocket } from 'lucide-react';
 import { useState } from 'react';
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import type { City } from '@/types/city';
+import type { City } from '@/types/cities';
 import type { Paginator } from '@/types/paginator';
 import type { Service, ServiceCityPage, ServiceCityPageSummary } from '@/types/service';
 import { DataTable } from './datatable';

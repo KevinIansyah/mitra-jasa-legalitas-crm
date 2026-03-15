@@ -2,7 +2,7 @@
  * Service Management System - TypeScript Definitions
  */
 
-import type { City } from './city';
+import type { City } from './cities';
 
 // ============================================================
 // CORE TYPES

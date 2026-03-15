@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { formatRupiah } from '@/lib/service';
-import type { ProjectInvoiceItemFormData } from '@/types/project';
+import type { ProjectInvoiceItemFormData } from '@/types/projects';
 
 type InvoiceSummaryProps = {
     subtotal?: number;

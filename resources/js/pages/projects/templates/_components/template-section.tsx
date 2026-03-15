@@ -2,7 +2,7 @@ import { CheckCircle2, FileText, LayoutTemplate, Wrench } from 'lucide-react';
 import { useState } from 'react';
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Paginator } from '@/types/paginator';
-import type { ProjectTemplate, ProjectTemplateSummary } from '@/types/project-template';
+import type { ProjectTemplate, ProjectTemplateSummary } from '@/types/project-templates';
 import type { Service } from '@/types/service';
 import { DataTable } from './datatable';
 
@@ -61,7 +61,9 @@ export function TemplateSection({ templates, summary, services, filters }: Templ
             icon: <Wrench className="size-3.5" />,
             footer: (
                 <>
-                    <p className="font-medium">{summary.service_based} berbasis layanan · {summary.custom} custom</p>
+                    <p className="font-medium">
+                        {summary.service_based} berbasis layanan · {summary.custom} custom
+                    </p>
                     <p className="text-muted-foreground">Tipe pembuatan template</p>
                 </>
             ),

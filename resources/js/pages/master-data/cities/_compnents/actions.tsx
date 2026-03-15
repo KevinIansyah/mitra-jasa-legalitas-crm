@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import citiesRoute from '@/routes/master-data/cities';
-import type { City } from '@/types/city';
+import type { City } from '@/types/cities';
 import { DrawerEdit } from './drawer-edit';
 
 type ActionsProps = {

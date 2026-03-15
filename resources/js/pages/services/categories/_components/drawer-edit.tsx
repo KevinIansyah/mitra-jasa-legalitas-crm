@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 
 import categories from '@/routes/services/categories';
@@ -20,8 +21,9 @@ type DrawerEditProps = {
 export function DrawerEdit({ category, open, onOpenChange }: DrawerEditProps) {
     const loadingFocusRef = React.useRef<HTMLButtonElement>(null);
 
-    const { data, setData, put, processing, errors } = useForm<ServiceCategoryFormData>({
+    const { data, setData, patch, processing, errors } = useForm<ServiceCategoryFormData>({
         name: category.name || '',
+        status: category.status || 'active',
     });
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -31,7 +33,7 @@ export function DrawerEdit({ category, open, onOpenChange }: DrawerEditProps) {
             description: 'Kategori layanan sedang diperbarui.',
         });
 
-        put(categories.update(category.id).url, {
+        patch(categories.update(category.id).url, {
             preserveScroll: true,
             onSuccess: () => {
                 toast.success('Berhasil', {
@@ -67,8 +69,7 @@ export function DrawerEdit({ category, open, onOpenChange }: DrawerEditProps) {
                     </DrawerHeader>
 
                     <form onSubmit={handleSubmit} className="flex flex-1 flex-col px-4">
-                        <div>
-                            
+                        <div className="space-y-4">
                             <Field>
                                 <FieldLabel htmlFor="name">
                                     Label <span className="text-destructive">*</span>
@@ -86,6 +87,20 @@ export function DrawerEdit({ category, open, onOpenChange }: DrawerEditProps) {
                                 />
 
                                 {errors.name && <FieldError>{errors.name}</FieldError>}
+                            </Field>
+
+                            <Field>
+                                <FieldLabel htmlFor="status">Status</FieldLabel>
+                                <Select value={data.status} onValueChange={(value) => setData('status', value as 'active' | 'inactive')} disabled={processing}>
+                                    <SelectTrigger id="status">
+                                        <SelectValue placeholder="Pilih status..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="active">Active</SelectItem>
+                                        <SelectItem value="inactive">Inactive</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                {errors.status && <FieldError>{errors.status}</FieldError>}
                             </Field>
                         </div>
 

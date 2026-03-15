@@ -4,7 +4,7 @@ import AppLayout from '@/layouts/app-layout';
 import projects from '@/routes/projects';
 import type { BreadcrumbItem } from '@/types';
 import type { Paginator } from '@/types/paginator';
-import type { ProjectDocument, ProjectDocumentSummary } from '@/types/project';
+import type { ProjectDocument, ProjectDocumentSummary } from '@/types/projects';
 import { DocumentSection } from './_components/document-section';
 
 const breadcrumbs: BreadcrumbItem[] = [

@@ -1,35 +1,36 @@
 import { Head, usePage } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
-import services from '@/routes/services';
+import blogs from '@/routes/blogs';
 import type { BreadcrumbItem } from '@/types';
-import type { Service, ServiceCategory } from '@/types/service';
+import type { Blog, BlogCategory, BlogRelatedService, BlogTag } from '@/types/blogs';
 import { EditSection } from './_components/edit-section';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Layanan',
-        href: services.index().url,
-    },
-    {
-        title: 'Edit',
-        href: '#',
-    },
-];
-
 export default function Page() {
-    const { service, categories } = usePage<{
-        service: Service;
-        categories: ServiceCategory[];
+    const { blog, categories, tags, services } = usePage<{
+        blog: Blog;
+        categories: BlogCategory[];
+        tags: BlogTag[];
+        services: BlogRelatedService[];
     }>().props;
+
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: 'Blog',
+            href: blogs.index().url,
+        },
+        {
+            title: blog.title ?? 'Edit',
+            href: '#',
+        },
+    ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Tambah Layanan" />
+            <Head title={`Edit Blog - ${blog.title}`} />
             <div className="p-4 md:p-6">
-                <Heading title="Edit Layanan" description="Perbarui informasi dan pengaturan layanan yang sudah ada." />
-
-                <EditSection service={service} categories={categories} />
+                <Heading title="Edit Blog" description={`Mengedit blog: ${blog.title}`} />
+                <EditSection blog={blog} categories={categories} tags={tags} services={services} />
             </div>
         </AppLayout>
     );

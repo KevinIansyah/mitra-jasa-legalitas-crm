@@ -3,7 +3,7 @@
  */
 
 import type { User } from './auth';
-import type { Project, ProjectInvoice } from './project';
+import type { Project, ProjectInvoice } from './projects';
 import type { Vendor } from './vendors';
 
 // ============================================================

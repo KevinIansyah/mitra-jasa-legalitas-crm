@@ -35,10 +35,12 @@ class ServiceCategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:service_categories,name',
+            'status' => 'nullable|in:active,inactive',
         ], [
             'name.required' => 'Nama kategori wajib diisi.',
             'name.max'      => 'Nama kategori maksimal 255 karakter.',
             'name.unique'   => 'Nama kategori sudah digunakan.',
+            'status.in'     => 'Status tidak valid.',
         ]);
 
         ServiceCategory::create($validated);
@@ -57,10 +59,12 @@ class ServiceCategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:service_categories,name,' . $category->id,
+            'status' => 'nullable|in:active,inactive',
         ], [
             'name.required' => 'Nama kategori wajib diisi.',
             'name.max'      => 'Nama kategori maksimal 255 karakter.',
             'name.unique'   => 'Nama kategori sudah digunakan.',
+            'status.in'     => 'Status tidak valid.',
         ]);
 
         $category->update($validated);
@@ -71,7 +75,7 @@ class ServiceCategoryController extends Controller
     public function destroy(ServiceCategory $category)
     {
         if ($category->services()->exists()) {
-            return back()->with('error', 'Kategori tidak dapat dihapus karena masih digunakan oleh layanan.');
+            return back()->withErrors(['error' => 'Kategori tidak dapat dihapus karena masih digunakan oleh layanan.']);
         }
 
         $category->delete();

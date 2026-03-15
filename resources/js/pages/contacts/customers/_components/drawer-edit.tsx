@@ -11,7 +11,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 
 import customers from '@/routes/contacts/customers';
-import { TIER, type Customer, type CustomerFormData } from '@/types/contact';
+import { TIER, type Customer, type CustomerFormData } from '@/types/contacts';
 
 type DrawerEditProps = {
     customer: Customer;

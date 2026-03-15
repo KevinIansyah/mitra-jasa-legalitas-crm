@@ -3,7 +3,7 @@ import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
 import templates from '@/routes/projects/templates';
 import type { BreadcrumbItem } from '@/types';
-import type { ProjectTemplate } from '@/types/project-template';
+import type { ProjectTemplate } from '@/types/project-templates';
 import type { Service } from '@/types/service';
 import { EditSection } from './_components/edit-section';
 

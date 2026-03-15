@@ -11,7 +11,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { getInitials } from '@/lib/service';
 import { formatRelativeTime } from '@/lib/utils';
 import projects from '@/routes/projects';
-import type { ProjectComment } from '@/types/project';
+import type { ProjectComment } from '@/types/projects';
 import { CommentBody } from './comment-body';
 import type { MentionUser } from './comment-composer';
 import { CommentComposer } from './comment-composer';
@@ -25,7 +25,7 @@ type CommentItemProps = {
 };
 
 export function CommentItem({ comment, projectId, currentUserId, mentionUsers, depth = 0 }: CommentItemProps) {
-    const R2_PUBLIC_URL = import.meta.env.VITE_R2_PUBLIC_URL;
+    const R2_PUBLIC_URL = import.meta.env.VITE_CLOUDFLARE_R2_PUBLIC_URL;
     const [showReplyForm, setShowReplyForm] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [processing, setProcessing] = useState(false);
@@ -110,7 +110,7 @@ export function CommentItem({ comment, projectId, currentUserId, mentionUsers, d
                 <Avatar className="h-8 w-8 shrink-0 rounded-full">
                     {!isDeleted && (
                         <>
-                            <AvatarImage src={comment.user?.avatar ? `${R2_PUBLIC_URL}/${comment.user?.avatar}` : undefined} />
+                            <AvatarImage src={`${R2_PUBLIC_URL}/${comment.user?.avatar}`} />
                             <AvatarFallback className="bg-primary/10 text-primary">{getInitials(comment.user?.name)}</AvatarFallback>
                         </>
                     )}

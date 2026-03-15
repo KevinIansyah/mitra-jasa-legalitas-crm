@@ -110,7 +110,7 @@ class ProjectDeliverableController extends Controller
         if ($error = $this->validateDeliverable($project, $deliverable)) return $error;
 
         if (!$deliverable->file_path) {
-            return back()->withErrors(['file' => 'Hasil akhir belum memiliki file.']);
+            return back()->withErrors(['error' => 'Hasil akhir belum memiliki file.']);
         }
 
         if (!$deliverable->is_encrypted) {
@@ -131,7 +131,7 @@ class ProjectDeliverableController extends Controller
         if ($error = $this->validateDeliverable($project, $deliverable)) return $error;
 
         if (!$deliverable->file_path) {
-            return back()->withErrors(['file' => 'Dokumen belum memiliki file.']);
+            return back()->withErrors(['error' => 'Dokumen belum memiliki file.']);
         }
 
         $content = FileHelper::downloadFromR2(
@@ -154,7 +154,7 @@ class ProjectDeliverableController extends Controller
             ->get();
 
         if ($documents->isEmpty()) {
-            return back()->withErrors(['file' => 'Tidak ada dokumen yang bisa diunduh.']);
+            return back()->withErrors(['error' => 'Tidak ada dokumen yang bisa diunduh.']);
         }
 
         $zipPath = tempnam(sys_get_temp_dir(), 'docs_') . '.zip';
@@ -186,7 +186,7 @@ class ProjectDeliverableController extends Controller
     private function validateDeliverable(Project $project, ProjectDeliverable $deliverable)
     {
         if ($deliverable->project_id !== $project->id) {
-            return back()->withErrors(['deliverable' => 'Hasil akhir tidak ditemukan.']);
+            return back()->withErrors(['error' => 'Hasil akhir tidak ditemukan.']);
         }
 
         return null;

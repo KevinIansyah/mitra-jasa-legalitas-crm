@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Spinner } from '@/components/ui/spinner';
 
 import contacts from '@/routes/contacts';
-import type { Customer } from '@/types/contact';
+import type { Customer } from '@/types/contacts';
 
 type Props = {
     customer: Customer;

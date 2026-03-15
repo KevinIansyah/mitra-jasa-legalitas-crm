@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardAction, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 import projects from '@/routes/projects';
-import type { Project, ProjectDocument } from '@/types/project';
+import type { Project, ProjectDocument } from '@/types/projects';
 import { DocumentCard } from './_components/document-card';
 import { DocumentForm } from './_components/document-form';
 import { DocumentUploadDrawer } from './_components/document-upload-drawer';

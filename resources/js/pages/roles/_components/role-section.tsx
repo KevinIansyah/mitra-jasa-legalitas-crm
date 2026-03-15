@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { Paginator } from '@/types/paginator';
-import type { Role } from '@/types/role';
+import type { Role } from '@/types/roles';
 import { DataTable } from './datatable';
 
 interface RoleSectionProps {

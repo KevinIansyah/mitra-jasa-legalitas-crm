@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatRupiah } from '@/lib/service';
 import type { Paginator } from '@/types/paginator';
-import type { ProjectPayment } from '@/types/project';
+import type { ProjectPayment } from '@/types/projects';
 import type { PaymentSummary } from '../index';
 import { DataTable } from './datatable';
 

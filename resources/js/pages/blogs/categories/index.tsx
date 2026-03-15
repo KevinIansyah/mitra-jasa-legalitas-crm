@@ -1,16 +1,15 @@
 import { Head, usePage } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
-import services from '@/routes/services';
 import type { BreadcrumbItem } from '@/types';
+import type { BlogCategory } from '@/types/blogs';
 import type { Paginator } from '@/types/paginator';
-import type { ServiceCategory } from '@/types/service';
 import { CategorySection } from './_components/category-section';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Layanan',
-        href: services.index().url,
+        title: 'Blog',
+        href: '/blogs',
     },
     {
         title: 'Kategori',
@@ -20,15 +19,15 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function Page() {
     const { categories, filters } = usePage<{
-        categories: Paginator<ServiceCategory>;
+        categories: Paginator<BlogCategory>;
         filters: { search?: string };
     }>().props;
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Kategori Layanan" />
+            <Head title="Kategori Blog" />
             <div className="p-4 md:p-6">
-                <Heading title="Manajemen Kategori Layanan" description="Kelola daftar kategori layanan secara terpusat" />
+                <Heading title="Manajemen Kategori Blog" description="Kelola daftar kategori blog secara terpusat" />
 
                 <CategorySection categories={categories} filters={filters} />
             </div>

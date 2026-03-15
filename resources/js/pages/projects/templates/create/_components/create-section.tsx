@@ -15,7 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 
 import { deleteItemAndReindex, moveItemDown, moveItemUp } from '@/lib/service';
 import templates from '@/routes/projects/templates';
-import type { ProjectTemplateStatus, ProjectTemplateWithService } from '@/types/project-template';
+import type { ProjectTemplateStatus, ProjectTemplateWithService } from '@/types/project-templates';
 import type { Service } from '@/types/service';
 
 import type { LocalDocument } from '../../_components/document-card';

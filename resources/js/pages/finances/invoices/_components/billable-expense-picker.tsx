@@ -9,7 +9,7 @@ import { formatRupiah } from '@/lib/service';
 import projects from '@/routes/projects';
 import type { Expense } from '@/types/expenses';
 import { EXPENSE_CATEGORIES_MAP } from '@/types/expenses';
-import type { ProjectInvoiceItemFormData } from '@/types/project';
+import type { ProjectInvoiceItemFormData } from '@/types/projects';
 
 type BillableExpensePickerProps = {
     projectId: number;

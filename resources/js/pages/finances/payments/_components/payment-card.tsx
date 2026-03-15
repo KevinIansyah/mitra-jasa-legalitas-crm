@@ -17,8 +17,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { formatRupiah } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
 import invoices from '@/routes/finances/invoices';
-import type { PaymentStatus, ProjectInvoice, ProjectPayment } from '@/types/project';
-import { PAYMENT_METHODS_MAP, PAYMENT_STATUSES, PAYMENT_STATUSES_MAP } from '@/types/project';
+import type { PaymentStatus, ProjectInvoice, ProjectPayment } from '@/types/projects';
+import { PAYMENT_METHODS_MAP, PAYMENT_STATUSES, PAYMENT_STATUSES_MAP } from '@/types/projects';
 import { PaymentAddDrawer } from './payment-add-drawer';
 import { PaymentEditDrawer } from './payment-edit-drawer';
 

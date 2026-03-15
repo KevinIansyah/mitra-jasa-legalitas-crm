@@ -1,6 +1,6 @@
 import type { User } from './auth';
-import type { Customer } from './contact';
-import type { Project } from './project';
+import type { Customer } from './contacts';
+import type { Project } from './projects';
 import type { Service, ServicePackage } from './service';
 
 // ============================================================

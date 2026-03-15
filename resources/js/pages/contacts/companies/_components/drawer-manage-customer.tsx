@@ -17,7 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getInitials } from '@/lib/service';
 import companies from '@/routes/contacts/companies';
 import search from '@/routes/search';
-import { TIER_MAP, type AttachCustomerToCompanyFormData, type CompanyWithCustomers, type Customer } from '@/types/contact';
+import { TIER_MAP, type AttachCustomerToCompanyFormData, type CompanyWithCustomers, type Customer } from '@/types/contacts';
 import { CustomerItem } from './customer-item';
 
 interface DrawerManageCustomersProps {

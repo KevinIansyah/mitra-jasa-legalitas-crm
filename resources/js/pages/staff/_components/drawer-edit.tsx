@@ -12,7 +12,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 
 import staffRoutes from '@/routes/staff';
-import type { Role } from '@/types/role';
+import type { Role } from '@/types/roles';
 import { AVAILABILITY_STATUSES, type Staff, type StaffUpdateFormData } from '@/types/staff';
 
 type DrawerEditProps = {

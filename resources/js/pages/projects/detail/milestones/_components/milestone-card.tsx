@@ -13,8 +13,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 import { formatDate } from '@/lib/utils';
 import projects from '@/routes/projects';
-import { MILESTONE_ICONS, MILESTONE_STATUSES, MILESTONE_STATUSES_MAP, UNDELETABLE_MILESTONE_STATUSES } from '@/types/project';
-import type { MilestoneStatus, ProjectMilestone } from '@/types/project';
+import { MILESTONE_ICONS, MILESTONE_STATUSES, MILESTONE_STATUSES_MAP, UNDELETABLE_MILESTONE_STATUSES } from '@/types/projects';
+import type { MilestoneStatus, ProjectMilestone } from '@/types/projects';
 import { MilestoneForm } from './milestone-form';
 
 type MilestoneCardProps = {

@@ -13,8 +13,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import projects from '@/routes/projects';
-import type { DocumentStatus } from '@/types/project';
-import { DOCUMENT_STATUSES, DOCUMENT_STATUSES_MAP, UNDELETABLE_DOCUMENT_STATUSES, type ProjectDocument } from '@/types/project';
+import type { DocumentStatus } from '@/types/projects';
+import { DOCUMENT_STATUSES, DOCUMENT_STATUSES_MAP, UNDELETABLE_DOCUMENT_STATUSES, type ProjectDocument } from '@/types/projects';
 import { DocumentUploadDrawer } from '../../detail/documents/_components/document-upload-drawer';
 
 type ActionsProps = {

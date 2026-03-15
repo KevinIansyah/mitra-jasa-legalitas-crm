@@ -1,9 +1,11 @@
-import { router, useForm } from '@inertiajs/react';
-import { ImagePlus, Plus, Sparkles, X } from 'lucide-react';
+import { useForm } from '@inertiajs/react';
+import { ImagePlus, Pencil, Sparkles, TableOfContents, Trash } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
-
 import { toast } from 'sonner';
+
+import MultiSelect from '@/components/multi-select';
 import Tiptap from '@/components/tiptap';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
@@ -13,223 +15,236 @@ import { Spinner } from '@/components/ui/spinner';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
-import {
-    deleteItemAndReindex,
-    formatSize,
-    makeFaq,
-    makeLegalBasis,
-    makePackage,
-    makeProcessStep,
-    makeRequirementCategory,
-    moveItemDown,
-    moveItemUp,
-    readImageAsDataURL,
-    validateImageFile,
-} from '@/lib/service';
-import services from '@/routes/services';
-import type { Service, ServiceCategory, ServiceStatus } from '@/types/service';
+import { formatSize, readImageAsDataURL, validateImageFile } from '@/lib/service';
+import blogs from '@/routes/blogs';
+import type { Blog, BlogCategory, BlogTag } from '@/types/blogs';
+import type { Service } from '@/types/service';
+import { defaultSeo, SeoCard, type LocalBlogSeo } from '../../_components/seo-card';
+import { AiGenerateDrawer, type AiDrawerType } from './ai-generate-drawe';
 
-import { FaqCard, type LocalFaq } from '../../_components/faq-card';
-import { LegalBasisCard, type LocalLegalBasis } from '../../_components/legal-basis-card';
-import { PackageCard, type LocalPackage } from '../../_components/package-card';
-import { ProcessStepCard, type LocalProcessStep } from '../../_components/process-step-card';
-import { RequirementCard, type LocalRequirementCategory } from '../../_components/requirement-card';
+const R2_PUBLIC_URL = import.meta.env.VITE_CLOUDFLARE_R2_PUBLIC_URL;
+
+// ============================================================
+// TYPES
+// ============================================================
 
 type BasicInfoFormData = {
-    service_category_id: number;
-    name: string;
-    slug: string;
+    blog_category_id: number | '';
+    title: string;
     short_description: string;
     featured_image: File | null;
     remove_image: boolean;
     is_published: boolean;
     is_featured: boolean;
-    is_popular: boolean;
-    status: ServiceStatus;
+    tag_ids: number[];
+    service_ids: number[];
 };
 
 type ContentFormData = {
-    introduction: string;
     content: string;
 };
 
-type PackageFormData = {
-    packages: LocalPackage[];
-};
-
-type FaqFormData = {
-    faqs: LocalFaq[];
-};
-
-type LegalBasisFormData = {
-    legal_bases: LocalLegalBasis[];
-};
-
-type RequirementCategoryFormData = {
-    requirement_categories: LocalRequirementCategory[];
-};
-
-type ProcessStepFormData = {
-    process_steps: LocalProcessStep[];
-};
-
-type TabId = 'basic-information' | 'content' | 'package' | 'faq' | 'legal-basis' | 'requirement' | 'timeline';
+type TabId = 'basic-information' | 'content' | 'seo';
 
 type EditSectionProps = {
-    service: Service;
-    categories: ServiceCategory[];
+    blog: Blog;
+    categories: BlogCategory[];
+    tags: BlogTag[];
+    services: Service[];
 };
 
-export function EditSection({ service, categories }: EditSectionProps) {
+// ============================================================
+// HELPERS
+// ============================================================
+
+function resolveImageUrl(path: string | null | undefined): string | null {
+    if (!path) return null;
+    return path.startsWith('http') ? path : `${R2_PUBLIC_URL}/${path}`;
+}
+
+// ============================================================
+// COMPONENT
+// ============================================================
+
+export function EditSection({ blog, categories, tags, services }: EditSectionProps) {
+    const tagOptions = tags.map((t) => ({ id: t.id, label: t.name }));
+    const serviceOptions = services.map((s) => ({ id: s.id, label: s.name }));
+    const existingTagIds = blog.tags?.map((t) => t.id) ?? [];
+    const existingServiceIds = blog.services?.map((s) => s.id) ?? [];
     const [activeTab, setActiveTab] = useState<TabId>('basic-information');
-    const [imagePreview, setImagePreview] = useState<{ src: string; name: string; size: number } | null>(
-        service.featured_image
-            ? {
-                  src: `/storage/${service.featured_image}`,
-                  name: service.featured_image.split('/').pop() || 'image',
-                  size: 0,
-              }
-            : null,
-    );
+    const [aiDrawer, setAiDrawer] = useState<{ open: boolean; type: AiDrawerType }>({ open: false, type: 'content' });
+    const openAiDrawer = (type: AiDrawerType) => setAiDrawer({ open: true, type });
+
+    // ============================================================
+    // BASIC INFORMATION FORM
+    // ============================================================
+
+    const [imagePreview, setImagePreview] = useState<{ src: string; name: string; size: number } | null>(() => {
+        const url = resolveImageUrl(blog.featured_image);
+        if (!url) return null;
+        return { src: url, name: blog.featured_image!.split('/').pop() || 'image', size: 0 };
+    });
     const [imageError, setImageError] = useState<string | null>(null);
     const [isDragging, setIsDragging] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // ============================================================
-    // FORMS
-    // ============================================================
-    const basicInfoForm = useForm<BasicInfoFormData>({
-        service_category_id: service.service_category_id,
-        name: service.name,
-        slug: service.slug,
-        short_description: service.short_description || '',
+    const {
+        data: basicData,
+        setData: setBasicData,
+        post: postBasic,
+        processing: processingBasic,
+        errors: basicErrors,
+        isDirty: basicIsDirty,
+    } = useForm<BasicInfoFormData>({
+        blog_category_id: blog.blog_category_id ?? '',
+        title: blog.title ?? '',
+    
+        short_description: blog.short_description ?? '',
         featured_image: null,
         remove_image: false,
-        is_published: service.is_published,
-        is_featured: service.is_featured,
-        is_popular: service.is_popular,
-        status: service.status,
+        is_published: blog.is_published ?? false,
+        is_featured: blog.is_featured ?? false,
+        tag_ids: existingTagIds,
+        service_ids: existingServiceIds,
     });
+
+    const handleFile = async (file: File | undefined) => {
+        const error = validateImageFile(file);
+        if (error) {
+            setImageError(error);
+            if (fileInputRef.current) fileInputRef.current.value = '';
+            return;
+        }
+        setImageError(null);
+        setBasicData('featured_image', file!);
+        setBasicData('remove_image', false);
+        const preview = await readImageAsDataURL(file!);
+        setImagePreview({ src: preview, name: file!.name, size: file!.size });
+    };
+
+    const handleDragEnter = useCallback((e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragging(true);
+    }, []);
+
+    const handleDragLeave = useCallback((e: React.DragEvent) => {
+        e.preventDefault();
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) setIsDragging(false);
+    }, []);
+
+    const handleRemoveImage = () => {
+        setImagePreview(null);
+        setImageError(null);
+        setBasicData('featured_image', null);
+        setBasicData('remove_image', true);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+
+    const handleSubmitBasic = (e: React.FormEvent) => {
+        e.preventDefault();
+        const id = toast.loading('Memproses...', { description: 'Informasi dasar blog sedang diperbarui.' });
+        postBasic(blogs.update.basicInformation(blog.id).url, {
+            forceFormData: true,
+            preserveScroll: true,
+            onSuccess: () => toast.success('Berhasil', { description: 'Informasi dasar berhasil diperbarui.' }),
+            onError: (errs) => {
+                const msg = Object.values(errs)[0] ?? 'Terjadi kesalahan.';
+                toast.error('Gagal', { description: String(msg) });
+            },
+            onFinish: () => toast.dismiss(id),
+        });
+    };
+
+    // ============================================================
+    // CONTENT FORM
+    // ============================================================
 
     const contentForm = useForm<ContentFormData>({
-        introduction: service.introduction || '',
-        content: service.content || '',
+        content: blog.content ?? '',
     });
 
-    const packageForm = useForm<PackageFormData>({
-        packages: (service.packages ?? []).map((pkg) => ({
-            id: pkg.id,
-            _key: `pkg-${pkg.id}`,
-            name: pkg.name,
-            price: Number(pkg.price),
-            original_price: pkg.original_price ? Number(pkg.original_price) : null,
-            duration: pkg.duration,
-            duration_days: pkg.duration_days,
-            short_description: pkg.short_description,
-            is_highlighted: pkg.is_highlighted,
-            badge: pkg.badge,
-            sort_order: pkg.sort_order,
-            status: pkg.status,
-            features: (pkg.features ?? []).map((feat) => ({
-                id: feat.id,
-                _key: `feat-${feat.id}`,
-                feature_name: feat.feature_name,
-                description: feat.description,
-                is_included: feat.is_included,
-                sort_order: feat.sort_order,
-            })),
-        })),
-    });
-
-    const faqForm = useForm<FaqFormData>({
-        faqs: (service.faqs ?? []).map((faq) => ({
-            id: faq.id,
-            _key: `faq-${faq.id}`,
-            question: faq.question,
-            answer: faq.answer,
-            sort_order: faq.sort_order,
-            status: faq.status,
-        })),
-    });
-
-    const legalBasisForm = useForm<LegalBasisFormData>({
-        legal_bases: (service.legal_bases ?? []).map((basis) => ({
-            id: basis.id,
-            _key: `basis-${basis.id}`,
-            document_type: basis.document_type,
-            document_number: basis.document_number,
-            title: basis.title,
-            issued_date: basis.issued_date ? basis.issued_date : null,
-            url: basis.url ? basis.url : null,
-            description: basis.description ? basis.description : null,
-            sort_order: basis.sort_order,
-            status: basis.status,
-        })),
-    });
-
-    const requirementCategoriesForm = useForm<RequirementCategoryFormData>({
-        requirement_categories: (service.requirement_categories ?? []).map((category) => ({
-            id: category.id,
-            _key: `category-${category.id}`,
-            name: category.name,
-            description: category.description ?? '',
-            sort_order: category.sort_order,
-            status: category.status,
-            requirements: (category.requirements ?? []).map((req) => ({
-                id: req.id,
-                _key: `requirement-${req.id}`,
-                service_requirement_category_id: req.service_requirement_category_id,
-                name: req.name,
-                description: req.description ?? '',
-                is_required: req.is_required,
-                document_format: req.document_format ?? '',
-                notes: req.notes ?? '',
-                sort_order: req.sort_order,
-                status: req.status,
-            })),
-        })),
-    });
-
-    const processStepsForm = useForm<ProcessStepFormData>({
-        process_steps: (service.process_steps ?? []).map((step) => ({
-            id: step.id,
-            _key: `step-${step.id}`,
-            title: step.title,
-            description: step.description ?? null,
-            duration: step.duration ?? null,
-            duration_days: step.duration_days ?? null,
-            required_documents: step.required_documents ?? null,
-            notes: step.notes ?? null,
-            icon: step.icon ?? null,
-            sort_order: step.sort_order,
-            status: step.status,
-        })),
-    });
+    const handleSubmitContent = (e: React.FormEvent) => {
+        e.preventDefault();
+        const id = toast.loading('Memproses...', { description: 'Konten blog sedang diperbarui.' });
+        contentForm.patch(blogs.update.content(blog.id).url, {
+            preserveScroll: true,
+            onSuccess: () => toast.success('Berhasil', { description: 'Konten berhasil diperbarui.' }),
+            onError: (errs) => {
+                const msg = Object.values(errs)[0] ?? 'Terjadi kesalahan.';
+                toast.error('Gagal', { description: String(msg) });
+            },
+            onFinish: () => toast.dismiss(id),
+        });
+    };
 
     // ============================================================
-    // TAB HANDLERS / TRACK UNSAVED CHANGES
+    // SEO FORM
     // ============================================================
-    const hasUnsavedChanges = {
-        'basic-information': basicInfoForm.isDirty,
+
+    const initSeo = (): LocalBlogSeo => {
+        const s = blog.seo;
+        return {
+            ...defaultSeo(),
+            meta_title: s?.meta_title ?? '',
+            meta_description: s?.meta_description ?? '',
+            canonical_url: s?.canonical_url ?? '',
+            focus_keyword: s?.focus_keyword ?? '',
+            secondary_keywords: s?.secondary_keywords ?? [],
+            og_title: s?.og_title ?? '',
+            og_description: s?.og_description ?? '',
+            og_image: null,
+            og_image_url: s?.og_image ?? null,
+            remove_og_image: false,
+            twitter_card: (s?.twitter_card as LocalBlogSeo['twitter_card']) ?? 'summary_large_image',
+            twitter_title: s?.twitter_title ?? '',
+            twitter_description: s?.twitter_description ?? '',
+            twitter_image: null,
+            twitter_image_url: s?.twitter_image ?? null,
+            remove_twitter_image: false,
+            robots: (s?.robots as LocalBlogSeo['robots']) ?? 'index,follow',
+            in_sitemap: s?.in_sitemap ?? true,
+            sitemap_priority: (s?.sitemap_priority as LocalBlogSeo['sitemap_priority']) ?? '0.7',
+            sitemap_changefreq: (s?.sitemap_changefreq as LocalBlogSeo['sitemap_changefreq']) ?? 'weekly',
+        };
+    };
+
+    const {
+        data: seoData,
+        setData: setSeoData,
+        post: postSeo,
+        processing: processingSeo,
+        errors: seoErrors,
+        isDirty: seoIsDirty,
+    } = useForm<{ seo: LocalBlogSeo }>({
+        seo: initSeo(),
+    });
+
+    const handleSubmitSeo = (e: React.FormEvent) => {
+        e.preventDefault();
+        const id = toast.loading('Memproses...', { description: 'SEO blog sedang diperbarui.' });
+        postSeo(blogs.update.seo(blog.id).url, {
+            forceFormData: true,
+            preserveScroll: true,
+            onSuccess: () => toast.success('Berhasil', { description: 'SEO berhasil diperbarui.' }),
+            onError: (errs) => {
+                const msg = Object.values(errs)[0] ?? 'Terjadi kesalahan.';
+                toast.error('Gagal', { description: String(msg) });
+            },
+            onFinish: () => toast.dismiss(id),
+        });
+    };
+
+    // ============================================================
+    // TAB CHANGE GUARD (unsaved changes warning)
+    // ============================================================
+
+    const hasUnsavedChanges: Record<TabId, boolean> = {
+        'basic-information': basicIsDirty,
         content: contentForm.isDirty,
-        package: packageForm.isDirty,
-        faq: faqForm.isDirty,
-        'legal-basis': legalBasisForm.isDirty,
-        requirement: requirementCategoriesForm.isDirty,
-        timeline: processStepsForm.isDirty,
-    } satisfies Record<TabId, boolean>;
-
-    // const handleTabChange = (value: string) => {
-    //     const newTab = value as TabId;
-
-    //     if (hasUnsavedChanges[activeTab]) {
-    //         const confirmed = window.confirm('Ada perubahan yang belum disimpan. Yakin ingin pindah tab?');
-    //         if (!confirmed) return;
-    //     }
-
-    //     setActiveTab(newTab);
-    // };
+        seo: seoIsDirty,
+    };
 
     const handleTabChange = (value: string) => {
         const newTab = value as TabId;
@@ -242,7 +257,6 @@ export function EditSection({ service, categories }: EditSectionProps) {
                     onClick: () => setActiveTab(newTab),
                 },
             });
-
             return;
         }
 
@@ -250,1059 +264,355 @@ export function EditSection({ service, categories }: EditSectionProps) {
     };
 
     // ============================================================
-    // IMAGE HANDLERS
+    // AI APPLY HANDLER
     // ============================================================
-    const handleFile = async (file: File | undefined) => {
-        const error = validateImageFile(file);
 
-        if (error) {
-            setImageError(error);
-
-            if (fileInputRef.current) fileInputRef.current.value = '';
-
-            return;
-        }
-
-        setImageError(null);
-        basicInfoForm.setData('featured_image', file!);
-
-        const preview = await readImageAsDataURL(file!);
-        setImagePreview({ src: preview, name: file!.name, size: file!.size });
-    };
-
-    const handleDragEnter = useCallback((e: React.DragEvent) => {
-        e.preventDefault();
-
-        setIsDragging(true);
-    }, []);
-
-    const handleDragLeave = useCallback((e: React.DragEvent) => {
-        e.preventDefault();
-
-        if (!e.currentTarget.contains(e.relatedTarget as Node)) setIsDragging(false);
-    }, []);
-
-    const handleDragOver = (e: React.DragEvent) => e.preventDefault();
-
-    const handleDrop = (e: React.DragEvent) => {
-        e.preventDefault();
-
-        setIsDragging(false);
-        handleFile(e.dataTransfer.files[0]);
-    };
-
-    const handleRemoveImage = () => {
-        setImagePreview(null);
-        setImageError(null);
-        basicInfoForm.setData('featured_image', null);
-        basicInfoForm.setData('remove_image', true);
-        if (fileInputRef.current) fileInputRef.current.value = '';
+    const handleAiApply = (data: Record<string, unknown>) => {
+        if (data.short_description !== undefined) setBasicData('short_description', data.short_description as string);
+        if (data.content !== undefined) contentForm.setData('content', data.content as string);
+        if (data.meta_title !== undefined) setSeoData('seo', { ...seoData.seo, meta_title: data.meta_title as string });
+        if (data.meta_description !== undefined) setSeoData('seo', { ...seoData.seo, meta_description: data.meta_description as string });
+        if (data.focus_keyword !== undefined) setSeoData('seo', { ...seoData.seo, focus_keyword: data.focus_keyword as string });
     };
 
     // ============================================================
-    // GENERIC MOVE HANDLERS
+    // RENDER
     // ============================================================
-
-    const createMoveHandlers = <T extends { sort_order: number }>(items: T[], setItems: (items: T[]) => void) => ({
-        moveUp: (index: number) => setItems(moveItemUp(items, index)),
-        moveDown: (index: number) => setItems(moveItemDown(items, index)),
-    });
-
-    // ============================================================
-    // PACKAGE HANDLERS
-    // ============================================================
-
-    const addPackage = () => packageForm.setData('packages', [...packageForm.data.packages, makePackage(packageForm.data.packages.length)]);
-
-    const updatePackage = (_key: string, updated: LocalPackage) =>
-        packageForm.setData(
-            'packages',
-            packageForm.data.packages.map((p) => (p._key === _key ? updated : p)),
-        );
-
-    const deletePackage = (_key: string) => packageForm.setData('packages', deleteItemAndReindex(packageForm.data.packages, _key));
-
-    const packageHandlers = createMoveHandlers(packageForm.data.packages, (packages) => packageForm.setData('packages', packages));
-
-    // ============================================================
-    // FAQ HANDLERS
-    // ============================================================
-    const addFaq = () => faqForm.setData('faqs', [...faqForm.data.faqs, makeFaq(faqForm.data.faqs.length)]);
-
-    const updateFaq = (_key: string, updated: LocalFaq) =>
-        faqForm.setData(
-            'faqs',
-            faqForm.data.faqs.map((f) => (f._key === _key ? updated : f)),
-        );
-
-    const deleteFaq = (_key: string) => faqForm.setData('faqs', deleteItemAndReindex(faqForm.data.faqs, _key));
-
-    const faqHandlers = createMoveHandlers(faqForm.data.faqs, (faqs) => faqForm.setData('faqs', faqs));
-
-    // ============================================================
-    // LEGAL BASIS HANDLERS
-    // ============================================================
-    const addLegalBasis = () => legalBasisForm.setData('legal_bases', [...legalBasisForm.data.legal_bases, makeLegalBasis(legalBasisForm.data.legal_bases.length)]);
-
-    const updateLegalBasis = (_key: string, updated: LocalLegalBasis) =>
-        legalBasisForm.setData(
-            'legal_bases',
-            legalBasisForm.data.legal_bases.map((l) => (l._key === _key ? updated : l)),
-        );
-
-    const deleteLegalBasis = (_key: string) => legalBasisForm.setData('legal_bases', deleteItemAndReindex(legalBasisForm.data.legal_bases, _key));
-
-    const legalBasisHandlers = createMoveHandlers(legalBasisForm.data.legal_bases, (legal_bases) => legalBasisForm.setData('legal_bases', legal_bases));
-
-    // ============================================================
-    // REQUIREMENT CATEGORY HANDLERS
-    // ============================================================
-    const addRequirementCategory = () =>
-        requirementCategoriesForm.setData('requirement_categories', [
-            ...requirementCategoriesForm.data.requirement_categories,
-            makeRequirementCategory(requirementCategoriesForm.data.requirement_categories.length),
-        ]);
-
-    const updateRequirementCategory = (_key: string, updated: LocalRequirementCategory) =>
-        requirementCategoriesForm.setData(
-            'requirement_categories',
-            requirementCategoriesForm.data.requirement_categories.map((r) => (r._key === _key ? updated : r)),
-        );
-
-    const deleteRequirementCategory = (_key: string) =>
-        requirementCategoriesForm.setData('requirement_categories', deleteItemAndReindex(requirementCategoriesForm.data.requirement_categories, _key));
-
-    const requirementCategoryHandlers = createMoveHandlers(requirementCategoriesForm.data.requirement_categories, (requirement_categories) =>
-        requirementCategoriesForm.setData('requirement_categories', requirement_categories),
-    );
-
-    // ============================================================
-    // PROCESS STEP HANDLERS
-    // ============================================================
-    const addProcessStep = () => processStepsForm.setData('process_steps', [...processStepsForm.data.process_steps, makeProcessStep(processStepsForm.data.process_steps.length)]);
-
-    const updateProcessStep = (_key: string, updated: LocalProcessStep) =>
-        processStepsForm.setData(
-            'process_steps',
-            processStepsForm.data.process_steps.map((p) => (p._key === _key ? updated : p)),
-        );
-
-    const deleteProcessStep = (_key: string) => processStepsForm.setData('process_steps', deleteItemAndReindex(processStepsForm.data.process_steps, _key));
-
-    const processStepHandlers = createMoveHandlers(processStepsForm.data.process_steps, (process_steps) => processStepsForm.setData('process_steps', process_steps));
-
-    // ============================================================
-    // FORM SUBMISSION HANDLERS
-    // ============================================================
-    const handleSubmitBasicInfo = (e: React.FormEvent) => {
-        e.preventDefault();
-
-        const id = toast.loading('Memproses...', {
-            description: 'Informasi dasar sedang diperbarui.',
-        });
-
-        basicInfoForm.patch(services.update.basicInformation(service.id).url, {
-            preserveScroll: true,
-            onSuccess: () => {
-                toast.success('Behasil', {
-                    description: 'Informasi dasar berhasil diperbarui.',
-                });
-
-                basicInfoForm.clearErrors();
-            },
-            onError: () => {
-                toast.error('Gagal', {
-                    description: 'Informasi dasar gagal diperbarui. Silakan periksa kembali data informasi dasar yang diisi.',
-                });
-            },
-            onFinish: () => {
-                toast.dismiss(id);
-            },
-        });
-    };
-
-    const handleSubmitContent = (e: React.FormEvent) => {
-        e.preventDefault();
-
-        const id = toast.loading('Memproses...', {
-            description: 'Konten sedang diperbarui.',
-        });
-
-        contentForm.patch(services.update.content(service.id).url, {
-            preserveScroll: true,
-            onSuccess: () => {
-                toast.success('Behasil', {
-                    description: 'Konten berhasil diperbarui.',
-                });
-
-                contentForm.clearErrors();
-            },
-            onError: () => {
-                toast.error('Gagal', {
-                    description: 'Konten gagal diperbarui. Silakan periksa kembali data konten yang diisi.',
-                });
-            },
-            onFinish: () => {
-                toast.dismiss(id);
-            },
-        });
-    };
-
-    const handleSubmitPackages = (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (packageForm.data.packages.length === 0) {
-            toast.error('Gagal', {
-                description: 'Minimal harus ada 1 paket harga',
-            });
-            return;
-        }
-
-        const id = toast.loading('Memproses...', {
-            description: 'Paket harga sedang diperbarui.',
-        });
-
-        packageForm.patch(services.update.packages(service.id).url, {
-            preserveScroll: true,
-            onSuccess: () => {
-                toast.success('Behasil', {
-                    description: 'Paket harga berhasil diperbarui.',
-                });
-
-                packageForm.clearErrors();
-            },
-            onError: () => {
-                toast.error('Gagal', {
-                    description: 'Paket harga gagal diperbarui. Silakan periksa kembali data paket yang diisi.',
-                });
-            },
-            onFinish: () => {
-                toast.dismiss(id);
-            },
-        });
-    };
-
-    const handleSubmitFaq = (e: React.FormEvent) => {
-        e.preventDefault();
-
-        const id = toast.loading('Memproses...', {
-            description: 'FAQ sedang diperbarui.',
-        });
-
-        faqForm.patch(services.update.faqs(service.id).url, {
-            preserveScroll: true,
-            onSuccess: () => {
-                toast.success('Behasil', {
-                    description: 'FAQ berhasil diperbarui.',
-                });
-
-                faqForm.clearErrors();
-            },
-            onError: () => {
-                toast.error('Gagal', {
-                    description: 'FAQ gagal diperbarui. Silakan periksa kembali data FAQ yang diisi.',
-                });
-            },
-            onFinish: () => {
-                toast.dismiss(id);
-            },
-        });
-    };
-
-    const handleSubmitLegalBasis = (e: React.FormEvent) => {
-        e.preventDefault();
-
-        const id = toast.loading('Memproses...', {
-            description: 'Dasar hukum sedang diperbarui.',
-        });
-
-        legalBasisForm.patch(services.update.legalBases(service.id).url, {
-            preserveScroll: true,
-            onSuccess: () => {
-                toast.success('Behasil', {
-                    description: 'Dasar hukum berhasil diperbarui.',
-                });
-
-                legalBasisForm.clearErrors();
-            },
-            onError: () => {
-                toast.error('Gagal', {
-                    description: 'Dasar hukum gagal diperbarui. Silakan periksa kembali data dasar hukum yang diisi.',
-                });
-            },
-            onFinish: () => {
-                toast.dismiss(id);
-            },
-        });
-    };
-
-    const handleSubmitRequirement = (e: React.FormEvent) => {
-        e.preventDefault();
-
-        const id = toast.loading('Memproses...', {
-            description: 'Persyaratan sedang diperbarui.',
-        });
-
-        requirementCategoriesForm.patch(services.update.requirements(service.id).url, {
-            preserveScroll: true,
-            onSuccess: () => {
-                toast.success('Behasil', {
-                    description: 'Persyaratan berhasil diperbarui.',
-                });
-
-                requirementCategoriesForm.clearErrors();
-            },
-            onError: () => {
-                toast.error('Gagal', {
-                    description: 'Persyaratan gagal diperbarui. Silakan periksa kembali data persyaratan yang diisi.',
-                });
-            },
-            onFinish: () => {
-                toast.dismiss(id);
-            },
-        });
-    };
-
-    const handleSubmitProcessStep = (e: React.FormEvent) => {
-        e.preventDefault();
-
-        const id = toast.loading('Memproses...', {
-            description: 'Tahapan sedang diperbarui.',
-        });
-
-        processStepsForm.patch(services.update.processSteps(service.id).url, {
-            preserveScroll: true,
-            onSuccess: () => {
-                toast.success('Behasil', {
-                    description: 'Tahapan berhasil diperbarui.',
-                });
-
-                processStepsForm.clearErrors();
-            },
-            onError: () => {
-                toast.error('Gagal', {
-                    description: 'Tahapan gagal diperbarui. Silakan periksa kembali data tahapan yang diisi.',
-                });
-            },
-            onFinish: () => {
-                toast.dismiss(id);
-            },
-        });
-    };
 
     return (
-        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-            <TabsList>
-                <TabsTrigger value="basic-information">
-                    Informasi Dasar
-                    {hasUnsavedChanges['basic-information'] && <div className="ml-1 h-2 w-2 rounded-full border border-destructive bg-destructive"></div>}
-                </TabsTrigger>
-                <TabsTrigger value="content">
-                    Konten
-                    {hasUnsavedChanges['content'] && <div className="ml-1 h-2 w-2 rounded-full border border-destructive bg-destructive"></div>}
-                </TabsTrigger>
-                <TabsTrigger value="package">
-                    Paket Harga
-                    {hasUnsavedChanges['package'] && <div className="ml-1 h-2 w-2 rounded-full border border-destructive bg-destructive"></div>}
-                </TabsTrigger>
-                <TabsTrigger value="faq">FAQ</TabsTrigger>
-                <TabsTrigger value="legal-basis">
-                    Dasar Hukum
-                    {hasUnsavedChanges['legal-basis'] && <div className="ml-1 h-2 w-2 rounded-full border border-destructive bg-destructive"></div>}
-                </TabsTrigger>
-                <TabsTrigger value="requirement">
-                    Persyaratan
-                    {hasUnsavedChanges['requirement'] && <div className="ml-1 h-2 w-2 rounded-full border border-destructive bg-destructive"></div>}
-                </TabsTrigger>
-                <TabsTrigger value="timeline">
-                    Tahapan
-                    {hasUnsavedChanges['timeline'] && <div className="ml-1 h-2 w-2 rounded-full border border-destructive bg-destructive"></div>}
-                </TabsTrigger>
-                <TabsTrigger value="seo">SEO</TabsTrigger>
-            </TabsList>
+        <>
+            <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full space-y-4">
+                <TabsList>
+                    <TabsTrigger value="basic-information">
+                        Informasi Dasar
+                        {hasUnsavedChanges['basic-information'] && <div className="ml-1 h-2 w-2 rounded-full border border-destructive bg-destructive" />}
+                    </TabsTrigger>
+                    <TabsTrigger value="content">
+                        Konten
+                        {hasUnsavedChanges.content && <div className="ml-1 h-2 w-2 rounded-full border border-destructive bg-destructive" />}
+                    </TabsTrigger>
+                    <TabsTrigger value="seo">
+                        SEO
+                        {hasUnsavedChanges.seo && <div className="ml-1 h-2 w-2 rounded-full border border-destructive bg-destructive" />}
+                    </TabsTrigger>
+                </TabsList>
 
-            {/* TAB: BASIC INFORMATION */}
-            <TabsContent value="basic-information">
-                <form onSubmit={handleSubmitBasicInfo}>
-                    <div className="w-full rounded-md bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <div className="space-y-4">
-                            <div>
-                                <h2 className="text-xl font-semibold">Informasi Dasar Layanan</h2>
-                                <p className="mt-0.5 text-sm text-muted-foreground">Kelola identitas, kategori, deskripsi singkat, dan pengaturan publikasi layanan.</p>
-                            </div>
+                {/* ───────────────── Basic Information ───────────────── */}
+                <TabsContent value="basic-information">
+                    <form onSubmit={handleSubmitBasic} className="space-y-4">
+                        <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+                            <div className="space-y-6">
+                                <div>
+                                    <h2 className="text-xl font-semibold">Informasi Dasar Blog</h2>
+                                    <p className="mt-0.5 text-sm text-muted-foreground">Kelola identitas, kategori, tag, deskripsi singkat, dan pengaturan publikasi blog.</p>
+                                </div>
 
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                {/* Status */}
-                                <Field>
-                                    <FieldLabel>Status</FieldLabel>
-                                    <Select value={basicInfoForm.data.status} onValueChange={(val) => basicInfoForm.setData('status', val as ServiceStatus)}>
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Pilih status" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                <SelectLabel>Status</SelectLabel>
-                                                <SelectItem value="active">Active</SelectItem>
-                                                <SelectItem value="inactive">Inactive</SelectItem>
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                </Field>
+                                {/* Title / Category */}
+                                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                                    <Field>
+                                        <FieldLabel htmlFor="title">
+                                            Judul <span className="text-destructive">*</span>
+                                        </FieldLabel>
+                                        <Input
+                                            id="title"
+                                            type="text"
+                                            required
+                                            autoFocus
+                                            placeholder="Masukkan judul blog"
+                                            value={basicData.title}
+                                            onChange={(e) => setBasicData('title', e.target.value)}
+                                        />
+                                        {basicErrors.title && <FieldError>{basicErrors.title}</FieldError>}
+                                    </Field>
 
-                                {/* Name */}
-                                <Field>
-                                    <FieldLabel htmlFor="name">
-                                        Nama <span className="text-destructive">*</span>
-                                    </FieldLabel>
-                                    <Input
-                                        id="name"
-                                        type="text"
-                                        name="name"
-                                        required
-                                        placeholder="Masukkan nama layanan"
-                                        value={basicInfoForm.data.name}
-                                        onChange={(e) => basicInfoForm.setData('name', e.target.value)}
-                                    />
-                                    {basicInfoForm.errors.name && <FieldError>{basicInfoForm.errors.name}</FieldError>}
-                                </Field>
-
-                                {/* Slug */}
-                                <Field>
-                                    <FieldLabel htmlFor="slug">Slug</FieldLabel>
-                                    <Input
-                                        id="slug"
-                                        type="text"
-                                        name="slug"
-                                        placeholder="Masukkan slug, contoh: slug-kategori-layanan"
-                                        value={basicInfoForm.data.slug}
-                                        onChange={(e) => basicInfoForm.setData('slug', e.target.value)}
-                                    />
-                                    {basicInfoForm.errors.slug && <FieldError>{basicInfoForm.errors.slug}</FieldError>}
-                                </Field>
-
-                                {/* Category */}
-                                <Field>
-                                    <FieldLabel htmlFor="category">
-                                        Kategori <span className="text-destructive">*</span>
-                                    </FieldLabel>
-                                    <Select
-                                        required
-                                        value={String(basicInfoForm.data.service_category_id)}
-                                        onValueChange={(val) => basicInfoForm.setData('service_category_id', Number(val))}
-                                    >
-                                        <SelectTrigger id="category">
-                                            <SelectValue placeholder="Pilih kategori" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                <SelectLabel>Kategori</SelectLabel>
-                                                {categories.map((category) => (
-                                                    <SelectItem key={category.id} value={String(category.id)}>
-                                                        {category.name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                    {basicInfoForm.errors.service_category_id && <FieldError>{basicInfoForm.errors.service_category_id}</FieldError>}
-                                </Field>
-                            </div>
-
-                            {/* Short Description */}
-                            <Field>
-                                <FieldLabel htmlFor="short_description">Deskripsi Singkat</FieldLabel>
-                                <Textarea
-                                    id="short_description"
-                                    className="min-h-24"
-                                    placeholder="Tambahkan deskripsi singkat layanan"
-                                    value={basicInfoForm.data.short_description}
-                                    onChange={(e) => basicInfoForm.setData('short_description', e.target.value)}
-                                />
-                                {basicInfoForm.errors.short_description && <FieldError>{basicInfoForm.errors.short_description}</FieldError>}
-                            </Field>
-
-                            {/* Featured Image */}
-                            <Field>
-                                <FieldLabel htmlFor="featured_image">Gambar Utama</FieldLabel>
-                                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFile(e.target.files?.[0])} />
-
-                                {!imagePreview ? (
-                                    <>
-                                        <div
-                                            role="button"
-                                            tabIndex={0}
-                                            onClick={() => fileInputRef.current?.click()}
-                                            onKeyDown={(e) => e.key === 'Enter' && fileInputRef.current?.click()}
-                                            onDragEnter={handleDragEnter}
-                                            onDragLeave={handleDragLeave}
-                                            onDragOver={handleDragOver}
-                                            onDrop={handleDrop}
-                                            className={[
-                                                'flex cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed px-6 py-10 text-center transition-colors select-none',
-                                                imageError
-                                                    ? 'border-destructive bg-destructive/5'
-                                                    : isDragging
-                                                      ? 'border-primary bg-primary/10'
-                                                      : 'border-border hover:border-primary hover:bg-muted/40',
-                                            ].join(' ')}
+                                    <Field>
+                                        <FieldLabel htmlFor="category">
+                                            Kategori <span className="text-destructive">*</span>
+                                        </FieldLabel>
+                                        <Select
+                                            required
+                                            value={basicData.blog_category_id ? String(basicData.blog_category_id) : ''}
+                                            onValueChange={(val) => setBasicData('blog_category_id', Number(val))}
                                         >
-                                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                                                <ImagePlus className="size-5 text-primary" />
+                                            <SelectTrigger id="category">
+                                                <SelectValue placeholder="Pilih kategori" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    <SelectLabel>Kategori</SelectLabel>
+                                                    {categories.map((cat) => (
+                                                        <SelectItem key={cat.id} value={String(cat.id)}>
+                                                            {cat.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                        {basicErrors.blog_category_id && <FieldError>{basicErrors.blog_category_id}</FieldError>}
+                                    </Field>
+                                </div>
+
+                                {/* Tags */}
+                                <Field>
+                                    <FieldLabel>Tag</FieldLabel>
+                                    <MultiSelect
+                                        options={tagOptions}
+                                        selected={basicData.tag_ids}
+                                        onChange={(ids) => setBasicData('tag_ids', ids)}
+                                        placeholder="Pilih tag blog..."
+                                    />
+                                    {basicErrors.tag_ids && <FieldError>{basicErrors.tag_ids}</FieldError>}
+                                </Field>
+
+                                {/* Service */}
+                                <Field>
+                                    <FieldLabel>Layanan</FieldLabel>
+                                    <MultiSelect options={serviceOptions} selected={basicData.service_ids} onChange={(ids) => setBasicData('service_ids', ids)} placeholder="Pilih layanan blog..." />
+                                    {basicErrors.service_ids && <FieldError>{basicErrors.service_ids}</FieldError>}
+                                </Field>
+
+                                {/* Short Description */}
+                                <Field>
+                                    <FieldLabel htmlFor="short_description">Deskripsi Singkat</FieldLabel>
+                                    <Textarea
+                                        id="short_description"
+                                        className="min-h-24"
+                                        placeholder="Tambahkan deskripsi singkat blog"
+                                        value={basicData.short_description}
+                                        onChange={(e) => setBasicData('short_description', e.target.value)}
+                                    />
+                                    {basicErrors.short_description && <FieldError>{basicErrors.short_description}</FieldError>}
+                                </Field>
+
+                                {/* Featured Image */}
+                                <Field>
+                                    <FieldLabel>Gambar Utama</FieldLabel>
+                                    <Alert className="border-primary bg-primary/20">
+                                        <TableOfContents />
+                                        <AlertTitle>Panduan Ukuran Gambar Ideal</AlertTitle>
+                                        <AlertDescription>
+                                            <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-foreground/70">
+                                                <li>
+                                                    <strong>Open Graph / Thumbnail:</strong> 1200×630px (Rasio 1.91:1)
+                                                </li>
+                                                <li>
+                                                    <strong>Hero / Banner:</strong> 1920×1080px (16:9)
+                                                </li>
+                                                <li>
+                                                    <strong>Format:</strong> JPG/PNG/WEBP · Maks. 5MB
+                                                </li>
+                                            </ul>
+                                        </AlertDescription>
+                                    </Alert>
+
+                                    <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFile(e.target.files?.[0])} />
+
+                                    {!imagePreview ? (
+                                        <>
+                                            <div
+                                                role="button"
+                                                tabIndex={0}
+                                                onClick={() => fileInputRef.current?.click()}
+                                                onKeyDown={(e) => e.key === 'Enter' && fileInputRef.current?.click()}
+                                                onDragEnter={handleDragEnter}
+                                                onDragLeave={handleDragLeave}
+                                                onDragOver={(e) => e.preventDefault()}
+                                                onDrop={(e) => {
+                                                    e.preventDefault();
+                                                    setIsDragging(false);
+                                                    handleFile(e.dataTransfer.files[0]);
+                                                }}
+                                                className={[
+                                                    'flex cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed px-6 py-10 text-center transition-colors select-none',
+                                                    imageError
+                                                        ? 'border-destructive bg-destructive/5'
+                                                        : isDragging
+                                                          ? 'border-primary bg-primary/10'
+                                                          : 'border-border hover:border-primary hover:bg-muted/40',
+                                                ].join(' ')}
+                                            >
+                                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                                    <ImagePlus className="size-5 text-primary" />
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-medium">{isDragging ? 'Lepaskan untuk mengunggah!' : 'Seret & lepas gambar di sini'}</p>
+                                                    <p className="mt-1 text-xs text-muted-foreground">
+                                                        atau <span className="text-primary underline underline-offset-2">klik untuk memilih</span>
+                                                    </p>
+                                                </div>
+                                                <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+                                                    JPG · PNG · WEBP · Maks. 5 MB
+                                                </span>
                                             </div>
-                                            <div>
-                                                <p className="text-sm font-medium text-foreground">{isDragging ? 'Lepaskan untuk mengunggah!' : 'Seret & lepas gambar di sini'}</p>
-                                                <p className="mt-1 text-xs text-muted-foreground">
-                                                    atau <span className="text-primary underline underline-offset-2">klik untuk memilih</span> dari perangkat Anda
-                                                </p>
+                                            {imageError && <FieldError>{imageError}</FieldError>}
+                                            {basicErrors.featured_image && <FieldError>{basicErrors.featured_image}</FieldError>}
+                                        </>
+                                    ) : (
+                                        <div>
+                                            <img src={imagePreview.src} alt={imagePreview.name} className="aspect-video w-full rounded-lg border border-border object-cover" />
+                                            <div className="mt-2 flex items-center gap-3 rounded-lg border border-primary bg-input/30 px-3 py-2">
+                                                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10">
+                                                    <ImagePlus className="size-4 text-primary" />
+                                                </div>
+                                                <div className="min-w-0 flex-1">
+                                                    <p className="truncate text-sm font-medium">{imagePreview.name}</p>
+                                                    {imagePreview.size > 0 && <p className="text-xs text-muted-foreground">{formatSize(imagePreview.size)}</p>}
+                                                </div>
+                                                <div className="space-x-1">
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <Button type="button" variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} className="h-8 w-8">
+                                                                <Pencil className="size-3.5" />
+                                                            </Button>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>Ganti File</TooltipContent>
+                                                    </Tooltip>
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <Button type="button" variant="destructive" size="sm" onClick={handleRemoveImage} className="h-8 w-8">
+                                                                <Trash className="size-3.5" />
+                                                            </Button>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>Hapus File</TooltipContent>
+                                                    </Tooltip>
+                                                </div>
                                             </div>
-                                            <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-                                                JPG · PNG · WEBP · GIF · SVG · Maks. 1 MB
-                                            </span>
                                         </div>
-                                        {imageError && <FieldError>{imageError}</FieldError>}
-                                        {basicInfoForm.errors.featured_image && <FieldError>{basicInfoForm.errors.featured_image}</FieldError>}
+                                    )}
+                                </Field>
+
+                                {/* Display Settings */}
+                                <Field>
+                                    <FieldLabel>Pengaturan Tampilan</FieldLabel>
+                                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                                        <div className="flex items-start gap-4 rounded-lg border border-primary bg-transparent p-4 dark:bg-input/30">
+                                            <Switch id="is_published" checked={basicData.is_published} onCheckedChange={(val) => setBasicData('is_published', val)} />
+                                            <div className="flex-1">
+                                                <Label htmlFor="is_published" className="cursor-pointer text-sm font-medium">
+                                                    Publikasikan Blog
+                                                </Label>
+                                                <p className="text-sm text-muted-foreground">Jika aktif, blog akan tampil dan dapat diakses oleh pengunjung website.</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-start gap-4 rounded-lg border border-primary bg-transparent p-4 dark:bg-input/30">
+                                            <Switch id="is_featured" checked={basicData.is_featured} onCheckedChange={(val) => setBasicData('is_featured', val)} />
+                                            <div className="flex-1">
+                                                <Label htmlFor="is_featured" className="cursor-pointer text-sm font-medium">
+                                                    Jadikan Blog Unggulan
+                                                </Label>
+                                                <p className="text-sm text-muted-foreground">Blog akan ditampilkan di bagian "Blog Unggulan" di halaman utama.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Field>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <Button type="submit" className="flex-1 md:w-45 md:flex-none" disabled={processingBasic || !hasUnsavedChanges['basic-information']}>
+                                {processingBasic ? (
+                                    <>
+                                        <Spinner className="mr-2" />
+                                        Menyimpan...
                                     </>
                                 ) : (
-                                    <div className="relative overflow-visible">
-                                        <Button
-                                            type="button"
-                                            variant="destructive"
-                                            size="icon"
-                                            onClick={handleRemoveImage}
-                                            className="absolute -top-3 -right-3 z-10 h-7 w-7 rounded-full shadow-md"
-                                            title="Hapus gambar"
-                                        >
-                                            <X className="size-3.5" />
-                                        </Button>
-                                        <img src={imagePreview.src} alt={imagePreview.name} className="aspect-video w-full rounded-lg border border-border object-cover" />
-                                        <div className="mt-2 flex items-center gap-3 rounded-lg border border-border bg-muted/40 px-3 py-2">
-                                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10">
-                                                <ImagePlus className="size-4 text-primary" />
-                                            </div>
-                                            <div className="min-w-0 flex-1">
-                                                <p className="truncate text-sm font-medium text-foreground">{imagePreview.name}</p>
-                                                {imagePreview.size > 0 && <p className="text-xs text-muted-foreground">{formatSize(imagePreview.size)}</p>}
-                                            </div>
-                                            <button
-                                                type="button"
-                                                onClick={() => fileInputRef.current?.click()}
-                                                className="shrink-0 text-xs text-primary underline underline-offset-2 hover:text-primary/80"
-                                            >
-                                                Ganti
-                                            </button>
-                                        </div>
-                                    </div>
+                                    'Simpan'
                                 )}
-                            </Field>
+                            </Button>
+                        </div>
+                    </form>
+                </TabsContent>
 
-                            {/* Display Settings */}
-                            <Field>
-                                <FieldLabel>Pengaturan Tampilan</FieldLabel>
-                                <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-                                    <div className="flex items-start gap-4 rounded-lg border border-primary bg-transparent p-4 dark:bg-input/30">
-                                        <Switch id="is_published" checked={basicInfoForm.data.is_published} onCheckedChange={(val) => basicInfoForm.setData('is_published', val)} />
-                                        <div className="flex-1">
-                                            <Label htmlFor="is_published" className="cursor-pointer text-sm font-medium">
-                                                Publikasikan Layanan
-                                            </Label>
-                                            <p className="text-sm text-muted-foreground">Jika aktif, layanan akan tampil dan dapat diakses oleh pengunjung website.</p>
-                                        </div>
+                {/* ───────────────── Content Section ───────────────── */}
+                <TabsContent value="content">
+                    <form onSubmit={handleSubmitContent} className="space-y-4">
+                        <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+                            <div className="space-y-6">
+                                <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
+                                    <div>
+                                        <h2 className="text-xl font-semibold">Konten Blog</h2>
+                                        <p className="mt-0.5 text-sm text-muted-foreground">
+                                            Tulis konten utama blog. Gunakan heading, list, dan formatting untuk SEO yang optimal.
+                                        </p>
                                     </div>
+                                    <Button type="button" variant="secondary" className="w-full md:w-30" onClick={() => openAiDrawer('content')}>
+                                        <Sparkles className="size-4" />
+                                        Generate AI
+                                    </Button>
+                                </div>
 
-                                    <div className="flex items-start gap-4 rounded-lg border border-primary bg-transparent p-4 dark:bg-input/30">
-                                        <Switch id="is_featured" checked={basicInfoForm.data.is_featured} onCheckedChange={(val) => basicInfoForm.setData('is_featured', val)} />
-                                        <div className="flex-1">
-                                            <Label htmlFor="is_featured" className="cursor-pointer text-sm font-medium">
-                                                Jadikan Layanan Unggulan
-                                            </Label>
-                                            <p className="text-sm text-muted-foreground">
-                                                Layanan akan ditampilkan di bagian khusus "Layanan Unggulan" dan diprioritaskan di halaman utama.
-                                            </p>
-                                        </div>
+                                <Field>
+                                    <FieldLabel>Konten</FieldLabel>
+                                    <Alert className="border-primary bg-primary/20">
+                                        <TableOfContents />
+                                        <AlertTitle>Panduan Penulisan Ideal</AlertTitle>
+                                        <AlertDescription>Konten minimal 800 kata untuk SEO yang baik. Gunakan heading (H2, H3) dan paragraf yang jelas.</AlertDescription>
+                                    </Alert>
+                                    <Tiptap content={contentForm.data.content} onChange={(html) => contentForm.setData('content', html)} />
+                                    {contentForm.errors.content && <FieldError>{contentForm.errors.content}</FieldError>}
+                                </Field>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <Button type="submit" className="flex-1 md:w-45 md:flex-none" disabled={contentForm.processing || !hasUnsavedChanges.content}>
+                                {contentForm.processing ? (
+                                    <>
+                                        <Spinner className="mr-2" />
+                                        Menyimpan...
+                                    </>
+                                ) : (
+                                    'Simpan'
+                                )}
+                            </Button>
+                        </div>
+                    </form>
+                </TabsContent>
+
+                {/* ───────────────── SEO Section ───────────────── */}
+                <TabsContent value="seo">
+                    <form onSubmit={handleSubmitSeo} className="space-y-4">
+                        <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+                            <div className="space-y-6">
+                                <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
+                                    <div>
+                                        <h2 className="text-xl font-semibold">Pengaturan SEO</h2>
+                                        <p className="mt-0.5 text-sm text-muted-foreground">Kelola meta tags, open graph, dan sitemap untuk halaman blog ini.</p>
                                     </div>
-
-                                    <div className="flex items-start gap-4 rounded-lg border border-primary bg-transparent p-4 dark:bg-input/30">
-                                        <Switch id="is_popular" checked={basicInfoForm.data.is_popular} onCheckedChange={(val) => basicInfoForm.setData('is_popular', val)} />
-                                        <div className="flex-1">
-                                            <Label htmlFor="is_popular" className="cursor-pointer text-sm font-medium">
-                                                Tandai sebagai Layanan Populer
-                                            </Label>
-                                            <p className="text-sm text-muted-foreground">Layanan akan diberi penanda populer dan diprioritaskan dalam urutan tampilan.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Field>
-                        </div>
-                    </div>
-
-                    {/* Submit Button */}
-                    <div className="mt-4 flex items-center gap-3">
-                        <Button type="submit" disabled={basicInfoForm.processing || !hasUnsavedChanges['basic-information']} className="gap-2">
-                            {basicInfoForm.processing ? (
-                                <>
-                                    <Spinner className="mr-2" />
-                                    Menyimpan...
-                                </>
-                            ) : (
-                                'Simpan'
-                            )}
-                        </Button>
-                        <Button type="button" variant="outline" onClick={() => router.visit(services.index().url)}>
-                            Kembali
-                        </Button>
-                    </div>
-                </form>
-            </TabsContent>
-
-            {/* TAB: CONTENT */}
-            <TabsContent value="content">
-                <form onSubmit={handleSubmitContent}>
-                    <div className="w-full rounded-md bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <div className="space-y-4">
-                            <div>
-                                <h2 className="text-xl font-semibold">Konten Layanan</h2>
-                                <p className="mt-0.5 text-sm text-muted-foreground">Kelola pengantar dan konten utama layanan untuk kebutuhan informasi dan optimasi SEO.</p>
-                            </div>
-
-                            {/* Introduction */}
-                            <Field>
-                                <FieldLabel>Pengantar Layanan</FieldLabel>
-                                <Tiptap content={contentForm.data.introduction} onChange={(html) => contentForm.setData('introduction', html)} />
-                                {contentForm.errors.introduction && <FieldError>{contentForm.errors.introduction}</FieldError>}
-                            </Field>
-
-                            {/* Content */}
-                            <Field>
-                                <FieldLabel>Konten Utama</FieldLabel>
-                                <Tiptap content={contentForm.data.content} onChange={(html) => contentForm.setData('content', html)} />
-                                {contentForm.errors.content && <FieldError>{contentForm.errors.content}</FieldError>}
-                            </Field>
-                        </div>
-                    </div>
-
-                    {/* Submit Button */}
-                    <div className="mt-4 flex items-center gap-3">
-                        <Button type="submit" disabled={contentForm.processing || !hasUnsavedChanges.content} className="gap-2">
-                            {contentForm.processing ? (
-                                <>
-                                    <Spinner className="mr-2" />
-                                    Menyimpan...
-                                </>
-                            ) : (
-                                'Simpan'
-                            )}
-                        </Button>
-                        <Button type="button" variant="outline" onClick={() => router.visit(services.index().url)}>
-                            Kembali
-                        </Button>
-                    </div>
-                </form>
-            </TabsContent>
-
-            {/* TAB: PACKAGE */}
-            <TabsContent value="package">
-                <form onSubmit={handleSubmitPackages}>
-                    <div className="w-full rounded-md bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <div className="space-y-4">
-                            <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
-                                <div>
-                                    <h2 className="text-xl font-semibold">Paket Harga</h2>
-                                    <p className="mt-0.5 text-sm text-muted-foreground">Buat paket harga dengan dokumen/fitur yang berbeda untuk setiap paket</p>
-                                </div>
-                                <div className="flex w-full flex-col items-center gap-2 md:flex-row lg:w-auto">
-                                    <Button variant="outline" className="w-full md:flex-1 lg:w-auto lg:flex-0">
+                                    <Button type="button" variant="secondary" className="w-full md:w-30" onClick={() => openAiDrawer('seo')}>
                                         <Sparkles className="size-4" />
                                         Generate AI
                                     </Button>
-                                    {packageForm.data.packages.length > 0 && (
-                                        <Button type="button" onClick={addPackage} className="w-full md:flex-1 lg:w-auto lg:flex-0">
-                                            <Plus className="size-4" />
-                                            Tambah Paket
-                                        </Button>
-                                    )}
                                 </div>
+
+                                <SeoCard seo={seoData.seo} onChange={(seo) => setSeoData('seo', seo)} errors={seoErrors} schemaMarkup={blog.seo?.schema_markup ?? null} />
                             </div>
-
-                            {packageForm.data.packages.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
-                                    <p className="text-sm">Belum ada paket harga</p>
-                                    <Button type="button" variant="outline" onClick={addPackage} className="gap-2">
-                                        <Plus className="size-4" />
-                                        Tambah Paket Pertama
-                                    </Button>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-                                    {packageForm.data.packages.map((pkg, i) => (
-                                        <PackageCard
-                                            key={pkg._key}
-                                            pkg={pkg}
-                                            index={i}
-                                            onChange={(updated) => updatePackage(pkg._key, updated)}
-                                            onDelete={() => deletePackage(pkg._key)}
-                                            onMoveUp={() => packageHandlers.moveUp(i)}
-                                            onMoveDown={() => packageHandlers.moveDown(i)}
-                                            totalItems={packageForm.data.packages.length}
-                                            isEdit={true}
-                                            errors={packageForm.errors}
-                                        />
-                                    ))}
-                                </div>
-                            )}
-
-                            {packageForm.data.packages.length > 0 && (
-                                <div className="flex w-full justify-end">
-                                    <Button type="button" onClick={addPackage} className="w-full gap-2 md:w-1/2 lg:w-auto">
-                                        <Plus className="size-4" />
-                                        Tambah Paket
-                                    </Button>
-                                </div>
-                            )}
                         </div>
-                    </div>
 
-                    {/* Submit Button */}
-                    <div className="mt-4 flex items-center gap-3">
-                        <Button type="submit" disabled={packageForm.processing || !hasUnsavedChanges.package} className="gap-2">
-                            {packageForm.processing ? (
-                                <>
-                                    <Spinner className="mr-2" />
-                                    Menyimpan...
-                                </>
-                            ) : (
-                                'Simpan'
-                            )}
-                        </Button>
-                        <Button type="button" variant="outline" onClick={() => router.visit(services.index().url)}>
-                            Kembali
-                        </Button>
-                    </div>
-                </form>
-            </TabsContent>
-
-            {/* TAB: FAQ */}
-            <TabsContent value="faq">
-                <form onSubmit={handleSubmitFaq}>
-                    <div className="w-full rounded-md bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <div className="space-y-4">
-                            <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
-                                <div>
-                                    <h2 className="text-xl font-semibold">FAQ (Frequently Asked Questions)</h2>
-                                    <p className="mt-0.5 text-sm text-muted-foreground">Kelola pertanyaan yang sering diajukan terkait layanan ini.</p>
-                                </div>
-                                <div className="flex w-full flex-col items-center gap-2 md:flex-row lg:w-auto">
-                                    <Button variant="outline" className="w-full md:flex-1 lg:w-auto lg:flex-0">
-                                        <Sparkles className="size-4" />
-                                        Generate AI
-                                    </Button>
-                                    {faqForm.data.faqs.length > 0 && (
-                                        <Button type="button" onClick={addFaq} className="w-full md:flex-1 lg:w-auto lg:flex-0">
-                                            <Plus className="size-4" />
-                                            Tambah Pertanyaan
-                                        </Button>
-                                    )}
-                                </div>
-                            </div>
-
-                            {faqForm.data.faqs.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
-                                    <p className="text-sm">Belum ada FAQ</p>
-                                    <Button type="button" variant="outline" onClick={addFaq} className="gap-2">
-                                        <Plus className="size-4" />
-                                        Tambah FAQ Pertama
-                                    </Button>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 gap-4">
-                                    {faqForm.data.faqs.map((faq, i) => (
-                                        <FaqCard
-                                            key={faq._key}
-                                            faq={faq}
-                                            index={i}
-                                            onChange={(updated) => updateFaq(faq._key, updated)}
-                                            onDelete={() => deleteFaq(faq._key)}
-                                            onMoveUp={() => faqHandlers.moveUp(i)}
-                                            onMoveDown={() => faqHandlers.moveDown(i)}
-                                            totalItems={faqForm.data.faqs.length}
-                                            isEdit={true}
-                                            errors={faqForm.errors}
-                                        />
-                                    ))}
-                                </div>
-                            )}
-
-                            {faqForm.data.faqs.length > 0 && (
-                                <div className="flex w-full justify-end">
-                                    <Button type="button" onClick={addPackage} className="w-full gap-2 md:w-1/2 lg:w-auto">
-                                        <Plus className="size-4" />
-                                        Tambah Pertanyaan
-                                    </Button>
-                                </div>
-                            )}
+                        <div className="flex items-center gap-2">
+                            <Button type="submit" className="flex-1 md:w-45 md:flex-none" disabled={processingSeo || !hasUnsavedChanges.seo}>
+                                {processingSeo ? (
+                                    <>
+                                        <Spinner className="mr-2" />
+                                        Menyimpan...
+                                    </>
+                                ) : (
+                                    'Simpan'
+                                )}
+                            </Button>
                         </div>
-                    </div>
+                    </form>
+                </TabsContent>
+            </Tabs>
 
-                    {/* Submit Button */}
-                    <div className="mt-4 flex items-center gap-3">
-                        <Button type="submit" disabled={faqForm.processing || !hasUnsavedChanges.faq} className="gap-2">
-                            {faqForm.processing ? (
-                                <>
-                                    <Spinner className="mr-2" />
-                                    Menyimpan...
-                                </>
-                            ) : (
-                                'Simpan'
-                            )}
-                        </Button>
-                        <Button type="button" variant="outline" onClick={() => router.visit(services.index().url)}>
-                            Kembali
-                        </Button>
-                    </div>
-                </form>
-            </TabsContent>
-
-            {/* TAB: LEGAL BASIS */}
-            <TabsContent value="legal-basis">
-                <form onSubmit={handleSubmitLegalBasis}>
-                    <div className="w-full rounded-md bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <div className="space-y-6">
-                            <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
-                                <div>
-                                    <h2 className="font-semibold text-xl">Dasar Hukum</h2>
-                                    <p className="mt-0.5 text-sm text-muted-foreground">Kelola referensi peraturan dan undang-undang yang menjadi dasar layanan.</p>
-                                </div>
-                                <div className="flex w-full flex-col items-center gap-2 md:flex-row lg:w-auto">
-                                    <Button variant="outline" className="w-full md:flex-1 lg:w-auto lg:flex-0">
-                                        <Sparkles className="size-4" />
-                                        Generate AI
-                                    </Button>
-                                    {legalBasisForm.data.legal_bases.length > 0 && (
-                                        <Button type="button" onClick={addLegalBasis} className="w-full md:flex-1 lg:w-auto lg:flex-0">
-                                            <Plus className="size-4" />
-                                            Tambah Dasar Hukum
-                                        </Button>
-                                    )}
-                                </div>
-                            </div>
-
-                            {legalBasisForm.data.legal_bases.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
-                                    <p className="text-sm">Belum ada dasar hukum</p>
-                                    <Button type="button" variant="outline" onClick={addLegalBasis} className="gap-2">
-                                        <Plus className="size-4" />
-                                        Tambah Dasar Hukum Pertama
-                                    </Button>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 gap-4">
-                                    {legalBasisForm.data.legal_bases.map((legal, i) => (
-                                        <LegalBasisCard
-                                            key={legal._key}
-                                            legalBasis={legal}
-                                            index={i}
-                                            onChange={(updated) => updateLegalBasis(legal._key, updated)}
-                                            onDelete={() => deleteLegalBasis(legal._key)}
-                                            onMoveUp={() => legalBasisHandlers.moveUp(i)}
-                                            onMoveDown={() => legalBasisHandlers.moveDown(i)}
-                                            totalItems={legalBasisForm.data.legal_bases.length}
-                                            isEdit={true}
-                                            errors={legalBasisForm.errors}
-                                        />
-                                    ))}
-                                </div>
-                            )}
-
-                            {legalBasisForm.data.legal_bases.length > 0 && (
-                                <div className="flex w-full justify-end">
-                                    <Button type="button" onClick={addLegalBasis} className="w-full gap-2 md:w-1/2 lg:w-auto">
-                                        <Plus className="size-4" />
-                                        Tambah Dasar Hukum
-                                    </Button>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Submit Button */}
-                    <div className="mt-4 flex items-center gap-3">
-                        <Button type="submit" disabled={legalBasisForm.processing || !hasUnsavedChanges['legal-basis']} className="gap-2">
-                            {legalBasisForm.processing ? (
-                                <>
-                                    <Spinner className="mr-2" />
-                                    Menyimpan...
-                                </>
-                            ) : (
-                                'Simpan'
-                            )}
-                        </Button>
-                        <Button type="button" variant="outline" onClick={() => router.visit(services.index().url)}>
-                            Kembali
-                        </Button>
-                    </div>
-                </form>
-            </TabsContent>
-
-            {/* TAB: REQUIREMENT */}
-            <TabsContent value="requirement">
-                <form onSubmit={handleSubmitRequirement}>
-                    <div className="w-full rounded-md bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <div className="space-y-6">
-                            <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
-                                <div>
-                                    <h2 className="text-xl font-semibold">Persyaratan</h2>
-                                    <p className="mt-0.5 text-sm text-muted-foreground">Kelola kategori dan daftar persyaratan dokumen yang dibutuhkan.</p>
-                                </div>
-                                <div className="flex w-full flex-col items-center gap-2 md:flex-row lg:w-auto">
-                                    <Button variant="outline" className="w-full md:flex-1 lg:w-auto lg:flex-0">
-                                        <Sparkles className="size-4" />
-                                        Generate AI
-                                    </Button>
-                                    {requirementCategoriesForm.data.requirement_categories.length > 0 && (
-                                        <Button type="button" onClick={addLegalBasis} className="w-full md:flex-1 lg:w-auto lg:flex-0">
-                                            <Plus className="size-4" />
-                                            Tambah Kategori
-                                        </Button>
-                                    )}
-                                </div>
-                            </div>
-
-                            {requirementCategoriesForm.data.requirement_categories.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
-                                    <p className="text-sm">Belum ada kategori persyaratan</p>
-                                    <Button type="button" variant="outline" onClick={addRequirementCategory} className="gap-2">
-                                        <Plus className="size-4" />
-                                        Tambah Kategori Pertama
-                                    </Button>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 gap-4">
-                                    {requirementCategoriesForm.data.requirement_categories.map((cat, i) => (
-                                        <RequirementCard
-                                            key={cat._key}
-                                            category={cat}
-                                            index={i}
-                                            onChange={(updated) => updateRequirementCategory(cat._key, updated)}
-                                            onDelete={() => deleteRequirementCategory(cat._key)}
-                                            onMoveUp={() => requirementCategoryHandlers.moveUp(i)}
-                                            onMoveDown={() => requirementCategoryHandlers.moveDown(i)}
-                                            totalItems={requirementCategoriesForm.data.requirement_categories.length}
-                                            isEdit={true}
-                                            errors={requirementCategoriesForm.errors}
-                                        />
-                                    ))}
-                                </div>
-                            )}
-
-                            {requirementCategoriesForm.data.requirement_categories.length > 0 && (
-                                <div className="flex w-full justify-end">
-                                    <Button type="button" onClick={addLegalBasis} className="w-full gap-2 md:w-1/2 lg:w-auto">
-                                        <Plus className="size-4" />
-                                        Tambah Kategori
-                                    </Button>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Submit Button */}
-                    <div className="mt-4 flex items-center gap-3">
-                        <Button type="submit" disabled={requirementCategoriesForm.processing || !hasUnsavedChanges.requirement} className="gap-2">
-                            {requirementCategoriesForm.processing ? (
-                                <>
-                                    <Spinner className="mr-2" />
-                                    Menyimpan...
-                                </>
-                            ) : (
-                                'Simpan'
-                            )}
-                        </Button>
-                        <Button type="button" variant="outline" onClick={() => router.visit(services.index().url)}>
-                            Kembali
-                        </Button>
-                    </div>
-                </form>
-            </TabsContent>
-
-            {/* TAB: TIMELINE */}
-            <TabsContent value="timeline">
-                <form onSubmit={handleSubmitProcessStep}>
-                    <div className="w-full rounded-md bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <div className="space-y-6">
-                            <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
-                                <div>
-                                    <h2 className="text-xl font-semibold">Tahapan Proses</h2>
-                                    <p className="mt-0.5 text-sm text-muted-foreground">Kelola langkah-langkah proses pengerjaan layanan secara berurutan.</p>
-                                </div>
-                                <div className="flex w-full flex-col items-center gap-2 md:flex-row lg:w-auto">
-                                    <Button variant="outline" className="w-full md:flex-1 lg:w-auto lg:flex-0">
-                                        <Sparkles className="size-4" />
-                                        Generate AI
-                                    </Button>
-                                    {processStepsForm.data.process_steps.length > 0 && (
-                                        <Button type="button" onClick={addLegalBasis} className="w-full md:flex-1 lg:w-auto lg:flex-0">
-                                            <Plus className="size-4" />
-                                            Tambah Tahap
-                                        </Button>
-                                    )}
-                                </div>
-                            </div>
-
-                            {processStepsForm.data.process_steps.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
-                                    <p className="text-sm">Belum ada tahapan proses</p>
-                                    <Button type="button" variant="outline" onClick={addProcessStep} className="gap-2">
-                                        <Plus className="size-4" />
-                                        Tambah Tahap Pertama
-                                    </Button>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 gap-4">
-                                    {processStepsForm.data.process_steps.map((step, i) => (
-                                        <ProcessStepCard
-                                            key={step._key}
-                                            step={step}
-                                            index={i}
-                                            onChange={(updated) => updateProcessStep(step._key, updated)}
-                                            onDelete={() => deleteProcessStep(step._key)}
-                                            onMoveUp={() => processStepHandlers.moveUp(i)}
-                                            onMoveDown={() => processStepHandlers.moveDown(i)}
-                                            totalItems={processStepsForm.data.process_steps.length}
-                                            isEdit={true}
-                                            errors={processStepsForm.errors}
-                                        />
-                                    ))}
-
-                                    {processStepsForm.data.process_steps.length > 0 && (
-                                        <div className="flex w-full justify-end">
-                                            <Button type="button" onClick={addLegalBasis} className="w-full gap-2 md:w-1/2 lg:w-auto">
-                                                <Plus className="size-4" />
-                                                Tambah Tahap
-                                            </Button>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Submit Button */}
-                    <div className="mt-4 flex items-center gap-3">
-                        <Button type="submit" disabled={processStepsForm.processing || !hasUnsavedChanges.timeline} className="gap-2">
-                            {processStepsForm.processing ? (
-                                <>
-                                    <Spinner className="mr-2" />
-                                    Menyimpan...
-                                </>
-                            ) : (
-                                'Simpan'
-                            )}
-                        </Button>
-                        <Button type="button" variant="outline" onClick={() => router.visit(services.index().url)}>
-                            Kembali
-                        </Button>
-                    </div>
-                </form>
-            </TabsContent>
-        </Tabs>
+            <AiGenerateDrawer
+                open={aiDrawer.open}
+                onOpenChange={(open) => setAiDrawer((prev) => ({ ...prev, open }))}
+                type={aiDrawer.type}
+                blogId={blog.id}
+                onApply={handleAiApply}
+            />
+        </>
     );
 }

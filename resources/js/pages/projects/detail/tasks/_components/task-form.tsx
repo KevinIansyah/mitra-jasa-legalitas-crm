@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 
-import { TASK_PRIORITIES, TASK_STATUSES } from '@/types/project';
+import { TASK_PRIORITIES, TASK_STATUSES } from '@/types/projects';
 
 export type TaskFormData = {
     title: string;

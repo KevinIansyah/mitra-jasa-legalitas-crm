@@ -23,7 +23,7 @@ export default function Page() {
             <Head title="Akun" />
             <div className="p-4 md:p-6">
                 <Heading title="Akun" description="Kelola daftar akun untuk pencatatan jurnal keuangan" />
-                
+
                 <AccountSection accounts={accounts} summary={summary} filters={filters} />
             </div>
         </AppLayout>

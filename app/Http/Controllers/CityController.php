@@ -26,7 +26,7 @@ class CityController extends Controller
                 ->orWhere('province', 'like', "%{$search}%"))
             ->when($status, fn($q) => $q->where('status', $status))
             ->when($province, fn($q) => $q->where('province', $province))
-            ->orderBy('sort_order')
+            ->latest()
             ->paginate($perPage);
 
         $provinces = City::distinct()->orderBy('province')
@@ -90,7 +90,7 @@ class CityController extends Controller
     {
         if ($city->serviceCityPages()->exists()) {
             return back()->withErrors([
-                'delete' => 'Kota tidak dapat dihapus karena masih memiliki halaman layanan aktif.'
+                'error' => 'Kota tidak dapat dihapus karena masih memiliki halaman layanan aktif.'
             ]);
         }
 

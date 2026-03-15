@@ -24,10 +24,10 @@ import { formatRupiah, getInitials } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
 import projects from '@/routes/projects';
 import search from '@/routes/search';
-import type { Customer, Company } from '@/types/contact';
-import { CATEGORY_BUSINESS_MAP, STATUS_LEGAL_MAP, TIER_MAP } from '@/types/contact';
-import type { ProjectStatus } from '@/types/project';
-import { PROJECT_STATUSES, PROJECT_STATUSES_MAP, type Project } from '@/types/project';
+import type { Customer, Company } from '@/types/contacts';
+import { CATEGORY_BUSINESS_MAP, STATUS_LEGAL_MAP, TIER_MAP } from '@/types/contacts';
+import type { ProjectStatus } from '@/types/projects';
+import { PROJECT_STATUSES, PROJECT_STATUSES_MAP, type Project } from '@/types/projects';
 import type { Service, ServicePackage } from '@/types/service';
 import InfoRow from './info-row';
 

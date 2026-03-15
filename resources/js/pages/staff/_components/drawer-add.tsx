@@ -13,7 +13,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 
 import staffRoutes from '@/routes/staff';
-import type { Role } from '@/types/role';
+import type { Role } from '@/types/roles';
 import { AVAILABILITY_STATUSES, type StaffCreateFormData } from '@/types/staff';
 
 export function DrawerAdd({ roles }: { roles: Role[] }) {

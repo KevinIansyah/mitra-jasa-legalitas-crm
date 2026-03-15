@@ -17,7 +17,7 @@ class ServiceAiGenerateController extends Controller
         private readonly AiContentService $aiContent,
     ) {}
 
-    // ─── Shared Context ───────────────────────────────────────────────────────
+    // 
 
     private function buildContext(Service $service, Request $request): array
     {

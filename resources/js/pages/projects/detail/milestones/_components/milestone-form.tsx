@@ -7,7 +7,7 @@ import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
-import type { ProjectMilestoneFormData } from '@/types/project';
+import type { ProjectMilestoneFormData } from '@/types/projects';
 
 type MilestoneFormProps = {
     initial: ProjectMilestoneFormData;

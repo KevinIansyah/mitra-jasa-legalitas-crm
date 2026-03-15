@@ -11,7 +11,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 import { formatDate, formatFileSize } from '@/lib/utils';
 import projects from '@/routes/projects';
-import type { ProjectDeliverable } from '@/types/project';
+import type { ProjectDeliverable } from '@/types/projects';
 import { DeliverableEditForm } from './deliverable-edit-form';
 
 function FileIcon({ fileType }: { fileType: string }) {

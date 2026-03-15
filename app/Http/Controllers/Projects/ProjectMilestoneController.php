@@ -66,7 +66,7 @@ class ProjectMilestoneController extends Controller
 
         if (in_array($milestone->status, ['in_progress', 'completed'])) {
             return back()->withErrors([
-                'milestone' => 'Milestone yang sedang berjalan atau selesai tidak dapat dihapus.'
+                'error' => 'Milestone yang sedang berjalan atau selesai tidak dapat dihapus.'
             ]);
         }
 
@@ -93,7 +93,7 @@ class ProjectMilestoneController extends Controller
     private function validateMilestone(Project $project, ProjectMilestone $milestone)
     {
         if ($milestone->project_id !== $project->id) {
-            return back()->withErrors(['milestone' => 'Milestone tidak ditemukan.']);
+            return back()->withErrors(['error' => 'Milestone tidak ditemukan.']);
         }
 
         return null;

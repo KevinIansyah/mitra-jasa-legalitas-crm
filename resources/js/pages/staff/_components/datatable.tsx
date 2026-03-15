@@ -16,7 +16,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
 import staffRoutes from '@/routes/staff';
-import type { Role } from '@/types/role';
+import type { Role } from '@/types/roles';
 import type { Staff } from '@/types/staff';
 import { AVAILABILITY_STATUSES } from '@/types/staff';
 import getColumns from './columns';

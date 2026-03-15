@@ -14,8 +14,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { getInitials } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
 import projects from '@/routes/projects';
-import type { TaskPriority } from '@/types/project';
-import { TASK_PRIORITIES, TASK_PRIORITIES_MAP, TASK_STATUSES, TASK_STATUSES_MAP, type ProjectTask, type TaskStatus } from '@/types/project';
+import type { TaskPriority } from '@/types/projects';
+import { TASK_PRIORITIES, TASK_PRIORITIES_MAP, TASK_STATUSES, TASK_STATUSES_MAP, type ProjectTask, type TaskStatus } from '@/types/projects';
 import { TaskForm, type TaskFormData } from './task-form';
 
 type MemberOption = { id: number; name: string };

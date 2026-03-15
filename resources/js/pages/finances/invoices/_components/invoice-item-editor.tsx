@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
 import { formatRupiah } from '@/lib/service';
-import type { ProjectInvoiceItemFormData } from '@/types/project';
+import type { ProjectInvoiceItemFormData } from '@/types/projects';
 
 type Props = {
     items: ProjectInvoiceItemFormData[];

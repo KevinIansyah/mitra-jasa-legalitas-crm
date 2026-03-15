@@ -3,7 +3,7 @@ import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
 import type { Paginator } from '@/types/paginator';
-import type { ProjectPayment } from '@/types/project';
+import type { ProjectPayment } from '@/types/projects';
 import { PaymentSection } from './_components/payment-section';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -32,7 +32,7 @@ export default function Page() {
             <Head title="Pembayaran" />
             <div className="p-4 md:p-6">
                 <Heading title="Manajemen Pembayaran" description="Pantau dan verifikasi pembayaran dari seluruh invoice project" />
-                
+
                 <PaymentSection payments={payments} summary={summary} filters={filters} />
             </div>
         </AppLayout>

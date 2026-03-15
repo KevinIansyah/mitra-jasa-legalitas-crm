@@ -18,8 +18,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 import { formatRupiah, formatSize, readImageAsDataURL, validateFile, validateImageFile } from '@/lib/service';
 import finances from '@/routes/finances';
-import type { ProjectInvoice, ProjectPayment, ProjectPaymentFormData } from '@/types/project';
-import { PAYMENT_METHODS } from '@/types/project';
+import type { ProjectInvoice, ProjectPayment, ProjectPaymentFormData } from '@/types/projects';
+import { PAYMENT_METHODS } from '@/types/projects';
 
 type PaymentEditDrawerProps = {
     invoice: ProjectInvoice;

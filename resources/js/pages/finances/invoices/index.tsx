@@ -3,7 +3,7 @@ import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
 import type { Paginator } from '@/types/paginator';
-import type { ProjectInvoice, ProjectInvoiceSummary } from '@/types/project';
+import type { ProjectInvoice, ProjectInvoiceSummary } from '@/types/projects';
 import { InvoiceSection } from './_components/invoice-section';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -23,7 +23,7 @@ export default function Page() {
             <Head title="Invoice" />
             <div className="p-4 md:p-6">
                 <Heading title="Manajemen Invoice" description="Kelola invoice project, pantau status pembayaran, dan lihat riwayat transaksi" />
-                
+
                 <InvoiceSection invoices={invoices} summary={summary} filters={filters} />
             </div>
         </AppLayout>

@@ -14,8 +14,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import finances from '@/routes/finances';
-import type { Quote, QuoteStatus } from '@/types/quote';
-import { QUOTE_STATUSES, QUOTE_STATUSES_MAP } from '@/types/quote';
+import type { Quote, QuoteStatus } from '@/types/quotes';
+import { QUOTE_STATUSES, QUOTE_STATUSES_MAP } from '@/types/quotes';
 
 type ActionsProps = {
     quote: Quote;

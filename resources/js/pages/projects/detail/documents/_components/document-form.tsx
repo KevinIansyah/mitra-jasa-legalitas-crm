@@ -10,7 +10,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 
-import type { ProjectDocumentFormData } from '@/types/project';
+import type { ProjectDocumentFormData } from '@/types/projects';
 import { DOCUMENT_FORMAT_OPTIONS } from '@/types/service';
 
 type DocumentFormProps = {

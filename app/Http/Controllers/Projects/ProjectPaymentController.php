@@ -164,7 +164,7 @@ class ProjectPaymentController extends Controller
     private function validatePaymentBelongsToInvoice(ProjectInvoice $invoice, ProjectPayment $payment)
     {
         if ($payment->invoice_id !== $invoice->id) {
-            return back()->withErrors(['payment' => 'Pembayaran tidak ditemukan.']);
+            return back()->withErrors(['error' => 'Pembayaran tidak ditemukan.']);
         }
 
         return null;
@@ -173,7 +173,7 @@ class ProjectPaymentController extends Controller
     private function validatePaymentEditable(ProjectPayment $payment)
     {
         if ($payment->isVerified()) {
-            return back()->withErrors(['payment' => 'Pembayaran yang sudah diverifikasi tidak dapat diubah.']);
+            return back()->withErrors(['error' => 'Pembayaran yang sudah diverifikasi tidak dapat diubah.']);
         }
 
         return null;
@@ -182,7 +182,7 @@ class ProjectPaymentController extends Controller
     private function validatePaymentPending(ProjectPayment $payment)
     {
         if (!$payment->isPending()) {
-            return back()->withErrors(['payment' => 'Hanya pembayaran pending yang dapat diubah statusnya.']);
+            return back()->withErrors(['error' => 'Hanya pembayaran pending yang dapat diubah statusnya.']);
         }
 
         return null;

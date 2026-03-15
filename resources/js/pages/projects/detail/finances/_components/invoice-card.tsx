@@ -15,8 +15,8 @@ import { formatRupiah } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
 import { PaymentCard } from '@/pages/finances/payments/_components/payment-card';
 import finances from '@/routes/finances';
-import type { InvoiceStatus, ProjectInvoice } from '@/types/project';
-import { INVOICE_STATUSES, INVOICE_STATUSES_MAP, INVOICE_TYPES_MAP, type Project } from '@/types/project';
+import type { InvoiceStatus, ProjectInvoice } from '@/types/projects';
+import { INVOICE_STATUSES, INVOICE_STATUSES_MAP, INVOICE_TYPES_MAP, type Project } from '@/types/projects';
 
 type InvoiceCardProps = {
     project: Project;

@@ -3,7 +3,7 @@ import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
 import companies from '@/routes/contacts/companies';
 import type { BreadcrumbItem } from '@/types';
-import type { CompanySummary, CompanyWithCustomers } from '@/types/contact';
+import type { CompanySummary, CompanyWithCustomers } from '@/types/contacts';
 import type { Paginator } from '@/types/paginator';
 import { CompanySection } from './_components/company-section';
 

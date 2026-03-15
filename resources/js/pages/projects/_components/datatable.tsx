@@ -18,8 +18,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
 import projects from '@/routes/projects';
-import type { Company, Customer } from '@/types/contact';
-import { PROJECT_STATUSES, type Project } from '@/types/project';
+import type { Company, Customer } from '@/types/contacts';
+import { PROJECT_STATUSES, type Project } from '@/types/projects';
 import type { Service } from '@/types/service';
 import getColumns from './columns';
 import ProjectDetail from './project-detail';

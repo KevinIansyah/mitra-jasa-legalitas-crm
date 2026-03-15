@@ -4,7 +4,7 @@ import AppLayout from '@/layouts/app-layout';
 
 import customers from '@/routes/contacts/customers';
 import type { BreadcrumbItem } from '@/types';
-import type { Customer, CustomerSummary } from '@/types/contact';
+import type { Customer, CustomerSummary } from '@/types/contacts';
 import type { Paginator } from '@/types/paginator';
 import { CustomerSection } from './_components/customer-section';
 

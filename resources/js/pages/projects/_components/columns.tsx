@@ -1,8 +1,8 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
 import { formatRupiah } from '@/lib/service';
-import { TIER_MAP } from '@/types/contact';
-import { PROJECT_STATUSES, type Project } from '@/types/project';
+import { TIER_MAP } from '@/types/contacts';
+import { PROJECT_STATUSES, type Project } from '@/types/projects';
 import Actions from './actions';
 
 export default function getColumns(expandedRow: string | null, setExpandedRow: (id: string | null) => void): ColumnDef<Project>[] {

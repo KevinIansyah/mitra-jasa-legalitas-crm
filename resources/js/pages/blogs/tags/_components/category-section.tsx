@@ -1,16 +1,16 @@
 import { useState } from 'react';
+import type { BlogTag } from '@/types/blogs';
 import type { Paginator } from '@/types/paginator';
-import type { ServiceCategory } from '@/types/service';
 import { DataTable } from './datatable';
 
-interface CategorySectionProps {
-    categories: Paginator<ServiceCategory>;
+interface TagSectionProps {
+    tags: Paginator<BlogTag>;
     filters: { search?: string };
 }
 
-export function CategorySection({ categories, filters }: CategorySectionProps) {
-    const { data, current_page, last_page, per_page, total } = categories;
-    const [pageIndex, setPageIndex] = useState(current_page - 1);
+export function TagSection({ tags, filters }: TagSectionProps) {
+    const { data, current_page, last_page, per_page, total } = tags;
+    const [pageIndex, setPageIndex] = useState<number>(current_page - 1);
 
     return (
         <div className="w-full rounded-xl bg-sidebar p-4">

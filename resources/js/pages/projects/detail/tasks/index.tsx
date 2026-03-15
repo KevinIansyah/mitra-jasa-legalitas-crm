@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardAction, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 import projects from '@/routes/projects';
-import { TASK_STATUSES, type Project } from '@/types/project';
+import { TASK_STATUSES, type Project } from '@/types/projects';
 import { TaskCard } from './_components/task-card';
 import { TaskForm, type TaskFormData } from './_components/task-form';
 
@@ -187,14 +187,12 @@ export default function Tasks({ project }: TasksProps) {
 
                         return (
                             <div key={group.value} className="space-y-4">
-                             
                                 <div className="flex items-center gap-4">
                                     <Badge className={group.classes}>{group.label}</Badge>
                                     <span className="text-xs text-muted-foreground">{group.tasks.length} tugas</span>
                                     <div className="flex-1 border-t border-border" />
                                 </div>
 
-                         
                                 {group.tasks.map((task) => (
                                     <TaskCard key={task.id} task={task} projectId={project.id} members={members} milestones={milestones} />
                                 ))}

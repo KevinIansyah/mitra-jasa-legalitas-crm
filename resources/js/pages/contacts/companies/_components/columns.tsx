@@ -1,6 +1,6 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
-import { CATEGORY_BUSINESS_MAP, STATUS_LEGAL_MAP, type CompanyWithCustomers } from '@/types/contact';
+import { CATEGORY_BUSINESS_MAP, STATUS_LEGAL_MAP, type CompanyWithCustomers } from '@/types/contacts';
 import Actions from './actions';
 
 export default function getColumns(expandedRow: string | null, setExpandedRow: (id: string | null) => void): ColumnDef<CompanyWithCustomers>[] {

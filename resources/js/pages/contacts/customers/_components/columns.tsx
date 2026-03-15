@@ -1,6 +1,6 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
-import { TIER_MAP, type Customer } from '@/types/contact';
+import { TIER_MAP, type Customer } from '@/types/contacts';
 import Actions from './actions';
 
 export default function getColumns(): ColumnDef<Customer>[] {

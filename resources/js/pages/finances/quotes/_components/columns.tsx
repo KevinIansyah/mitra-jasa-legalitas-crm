@@ -1,7 +1,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
-import type { Quote } from '@/types/quote';
-import { QUOTE_TIMELINES_MAP, QUOTE_SOURCES_MAP } from '@/types/quote';
+import type { Quote } from '@/types/quotes';
+import { QUOTE_TIMELINES_MAP, QUOTE_SOURCES_MAP } from '@/types/quotes';
 import Actions from './actions';
 
 export default function getColumns(expandedRow: string | null, setExpandedRow: (id: string | null) => void): ColumnDef<Quote>[] {

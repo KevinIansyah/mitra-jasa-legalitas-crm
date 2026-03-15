@@ -15,7 +15,7 @@ import { Switch } from '@/components/ui/switch';
 
 import { getInitials } from '@/lib/service';
 import companies from '@/routes/contacts/companies';
-import { TIER_MAP, type CompanyWithCustomers } from '@/types/contact';
+import { TIER_MAP, type CompanyWithCustomers } from '@/types/contacts';
 
 type CustomerItemProps = {
     customer: CompanyWithCustomers['customers'][number];

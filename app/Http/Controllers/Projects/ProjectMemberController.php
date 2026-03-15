@@ -75,7 +75,7 @@ class ProjectMemberController extends Controller
     private function validateMember(Project $project, ProjectMember $member)
     {
         if ($member->project_id !== $project->id) {
-            return back()->withErrors(['member' => 'Anggota tim tidak ditemukan.']);
+            return back()->withErrors(['error' => 'Anggota tim tidak ditemukan.']);
         }
 
         return null;

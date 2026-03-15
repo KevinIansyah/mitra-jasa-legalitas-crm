@@ -2,7 +2,7 @@ import { router } from '@inertiajs/react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import finances from '@/routes/finances';
-import type { EstimateFormData, Quote } from '@/types/quote';
+import type { EstimateFormData, Quote } from '@/types/quotes';
 import { EstimateForm } from '../../_components/estimate-form';
 import type { EstimateFormErrors } from '../../_components/estimate-form';
 import { EstimateSummary } from '../../_components/estimate-summary';

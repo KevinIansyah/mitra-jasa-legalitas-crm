@@ -4,7 +4,7 @@ import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
 import type { Paginator } from '@/types/paginator';
-import type { Quote, QuoteSummary } from '@/types/quote';
+import type { Quote, QuoteSummary } from '@/types/quotes';
 
 import { QuoteSection } from './_components/quote-section';
 
@@ -25,7 +25,7 @@ export default function Page() {
             <Head title="Permintaan Penawaran" />
             <div className="p-4 md:p-6">
                 <Heading title="Permintaan Penawaran" description="Kelola semua permintaan penawaran dari customer dan prospek" />
-                
+
                 <QuoteSection quotes={quotes} summary={summary} filters={filters} />
             </div>
         </AppLayout>

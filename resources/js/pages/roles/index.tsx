@@ -4,7 +4,7 @@ import AppLayout from '@/layouts/app-layout';
 import roles from '@/routes/roles';
 import type { BreadcrumbItem } from '@/types';
 import type { Paginator } from '@/types/paginator';
-import type { Role } from '@/types/role';
+import type { Role } from '@/types/roles';
 import { RoleSection } from './_components/role-section';
 
 const breadcrumbs: BreadcrumbItem[] = [

@@ -34,6 +34,7 @@ class ProjectTemplateController extends Controller
             ->paginate($perPage);
 
         $services = Service::where('status', 'active')
+            ->where('is_published', true)
             ->orderBy('name')
             ->get(['id', 'name']);
 
@@ -70,6 +71,7 @@ class ProjectTemplateController extends Controller
     public function create()
     {
         $services = Service::where('status', 'active')
+            ->where('is_published', true)
             ->orderBy('name')
             ->get(['id', 'name']);
 
@@ -102,6 +104,7 @@ class ProjectTemplateController extends Controller
         $template->load('service:id,name');
 
         $services = Service::where('status', 'active')
+            ->where('is_published', true)
             ->orderBy('name')
             ->get(['id', 'name']);
 

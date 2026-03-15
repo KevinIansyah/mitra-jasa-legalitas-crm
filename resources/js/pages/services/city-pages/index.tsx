@@ -3,7 +3,7 @@ import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
 import services from '@/routes/services';
 import type { BreadcrumbItem } from '@/types';
-import type { City } from '@/types/city';
+import type { City } from '@/types/cities';
 import type { Paginator } from '@/types/paginator';
 import type { Service, ServiceCityPage, ServiceCityPageSummary } from '@/types/service';
 import { CityPageSection } from './_components/city-pages-section';

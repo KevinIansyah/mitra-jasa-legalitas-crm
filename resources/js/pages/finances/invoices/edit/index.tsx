@@ -3,7 +3,7 @@ import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
 import finances from '@/routes/finances';
 import type { BreadcrumbItem } from '@/types';
-import type { Project, ProjectInvoice } from '@/types/project';
+import type { Project, ProjectInvoice } from '@/types/projects';
 import EditSection from './_components/edit-section';
 
 const breadcrumbs: BreadcrumbItem[] = [

@@ -12,8 +12,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import finances from '@/routes/finances';
-import type { InvoiceStatus, ProjectInvoice } from '@/types/project';
-import { INVOICE_STATUSES, INVOICE_STATUSES_MAP } from '@/types/project';
+import type { InvoiceStatus, ProjectInvoice } from '@/types/projects';
+import { INVOICE_STATUSES, INVOICE_STATUSES_MAP } from '@/types/projects';
 
 type ActionsProps = {
     invoice: ProjectInvoice;

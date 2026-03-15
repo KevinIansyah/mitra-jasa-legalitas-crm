@@ -11,7 +11,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 
 import citiesRoute from '@/routes/master-data/cities';
-import type { City, CityFormData } from '@/types/city';
+import type { City, CityFormData } from '@/types/cities';
 
 type DrawerEditProps = {
     city: City;

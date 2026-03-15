@@ -138,7 +138,7 @@ class ProjectDocumentController extends Controller
 
         if ($document->file_path) {
             return back()->withErrors([
-                'encrypt' => 'Enkripsi tidak dapat diubah karena dokumen sudah memiliki file. Hapus file terlebih dahulu.'
+                'error' => 'Enkripsi tidak dapat diubah karena dokumen sudah memiliki file. Hapus file terlebih dahulu.'
             ]);
         }
 
@@ -188,7 +188,7 @@ class ProjectDocumentController extends Controller
 
         if ($document->status === 'verified') {
             return back()->withErrors([
-                'document' => 'Dokumen yang telah terverifikasi tidak dapat dihapus.'
+                'error' => 'Dokumen yang telah terverifikasi tidak dapat dihapus.'
             ]);
         }
 
@@ -221,7 +221,7 @@ class ProjectDocumentController extends Controller
         if ($error = $this->validateDocument($project, $document)) return $error;
 
         if (!$document->file_path) {
-            return back()->withErrors(['file' => 'Hasil akhir belum memiliki file.']);
+            return back()->withErrors(['error' => 'Hasil akhir belum memiliki file.']);
         }
 
         if (!$document->is_encrypted) {
@@ -242,7 +242,7 @@ class ProjectDocumentController extends Controller
         if ($error = $this->validateDocument($project, $document)) return $error;
 
         if (!$document->file_path) {
-            return back()->withErrors(['document' => 'Dokumen belum memiliki file.']);
+            return back()->withErrors(['error' => 'Dokumen belum memiliki file.']);
         }
 
         $content  = FileHelper::downloadFromR2($document->file_path, $document->is_encrypted);
@@ -261,14 +261,14 @@ class ProjectDocumentController extends Controller
             ->get();
 
         if ($documents->isEmpty()) {
-            return back()->withErrors(['documents' => 'Tidak ada dokumen yang bisa diunduh.']);
+            return back()->withErrors(['error' => 'Tidak ada dokumen yang bisa diunduh.']);
         }
 
         $zipPath = tempnam(sys_get_temp_dir(), 'docs_') . '.zip';
 
         $zip = new ZipArchive();
         if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
-            return back()->withErrors(['zip' => 'Gagal membuat file ZIP.']);
+            return back()->withErrors(['error' => 'Gagal membuat file ZIP.']);
         }
 
         foreach ($documents as $document) {
@@ -295,11 +295,11 @@ class ProjectDocumentController extends Controller
         if ($error = $this->validateDocument($project, $document)) return $error;
 
         if (!$document->file_path) {
-            return back()->withErrors(['document' => 'Dokumen tidak memiliki file.']);
+            return back()->withErrors(['error' => 'Dokumen tidak memiliki file.']);
         }
 
         if ($document->status === 'verified') {
-            return back()->withErrors(['document' => 'File dokumen yang telah terverifikasi tidak dapat dihapus.']);
+            return back()->withErrors(['error' => 'File dokumen yang telah terverifikasi tidak dapat dihapus.']);
         }
 
         FileHelper::deleteFromR2($document->file_path);
@@ -326,7 +326,7 @@ class ProjectDocumentController extends Controller
             ->exists();
 
         if (!$canApprove) {
-            return back()->withErrors(['document' => 'Anda tidak memiliki izin untuk mengubah status dokumen.']);
+            return back()->withErrors(['error' => 'Anda tidak memiliki izin untuk mengubah status dokumen.']);
         }
 
         return null;
@@ -335,7 +335,7 @@ class ProjectDocumentController extends Controller
     private function validateDocument(Project $project, ProjectDocument $document)
     {
         if ($document->project_id !== $project->id) {
-            return back()->withErrors(['document' => 'Dokumen tidak ditemukan.']);
+            return back()->withErrors(['error' => 'Dokumen tidak ditemukan.']);
         }
 
         return null;

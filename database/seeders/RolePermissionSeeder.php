@@ -47,6 +47,21 @@ class RolePermissionSeeder extends Seeder
             'edit-service-categories',
             'delete-service-categories',
 
+            'view-blogs',
+            'create-blogs',
+            'edit-blogs',
+            'delete-blogs',
+
+            'view-blog-categories',
+            'create-blog-categories',
+            'edit-blog-categories',
+            'delete-blog-categories',
+
+            'view-blog-tags',
+            'create-blog-tags',
+            'edit-blog-tags',
+            'delete-blog-tags',
+
             'view-projects',
             'create-projects',
             'edit-projects',
@@ -155,6 +170,8 @@ class RolePermissionSeeder extends Seeder
             'edit-site-settings',
 
             'create-ai-generate',
+
+
         ];
 
         foreach ($permissions as $permission) {

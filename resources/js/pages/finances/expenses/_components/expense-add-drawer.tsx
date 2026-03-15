@@ -22,8 +22,8 @@ import { formatRupiah, formatSize, readImageAsDataURL, validateFile, validateIma
 import expenses from '@/routes/finances/expenses';
 import search from '@/routes/search';
 import { EXPENSE_CATEGORIES, type ExpenseFormData } from '@/types/expenses';
-import type { Project } from '@/types/project';
-import { PROJECT_STATUSES_MAP } from '@/types/project';
+import type { Project } from '@/types/projects';
+import { PROJECT_STATUSES_MAP } from '@/types/projects';
 import type { Vendor } from '@/types/vendors';
 
 type ExpenseAddDrawerProps = {
@@ -295,7 +295,7 @@ export function ExpenseAddDrawer({ fromProject = false, initialProject, open, on
                                             </div>
                                         )}
                                         {projectQuery.length >= 2 && projectResults.length === 0 && !isSearchingProject && (
-                                            <FieldDescription >Tidak ada project ditemukan</FieldDescription>
+                                            <FieldDescription>Tidak ada project ditemukan</FieldDescription>
                                         )}
                                     </>
                                 )}

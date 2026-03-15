@@ -16,7 +16,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 import { formatDate, formatFileSize } from '@/lib/utils';
 import projects from '@/routes/projects';
-import { DOCUMENT_STATUS_ICONS, DOCUMENT_STATUSES, DOCUMENT_STATUSES_MAP, UNDELETABLE_DOCUMENT_STATUSES, type DocumentStatus, type ProjectDocument } from '@/types/project';
+import { DOCUMENT_STATUS_ICONS, DOCUMENT_STATUSES, DOCUMENT_STATUSES_MAP, UNDELETABLE_DOCUMENT_STATUSES, type DocumentStatus, type ProjectDocument } from '@/types/projects';
 import { DocumentForm } from './document-form';
 
 export type DocumentStatusMeta = {

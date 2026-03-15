@@ -7,19 +7,20 @@ import { HasPermission } from '@/components/has-permission';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Field, FieldLabel } from '@/components/ui/field';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
-import services from '@/routes/services';
-import type { Service, ServiceCategory } from '@/types/service';
+import blogs from '@/routes/blogs';
+import type { Blog, BlogCategory } from '@/types/blogs';
 import getColumns from './columns';
 
 interface DataTableProps {
-    data: Service[];
-    categories: ServiceCategory[];
+    data: Blog[];
+    categories: BlogCategory[];
     pageIndex: number;
     setPageIndex: React.Dispatch<React.SetStateAction<number>>;
     totalPages: number;
@@ -27,14 +28,15 @@ interface DataTableProps {
     perPage: number;
     initialFilters?: {
         search?: string;
-        status?: string;
         category?: string;
+        is_published?: string;
     };
 }
 
 export function DataTable({ data, categories, pageIndex, setPageIndex, totalPages, totalItems, perPage, initialFilters = {} }: DataTableProps) {
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
     const [isFilterOpen, setIsFilterOpen] = React.useState(false);
+
     const { searchValue, clearSearch, handleSearchChange, filters, updateFilter, goToPage, changePageSize, canPreviousPage, canNextPage, resetFilters, activeFiltersCount } =
         useDataTableWithFilters({
             pageIndex,
@@ -42,12 +44,11 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
             totalPages,
             perPage,
             initialFilters,
-            onlyFields: ['services', 'filters'],
-            routeUrl: services.index().url,
+            onlyFields: ['blogs', 'filters'],
+            routeUrl: blogs.index().url,
         });
 
     const columns = getColumns();
-
     const selectedCategory = categories.find((cat) => String(cat.id) === filters.category);
 
     const table = useReactTable({
@@ -55,10 +56,7 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
         columns,
         state: {
             columnVisibility,
-            pagination: {
-                pageIndex,
-                pageSize: perPage,
-            },
+            pagination: { pageIndex, pageSize: perPage },
         },
         pageCount: totalPages,
         manualPagination: true,
@@ -68,11 +66,12 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
 
     return (
         <>
+            {/* ───────────────── Filter & Search Section ───────────────── */}
             <div className="flex flex-col gap-4 pb-4">
                 <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
                     <div className="flex w-full flex-1 items-center gap-2 md:w-auto">
                         <InputGroup className="max-w-sm">
-                            <InputGroupInput placeholder="Cari nama layanan..." value={searchValue} onChange={handleSearchChange} />
+                            <InputGroupInput placeholder="Cari judul blog..." value={searchValue} onChange={handleSearchChange} />
                             <InputGroupAddon>
                                 <Search />
                             </InputGroupAddon>
@@ -80,7 +79,7 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
 
                         <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
                             <SheetTrigger asChild>
-                                <Button variant="outline" className="relative gap-1.5 lg:w-30">
+                                <Button variant="secondary" className="relative gap-1.5 lg:w-30">
                                     <Filter className="size-3.75" />
                                     <span className="hidden lg:inline">Filter</span>
                                     {activeFiltersCount > 0 && (
@@ -93,43 +92,44 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
                             <SheetContent>
                                 <SheetHeader>
                                     <SheetTitle>Filter Data</SheetTitle>
-                                    <SheetDescription>Atur filter untuk menyaring data pelanggan</SheetDescription>
+                                    <SheetDescription>Atur filter untuk menyaring data blog</SheetDescription>
                                 </SheetHeader>
 
                                 <div className="space-y-4 px-4">
-                                    <div className="space-y-2">
-                                        <Label>Kategori</Label>
+                                    <Field>
+                                        <FieldLabel>Kategori</FieldLabel>
                                         <Select value={filters.category || ''} onValueChange={(value) => updateFilter('category', value || undefined)}>
                                             <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Pilih kategori" />
+                                                <SelectValue placeholder="Pilih kategori..." />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
-                                                    {categories.map((category) => (
-                                                        <SelectItem key={category.id} value={String(category.id)}>
-                                                            {category.name}
+                                                    <SelectLabel>Kategori</SelectLabel>
+                                                    {categories.map((item) => (
+                                                        <SelectItem key={item.id} value={String(item.id)}>
+                                                            {item.name}
                                                         </SelectItem>
                                                     ))}
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
-                                    </div>
+                                    </Field>
 
-                                    <div className="space-y-2">
-                                        <Label>Status</Label>
-                                        <Select value={filters.status || ''} onValueChange={(value) => updateFilter('status', value || undefined)}>
+                                    <Field>
+                                        <FieldLabel>Publikasi</FieldLabel>
+                                        <Select value={filters.is_published || ''} onValueChange={(value) => updateFilter('is_published', value || undefined)}>
                                             <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Pilih status" />
+                                                <SelectValue placeholder="Pilih status publikasi..." />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
-                                                    <SelectLabel>Status</SelectLabel>
-                                                    <SelectItem value="active">Active</SelectItem>
-                                                    <SelectItem value="inactive">Inactive</SelectItem>
+                                                    <SelectLabel>Publikasi</SelectLabel>
+                                                    <SelectItem value="published">Publik</SelectItem>
+                                                    <SelectItem value="unpublished">Draft</SelectItem>
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
-                                    </div>
+                                    </Field>
 
                                     {activeFiltersCount > 0 && (
                                         <Button className="w-full" onClick={resetFilters}>
@@ -160,9 +160,9 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
                             </DropdownMenuContent>
                         </DropdownMenu>
 
-                        <HasPermission permission="create-services">
+                        <HasPermission permission="create-blogs">
                             <Button className="flex-1 gap-1.5 md:w-30" asChild>
-                                <Link href={services.create().url}>
+                                <Link href={blogs.create().url}>
                                     <Plus />
                                     Tambah
                                 </Link>
@@ -171,6 +171,7 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
                     </div>
                 </div>
 
+                {/* Active Filters */}
                 {activeFiltersCount > 0 && (
                     <div className="flex flex-wrap items-center gap-2">
                         <span className="text-sm text-muted-foreground">Filter aktif:</span>
@@ -190,10 +191,10 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
                                 </Button>
                             </Badge>
                         )}
-                        {filters.status && (
+                        {filters.is_published && (
                             <Badge variant="secondary" className="gap-2">
-                                Status: {filters.status}
-                                <Button variant="ghost" size="sm" className="h-6 w-6 text-xs" onClick={() => updateFilter('status', undefined)}>
+                                Publikasi: {filters.is_published === 'published' ? 'Publik' : 'Draft'}
+                                <Button variant="ghost" size="sm" className="h-6 w-6 text-xs" onClick={() => updateFilter('is_published', undefined)}>
                                     <X className="size-3" />
                                 </Button>
                             </Badge>
@@ -205,18 +206,17 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
                 )}
             </div>
 
+            {/* ───────────────── Table Section ───────────────── */}
             <div className="overflow-hidden rounded-t-md border-b">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id} className="border-none">
-                                {headerGroup.headers.map((header) => {
-                                    return (
-                                        <TableHead key={header.id} className="font-medium text-background">
-                                            {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                                        </TableHead>
-                                    );
-                                })}
+                                {headerGroup.headers.map((header) => (
+                                    <TableHead key={header.id}>
+                                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                                    </TableHead>
+                                ))}
                             </TableRow>
                         ))}
                     </TableHeader>
@@ -240,6 +240,7 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
                 </Table>
             </div>
 
+            {/* ───────────────── Pagination Section ───────────────── */}
             <div className="flex items-center justify-between gap-8 pt-4">
                 <div className="hidden flex-1 text-sm md:flex">
                     Menampilkan {Math.min(pageIndex * perPage + 1, totalItems)} sampai {Math.min((pageIndex + 1) * perPage, totalItems)} dari {totalItems} hasil
@@ -268,19 +269,19 @@ export function DataTable({ data, categories, pageIndex, setPageIndex, totalPage
                     </div>
 
                     <div className="ml-auto flex items-center gap-2 lg:ml-0">
-                        <Button variant="outline" className="hidden h-8 w-8 p-0 lg:flex" onClick={() => goToPage(0)} disabled={!canPreviousPage}>
+                        <Button variant="secondary" className="hidden h-8 w-8 p-0 lg:flex" onClick={() => goToPage(0)} disabled={!canPreviousPage}>
                             <span className="sr-only">Go to first page</span>
                             <ChevronsLeftIcon />
                         </Button>
-                        <Button variant="outline" className="size-8" size="sm" onClick={() => goToPage(pageIndex - 1)} disabled={!canPreviousPage}>
+                        <Button variant="secondary" className="size-8" size="sm" onClick={() => goToPage(pageIndex - 1)} disabled={!canPreviousPage}>
                             <span className="sr-only">Go to previous page</span>
                             <ChevronLeftIcon />
                         </Button>
-                        <Button variant="outline" className="size-8" size="sm" onClick={() => goToPage(pageIndex + 1)} disabled={!canNextPage}>
+                        <Button variant="secondary" className="size-8" size="sm" onClick={() => goToPage(pageIndex + 1)} disabled={!canNextPage}>
                             <span className="sr-only">Go to next page</span>
                             <ChevronRightIcon />
                         </Button>
-                        <Button variant="outline" className="hidden size-8 lg:flex" size="sm" onClick={() => goToPage(totalPages - 1)} disabled={!canNextPage}>
+                        <Button variant="secondary" className="hidden size-8 lg:flex" size="sm" onClick={() => goToPage(totalPages - 1)} disabled={!canNextPage}>
                             <span className="sr-only">Go to last page</span>
                             <ChevronsRightIcon />
                         </Button>

@@ -24,8 +24,8 @@ import expenses from '@/routes/finances/expenses';
 import search from '@/routes/search';
 import type { Expense, ExpenseFormData } from '@/types/expenses';
 import { EXPENSE_CATEGORIES } from '@/types/expenses';
-import type { Project } from '@/types/project';
-import { PROJECT_STATUSES_MAP } from '@/types/project';
+import type { Project } from '@/types/projects';
+import { PROJECT_STATUSES_MAP } from '@/types/projects';
 import type { Vendor } from '@/types/vendors';
 
 type ExpenseEditDrawerProps = {

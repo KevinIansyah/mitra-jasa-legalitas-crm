@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Crypt;
 use Spatie\Activitylog\LogOptions;
@@ -87,7 +88,10 @@ class ProjectDeliverable extends Model
 
     public function getFileUrlAttribute(): string
     {
-        return Storage::disk('r2')->url($this->file_path);
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+        $disk = Storage::disk('r2');
+
+        return $disk->url($this->file_path);
     }
 
     public function getFormattedFileSizeAttribute(): string
@@ -106,7 +110,10 @@ class ProjectDeliverable extends Model
 
     public function download()
     {
-        $content = Storage::disk('r2')->get($this->file_path);
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+        $disk = Storage::disk('r2');
+
+        $content = $disk->get($this->file_path);
 
         if ($this->is_encrypted) {
             $content = Crypt::decryptString($content);
@@ -138,7 +145,7 @@ class ProjectDeliverable extends Model
             'file_size' => $file->getSize(),
             'file_type' => $file->getMimeType(),
             'is_encrypted' => $data['is_encrypted'] ?? false,
-            'uploaded_by' => auth()->id(),
+            'uploaded_by' => Auth::id(),
             'uploaded_at' => now(),
             'is_final' => $data['is_final'] ?? false,
             'version' => $data['version'] ?? null,

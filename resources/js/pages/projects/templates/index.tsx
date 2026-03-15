@@ -4,7 +4,7 @@ import AppLayout from '@/layouts/app-layout';
 import projects from '@/routes/projects';
 import type { BreadcrumbItem } from '@/types';
 import type { Paginator } from '@/types/paginator';
-import type { ProjectTemplate, ProjectTemplateSummary } from '@/types/project-template';
+import type { ProjectTemplate, ProjectTemplateSummary } from '@/types/project-templates';
 import type { Service } from '@/types/service';
 import { TemplateSection } from './_components/template-section';
 

@@ -16,8 +16,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
 import finances from '@/routes/finances';
-import type { Quote } from '@/types/quote';
-import { QUOTE_STATUSES, QUOTE_TIMELINES, QUOTE_SOURCES } from '@/types/quote';
+import type { Quote } from '@/types/quotes';
+import { QUOTE_STATUSES, QUOTE_TIMELINES, QUOTE_SOURCES } from '@/types/quotes';
 import getColumns from './columns';
 import QuoteDetail from './quote-detail';
 

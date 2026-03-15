@@ -2,8 +2,8 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
 import { formatRupiah } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
-import type { Estimate } from '@/types/quote';
-import { QUOTE_STATUSES_MAP } from '@/types/quote';
+import type { Estimate } from '@/types/quotes';
+import { QUOTE_STATUSES_MAP } from '@/types/quotes';
 import Actions from './actions';
 
 export default function getColumns(expandedRow: string | null, setExpandedRow: (id: string | null) => void): ColumnDef<Estimate>[] {

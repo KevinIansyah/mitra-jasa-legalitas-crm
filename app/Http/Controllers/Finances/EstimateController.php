@@ -90,7 +90,7 @@ class EstimateController extends Controller
 
         $quote = Quote::find($validated['quote_id']);
         if (!$quote) {
-            return back()->withErrors(['project_id' => 'Project tidak ditemukan.']);
+            return back()->withErrors(['error' => 'Project tidak ditemukan.']);
         }
 
         DB::transaction(function () use ($quote, $validated) {

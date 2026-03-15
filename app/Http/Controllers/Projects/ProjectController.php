@@ -96,6 +96,7 @@ class ProjectController extends Controller
     public function create()
     {
         $services = Service::where('status', 'active')
+            ->where('is_published', true)
             ->orderBy('name')
             ->get(['id', 'name']);
 
@@ -239,6 +240,7 @@ class ProjectController extends Controller
         $project->load(['customer.companies', 'customer.user', 'company', 'service.category',  'servicePackage']);
 
         $services = Service::where('status', 'active')
+            ->where('is_published', true)
             ->orderBy('name')
             ->get(['id', 'name']);
 

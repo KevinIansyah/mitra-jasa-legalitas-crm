@@ -1,5 +1,5 @@
 import { formatDate } from '@/lib/utils';
-import type { Project } from '@/types/project';
+import type { Project } from '@/types/projects';
 
 export default function ProjectDetail({ project }: { project: Project }) {
     const hasContent = project.description || project.created_at;

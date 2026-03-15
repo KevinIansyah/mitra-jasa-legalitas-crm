@@ -42,14 +42,14 @@ export default function getColumns(): ColumnDef<ServiceCityPage>[] {
                 return <Badge className={statusInfo.classes}>{statusInfo.label}</Badge>;
             },
         },
-        {
-            accessorKey: 'is_published',
-            header: 'Publikasi',
-            cell: ({ row }) => {
-                const isPublished = row.getValue<boolean>('is_published');
-                return isPublished ? <Badge className="bg-emerald-500 text-white">Published</Badge> : <Badge variant="secondary">Draft</Badge>;
-            },
-        },
+        // {
+        //     accessorKey: 'is_published',
+        //     header: 'Publikasi',
+        //     cell: ({ row }) => {
+        //         const isPublished = row.getValue<boolean>('is_published');
+        //         return isPublished ? <Badge className="bg-emerald-500 text-white">Published</Badge> : <Badge variant="secondary">Draft</Badge>;
+        //     },
+        // },
         {
             accessorKey: 'action',
             header: 'Aksi',

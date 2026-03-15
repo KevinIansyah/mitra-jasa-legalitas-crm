@@ -48,6 +48,22 @@ export function NavMain({ section }: { section: NavSection }) {
         }
 
         // =========================
+        // BLOGS
+        // =========================
+
+        if (itemPath === '/blogs') {
+            return currentPath === '/blogs' || (currentPath.startsWith('/blogs/') && !currentPath.startsWith('/blogs/categories') && !currentPath.startsWith('/blogs/tags'));
+        }
+
+        if (itemPath === '/blogs/categories') {
+            return currentPath.startsWith('/blogs/categories');
+        }
+
+        if (itemPath === '/blogs/tags') {
+            return currentPath.startsWith('/blogs/tags');
+        }
+
+        // =========================
         // PROJECTS
         // =========================
 

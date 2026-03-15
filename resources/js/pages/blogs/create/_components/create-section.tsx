@@ -1,8 +1,8 @@
 import { useForm } from '@inertiajs/react';
-import { ImagePlus, Plus, TableOfContents, X } from 'lucide-react';
+import { ImagePlus, Pencil, TableOfContents, Trash } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
-
 import { toast } from 'sonner';
+import MultiSelect from '@/components/multi-select';
 import Tiptap from '@/components/tiptap';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -14,105 +14,78 @@ import { Spinner } from '@/components/ui/spinner';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
-
-import {
-    deleteItemAndReindex,
-    formatSize,
-    makeFaq,
-    makeLegalBasis,
-    makePackage,
-    makeProcessStep,
-    makeRequirementCategory,
-    moveItemDown,
-    moveItemUp,
-    readImageAsDataURL,
-    validateImageFile,
-} from '@/lib/service';
-import services from '@/routes/services';
-import type { ServiceCategory } from '@/types/service';
-
-import { FaqCard, type LocalFaq } from '../../_components/faq-card';
-import { LegalBasisCard, type LocalLegalBasis } from '../../_components/legal-basis-card';
-import { PackageCard, type LocalPackage } from '../../_components/package-card';
-import { ProcessStepCard, type LocalProcessStep } from '../../_components/process-step-card';
-import { RequirementCard, type LocalRequirementCategory } from '../../_components/requirement-card';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { formatSize, readImageAsDataURL, validateImageFile } from '@/lib/service';
+import blogs from '@/routes/blogs';
+import type { BlogCategory, BlogRelatedService, BlogTag } from '@/types/blogs';
+import { defaultSeo, SeoCard, type LocalServiceSeo } from '../../_components/seo-card';
 
 type FormData = {
-    service_category_id: number | '';
-    name: string;
+    blog_category_id: number | '';
+    title: string;
     slug: string;
     short_description: string;
-    introduction: string;
     content: string;
     featured_image: File | null;
     is_published: boolean;
     is_featured: boolean;
-    is_popular: boolean;
-    packages: LocalPackage[];
-    faqs: LocalFaq[];
-    legal_bases: LocalLegalBasis[];
-    requirement_categories: LocalRequirementCategory[];
-    process_steps: LocalProcessStep[];
+    tag_ids: number[];
+    service_ids: number[];
+    seo: LocalServiceSeo;
 };
 
 type CreateSectionProps = {
-    categories: ServiceCategory[];
+    categories: BlogCategory[];
+    tags: BlogTag[];
+    services: BlogRelatedService[];
 };
 
-export function CreateSection({ categories }: CreateSectionProps) {
+export function CreateSection({ categories, tags, services }: CreateSectionProps) {
     const [imagePreview, setImagePreview] = useState<{ src: string; name: string; size: number } | null>(null);
     const [imageError, setImageError] = useState<string | null>(null);
     const [isDragging, setIsDragging] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const { data, setData, post, processing, errors, reset } = useForm<FormData>({
-        service_category_id: '',
-        name: '',
+        blog_category_id: '',
+        title: '',
         slug: '',
         short_description: '',
-        introduction: '',
         content: '',
         featured_image: null,
         is_published: false,
         is_featured: false,
-        is_popular: false,
-        packages: [],
-        faqs: [],
-        legal_bases: [],
-        requirement_categories: [],
-        process_steps: [],
+        tag_ids: [],
+        service_ids: [],
+        seo: defaultSeo(),
     });
+
+    const tagOptions     = tags.map((t) => ({ id: t.id, label: t.name }));
+    const serviceOptions = services.map((s) => ({ id: s.id, label: s.name }));
 
     // ============================================================
     // IMAGE HANDLERS
     // ============================================================
     const handleFile = async (file: File | undefined) => {
         const error = validateImageFile(file);
-
         if (error) {
             setImageError(error);
-
             if (fileInputRef.current) fileInputRef.current.value = '';
-
             return;
         }
-
         setImageError(null);
         setData('featured_image', file!);
-
         const preview = await readImageAsDataURL(file!);
         setImagePreview({ src: preview, name: file!.name, size: file!.size });
     };
 
     const handleDragEnter = useCallback((e: React.DragEvent) => {
         e.preventDefault();
-
         setIsDragging(true);
     }, []);
 
     const handleDragLeave = useCallback((e: React.DragEvent) => {
         e.preventDefault();
-
         if (!e.currentTarget.contains(e.relatedTarget as Node)) setIsDragging(false);
     }, []);
 
@@ -120,7 +93,6 @@ export function CreateSection({ categories }: CreateSectionProps) {
 
     const handleDrop = (e: React.DragEvent) => {
         e.preventDefault();
-
         setIsDragging(false);
         handleFile(e.dataTransfer.files[0]);
     };
@@ -129,126 +101,31 @@ export function CreateSection({ categories }: CreateSectionProps) {
         setImagePreview(null);
         setImageError(null);
         setData('featured_image', null);
-
         if (fileInputRef.current) fileInputRef.current.value = '';
     };
 
     // ============================================================
-    // GENERIC MOVE HANDLERS
-    // ============================================================
-    const createMoveHandlers = <T extends { sort_order: number }>(items: T[], setItems: (items: T[]) => void) => ({
-        moveUp: (index: number) => setItems(moveItemUp(items, index)),
-        moveDown: (index: number) => setItems(moveItemDown(items, index)),
-    });
-
-    // ============================================================
-    // PACKAGE HANDLERS
-    // ============================================================
-    const addPackage = () => setData('packages', [...data.packages, makePackage(data.packages.length)]);
-
-    const updatePackage = (_key: string, updated: LocalPackage) =>
-        setData(
-            'packages',
-            data.packages.map((p) => (p._key === _key ? updated : p)),
-        );
-
-    const deletePackage = (_key: string) => setData('packages', deleteItemAndReindex(data.packages, _key));
-
-    const packageHandlers = createMoveHandlers(data.packages, (packages) => setData('packages', packages));
-
-    // ============================================================
-    // FAQ HANDLERS
-    // ============================================================
-    const addFaq = () => setData('faqs', [...data.faqs, makeFaq(data.faqs.length)]);
-
-    const updateFaq = (_key: string, updated: LocalFaq) =>
-        setData(
-            'faqs',
-            data.faqs.map((f) => (f._key === _key ? updated : f)),
-        );
-
-    const deleteFaq = (_key: string) => setData('faqs', deleteItemAndReindex(data.faqs, _key));
-
-    const faqHandlers = createMoveHandlers(data.faqs, (faqs) => setData('faqs', faqs));
-
-    // ============================================================
-    // LEGAL BASIS HANDLERS
-    // ============================================================
-    const addLegalBasis = () => setData('legal_bases', [...data.legal_bases, makeLegalBasis(data.legal_bases.length)]);
-
-    const updateLegalBasis = (_key: string, updated: LocalLegalBasis) =>
-        setData(
-            'legal_bases',
-            data.legal_bases.map((l) => (l._key === _key ? updated : l)),
-        );
-
-    const deleteLegalBasis = (_key: string) => setData('legal_bases', deleteItemAndReindex(data.legal_bases, _key));
-
-    const legalBasisHandlers = createMoveHandlers(data.legal_bases, (legal_bases) => setData('legal_bases', legal_bases));
-
-    // ============================================================
-    // REQUIREMENT CATEGORY HANDLERS
-    // ============================================================
-    const addRequirementCategory = () => setData('requirement_categories', [...data.requirement_categories, makeRequirementCategory(data.requirement_categories.length)]);
-
-    const updateRequirementCategory = (_key: string, updated: LocalRequirementCategory) =>
-        setData(
-            'requirement_categories',
-            data.requirement_categories.map((r) => (r._key === _key ? updated : r)),
-        );
-
-    const deleteRequirementCategory = (_key: string) => setData('requirement_categories', deleteItemAndReindex(data.requirement_categories, _key));
-
-    const requirementCategoryHandlers = createMoveHandlers(data.requirement_categories, (requirement_categories) => setData('requirement_categories', requirement_categories));
-
-    // ============================================================
-    // PROCESS STEP HANDLERS
-    // ============================================================
-    const addProcessStep = () => setData('process_steps', [...data.process_steps, makeProcessStep(data.process_steps.length)]);
-
-    const updateProcessStep = (_key: string, updated: LocalProcessStep) =>
-        setData(
-            'process_steps',
-            data.process_steps.map((p) => (p._key === _key ? updated : p)),
-        );
-
-    const deleteProcessStep = (_key: string) => setData('process_steps', deleteItemAndReindex(data.process_steps, _key));
-
-    const processStepHandlers = createMoveHandlers(data.process_steps, (process_steps) => setData('process_steps', process_steps));
-
-    // ============================================================
-    // FORM SUBMISSION HANDLERS
+    // SUBMIT
     // ============================================================
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        const id = toast.loading('Memproses...', {
-            description: 'Layanan sedang ditambahkan.',
-        });
+        const id = toast.loading('Memproses...', { description: 'Blog sedang ditambahkan.' });
 
-        post(services.store().url, {
+        post(blogs.store().url, {
             forceFormData: true,
             onSuccess: () => {
-                toast.success('Berhasil', {
-                    description: 'Layanan berhasil ditambahkan.',
-                });
-
+                toast.success('Berhasil', { description: 'Blog berhasil ditambahkan.' });
                 handleCancel();
             },
-            onError: () => {
-                toast.error('Gagal', {
-                    description: 'Gagal menambahkan data layanan. Silakan periksa kembali data layanan yang diisi.',
-                });
+            onError: (errs) => {
+                const msg = Object.values(errs)[0] ?? 'Terjadi kesalahan saat menambahkan blog.';
+                toast.error('Gagal', { description: String(msg) });
             },
-            onFinish: () => {
-                toast.dismiss(id);
-            },
+            onFinish: () => toast.dismiss(id),
         });
     };
 
-    // ============================================================
-    // FORM RESET HANDLERS
-    // ============================================================
     const handleCancel = () => {
         reset();
         setImagePreview(null);
@@ -256,70 +133,65 @@ export function CreateSection({ categories }: CreateSectionProps) {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="space-y-4">
             <Tabs defaultValue="basic-information" className="w-full">
                 <TabsList>
                     <TabsTrigger value="basic-information">Informasi Dasar</TabsTrigger>
                     <TabsTrigger value="content">Konten</TabsTrigger>
-                    <TabsTrigger value="package">Paket Harga</TabsTrigger>
-                    <TabsTrigger value="faq">FAQ</TabsTrigger>
-                    <TabsTrigger value="legal-basis">Dasar Hukum</TabsTrigger>
-                    <TabsTrigger value="requirement">Persyaratan</TabsTrigger>
-                    <TabsTrigger value="timeline">Tahapan</TabsTrigger>
                     <TabsTrigger value="seo">SEO</TabsTrigger>
                 </TabsList>
 
-                {/* TAB: BASIC INFORMATION */}
+                {/* ───────────────── Basic Information ───────────────── */}
                 <TabsContent value="basic-information">
-                    <div className="w-full rounded-md bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+                    <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                         <div className="space-y-6">
                             <div>
-                                <h2 className="text-xl font-semibold">Informasi Dasar Layanan</h2>
-                                <p className="mt-0.5 text-sm text-muted-foreground">Kelola identitas, kategori, deskripsi singkat, dan pengaturan publikasi layanan.</p>
+                                <h2 className="text-xl font-semibold">Informasi Dasar Blog</h2>
+                                <p className="mt-0.5 text-sm text-muted-foreground">Kelola identitas, kategori, tag, deskripsi singkat, dan pengaturan publikasi blog.</p>
                             </div>
 
                             <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-                                {/* Name */}
+                                {/* Title */}
                                 <Field>
-                                    <FieldLabel htmlFor="name">
-                                        Nama <span className="text-destructive">*</span>
+                                    <FieldLabel htmlFor="title">
+                                        Judul <span className="text-destructive">*</span>
                                     </FieldLabel>
                                     <Input
-                                        id="name"
+                                        id="title"
                                         type="text"
-                                        name="name"
+                                        name="title"
                                         required
                                         autoFocus
-                                        placeholder="Masukkan nama layanan"
-                                        value={data.name}
-                                        onChange={(e) => setData('name', e.target.value)}
+                                        placeholder="Masukkan judul blog"
+                                        value={data.title}
+                                        onChange={(e) => setData('title', e.target.value)}
                                     />
-                                    {errors.name && <FieldError>{errors.name}</FieldError>}
+                                    {errors.title && <FieldError>{errors.title}</FieldError>}
                                 </Field>
 
+                                {/* Slug */}
                                 <Field>
-                                    {/* Slug */}
                                     <FieldLabel htmlFor="slug">Slug</FieldLabel>
                                     <Input
                                         id="slug"
                                         type="text"
                                         name="slug"
-                                        placeholder="Masukkan slug, contoh: slug-kategori-layanan"
+                                        placeholder="contoh: cara-mendirikan-pt"
                                         value={data.slug}
                                         onChange={(e) => setData('slug', e.target.value)}
                                     />
                                     {errors.slug && <FieldError>{errors.slug}</FieldError>}
                                 </Field>
 
+                                {/* Category */}
                                 <Field>
-                                    {/* Category */}
                                     <FieldLabel htmlFor="category">
                                         Kategori <span className="text-destructive">*</span>
                                     </FieldLabel>
                                     <Select
-                                        value={data.service_category_id ? String(data.service_category_id) : ''}
+                                        value={data.blog_category_id ? String(data.blog_category_id) : ''}
                                         required
-                                        onValueChange={(val) => setData('service_category_id', Number(val))}
+                                        onValueChange={(val) => setData('blog_category_id', Number(val))}
                                     >
                                         <SelectTrigger id="category">
                                             <SelectValue placeholder="Pilih kategori" />
@@ -335,9 +207,33 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
-                                    {errors.service_category_id && <FieldError>{errors.service_category_id}</FieldError>}
+                                    {errors.blog_category_id && <FieldError>{errors.blog_category_id}</FieldError>}
                                 </Field>
                             </div>
+
+                            {/* Tags */}
+                            <Field>
+                                <FieldLabel>Tag</FieldLabel>
+                                <MultiSelect
+                                    options={tagOptions}
+                                    selected={data.tag_ids}
+                                    onChange={(ids) => setData('tag_ids', ids)}
+                                    placeholder="Pilih tag blog..."
+                                />
+                                {errors.tag_ids && <FieldError>{errors.tag_ids}</FieldError>}
+                            </Field>
+
+                            {/* Related Services */}
+                            <Field>
+                                <FieldLabel>Layanan Terkait</FieldLabel>
+                                <MultiSelect
+                                    options={serviceOptions}
+                                    selected={data.service_ids}
+                                    onChange={(ids) => setData('service_ids', ids)}
+                                    placeholder="Pilih layanan terkait..."
+                                />
+                                {errors.service_ids && <FieldError>{errors.service_ids}</FieldError>}
+                            </Field>
 
                             {/* Short Description */}
                             <Field>
@@ -345,7 +241,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                 <Textarea
                                     id="short_description"
                                     className="min-h-24"
-                                    placeholder="Tambahkan deskripsi singkat layanan"
+                                    placeholder="Tambahkan deskripsi singkat blog"
                                     value={data.short_description}
                                     onChange={(e) => setData('short_description', e.target.value)}
                                 />
@@ -354,32 +250,15 @@ export function CreateSection({ categories }: CreateSectionProps) {
 
                             {/* Featured Image */}
                             <Field>
-                                <FieldLabel htmlFor="featured_image">Gambar Utama</FieldLabel>
+                                <FieldLabel>Gambar Utama</FieldLabel>
                                 <Alert className="border-primary bg-primary/20">
                                     <TableOfContents />
                                     <AlertTitle>Panduan Ukuran Gambar Ideal</AlertTitle>
                                     <AlertDescription>
-                                        <ul className="list-inside list-disc space-y-1.5 text-sm">
-                                            <li>
-                                                <strong>Hero Background:</strong> 1920x1080px (16:9 aspect ratio)
-                                                <br />
-                                                <span className="ml-5">Untuk background section hero dengan gradient overlay</span>
-                                            </li>
-                                            <li>
-                                                <strong>Sidebar Card:</strong> 800x600px (4:3) atau 800x450px (16:9)
-                                                <br />
-                                                <span className="ml-5">Untuk card vertikal di sidebar proposal</span>
-                                            </li>
-                                            <li>
-                                                <strong>Format & Kualitas:</strong> JPG/PNG, maksimal 1MB
-                                                <br />
-                                                <span className="ml-5">Kompresi 80-90% untuk performa optimal</span>
-                                            </li>
-                                            <li>
-                                                <strong>Tips:</strong> Gunakan gambar profesional terkait legal/bisnis
-                                                <br />
-                                                <span className="ml-5">Hindari gambar stock yang terlalu umum</span>
-                                            </li>
+                                        <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-foreground/70">
+                                            <li><strong>Open Graph / Thumbnail:</strong> 1200×630px (Rasio 1.91:1)</li>
+                                            <li><strong>Hero / Banner:</strong> 1920×1080px (16:9)</li>
+                                            <li><strong>Format:</strong> JPG/PNG/WEBP · Maks. 5MB</li>
                                         </ul>
                                     </AlertDescription>
                                 </Alert>
@@ -410,13 +289,13 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                                 <ImagePlus className="size-5 text-primary" />
                                             </div>
                                             <div>
-                                                <p className="text-sm font-medium text-foreground">{isDragging ? 'Lepaskan untuk mengunggah!' : 'Seret & lepas gambar di sini'}</p>
+                                                <p className="text-sm font-medium">{isDragging ? 'Lepaskan untuk mengunggah!' : 'Seret & lepas gambar di sini'}</p>
                                                 <p className="mt-1 text-xs text-muted-foreground">
-                                                    atau <span className="text-primary underline underline-offset-2">klik untuk memilih</span> dari perangkat Anda
+                                                    atau <span className="text-primary underline underline-offset-2">klik untuk memilih</span>
                                                 </p>
                                             </div>
                                             <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-                                                JPG · PNG · WEBP · GIF · SVG · Maks. 1 MB
+                                                JPG · PNG · WEBP · Maks. 5 MB
                                             </span>
                                         </div>
                                         {imageError && <FieldError>{imageError}</FieldError>}
@@ -424,48 +303,49 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                     </>
                                 ) : (
                                     <div className="relative overflow-visible">
-                                        <Button
-                                            type="button"
-                                            variant="destructive"
-                                            size="icon"
-                                            onClick={handleRemoveImage}
-                                            className="absolute -top-3 -right-3 z-10 h-7 w-7 rounded-full shadow-md"
-                                            title="Hapus gambar"
-                                        >
-                                            <X className="size-3.5" />
-                                        </Button>
                                         <img src={imagePreview.src} alt={imagePreview.name} className="aspect-video w-full rounded-lg border border-border object-cover" />
-                                        <div className="mt-2 flex items-center gap-3 rounded-lg border border-border bg-muted/40 px-3 py-2">
+                                        <div className="mt-2 flex items-center gap-3 rounded-lg border border-primary bg-input/30 px-3 py-2">
                                             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10">
                                                 <ImagePlus className="size-4 text-primary" />
                                             </div>
                                             <div className="min-w-0 flex-1">
-                                                <p className="truncate text-sm font-medium text-foreground">{imagePreview.name}</p>
+                                                <p className="truncate text-sm font-medium">{imagePreview.name}</p>
                                                 <p className="text-xs text-muted-foreground">{formatSize(imagePreview.size)}</p>
                                             </div>
-                                            <button
-                                                type="button"
-                                                onClick={() => fileInputRef.current?.click()}
-                                                className="shrink-0 text-xs text-primary underline underline-offset-2 hover:text-primary/80"
-                                            >
-                                                Ganti
-                                            </button>
+                                            <div className="space-x-1">
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <Button type="button" variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} className="h-8 w-8">
+                                                            <Pencil className="size-3.5" />
+                                                        </Button>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>Ganti File</TooltipContent>
+                                                </Tooltip>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <Button type="button" variant="destructive" size="sm" onClick={handleRemoveImage} className="h-8 w-8">
+                                                            <Trash className="size-3.5" />
+                                                        </Button>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>Hapus File</TooltipContent>
+                                                </Tooltip>
+                                            </div>
                                         </div>
                                     </div>
                                 )}
                             </Field>
 
-                            {/* Apperance Settings */}
+                            {/* Publication Settings */}
                             <Field>
                                 <FieldLabel>Pengaturan Tampilan</FieldLabel>
-                                <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                                     <div className="flex items-start gap-4 rounded-lg border border-primary bg-transparent p-4 dark:bg-input/30">
                                         <Switch id="is_published" checked={data.is_published} onCheckedChange={(val) => setData('is_published', val)} />
                                         <div className="flex-1">
                                             <Label htmlFor="is_published" className="cursor-pointer text-sm font-medium">
-                                                Publikasikan Layanan
+                                                Publikasikan Blog
                                             </Label>
-                                            <p className="text-sm text-muted-foreground">Jika aktif, layanan akan tampil dan dapat diakses oleh pengunjung website.</p>
+                                            <p className="text-sm text-muted-foreground">Jika aktif, blog akan tampil dan dapat diakses oleh pengunjung website.</p>
                                         </div>
                                     </div>
 
@@ -473,21 +353,9 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                         <Switch id="is_featured" checked={data.is_featured} onCheckedChange={(val) => setData('is_featured', val)} />
                                         <div className="flex-1">
                                             <Label htmlFor="is_featured" className="cursor-pointer text-sm font-medium">
-                                                Jadikan Layanan Unggulan
+                                                Jadikan Blog Unggulan
                                             </Label>
-                                            <p className="text-sm text-muted-foreground">
-                                                Layanan akan ditampilkan di bagian khusus "Layanan Unggulan" dan diprioritaskan di halaman utama.
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-start gap-4 rounded-lg border border-primary bg-transparent p-4 dark:bg-input/30">
-                                        <Switch id="is_popular" checked={data.is_popular} onCheckedChange={(val) => setData('is_popular', val)} />
-                                        <div className="flex-1">
-                                            <Label htmlFor="is_popular" className="cursor-pointer text-sm font-medium">
-                                                Tandai sebagai Layanan Populer
-                                            </Label>
-                                            <p className="text-sm text-muted-foreground">Layanan akan diberi penanda populer dan diprioritaskan dalam urutan tampilan.</p>
+                                            <p className="text-sm text-muted-foreground">Blog akan ditampilkan di bagian "Blog Unggulan" di halaman utama.</p>
                                         </div>
                                     </div>
                                 </div>
@@ -496,44 +364,21 @@ export function CreateSection({ categories }: CreateSectionProps) {
                     </div>
                 </TabsContent>
 
-                {/* TAB: CONTENT */}
+                {/* ───────────────── Content Section ───────────────── */}
                 <TabsContent value="content">
-                    <div className="w-full rounded-md bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+                    <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                         <div className="space-y-6">
-                            {/* Header */}
-                            <div className="flex items-start justify-between">
-                                <div>
-                                    <h2 className="text-xl font-semibold">Konten Layanan</h2>
-                                    <p className="mt-0.5 text-sm text-muted-foreground">Kelola pengantar dan konten utama layanan untuk kebutuhan informasi dan optimasi SEO.</p>
-                                </div>
-                                {/* <Button type="button" variant="outline" className="shrink-0 gap-1.5" disabled>
-                                    <Sparkles className="size-3.5" />
-                                    AI Generate
-                                </Button> */}
+                            <div>
+                                <h2 className="text-xl font-semibold">Konten Blog</h2>
+                                <p className="mt-0.5 text-sm text-muted-foreground">Tulis konten utama blog. Gunakan heading, list, dan formatting untuk SEO yang optimal.</p>
                             </div>
 
-                            {/* Introduction */}
                             <Field>
-                                <FieldLabel>Pengantar Layanan</FieldLabel>
+                                <FieldLabel>Konten</FieldLabel>
                                 <Alert className="border-primary bg-primary/20">
                                     <TableOfContents />
                                     <AlertTitle>Panduan Penulisan Ideal</AlertTitle>
-                                    <AlertDescription>2-3 paragraf pembuka yang merangkum keseluruhan layanan (200-300 kata)</AlertDescription>
-                                </Alert>
-                                <Tiptap content={data.introduction} onChange={(html) => setData('introduction', html)} />
-                                {errors.introduction && <FieldError>{errors.introduction}</FieldError>}
-                            </Field>
-
-                            {/* Content */}
-                            <Field>
-                                <FieldLabel>Konten Utama</FieldLabel>
-                                <Alert className="border-primary bg-primary/20">
-                                    <TableOfContents />
-                                    <AlertTitle>Panduan Penulisan Ideal</AlertTitle>
-                                    <AlertDescription>
-                                        Konten utama untuk SEO (minimal 1000 kata, ideal 1200-1500 kata). Gunakan HTML formatting. Konten ini menjadi tulang punggung SEO halaman.
-                                        Gunakan heading (h2, h3), list, dan anchor links ke tab struktur untuk navigasi.
-                                    </AlertDescription>
+                                    <AlertDescription>Konten minimal 800 kata untuk SEO yang baik. Gunakan heading (H2, H3) dan paragraf yang jelas.</AlertDescription>
                                 </Alert>
                                 <Tiptap content={data.content} onChange={(html) => setData('content', html)} />
                                 {errors.content && <FieldError>{errors.content}</FieldError>}
@@ -542,235 +387,23 @@ export function CreateSection({ categories }: CreateSectionProps) {
                     </div>
                 </TabsContent>
 
-                {/* TAB: PACKAGE */}
-                <TabsContent value="package">
-                    <div className="w-full rounded-md bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+                {/* ───────────────── SEO Section ───────────────── */}
+                <TabsContent value="seo">
+                    <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                         <div className="space-y-6">
-                            <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
-                                <div>
-                                    <h2 className="text-xl font-semibold">Paket Harga</h2>
-                                    <p className="mt-0.5 text-sm text-muted-foreground">Kelola paket harga dengan dokumen/fitur yang berbeda untuk setiap paket</p>
-                                </div>
-                                <div className="flex w-full items-center gap-2 md:w-auto">
-                                    {/* <Button type="button" variant="outline" className="flex-1 shrink-0 gap-1.5 md:flex-none" disabled>
-                                        <Sparkles className="size-3.5" />
-                                        AI Generate
-                                    </Button> */}
-                                    <Button type="button" onClick={addPackage} className="flex-1 gap-1.5 md:flex-none">
-                                        <Plus className="size-4" />
-                                        Tambah Paket
-                                    </Button>
-                                </div>
+                            <div>
+                                <h2 className="text-xl font-semibold">Pengaturan SEO</h2>
+                                <p className="mt-0.5 text-sm text-muted-foreground">Kelola meta tags, open graph, dan sitemap untuk halaman blog ini.</p>
                             </div>
-
-                            {data.packages.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
-                                    <p className="text-sm">Belum ada paket harga</p>
-                                    <Button type="button" variant="outline" onClick={addPackage} className="gap-1.5">
-                                        <Plus className="size-4" />
-                                        Tambah Paket Pertama
-                                    </Button>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-                                    {data.packages.map((pkg, i) => (
-                                        <PackageCard
-                                            key={pkg._key}
-                                            pkg={pkg}
-                                            index={i}
-                                            onChange={(updated) => updatePackage(pkg._key, updated)}
-                                            onDelete={() => deletePackage(pkg._key)}
-                                            onMoveUp={() => packageHandlers.moveUp(i)}
-                                            onMoveDown={() => packageHandlers.moveDown(i)}
-                                            totalItems={data.packages.length}
-                                            errors={errors}
-                                        />
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </TabsContent>
-
-                {/* TAB: FAQ */}
-                <TabsContent value="faq">
-                    <div className="w-full rounded-md bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <div className="space-y-6">
-                            <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
-                                <div>
-                                    <h2 className="text-xl font-semibold">FAQ (Frequently Asked Questions)</h2>
-                                    <p className="mt-0.5 text-sm text-muted-foreground">Kelola pertanyaan yang sering diajukan terkait layanan ini.</p>
-                                </div>
-                                <Button type="button" onClick={addFaq} className="w-full gap-1.5 md:w-auto">
-                                    <Plus className="size-4" />
-                                    Tambah FAQ
-                                </Button>
-                            </div>
-
-                            {data.faqs.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
-                                    <p className="text-sm">Belum ada FAQ</p>
-                                    <Button type="button" variant="outline" onClick={addFaq} className="gap-1.5">
-                                        <Plus className="size-4" />
-                                        Tambah FAQ Pertama
-                                    </Button>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 gap-4">
-                                    {data.faqs.map((faq, i) => (
-                                        <FaqCard
-                                            key={faq._key}
-                                            faq={faq}
-                                            index={i}
-                                            onChange={(updated) => updateFaq(faq._key, updated)}
-                                            onDelete={() => deleteFaq(faq._key)}
-                                            onMoveUp={() => faqHandlers.moveUp(i)}
-                                            onMoveDown={() => faqHandlers.moveDown(i)}
-                                            totalItems={data.faqs.length}
-                                            errors={errors}
-                                        />
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </TabsContent>
-
-                {/* TAB: LEGAL BASIS */}
-                <TabsContent value="legal-basis">
-                    <div className="w-full rounded-md bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <div className="space-y-6">
-                            <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
-                                <div>
-                                    <h2 className="text-xl font-semibold">Dasar Hukum</h2>
-                                    <p className="mt-0.5 text-sm text-muted-foreground">Kelola referensi peraturan dan undang-undang yang menjadi dasar layanan.</p>
-                                </div>
-                                <Button type="button" onClick={addLegalBasis} className="w-full gap-1.5 md:w-auto">
-                                    <Plus className="size-4" />
-                                    Tambah Dasar Hukum
-                                </Button>
-                            </div>
-
-                            {data.legal_bases.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
-                                    <p className="text-sm">Belum ada dasar hukum</p>
-                                    <Button type="button" variant="outline" onClick={addLegalBasis} className="gap-1.5">
-                                        <Plus className="size-4" />
-                                        Tambah Dasar Hukum Pertama
-                                    </Button>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 gap-4">
-                                    {data.legal_bases.map((legal, i) => (
-                                        <LegalBasisCard
-                                            key={legal._key}
-                                            legalBasis={legal}
-                                            index={i}
-                                            onChange={(updated) => updateLegalBasis(legal._key, updated)}
-                                            onDelete={() => deleteLegalBasis(legal._key)}
-                                            onMoveUp={() => legalBasisHandlers.moveUp(i)}
-                                            onMoveDown={() => legalBasisHandlers.moveDown(i)}
-                                            totalItems={data.legal_bases.length}
-                                            errors={errors}
-                                        />
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </TabsContent>
-
-                {/* TAB: REQUIREMENT */}
-                <TabsContent value="requirement">
-                    <div className="w-full rounded-md bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <div className="space-y-6">
-                            <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
-                                <div>
-                                    <h2 className="text-xl font-semibold">Persyaratan</h2>
-                                    <p className="mt-0.5 text-sm text-muted-foreground">Kelola kategori dan daftar persyaratan dokumen yang dibutuhkan.</p>
-                                </div>
-                                <Button type="button" onClick={addRequirementCategory} className="w-full gap-1.5 md:w-auto">
-                                    <Plus className="size-4" />
-                                    Tambah Kategori
-                                </Button>
-                            </div>
-
-                            {data.requirement_categories.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
-                                    <p className="text-sm">Belum ada kategori persyaratan</p>
-                                    <Button type="button" variant="outline" onClick={addRequirementCategory} className="gap-1.5">
-                                        <Plus className="size-4" />
-                                        Tambah Kategori Pertama
-                                    </Button>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 gap-4">
-                                    {data.requirement_categories.map((cat, i) => (
-                                        <RequirementCard
-                                            key={cat._key}
-                                            category={cat}
-                                            index={i}
-                                            onChange={(updated) => updateRequirementCategory(cat._key, updated)}
-                                            onDelete={() => deleteRequirementCategory(cat._key)}
-                                            onMoveUp={() => requirementCategoryHandlers.moveUp(i)}
-                                            onMoveDown={() => requirementCategoryHandlers.moveDown(i)}
-                                            totalItems={data.requirement_categories.length}
-                                            errors={errors}
-                                        />
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </TabsContent>
-
-                {/* TAB: TIMELINE */}
-                <TabsContent value="timeline">
-                    <div className="w-full rounded-md bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <div className="space-y-6">
-                            <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
-                                <div>
-                                    <h2 className="text-xl font-semibold">Tahapan Proses</h2>
-                                    <p className="mt-0.5 text-sm text-muted-foreground">Kelola langkah-langkah proses pengerjaan layanan secara berurutan.</p>
-                                </div>
-                                <Button type="button" onClick={addProcessStep} className="w-full gap-1.5 md:w-auto">
-                                    <Plus className="size-4" />
-                                    Tambah Tahap
-                                </Button>
-                            </div>
-
-                            {data.process_steps.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
-                                    <p className="text-sm">Belum ada tahapan proses</p>
-                                    <Button type="button" variant="outline" onClick={addProcessStep} className="gap-1.5">
-                                        <Plus className="size-4" />
-                                        Tambah Tahap Pertama
-                                    </Button>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 gap-4">
-                                    {data.process_steps.map((step, i) => (
-                                        <ProcessStepCard
-                                            key={step._key}
-                                            step={step}
-                                            index={i}
-                                            onChange={(updated) => updateProcessStep(step._key, updated)}
-                                            onDelete={() => deleteProcessStep(step._key)}
-                                            onMoveUp={() => processStepHandlers.moveUp(i)}
-                                            onMoveDown={() => processStepHandlers.moveDown(i)}
-                                            totalItems={data.process_steps.length}
-                                            errors={errors}
-                                        />
-                                    ))}
-                                </div>
-                            )}
+                            <SeoCard seo={data.seo} onChange={(seo) => setData('seo', seo)} errors={errors} />
                         </div>
                     </div>
                 </TabsContent>
             </Tabs>
 
-            <div className="mt-4 flex items-center gap-3">
-                <Button type="submit" disabled={processing}>
+            {/* ───────────────── Action Buttons ───────────────── */}
+            <div className="flex items-center justify-start gap-2">
+                <Button type="submit" className="flex-1 md:w-45 md:flex-none" disabled={processing}>
                     {processing ? (
                         <>
                             <Spinner className="mr-2" />
@@ -780,7 +413,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
                         'Simpan'
                     )}
                 </Button>
-                <Button type="button" variant="outline" onClick={handleCancel} disabled={processing}>
+                <Button type="button" variant="secondary" className="flex-1 md:w-45 md:flex-none" onClick={handleCancel} disabled={processing}>
                     Batal
                 </Button>
             </div>

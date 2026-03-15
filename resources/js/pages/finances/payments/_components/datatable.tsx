@@ -16,8 +16,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
 
 import finances from '@/routes/finances';
-import type { ProjectPayment } from '@/types/project';
-import { PAYMENT_METHODS, PAYMENT_STATUSES } from '@/types/project';
+import type { ProjectPayment } from '@/types/projects';
+import { PAYMENT_METHODS, PAYMENT_STATUSES } from '@/types/projects';
 import getColumns from './columns';
 import PaymentDetail from './payment-detail';
 

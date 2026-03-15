@@ -1,7 +1,7 @@
 import { AlertTriangle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { formatDate } from '@/lib/utils';
-import { PAYMENT_METHODS_MAP, type ProjectPayment } from '@/types/project';
+import { PAYMENT_METHODS_MAP, type ProjectPayment } from '@/types/projects';
 
 export default function PaymentDetail({ payment }: { payment: ProjectPayment }) {
     const { notes, status, rejection_reason, payment_method, reference_number, verified_at, verifier } = payment;

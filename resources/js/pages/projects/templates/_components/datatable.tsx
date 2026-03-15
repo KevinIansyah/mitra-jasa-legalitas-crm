@@ -17,7 +17,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
 import templates from '@/routes/projects/templates';
-import type { ProjectTemplate } from '@/types/project-template';
+import type { ProjectTemplate } from '@/types/project-templates';
 import type { Service } from '@/types/service';
 import getColumns from './columns';
 import TemplateDetail from './template-detail';

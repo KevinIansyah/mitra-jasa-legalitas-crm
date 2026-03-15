@@ -14,8 +14,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import finances from '@/routes/finances';
-import type { PaymentStatus, ProjectPayment } from '@/types/project';
-import { PAYMENT_STATUSES, PAYMENT_STATUSES_MAP } from '@/types/project';
+import type { PaymentStatus, ProjectPayment } from '@/types/projects';
+import { PAYMENT_STATUSES, PAYMENT_STATUSES_MAP } from '@/types/projects';
 import { PaymentEditDrawer } from './payment-edit-drawer';
 
 type ActionsProps = {
@@ -147,7 +147,7 @@ export default function Actions({ payment, isExpanded, onToggleExpand }: Actions
 
                 {(isVerified || isRejected) && <Badge className={`${statusInfo?.classes} px-3 py-1`}>{statusInfo?.label}</Badge>}
             </div>
-            
+
             {editingPayment && (
                 <PaymentEditDrawer
                     invoice={payment.invoice!}

@@ -3,7 +3,7 @@ import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
 import finances from '@/routes/finances';
 import type { BreadcrumbItem } from '@/types';
-import type { Quote } from '@/types/quote';
+import type { Quote } from '@/types/quotes';
 import { DetailSection } from './_components/detail-section';
 
 export default function Page() {
@@ -20,7 +20,7 @@ export default function Page() {
             <Head title={`Quote ${quote.reference_number}`} />
             <div className="p-4 md:p-6">
                 <Heading title="Detail Permintaan Penawaran" description={`${quote.reference_number} - Request dari ${quote.user?.name}`} />
-                
+
                 <DetailSection quote={quote} />
             </div>
         </AppLayout>

@@ -17,8 +17,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
 import finances from '@/routes/finances';
-import type { ProjectInvoice } from '@/types/project';
-import { INVOICE_STATUSES, INVOICE_TYPES } from '@/types/project';
+import type { ProjectInvoice } from '@/types/projects';
+import { INVOICE_STATUSES, INVOICE_TYPES } from '@/types/projects';
 import getColumns from './columns';
 import InvoiceDetail from './invoice-detail';
 

@@ -1,9 +1,9 @@
 import { Ban, CheckCircle2, Clock, FolderOpen } from 'lucide-react';
 import { useState } from 'react';
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import type { Company, Customer } from '@/types/contact';
+import type { Company, Customer } from '@/types/contacts';
 import type { Paginator } from '@/types/paginator';
-import type { Project, ProjectSummary } from '@/types/project';
+import type { Project, ProjectSummary } from '@/types/projects';
 import type { Service } from '@/types/service';
 import { DataTable } from './datatable';
 
@@ -64,7 +64,9 @@ export function ProjectSection({ projects, summary, customers, companies, servic
             icon: <Ban className="size-3.5" />,
             footer: (
                 <>
-                    <p className="font-medium">{summary.on_hold} ditunda · {summary.cancelled} dibatalkan</p>
+                    <p className="font-medium">
+                        {summary.on_hold} ditunda · {summary.cancelled} dibatalkan
+                    </p>
                     <p className="text-muted-foreground">On Hold &amp; Cancelled</p>
                 </>
             ),

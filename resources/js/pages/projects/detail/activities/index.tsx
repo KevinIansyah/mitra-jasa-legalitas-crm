@@ -2,7 +2,7 @@ import { router } from '@inertiajs/react';
 import { Activity, ChevronLeftIcon, ChevronRightIcon, FilePlus, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatDateTime } from '@/lib/utils';
-import type { ActivityLog } from '@/types/project';
+import type { ActivityLog } from '@/types/projects';
 
 type ActivitiesProps = {
     activities: {

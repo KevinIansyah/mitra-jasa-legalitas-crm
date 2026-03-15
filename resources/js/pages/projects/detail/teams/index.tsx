@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 import { HasPermission } from '@/components/has-permission';
 import { Button } from '@/components/ui/button';
-import type { Project } from '@/types/project';
+import type { Project } from '@/types/projects';
 import { TeamAddDrawer } from './_components/team-add-drawer';
 import { TeamCard } from './_components/team-card';
 
@@ -18,7 +18,7 @@ export default function Teams({ project }: TeamsProps) {
         <>
             <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-6">
-                    <div className="flex flex-col items-start gap-4 justify-between md:flex-row">
+                    <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
                         <div>
                             <h2 className="text-xl font-semibold">Anggota Tim</h2>
                             <p className="mt-0.5 text-sm text-muted-foreground">Daftar anggota tim pada project ini</p>

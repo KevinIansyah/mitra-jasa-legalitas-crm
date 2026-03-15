@@ -1,6 +1,6 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
-import type { City } from '@/types/city';
+import type { City } from '@/types/cities';
 import Actions from './actions';
 
 export default function getColumns(): ColumnDef<City>[] {
@@ -40,11 +40,7 @@ export default function getColumns(): ColumnDef<City>[] {
             header: 'Halaman Layanan',
             cell: ({ row }) => {
                 const count = row.original.service_city_pages_count ?? 0;
-                return (
-                    <Badge variant={count > 0 ? 'default' : 'secondary'}>
-                        {count} halaman
-                    </Badge>
-                );
+                return <Badge variant={count > 0 ? 'default' : 'secondary'}>{count} halaman</Badge>;
             },
         },
         {

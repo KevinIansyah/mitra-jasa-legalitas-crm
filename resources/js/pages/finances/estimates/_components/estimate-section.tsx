@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatRupiah } from '@/lib/service';
 import type { Paginator } from '@/types/paginator';
-import type { Estimate, EstimateSummaryData } from '@/types/quote';
+import type { Estimate, EstimateSummaryData } from '@/types/quotes';
 
 import { DataTable } from './datatable';
 

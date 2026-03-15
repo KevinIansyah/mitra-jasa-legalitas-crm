@@ -5,11 +5,11 @@ type TabItem = {
     label: string;
 };
 
-interface ServiceTabProps {
+interface BlogTagProps {
     tabs: TabItem[];
 }
 
-export function ServiceTab({ tabs }: ServiceTabProps) {
+export function BlogTab({ tabs }: BlogTagProps) {
     return (
         <TabsList>
             {tabs.map((tab) => (

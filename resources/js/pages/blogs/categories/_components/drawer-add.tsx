@@ -7,13 +7,13 @@ import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, Dr
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
-import categories from '@/routes/services/categories';
-import type { ServiceCategoryFormData } from '@/types/service';
+import categories from '@/routes/blogs/categories';
+import type { BlogCategoryFormData } from '@/types/blogs';
 
 export function DrawerAdd() {
     const [open, setOpen] = React.useState(false);
 
-    const { data, setData, post, processing, errors, reset } = useForm<ServiceCategoryFormData>({
+    const { data, setData, post, processing, errors, reset } = useForm<BlogCategoryFormData>({
         name: '',
     });
 
@@ -21,14 +21,14 @@ export function DrawerAdd() {
         e.preventDefault();
 
         const id = toast.loading('Memproses...', {
-            description: 'Kategori layanan sedang ditambahkan.',
+            description: 'Kategori blog sedang ditambahkan.',
         });
 
         post(categories.store().url, {
             preserveScroll: true,
             onSuccess: () => {
                 toast.success('Berhasil', {
-                    description: 'Kategori layanan berhasil ditambahkan.',
+                    description: 'Kategori blog berhasil ditambahkan.',
                 });
 
                 reset();
@@ -36,7 +36,7 @@ export function DrawerAdd() {
             },
             onError: () => {
                 toast.error('Gagal', {
-                    description: 'Kategori layanan gagal ditambahkan. Silakan periksa kembali data kategori layanan yang diisi.',
+                    description: 'Kategori blog gagal ditambahkan. Silakan periksa kembali data yang diisi.',
                 });
             },
             onFinish: () => {
@@ -55,24 +55,25 @@ export function DrawerAdd() {
             </DrawerTrigger>
 
             <DrawerContent className="flex h-screen flex-col">
-                <div className="mx-auto flex w-full max-w-lg flex-1 flex-col overflow-y-auto px-4">
+                <div className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-4 overflow-y-auto px-4">
                     <DrawerHeader className="px-4">
-                        <DrawerTitle>Tambah Kategori Layanan Baru</DrawerTitle>
-                        <DrawerDescription>Isi formulir di bawah untuk menambahkan kategori layanan baru ke sistem</DrawerDescription>
+                        <DrawerTitle>Tambah Kategori Blog Baru</DrawerTitle>
+                        <DrawerDescription>Isi formulir di bawah untuk menambahkan kategori blog baru ke sistem</DrawerDescription>
                     </DrawerHeader>
 
                     <form onSubmit={handleSubmit} className="flex flex-1 flex-col px-4">
-                        {/* Content */}
                         <div>
                             <Field>
-                                <FieldLabel htmlFor="name">Nama</FieldLabel>
+                                <FieldLabel htmlFor="name">
+                                    Nama <span className="text-destructive">*</span>
+                                </FieldLabel>
                                 <Input
                                     id="name"
                                     type="text"
                                     name="name"
                                     required
                                     autoFocus
-                                    placeholder="Masukkan nama kategori layanan, contoh: Perizinan"
+                                    placeholder="Masukkan nama kategori blog, contoh: Hukum Bisnis"
                                     value={data.name}
                                     onChange={(e) => setData('name', e.target.value)}
                                 />
@@ -81,7 +82,6 @@ export function DrawerAdd() {
                             </Field>
                         </div>
 
-                        {/* Footer */}
                         <DrawerFooter className="mt-auto px-0">
                             <Button type="submit" disabled={processing}>
                                 {processing ? (
@@ -94,7 +94,7 @@ export function DrawerAdd() {
                                 )}
                             </Button>
                             <DrawerClose asChild>
-                                <Button variant="outline" type="button">
+                                <Button variant="secondary" type="button">
                                     Batal
                                 </Button>
                             </DrawerClose>

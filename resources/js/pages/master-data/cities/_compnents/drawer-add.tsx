@@ -12,7 +12,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 
 import citiesRoute from '@/routes/master-data/cities';
-import type { CityFormData } from '@/types/city';
+import type { CityFormData } from '@/types/cities';
 
 export function DrawerAdd() {
     const [open, setOpen] = React.useState(false);

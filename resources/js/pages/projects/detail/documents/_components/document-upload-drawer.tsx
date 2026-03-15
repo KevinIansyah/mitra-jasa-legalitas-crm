@@ -12,7 +12,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 import { formatSize, readImageAsDataURL, validateFile, validateImageFile } from '@/lib/service';
 import projects from '@/routes/projects';
-import type { ProjectDocument } from '@/types/project';
+import type { ProjectDocument } from '@/types/projects';
 
 const DOCUMENT_MAX_FILE_SIZE = 20 * 1024 * 1024;
 

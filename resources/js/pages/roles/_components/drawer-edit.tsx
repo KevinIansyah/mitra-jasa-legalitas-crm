@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner';
 import roles from '@/routes/roles';
-import type { RoleFormData } from '@/types/role';
+import type { RoleFormData } from '@/types/roles';
 
 type DrawerEditProps = {
     roleId: number;

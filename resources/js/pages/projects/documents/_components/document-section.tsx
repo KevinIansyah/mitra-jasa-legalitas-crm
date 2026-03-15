@@ -2,7 +2,7 @@ import { File, FileCheck, FileClock, FileX } from 'lucide-react';
 import { useState } from 'react';
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Paginator } from '@/types/paginator';
-import type { ProjectDocument, ProjectDocumentSummary } from '@/types/project';
+import type { ProjectDocument, ProjectDocumentSummary } from '@/types/projects';
 import { DataTable } from './datatable';
 
 interface DocumentSectionProps {
@@ -59,7 +59,9 @@ export function DocumentSection({ documents, summary, filters }: DocumentSection
             icon: <FileX className="size-3.5" />,
             footer: (
                 <>
-                    <p className="font-medium">{summary.rejected} ditolak · {summary.not_uploaded} belum diunggah</p>
+                    <p className="font-medium">
+                        {summary.rejected} ditolak · {summary.not_uploaded} belum diunggah
+                    </p>
                     <p className="text-muted-foreground">Perlu tindak lanjut</p>
                 </>
             ),

@@ -7,9 +7,11 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarRail } from '@/components/ui/sidebar';
 
 import { usePermission } from '@/hooks/use-permission';
+import blogs from '@/routes/blogs';
 import contacts from '@/routes/contacts';
 import dashboard from '@/routes/dashboard';
 import finances from '@/routes/finances';
+import masterData from '@/routes/master-data';
 import projects from '@/routes/projects';
 import { index as deliverablesIndex } from '@/routes/projects/deliverables';
 import { index as documentsIndex } from '@/routes/projects/documents';
@@ -19,8 +21,6 @@ import siteSettings from '@/routes/site-settings';
 import staffRoutes from '@/routes/staff';
 import type { NavItem, NavSection } from '@/types';
 import type { SharedData } from '@/types';
-import masterData from '@/routes/master-data';
-
 
 function buildNavData(userId: number): {
     navMain: NavSection;
@@ -222,7 +222,7 @@ function buildNavData(userId: number): {
                             permission: 'view-services',
                         },
                         {
-                            title: 'Layanan per Kota',
+                            title: 'Halaman Kota',
                             url: services.cityPages.index().url,
                             permission: 'view-service-city-pages',
                         },
@@ -237,30 +237,25 @@ function buildNavData(userId: number): {
                     title: 'Blog',
                     url: '#',
                     icon: Newspaper,
-                    permission: ['view-services', 'view-service-categories'],
+                    permission: ['view-blogs', 'view-blog-categories', 'view-blog-tags'],
                     items: [
                         {
                             title: 'Semua Blog',
-                            url: services.index().url,
-                            permission: 'view-services',
+                            url: blogs.index().url,
+                            permission: 'view-blogs',
+                        },
+                        {
+                            title: 'Kategori',
+                            url: blogs.categories.index().url,
+                            permission: 'view-blog-categories',
                         },
                         {
                             title: 'Tag',
-                            url: services.categories.index().url,
-                            permission: 'view-service-categories',
+                            url: blogs.tags.index().url,
+                            permission: 'view-blog-tags',
                         },
                     ],
                 },
-                // {
-                //     title: 'Content',
-                //     url: '#',
-                //     icon: PenLine,
-                //     items: [
-                //         { title: 'Halaman Layanan', url: '#' },
-                //         { title: 'Blog', url: '#' },
-                //         { title: 'Email Templates', url: '#' },
-                //     ],
-                // },
                 // {
                 //     title: 'SEO',
                 //     url: '#',

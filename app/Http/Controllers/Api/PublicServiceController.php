@@ -36,7 +36,7 @@ class PublicServiceController extends Controller
                         ->whereHas('city', fn($query) => $query->where('slug', $request->kota));
                 })
             )
-            ->orderBy('sort_order')
+            ->latest()
             ->orderBy('name')
             ->get(['id', 'service_category_id', 'name', 'slug', 'short_description', 'featured_image', 'is_featured', 'is_popular'])
             ->map(fn($service) => $this->formatServiceCard($service));
@@ -59,8 +59,8 @@ class PublicServiceController extends Controller
             ->where('service_category_id', $category->id)
             ->where('is_published', true)
             ->where('status', 'active')
-            ->orderBy('sort_order')
             ->orderBy('name')
+            ->latest()
             ->get(['id', 'service_category_id', 'name', 'slug', 'short_description', 'featured_image', 'is_featured', 'is_popular'])
             ->map(fn($service) => $this->formatServiceCard($service));
 

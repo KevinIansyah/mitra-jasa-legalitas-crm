@@ -3,7 +3,7 @@
  */
 
 import type { User } from './auth';
-import type { TaskStatus } from './project';
+import type { TaskStatus } from './projects';
 
 // ============================================================
 // CORE TYPES

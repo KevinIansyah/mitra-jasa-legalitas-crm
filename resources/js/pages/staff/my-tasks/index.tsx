@@ -16,8 +16,8 @@ import { formatDate } from '@/lib/utils';
 import projects from '@/routes/projects';
 import staffRoutes from '@/routes/staff';
 import type { BreadcrumbItem } from '@/types';
-import type { ProjectTask, TaskStatus } from '@/types/project';
-import { TASK_PRIORITIES_MAP, TASK_STATUSES, TASK_STATUSES_MAP } from '@/types/project';
+import type { ProjectTask, TaskStatus } from '@/types/projects';
+import { TASK_PRIORITIES_MAP, TASK_STATUSES, TASK_STATUSES_MAP } from '@/types/projects';
 
 export default function Page() {
     const R2_PUBLIC_URL = import.meta.env.VITE_CLOUDFLARE_R2_PUBLIC_URL;
@@ -103,7 +103,6 @@ export default function Page() {
                 <Heading title="My Tasks" description={`Daftar tugas yang ditugaskan kepada ${staff.name}`} />
 
                 <div className="mt-4 space-y-4">
-             
                     <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:border-none *:data-[slot=card]:bg-sidebar *:data-[slot=card]:shadow md:grid-cols-4 *:data-[slot=card]:dark:shadow-none">
                         {STATS.map(({ label, value, badge, icon }) => (
                             <Card key={label}>
@@ -150,22 +149,13 @@ export default function Page() {
                                             const isLoading = loadingTaskId === task.id;
 
                                             return (
-                                                <div
-                                                    key={task.id}
-                                                    className={`rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none ${isDone ? 'opacity-60' : ''}`}
-                                                >
+                                                <div key={task.id} className={`rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none ${isDone ? 'opacity-60' : ''}`}>
                                                     <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-start">
-                                                 
                                                         <div className="flex-1 space-y-2">
-                                                            <p className={`font-semibold leading-snug ${isDone ? 'text-muted-foreground line-through' : ''}`}>
-                                                                {task.title}
-                                                            </p>
+                                                            <p className={`leading-snug font-semibold ${isDone ? 'text-muted-foreground line-through' : ''}`}>{task.title}</p>
 
-                                                           
                                                             <div className="flex flex-wrap items-center gap-2">
-                                                                <Badge className={`${priorityInfo.classes}`}>
-                                                                    {priorityInfo.label}
-                                                                </Badge>
+                                                                <Badge className={`${priorityInfo.classes}`}>{priorityInfo.label}</Badge>
 
                                                                 {task.milestone && (
                                                                     <div className="flex items-center gap-1 text-xs">
@@ -201,11 +191,8 @@ export default function Page() {
                                                                 )}
                                                             </div>
 
-                                                            {task.description && (
-                                                                <p className="text-sm text-muted-foreground">{task.description}</p>
-                                                            )}
+                                                            {task.description && <p className="text-sm text-muted-foreground">{task.description}</p>}
 
-                                                        
                                                             {task.project && (
                                                                 <div className="pt-1">
                                                                     <Button asChild variant="ghost" size="sm" className="h-7 gap-1.5 px-2 text-xs">
@@ -218,7 +205,6 @@ export default function Page() {
                                                             )}
                                                         </div>
 
-                                                      
                                                         <div className="shrink-0">
                                                             <DropdownMenu>
                                                                 <DropdownMenuTrigger asChild>

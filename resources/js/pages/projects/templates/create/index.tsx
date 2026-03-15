@@ -6,7 +6,6 @@ import type { BreadcrumbItem } from '@/types';
 import type { Service } from '@/types/service';
 import { CreateSection } from './_components/create-section';
 
-
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Template Project',
