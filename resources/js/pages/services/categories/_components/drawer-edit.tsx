@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Spinner } from '@/components/ui/spinner';
 
 import categories from '@/routes/services/categories';
-import type { ServiceCategory, ServiceCategoryFormData } from '@/types/service';
+import type { ServiceCategory, ServiceCategoryFormData } from '@/types/services';
 
 type DrawerEditProps = {
     category: ServiceCategory;

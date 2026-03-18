@@ -5,7 +5,7 @@ import type { BreadcrumbItem } from '@/types';
 import type { Company, Customer } from '@/types/contacts';
 import type { Paginator } from '@/types/paginator';
 import type { Project, ProjectSummary } from '@/types/projects';
-import type { Service } from '@/types/service';
+import type { Service } from '@/types/services';
 import { ProjectSection } from './_components/project-section';
 
 const breadcrumbs: BreadcrumbItem[] = [

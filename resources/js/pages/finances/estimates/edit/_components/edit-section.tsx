@@ -1,8 +1,12 @@
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+
 import finances from '@/routes/finances';
-import type { Estimate, EstimateFormData, Quote } from '@/types/quotes';
+import type { Customer } from '@/types/contacts';
+import type { Estimate, EstimateFormData } from '@/types/estimates';
+import type { Proposal } from '@/types/proposals';
+import type { Quote } from '@/types/quotes';
 import { EstimateForm } from '../../_components/estimate-form';
 import type { EstimateFormErrors } from '../../_components/estimate-form';
 import { EstimateSummary } from '../../_components/estimate-summary';
@@ -11,13 +15,19 @@ type EditSectionProps = {
     estimate: Estimate;
     selectedQuote: Quote | null;
     fromQuote: boolean;
+    selectedProposal: Proposal | null;
+    fromProposal: boolean;
+    selectedCustomer: Customer | null;
     isEdit: boolean;
 };
 
 function estimateToFormData(estimate: Estimate): EstimateFormData {
     return {
         quote_id: estimate.quote_id,
+        proposal_id: estimate.proposal_id,
+        customer_id: estimate.customer_id,
         valid_until: estimate.valid_until ?? '',
+        estimate_date: estimate.estimate_date,
         tax_percent: Number(estimate.tax_percent),
         discount_percent: Number(estimate.discount_percent),
         notes: estimate.notes ?? '',
@@ -32,7 +42,7 @@ function estimateToFormData(estimate: Estimate): EstimateFormData {
     };
 }
 
-export default function EditSection({ estimate, selectedQuote, fromQuote, isEdit }: EditSectionProps) {
+export default function EditSection({ estimate, selectedQuote, fromQuote, selectedProposal, fromProposal, selectedCustomer, isEdit }: EditSectionProps) {
     const [data, setData] = useState<EstimateFormData>(() => estimateToFormData(estimate));
     const [errors, setErrors] = useState<EstimateFormErrors>({});
     const [processing, setProcessing] = useState(false);
@@ -46,7 +56,7 @@ export default function EditSection({ estimate, selectedQuote, fromQuote, isEdit
         const toastId = toast.loading('Menyimpan...', { description: 'Estimate sedang diperbarui.' });
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        router.put(finances.estimates.update(estimate.id).url, { ...data, from_quote: fromQuote } as any, {
+        router.put(finances.estimates.update(estimate.id).url, { ...data, from_quote: fromQuote, from_proposal: fromProposal } as any, {
             onSuccess: () => {
                 toast.success('Berhasil', { description: 'Estimate berhasil diperbarui.' });
             },
@@ -65,9 +75,18 @@ export default function EditSection({ estimate, selectedQuote, fromQuote, isEdit
     return (
         <div className="space-y-6">
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_280px]">
-                <EstimateForm data={data} errors={errors} initialQuote={selectedQuote} fromQuote={fromQuote} isEdit={isEdit} onChange={handleChange} />
-
-                <EstimateSummary items={data.items} processing={processing} onSubmit={() => handleSubmit()} />
+                <EstimateForm
+                    data={data}
+                    errors={errors}
+                    initialQuote={selectedQuote}
+                    initialProposal={selectedProposal}
+                    initialCustomer={selectedCustomer}
+                    fromQuote={fromQuote}
+                    fromProposal={fromProposal}
+                    isEdit={isEdit}
+                    onChange={handleChange}
+                />
+                <EstimateSummary items={data.items} processing={processing} onSubmit={handleSubmit} />
             </div>
         </div>
     );

@@ -20,7 +20,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { formatSize, readImageAsDataURL, validateImageFile } from '@/lib/service';
 import blogs from '@/routes/blogs';
 import type { Blog, BlogCategory, BlogTag } from '@/types/blogs';
-import type { Service } from '@/types/service';
+import type { Service } from '@/types/services';
 import { defaultSeo, SeoCard, type LocalBlogSeo } from '../../_components/seo-card';
 import { AiGenerateDrawer, type AiDrawerType } from './ai-generate-drawe';
 

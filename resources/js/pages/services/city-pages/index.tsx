@@ -5,7 +5,7 @@ import services from '@/routes/services';
 import type { BreadcrumbItem } from '@/types';
 import type { City } from '@/types/cities';
 import type { Paginator } from '@/types/paginator';
-import type { Service, ServiceCityPage, ServiceCityPageSummary } from '@/types/service';
+import type { Service, ServiceCityPage, ServiceCityPageSummary } from '@/types/services';
 import { CityPageSection } from './_components/city-pages-section';
 
 const breadcrumbs: BreadcrumbItem[] = [

@@ -99,6 +99,24 @@ class CustomerController extends Controller
             return back()->with('error', 'Tidak dapat menghapus customer yang memiliki akun user. Hapus akun user terlebih dahulu.');
         }
 
+        if ($customer->invoices()->exists()) {
+            return back()->withErrors([
+                'error' => 'Customer tidak dapat dihapus karena sudah memiliki invoice.'
+            ]);
+        }
+
+        if ($customer->proposals()->exists()) {
+            return back()->withErrors([
+                'error' => 'Customer tidak dapat dihapus karena sudah memiliki proposal.'
+            ]);
+        }
+
+        if ($customer->estimates()->exists()) {
+            return back()->withErrors([
+                'error' => 'Customer tidak dapat dihapus karena sudah memiliki estimate.'
+            ]);
+        }
+
         $customer->delete();
 
         return back()->with('success', 'Customer berhasil dihapus.');

@@ -23,7 +23,7 @@ return new class extends Migration
             $table->decimal('subtotal', 15, 2);
             $table->decimal('discount_amount', 15, 2)->default(0);
             $table->decimal('tax_amount', 15, 2)->default(0);
-            $table->decimal('total', 15, 2);
+            $table->decimal('total_amount', 15, 2);
 
             $table->unsignedInteger('sort_order')->default(0);
             $table->timestamps();

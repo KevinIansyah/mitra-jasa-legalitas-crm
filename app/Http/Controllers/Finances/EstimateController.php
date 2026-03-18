@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers\Finances;
 
+use App\Helpers\FileHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Finances\Estimates\StoreRequest;
 use App\Http\Requests\Finances\Estimates\UpdateRequest;
 use App\Models\Estimate;
 use App\Models\EstimateItem;
+use App\Models\Proposal;
 use App\Models\Quote;
+use App\Models\SiteSetting;
+use App\Services\Pdf\EstimatePdfService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class EstimateController extends Controller
@@ -21,36 +26,43 @@ class EstimateController extends Controller
 
         $search = $request->get('search');
         $status = $request->get('status');
+        $source = $request->get('source');
 
         $estimates = Estimate::query()
             ->with([
                 'quote:id,reference_number,project_name,status,user_id',
                 'quote.user:id,name',
+                'proposal:id,proposal_number,project_name,status,customer_id',
+                'proposal.customer:id,name,tier',
+                'customer:id,name,tier',
                 'items',
             ])
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('estimate_number', 'like', "%{$search}%")
-                        ->orWhereHas('quote', function ($q) use ($search) {
-                            $q->where('reference_number', 'like', "%{$search}%")
-                                ->orWhere('project_name', 'like', "%{$search}%");
-                        });
+                        ->orWhereHas('quote', fn($q) => $q->where('reference_number', 'like', "%{$search}%")
+                            ->orWhere('project_name', 'like', "%{$search}%"))
+                        ->orWhereHas('proposal', fn($q) => $q->where('proposal_number', 'like', "%{$search}%"))
+                        ->orWhereHas('customer', fn($q) => $q->where('name', 'like', "%{$search}%"));
                 });
             })
             ->when($status, fn($q) => $q->where('status', $status))
+            ->when($source === 'quote',    fn($q) => $q->whereNotNull('quote_id'))
+            ->when($source === 'proposal', fn($q) => $q->whereNotNull('proposal_id'))
+            ->when($source === 'customer', fn($q) => $q->whereNotNull('customer_id'))
             ->latest()
             ->paginate($perPage);
 
         $summary = Estimate::query()
             ->selectRaw("
-            COUNT(*) as total,
-            SUM(CASE WHEN status = 'draft'    THEN 1 ELSE 0 END) as draft,
-            SUM(CASE WHEN status = 'sent'     THEN 1 ELSE 0 END) as sent,
-            SUM(CASE WHEN status = 'accepted' THEN 1 ELSE 0 END) as accepted,
-            SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) as rejected,
-            SUM(total_amount) as total_amount,
-            SUM(CASE WHEN status = 'accepted' THEN total_amount ELSE 0 END) as accepted_amount
-        ")
+                COUNT(*) as total,
+                SUM(CASE WHEN status = 'draft'    THEN 1 ELSE 0 END) as draft,
+                SUM(CASE WHEN status = 'sent'     THEN 1 ELSE 0 END) as sent,
+                SUM(CASE WHEN status = 'accepted' THEN 1 ELSE 0 END) as accepted,
+                SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) as rejected,
+                SUM(total_amount) as total_amount,
+                SUM(CASE WHEN status = 'accepted' THEN total_amount ELSE 0 END) as accepted_amount
+            ")
             ->first();
 
         return Inertia::render('finances/estimates/index', [
@@ -60,96 +72,156 @@ class EstimateController extends Controller
                 'search'   => $search,
                 'per_page' => $perPage,
                 'status'   => $status,
+                'source'   => $source,
             ],
+        ]);
+    }
+
+    public function show(Estimate $estimate)
+    {
+        $estimate->load([
+            'customer',
+            'proposal.customer',
+            'quote.user',
+            'quote.customer',
+            'items',
+        ]);
+
+        return Inertia::render('finances/estimates/detail/index', [
+            'estimate' => $estimate,
+            'settings' => SiteSetting::get(),
         ]);
     }
 
     public function create(Request $request)
     {
-        $selectedQuote = null;
+        $selectedQuote    = null;
+        $selectedProposal = null;
+        $selectedCustomer = null;
+
         if ($request->filled('quote_id')) {
             $selectedQuote = Quote::with(
-                'user:id,name,email',
-                'customer:id,name',
+                'user:id,name,email,phone',
+                'customer:id,name,email,phone',
                 'service:id,name',
                 'servicePackage:id,name',
-            )->find($request->quote_id, ['id', 'project_name', 'customer_id', 'service_id', 'service_package_id', 'status']);
+            )->find($request->quote_id);
+        } elseif ($request->filled('proposal_id')) {
+            $selectedProposal = Proposal::with('customer:id,name,email,phone', 'items')
+                ->find($request->proposal_id);
         }
 
-        $fromQuote = $request->filled('quote_id');
-
         return Inertia::render('finances/estimates/create/index', [
-            'selectedQuote' => $selectedQuote,
-            'fromQuote' => $fromQuote,
+            'selectedQuote'    => $selectedQuote,
+            'selectedProposal' => $selectedProposal,
+            'fromQuote'        => $request->filled('quote_id'),
+            'fromProposal'     => $request->filled('proposal_id'),
         ]);
     }
 
     public function store(StoreRequest $request)
     {
-        $validated = $request->validated();
+        $validated    = $request->validated();
+        $fromQuote    = $request->boolean('from_quote');
+        $fromProposal = $request->boolean('from_proposal');
 
-        $quote = Quote::find($validated['quote_id']);
-        if (!$quote) {
-            return back()->withErrors(['error' => 'Project tidak ditemukan.']);
+        $quote    = null;
+        $proposal = null;
+
+        if ($fromQuote) {
+            $quote = Quote::find($validated['quote_id']);
+            if (!$quote) {
+                return back()->withErrors(['error' => 'Quote tidak ditemukan.']);
+            }
+        } elseif ($fromProposal) {
+            $proposal = Proposal::find($validated['proposal_id']);
+            if (!$proposal) {
+                return back()->withErrors(['error' => 'Proposal tidak ditemukan.']);
+            }
         }
 
-        DB::transaction(function () use ($quote, $validated) {
-            $latestVersion = $quote->estimates()->max('version') ?? 0;
+        $estimate = DB::transaction(function () use ($validated, $fromQuote, $fromProposal, $quote, $proposal) {
+            $anchor = $quote ?? $proposal;
+            $latestVersion = $anchor
+                ? $anchor->estimates()->max('version') ?? 0
+                : 0;
 
-            $quote->estimates()->update(['is_active' => false]);
+            if ($anchor) {
+                $anchor->estimates()->update(['is_active' => false]);
+            }
 
             $estimate = Estimate::create([
-                'estimate_number'      => Estimate::generateEstimateNumber(),
-                'quote_id'             => $quote->id,
-                'version'              => $latestVersion + 1,
-                'is_active'            => true,
-                'subtotal'             => 0,
-                'tax_percent'          => $validated['tax_percent'] ?? 0,
-                'tax_amount'           => 0,
-                'discount_percent'     => $validated['discount_percent'] ?? 0,
-                'discount_amount'      => 0,
-                'total_amount'         => 0,
-                'valid_until'          => $validated['valid_until'] ?? null,
-                'status'               => 'draft',
-                'notes'                => $validated['notes'] ?? null,
-
+                'estimate_number'  => Estimate::generateEstimateNumber(),
+                'quote_id'         => $fromQuote ? $quote->id : null,
+                'proposal_id'      => $fromProposal ? $proposal->id : null,
+                'customer_id'      => (!$fromQuote && !$fromProposal) ? ($validated['customer_id'] ?? null) : null,
+                'version'          => $latestVersion + 1,
+                'is_active'        => true,
+                'subtotal'         => 0,
+                'tax_percent'      => $validated['tax_percent'] ?? 0,
+                'tax_amount'       => 0,
+                'discount_percent' => $validated['discount_percent'] ?? 0,
+                'discount_amount'  => 0,
+                'total_amount'     => 0,
+                'estimate_date'    => $validated['estimate_date'] ?? null,
+                'valid_until'      => $validated['valid_until'] ?? null,
+                'status'           => 'draft',
+                'notes'            => $validated['notes'] ?? null,
             ]);
 
             $this->syncItems($estimate, $validated);
             $estimate->calculateTotals();
 
-            if ($quote->status === 'contacted') {
+            if ($fromQuote && $quote->status === 'contacted') {
                 $quote->update(['status' => 'estimated']);
             }
 
             return $estimate;
         });
 
-        if ($request->boolean('from_quote')) {
+        try {
+            $filePath = app(EstimatePdfService::class)->generate($estimate);
+            $estimate->update(['file_path' => $filePath]);
+        } catch (\Exception $e) {
+            Log::error('Estimate PDF generation failed', [
+                'estimate_id' => $estimate->id,
+                'error'       => $e->getMessage(),
+            ]);
+        }
+
+        if ($fromQuote) {
             return redirect()->route('finances.quotes.show', ['quote' => $quote->id])
-                ->with('success', 'Permintaan penawaran berhasil ditambahkan.');
+                ->with('success', 'Estimasi berhasil ditambahkan.');
+        }
+
+        if ($fromProposal) {
+            return redirect()->route('finances.proposals.index', ['proposal' => $proposal->id])
+                ->with('success', 'Estimasi berhasil ditambahkan.');
         }
 
         return redirect()->route('finances.estimates.index')
-            ->with('success', 'Permintaan penawaran berhasil ditambahkan.');
+            ->with('success', 'Estimasi berhasil ditambahkan.');
     }
 
     public function edit(Request $request, Estimate $estimate)
     {
         $estimate->load([
             'items',
-            'quote.user:id,name,email',
-            'quote.customer:id,name',
+            'quote.user:id,name,email,phone',
+            'quote.customer:id,name,tier,email,phone',
             'quote.service:id,name',
+            'proposal.customer:id,name,tier,email,phone',
+            'customer:id,name,tier,email,phone',
         ]);
 
-        $fromQuote = $request->filled('quote_id');
-
         return Inertia::render('finances/estimates/edit/index', [
-            'estimate' => $estimate,
-            'selectedQuote' => $estimate->quote,
-            'fromQuote' => $fromQuote,
-            'isEdit'   => true,
+            'estimate'         => $estimate,
+            'selectedQuote'    => $estimate->quote,
+            'selectedProposal' => $estimate->proposal,
+            'selectedCustomer' => $estimate->customer,
+            'fromQuote'        => $request->filled('quote_id'),
+            'fromProposal'     => $request->filled('proposal_id'),
+            'isEdit'           => true,
         ]);
     }
 
@@ -161,24 +233,42 @@ class EstimateController extends Controller
             $validated = $request->validated();
 
             $estimate->update([
-                'valid_until'          => $validated['valid_until'] ?? null,
-                'tax_percent'          => $validated['tax_percent'] ?? 0,
-                'discount_percent'     => $validated['discount_percent'] ?? 0,
-                'status'               => $validated['status'] ?? $estimate->status,
-                'notes'                => $validated['notes'] ?? null,
+                'estimate_date'    => $validated['estimate_date'] ?? null,
+                'valid_until'      => $validated['valid_until'] ?? null,
+                'tax_percent'      => $validated['tax_percent'] ?? 0,
+                'discount_percent' => $validated['discount_percent'] ?? 0,
+                'status'           => $validated['status'] ?? $estimate->status,
+                'notes'            => $validated['notes'] ?? null,
             ]);
 
             $this->syncItems($estimate, $validated);
             $estimate->refresh()->calculateTotals();
         });
 
+        try {
+            $pdfService = app(EstimatePdfService::class);
+            $pdfService->delete($estimate);
+            $filePath = $pdfService->generate($estimate->fresh());
+            $estimate->update(['file_path' => $filePath]);
+        } catch (\Exception $e) {
+            Log::error('Estimate PDF regeneration failed', [
+                'estimate_id' => $estimate->id,
+                'error'       => $e->getMessage(),
+            ]);
+        }
+
         if ($request->boolean('from_quote')) {
             return redirect()->route('finances.quotes.show', ['quote' => $estimate->quote->id])
-                ->with('success', 'Permintaan penawaran berhasil diperbarui.');
+                ->with('success', 'Estimasi berhasil diperbarui.');
+        }
+
+        if ($request->boolean('from_proposal')) {
+            return redirect()->route('finances.proposals.show', ['proposal' => $estimate->proposal->id])
+                ->with('success', 'Estimasi berhasil diperbarui.');
         }
 
         return redirect()->route('finances.estimates.index')
-            ->with('success', 'Permintaan penawaran berhasil diperbarui.');
+            ->with('success', 'Estimasi berhasil diperbarui.');
     }
 
     public function updateStatus(Request $request, Estimate $estimate)
@@ -198,16 +288,18 @@ class EstimateController extends Controller
 
         match ($request->status) {
             'rejected' => $estimate->reject($request->rejected_reason),
-            default => $estimate->update([
-                'status' => $request->status,
+            default    => $estimate->update([
+                'status'          => $request->status,
                 'rejected_reason' => null,
             ]),
         };
 
-        if ($request->status === 'accepted') {
-            $estimate->quote->update(['status' => 'accepted']);
-        } elseif ($request->status === 'rejected' && $estimate->quote->status === 'accepted') {
-            $estimate->quote->update(['status' => 'contacted']);
+        if ($estimate->quote) {
+            if ($request->status === 'accepted') {
+                $estimate->quote->update(['status' => 'accepted']);
+            } elseif ($request->status === 'rejected' && $estimate->quote->status === 'accepted') {
+                $estimate->quote->update(['status' => 'contacted']);
+            }
         }
 
         $messages = [
@@ -236,8 +328,16 @@ class EstimateController extends Controller
             ])->with('success', 'Revisi estimasi berhasil dibuat.');
         }
 
+        if ($request->boolean('from_proposal')) {
+            return redirect()->route('finances.estimates.edit', [
+                'estimate'    => $newEstimate,
+                'from_proposal' => 'true',
+                'proposal_id' => $request->proposal_id,
+            ])->with('success', 'Revisi estimasi berhasil dibuat.');
+        }
+
         return redirect()->route('finances.estimates.edit', $newEstimate)
-            ->with('success', 'Revisi estmasi berhasil dibuat.');
+            ->with('success', 'Revisi estimasi berhasil dibuat.');
     }
 
     public function destroy(Estimate $estimate)
@@ -251,7 +351,8 @@ class EstimateController extends Controller
             $estimate->delete();
 
             if ($wasActive) {
-                $previous = Estimate::where('quote_id', $estimate->quote_id)
+                $previous = Estimate::when($estimate->quote_id, fn($q) => $q->where('quote_id', $estimate->quote_id))
+                    ->when($estimate->proposal_id, fn($q) => $q->where('proposal_id', $estimate->proposal_id))
                     ->orderBy('version', 'desc')
                     ->first();
 
@@ -260,6 +361,35 @@ class EstimateController extends Controller
         });
 
         return back()->with('success', 'Estimate berhasil dihapus.');
+    }
+
+    public function regeneratePdf(Estimate $estimate)
+    {
+        try {
+            $pdfService = app(EstimatePdfService::class);
+            $pdfService->delete($estimate);
+            $filePath = $pdfService->generate($estimate->fresh());
+            $estimate->update(['file_path' => $filePath]);
+
+            return back()->with('success', 'PDF estimasi berhasil di-generate ulang.');
+        } catch (\Exception $e) {
+            Log::error('Estimate PDF manual regeneration failed', [
+                'estimate_id' => $estimate->id,
+                'error'       => $e->getMessage(),
+            ]);
+
+            return back()->withErrors(['error' => 'Gagal generate PDF: ' . $e->getMessage()]);
+        }
+    }
+
+    public function download(Estimate $estimate)
+    {
+        $content  = FileHelper::downloadFromR2Public($estimate->file_path);
+        $filename = 'estimasi-' . $estimate->estimate_number . '.pdf';
+
+        return response($content, 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 
     private function syncItems(Estimate $estimate, array $validated): void

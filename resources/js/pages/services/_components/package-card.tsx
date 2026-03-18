@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { formatRupiah, uid } from '@/lib/service';
-import type { ServiceStatus } from '@/types/service';
+import type { ServiceStatus } from '@/types/services';
 
 export type LocalFeature = {
     _key: string;

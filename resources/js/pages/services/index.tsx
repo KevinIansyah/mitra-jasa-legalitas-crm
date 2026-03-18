@@ -4,7 +4,7 @@ import AppLayout from '@/layouts/app-layout';
 import services from '@/routes/services';
 import type { BreadcrumbItem } from '@/types';
 import type { Paginator } from '@/types/paginator';
-import type { Service, ServiceCategory, ServiceSummary } from '@/types/service';
+import type { Service, ServiceCategory, ServiceSummary } from '@/types/services';
 import { ServiceSection } from './_components/service-section';
 
 const breadcrumbs: BreadcrumbItem[] = [

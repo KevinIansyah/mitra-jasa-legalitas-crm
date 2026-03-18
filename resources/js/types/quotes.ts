@@ -1,7 +1,12 @@
+/**
+ * Quote Management System - TypeScript Definitions
+ */
+
 import type { User } from './auth';
 import type { Customer } from './contacts';
+import type { Estimate } from './estimates';
 import type { Project } from './projects';
-import type { Service, ServicePackage } from './service';
+import type { Service, ServicePackage } from './services';
 
 // ============================================================
 // CORE TYPES
@@ -11,56 +16,10 @@ export type QuoteStatus = 'pending' | 'contacted' | 'estimated' | 'accepted' | '
 export type QuoteTimeline = 'normal' | 'priority' | 'express';
 export type QuoteBudgetRange = 'under_5jt' | '5_10jt' | '10_25jt' | '25_50jt' | 'above_50jt';
 export type QuoteSource = 'portal' | 'whatsapp' | 'referral' | 'other';
-export type EstimateStatus = 'draft' | 'sent' | 'accepted' | 'rejected';
 
 // ============================================================
 // MODELS
 // ============================================================
-
-export interface EstimateItem {
-    id: number;
-    estimate_id: number;
-    description: string;
-    quantity: string;
-    unit_price: string;
-    tax_percent: string;
-    discount_percent: string;
-    subtotal: string;
-    discount_amount: string;
-    tax_amount: string;
-    total_amount: string;
-    sort_order: number;
-    created_at: string;
-    updated_at: string;
-}
-
-export interface Estimate {
-    id: number;
-    estimate_number: string;
-    quote_id: number;
-    version: number;
-    is_active: boolean;
-    subtotal: string;
-    tax_percent: string;
-    tax_amount: string;
-    discount_percent: string;
-    discount_amount: string;
-    total_amount: string;
-    valid_until: string | null;
-    status: EstimateStatus;
-    notes: string | null;
-    rejected_reason: string | null;
-    created_at: string;
-    updated_at: string;
-
-    // Computed
-    version_label: string;
-    is_expired: boolean;
-
-    // Relations
-    items?: EstimateItem[];
-    quote?: Quote;
-}
 
 export interface Quote {
     id: number;
@@ -87,6 +46,7 @@ export interface Quote {
 
     // Computed
     is_convertible: boolean;
+    estimates_count: number;
 
     // Relations
     user?: User;
@@ -96,27 +56,6 @@ export interface Quote {
     service_package?: ServicePackage;
     estimates?: Estimate[];
     active_estimate?: Estimate | null;
-}
-
-// ============================================================
-// FORM DATA
-// ============================================================
-
-export interface EstimateItemFormData {
-    description: string;
-    quantity: number;
-    unit_price: number;
-    tax_percent: number;
-    discount_percent: number;
-}
-
-export interface EstimateFormData {
-    quote_id: number;
-    valid_until: string;
-    tax_percent: number;
-    discount_percent: number;
-    notes: string;
-    items: EstimateItemFormData[];
 }
 
 // ============================================================
@@ -132,16 +71,6 @@ export interface QuoteSummary {
     rejected: number;
     converted: number;
 }
-
-export type EstimateSummaryData = {
-    total: number;
-    draft: number;
-    sent: number;
-    accepted: number;
-    rejected: number;
-    total_amount: string;
-    accepted_amount: string;
-};
 
 // ============================================================
 // CONSTANTS
@@ -184,12 +113,3 @@ export const QUOTE_SOURCES = [
 ] as const;
 
 export const QUOTE_SOURCES_MAP = Object.fromEntries(QUOTE_SOURCES.map((item) => [item.value, item]));
-
-export const ESTIMATE_STATUSES = [
-    { value: 'draft', label: 'Draft', classes: 'bg-slate-500 text-white' },
-    { value: 'sent', label: 'Sent', classes: 'bg-blue-500 text-white' },
-    { value: 'accepted', label: 'Accepted', classes: 'bg-emerald-500 text-white' },
-    { value: 'rejected', label: 'Rejected', classes: 'bg-red-500 text-white' },
-] as const;
-
-export const ESTIMATE_STATUSES_MAP = Object.fromEntries(ESTIMATE_STATUSES.map((item) => [item.value, item]));

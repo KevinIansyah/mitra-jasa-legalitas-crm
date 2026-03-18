@@ -6,7 +6,7 @@ import { HasPermission } from '@/components/has-permission';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import services from '@/routes/services';
-import type { ServiceCityPage } from '@/types/service';
+import type { ServiceCityPage } from '@/types/services';
 
 type ActionsProps = {
     cityPage: ServiceCityPage;

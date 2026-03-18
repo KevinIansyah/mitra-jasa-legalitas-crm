@@ -3,7 +3,7 @@ import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
 import services from '@/routes/services';
 import type { BreadcrumbItem } from '@/types';
-import type { ServiceCategory } from '@/types/service';
+import type { ServiceCategory } from '@/types/services';
 import { CreateSection } from './_components/create-section';
 
 const breadcrumbs: BreadcrumbItem[] = [

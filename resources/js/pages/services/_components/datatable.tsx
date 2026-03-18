@@ -17,7 +17,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
 import services from '@/routes/services';
-import type { Service, ServiceCategory } from '@/types/service';
+import type { Service, ServiceCategory } from '@/types/services';
 import getColumns from './columns';
 
 interface DataTableProps {

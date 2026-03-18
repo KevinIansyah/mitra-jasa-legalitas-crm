@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { DOCUMENT_FORMAT_OPTIONS } from '@/types/service';
+import { DOCUMENT_FORMAT_OPTIONS } from '@/types/services';
 
 export type LocalDocument = {
     _key: string;

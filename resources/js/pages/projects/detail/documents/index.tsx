@@ -1,5 +1,5 @@
 import { router } from '@inertiajs/react';
-import { Download, File, FileCheck, FileClock, FileText, FileX, Plus } from 'lucide-react';
+import { ArrowDownToLine, File, FileCheck, FileClock, FileText, FileX, Plus } from 'lucide-react';
 import { useState } from 'react';
 
 import { HasPermission } from '@/components/has-permission';
@@ -126,7 +126,7 @@ export default function Documents({ project, canApproveDocuments }: DocumentsPro
                         <HasPermission permission="view-project-documents">
                             <Button variant="secondary" className="flex-1 md:min-w-40 md:flex-none" asChild>
                                 <a href={projects.documents.downloadAll(project.id).url}>
-                                    <Download className="size-3.5" />
+                                    <ArrowDownToLine className="size-3.5" />
                                     Unduh Semua
                                 </a>
                             </Button>

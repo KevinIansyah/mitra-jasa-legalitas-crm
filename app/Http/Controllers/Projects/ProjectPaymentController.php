@@ -8,8 +8,11 @@ use App\Http\Requests\Projects\Payments\StoreRequest;
 use App\Http\Requests\Projects\Payments\UpdateRequest;
 use App\Models\ProjectInvoice;
 use App\Models\ProjectPayment;
+use App\Models\SiteSetting;
+use App\Services\Pdf\ReceiptPdfService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class ProjectPaymentController extends Controller
@@ -69,6 +72,22 @@ class ProjectPaymentController extends Controller
                 'status'         => $status,
                 'payment_method' => $method,
             ],
+        ]);
+    }
+
+    public function show(ProjectInvoice $invoice, ProjectPayment $payment)
+    {
+        $payment->load([
+            'invoice.project.customer',
+            'invoice.project.company',
+            'invoice.customer',
+            'invoice.payments' => fn($q) => $q->where('status', 'verified'),
+            'verifier',
+        ]);
+
+        return Inertia::render('finances/payments/detail/index', [
+            'payment'  => $payment,
+            'settings' => SiteSetting::get(),
         ]);
     }
 
@@ -159,6 +178,43 @@ class ProjectPaymentController extends Controller
         $payment->delete();
 
         return back()->with('success', 'Pembayaran berhasil dihapus.');
+    }
+
+    public function downloadReceiptPdf(ProjectInvoice $invoice, ProjectPayment $payment)
+    {
+        if (!$payment->file_path) {
+            abort(404, 'Kwitansi belum tersedia.');
+        }
+
+        $content  = FileHelper::downloadFromR2Public($payment->file_path);
+        $filename = 'kwitansi-' . $payment->receipt_number . '.pdf';
+
+        return response($content, 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+    }
+
+    public function regenerateReceiptPdf(ProjectInvoice $invoice, ProjectPayment $payment)
+    {
+        if (!$payment->isVerified()) {
+            return back()->withErrors(['error' => 'Hanya pembayaran terverifikasi yang dapat digenerate kwitansinya.']);
+        }
+
+        try {
+            $pdfService = app(ReceiptPdfService::class);
+            $pdfService->delete($payment);
+            $filePath = $pdfService->generate($payment->fresh());
+            $payment->update(['file_pathpath' => $filePath]);
+
+            return back()->with('success', 'Kwitansi berhasil di-generate ulang.');
+        } catch (\Exception $e) {
+            Log::error('Receipt PDF manual regeneration failed', [
+                'payment_id' => $payment->id,
+                'error'      => $e->getMessage(),
+            ]);
+
+            return back()->withErrors(['error' => 'Gagal generate kwitansi: ' . $e->getMessage()]);
+        }
     }
 
     private function validatePaymentBelongsToInvoice(ProjectInvoice $invoice, ProjectPayment $payment)

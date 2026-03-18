@@ -4,7 +4,7 @@ import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
 import services from '@/routes/services';
 import type { BreadcrumbItem } from '@/types';
-import type { ServiceCityPage } from '@/types/service';
+import type { ServiceCityPage } from '@/types/services';
 
 import { EditSection } from './_components/edit-section';
 

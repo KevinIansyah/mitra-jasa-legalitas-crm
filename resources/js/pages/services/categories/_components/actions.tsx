@@ -5,7 +5,7 @@ import { HasPermission } from '@/components/has-permission';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import categories from '@/routes/services/categories';
-import type { ServiceCategory } from '@/types/service';
+import type { ServiceCategory } from '@/types/services';
 import { DrawerEdit } from './drawer-edit';
 
 type ActionsProps = {

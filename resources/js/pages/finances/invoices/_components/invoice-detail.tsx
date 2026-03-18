@@ -21,7 +21,7 @@ export default function InvoiceDetail({ invoice }: { invoice: ProjectInvoice }) 
                                         {Number(item.tax_percent) > 0 && <span className="ml-2">pajak {item.tax_percent}%</span>}
                                     </p>
                                 </div>
-                                <p className="shrink-0 font-semibold tabular-nums">{formatRupiah(Number(item.total))}</p>
+                                <p className="shrink-0 font-semibold tabular-nums">{formatRupiah(Number(item.total_amount))}</p>
                             </div>
                         ))}
                     </div>

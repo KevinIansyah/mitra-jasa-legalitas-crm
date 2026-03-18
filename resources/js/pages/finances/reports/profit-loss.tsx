@@ -1,5 +1,5 @@
 import { Head, usePage } from '@inertiajs/react';
-import { FileDown, TrendingDown, TrendingUp } from 'lucide-react';
+import { ArrowDownToLine, TrendingDown, TrendingUp } from 'lucide-react';
 import * as React from 'react';
 import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 
@@ -83,7 +83,7 @@ export default function Page() {
                     <PeriodFilterSheet from={filters.from} to={filters.to} routeUrl={reportRoutes.profitLoss().url} />
                     <Button className="flex-1 md:w-30 md:flex-none" asChild>
                         <a href={finances.reports.profitLoss.pdf.url({ query: { from: filters.from, to: filters.to } })} target="_blank" rel="noopener noreferrer">
-                            <FileDown className="size-3.5" />
+                            <ArrowDownToLine className="size-3.5" />
                             Export PDF
                         </a>
                     </Button>

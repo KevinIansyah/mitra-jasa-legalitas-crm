@@ -16,8 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import services from '@/routes/services';
-import { ROBOTS_OPTIONS, SCHEMA_LABELS, SITEMAP_PRIORITY_OPTIONS, type RobotsDirective, type SitemapPriority } from '@/types/service';
-import type { ServiceCityPage } from '@/types/service';
+import { ROBOTS_OPTIONS, SCHEMA_LABELS, SITEMAP_PRIORITY_OPTIONS, type RobotsDirective, type SitemapPriority, type ServiceCityPage } from '@/types/services';
 import { FaqEditor } from '../../_components/faq-editor';
 import { AiCityPageDrawer } from './ai-city-page-drawer';
 

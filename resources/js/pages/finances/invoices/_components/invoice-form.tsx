@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import { toast } from 'sonner';
 import { DatePicker } from '@/components/date-picker';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
@@ -13,8 +14,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 
-import { formatRupiah } from '@/lib/service';
-import search from '@/routes/search';
+import { formatRupiah, getInitials } from '@/lib/service';
+import { TIER_MAP, type Customer } from '@/types/contacts';
 import type { Project, ProjectInvoiceFormData } from '@/types/projects';
 import { INVOICE_TYPES, PROJECT_STATUSES_MAP, type InvoiceType } from '@/types/projects';
 import type { InvoiceFormErrors } from '../create/_components/create-section';
@@ -25,64 +26,73 @@ type InvoiceFormProps = {
     data: ProjectInvoiceFormData;
     errors: InvoiceFormErrors;
     initialProject?: Project | null;
+    initialCustomer?: Customer | null;
     fromProject: boolean;
     isEdit?: boolean;
     onChange: (val: Partial<ProjectInvoiceFormData>) => void;
 };
 
-export function InvoiceForm({ data, errors, initialProject, fromProject, isEdit, onChange }: InvoiceFormProps) {
-    const [searchQuery, setSearchQuery] = React.useState('');
-    const [searchResults, setSearchResults] = React.useState<Project[]>([]);
-    const [isSearching, setIsSearching] = React.useState(false);
+export function InvoiceForm({ data, errors, initialProject, initialCustomer, fromProject, isEdit, onChange }: InvoiceFormProps) {
+    const R2_PUBLIC_URL = import.meta.env.VITE_CLOUDFLARE_R2_PUBLIC_URL;
+    const selectedProject = initialProject ?? null;
+    const [customerSearchQuery, setCustomerSearchQuery] = React.useState('');
+    const [customerSearchResults, setCustomerSearchResults] = React.useState<Customer[]>([]);
+    const [isCustomerSearching, setIsCustomerSearching] = React.useState(false);
+    const [selectedCustomer, setSelectedCustomer] = React.useState<Customer | null>(initialCustomer ?? null);
+
     const [showBillablePicker, setShowBillablePicker] = React.useState(false);
 
-    const [selectedProject, setSelectedProject] = React.useState<Project | null>(initialProject ?? null);
-
     const isAdditional = data.type === 'additional';
-    const searchTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+    const customerSearchTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
     React.useEffect(() => {
         setShowBillablePicker(false);
     }, [data.project_id, data.type]);
 
-    function handleSearch(query: string) {
-        setSearchQuery(query);
-        if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    //============================================================
+    // CUSTOMER SEARCH
+    //============================================================
+
+    function handleCustomerSearch(query: string) {
+        setCustomerSearchQuery(query);
+        if (customerSearchTimeoutRef.current) clearTimeout(customerSearchTimeoutRef.current);
         if (query.length < 2) {
-            setSearchResults([]);
+            setCustomerSearchResults([]);
             return;
         }
-        searchTimeoutRef.current = setTimeout(async () => {
-            setIsSearching(true);
+        customerSearchTimeoutRef.current = setTimeout(async () => {
+            setIsCustomerSearching(true);
             try {
-                const response = await axios.get(search.projects().url, { params: { search: query } });
-                setSearchResults(response.data.projects || []);
-            } catch (errors) {
-                let msg = 'Terjadi kesalahan saat mencari project, coba lagi.';
-
-                if (axios.isAxiosError(errors)) {
-                    msg = errors.response?.data?.message || Object.values(errors.response?.data?.errors || {})[0] || msg;
+                const response = await axios.get('/search/customers', { params: { search: query } });
+                setCustomerSearchResults(response.data.customers || []);
+            } catch (err) {
+                let msg = 'Terjadi kesalahan saat mencari customer, coba lagi.';
+                if (axios.isAxiosError(err)) {
+                    msg = err.response?.data?.message || Object.values(err.response?.data?.errors || {})[0] || msg;
                 }
-
                 toast.error('Gagal', { description: String(msg) });
-                setSearchResults([]);
+                setCustomerSearchResults([]);
             } finally {
-                setIsSearching(false);
+                setIsCustomerSearching(false);
             }
         }, 300);
     }
 
-    function handleSelectProject(project: Project) {
-        setSelectedProject(project);
-        onChange({ project_id: project.id });
-        setSearchQuery('');
-        setSearchResults([]);
+    function handleSelectCustomer(customer: Customer) {
+        setSelectedCustomer(customer);
+        onChange({ customer_id: customer.id });
+        setCustomerSearchQuery('');
+        setCustomerSearchResults([]);
     }
 
-    function handleRemoveProject() {
-        setSelectedProject(null);
-        onChange({ project_id: 0 });
+    function handleRemoveCustomer() {
+        setSelectedCustomer(null);
+        onChange({ customer_id: null });
     }
+
+    //============================================================
+    // TYPE & PERCENTAGE
+    //============================================================
 
     function handleTypeChange(type: string) {
         onChange({
@@ -105,75 +115,105 @@ export function InvoiceForm({ data, errors, initialProject, fromProject, isEdit,
                 <div className="space-y-4">
                     <div>
                         <h2 className="text-xl font-semibold">Info Invoice</h2>
-                        <p className="mt-0.5 text-sm text-muted-foreground">Pilih project dan atur detail dasar invoice</p>
+                        <p className="mt-0.5 text-sm text-muted-foreground">
+                            {fromProject ? 'Atur detail dasar invoice untuk project ini' : 'Pilih customer dan atur detail dasar invoice'}
+                        </p>
                     </div>
 
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         {/* Project */}
-                        <Field className="col-span-2">
-                            <FieldLabel htmlFor="search-project">
-                                Project <span className="text-destructive">*</span>
-                            </FieldLabel>
-
-                            {selectedProject ? (
-                                <div className="flex items-center justify-between rounded-md bg-primary/10 p-3 dark:bg-muted/40">
-                                    <div className="flex items-center gap-3">
-                                        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10">
-                                            <Table2 className="size-4 text-primary" />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-medium">{selectedProject.name}</p>
-                                            {selectedProject.customer && <p className="mb-1 text-xs text-muted-foreground">{selectedProject.customer.name}</p>}
-                                            <Badge className={PROJECT_STATUSES_MAP[selectedProject.status]?.classes}>{PROJECT_STATUSES_MAP[selectedProject.status]?.label}</Badge>
-                                        </div>
+                        {fromProject && selectedProject && (
+                            <Field className="col-span-2">
+                                <FieldLabel>Project</FieldLabel>
+                                <div className="flex items-center gap-3 rounded-md bg-primary/10 p-3 dark:bg-muted/40">
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10">
+                                        <Table2 className="size-4 text-primary" />
                                     </div>
-                                    {!fromProject && !isEdit && (
-                                        <Button type="button" variant="ghost" size="sm" className="h-8 w-8" onClick={handleRemoveProject}>
-                                            <X className="size-4" />
-                                        </Button>
-                                    )}
+                                    <div>
+                                        <p className="text-sm font-medium">{selectedProject.name}</p>
+                                        {selectedProject.customer && <p className="mb-1 text-xs text-muted-foreground">{selectedProject.customer.name}</p>}
+                                        <Badge className={PROJECT_STATUSES_MAP[selectedProject.status]?.classes}>{PROJECT_STATUSES_MAP[selectedProject.status]?.label}</Badge>
+                                    </div>
                                 </div>
-                            ) : (
-                                <>
-                                    <InputGroup>
-                                        <InputGroupInput
-                                            id="search-project"
-                                            placeholder="Cari nama project..."
-                                            value={searchQuery}
-                                            onChange={(e) => handleSearch(e.target.value)}
-                                            autoComplete="off"
-                                        />
-                                        <InputGroupAddon>{isSearching ? <Spinner className="size-4" /> : <Search className="size-4" />}</InputGroupAddon>
-                                    </InputGroup>
+                            </Field>
+                        )}
 
-                                    {searchResults.length > 0 && (
-                                        <div className="-mt-2 max-h-64 space-y-1 overflow-y-auto">
-                                            {searchResults.map((project) => (
-                                                <button
-                                                    key={project.id}
-                                                    type="button"
-                                                    onClick={() => handleSelectProject(project)}
-                                                    className="flex w-full items-center gap-3 rounded-md bg-primary/10 p-3 text-left hover:bg-primary/20 dark:bg-muted/40 dark:hover:bg-muted/50"
-                                                >
-                                                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10">
-                                                        <Table2 className="size-3.5 text-primary" />
-                                                    </div>
-                                                    <div className="flex-1">
-                                                        <p className="text-sm font-medium">{project.name}</p>
-                                                        {project.customer && <p className="text-xs text-muted-foreground">{project.customer.name}</p>}
-                                                    </div>
-                                                    <Badge className={PROJECT_STATUSES_MAP[project.status]?.classes}>{PROJECT_STATUSES_MAP[project.status]?.label}</Badge>
-                                                </button>
-                                            ))}
+                        {/* Customer */}
+                        {!fromProject && (
+                            <Field className="col-span-2">
+                                <FieldLabel htmlFor="search-customer">
+                                    Customer <span className="text-destructive">*</span>
+                                </FieldLabel>
+
+                                {selectedCustomer ? (
+                                    <div className="flex items-center justify-between gap-3 rounded-md bg-primary/10 p-3 dark:bg-muted/40">
+                                        <Avatar className="rounded-full">
+                                            <AvatarImage src={`${R2_PUBLIC_URL}/${selectedCustomer?.user?.avatar}`} alt={selectedCustomer!.name} />
+                                            <AvatarFallback className="bg-primary/10 text-xs text-primary">{getInitials(selectedCustomer!.name)}</AvatarFallback>
+                                        </Avatar>
+                                        <div className="flex-1">
+                                            <p className="text-sm font-medium">{selectedCustomer!.name}</p>
+                                            <p className="text-xs text-muted-foreground">{selectedCustomer!.email || selectedCustomer!.phone || 'Tidak ada info kontak'}</p>
+                                            <Badge className={`mt-1 ${TIER_MAP[selectedCustomer.tier]?.classes ?? 'bg-muted text-muted-foreground'}`}>
+                                                {TIER_MAP[selectedCustomer.tier]?.label ?? selectedCustomer.tier}
+                                            </Badge>
                                         </div>
-                                    )}
 
-                                    {searchQuery.length >= 2 && searchResults.length === 0 && !isSearching && <FieldDescription>Tidak ada project ditemukan</FieldDescription>}
-                                </>
-                            )}
+                                        {!isEdit && (
+                                            <Button type="button" variant="ghost" size="sm" className="h-8 w-8" onClick={handleRemoveCustomer}>
+                                                <X className="size-4" />
+                                            </Button>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <>
+                                        <InputGroup>
+                                            <InputGroupInput
+                                                id="search-customer"
+                                                placeholder="Cari nama customer..."
+                                                value={customerSearchQuery}
+                                                onChange={(e) => handleCustomerSearch(e.target.value)}
+                                                autoComplete="off"
+                                            />
+                                            <InputGroupAddon>{isCustomerSearching ? <Spinner className="size-4" /> : <Search className="size-4" />}</InputGroupAddon>
+                                        </InputGroup>
 
-                            {errors.project_id && <FieldError>{errors.project_id}</FieldError>}
-                        </Field>
+                                        {customerSearchResults.length > 0 && (
+                                            <div className="-mt-2 max-h-64 space-y-1 overflow-y-auto">
+                                                {customerSearchResults.map((item) => (
+                                                    <button
+                                                        key={item.id}
+                                                        type="button"
+                                                        onClick={() => handleSelectCustomer(item)}
+                                                        className="flex w-full items-center gap-3 rounded-lg bg-primary/10 p-3 text-left hover:bg-primary/20 dark:bg-muted/40 dark:hover:bg-muted/50"
+                                                    >
+                                                        <Avatar className="rounded-full">
+                                                            <AvatarImage src={`${R2_PUBLIC_URL}/${item.user?.avatar}`} alt={item.name} />
+                                                            <AvatarFallback className="bg-primary/10 text-sm text-primary">{getInitials(item.name)}</AvatarFallback>
+                                                        </Avatar>
+                                                        <div className="flex-1">
+                                                            <p className="text-sm font-medium">{item.name}</p>
+                                                            <p className="text-xs text-muted-foreground">{item.email || item.phone || 'Tidak ada info kontak'}</p>
+                                                        </div>
+                                                        {item.tier && (
+                                                            <Badge className={TIER_MAP[item.tier]?.classes ?? 'bg-muted text-muted-foreground'}>
+                                                                {TIER_MAP[item.tier]?.label ?? item.tier}
+                                                            </Badge>
+                                                        )}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        {customerSearchQuery.length >= 2 && customerSearchResults.length === 0 && !isCustomerSearching && (
+                                            <FieldDescription>Tidak ada customer ditemukan</FieldDescription>
+                                        )}
+                                    </>
+                                )}
+
+                                {errors.customer_id && <FieldError>{errors.customer_id}</FieldError>}
+                            </Field>
+                        )}
 
                         {/* Type */}
                         <Field className="col-span-2">
@@ -223,18 +263,18 @@ export function InvoiceForm({ data, errors, initialProject, fromProject, isEdit,
                     <div className="space-y-4">
                         <div>
                             <h2 className="text-xl font-semibold">Jumlah Tagihan</h2>
-                            {selectedProject ? (
+                            {fromProject && selectedProject ? (
                                 <p className="mt-0.5 text-sm text-muted-foreground">
                                     Budget project: <span className="font-medium text-foreground">{formatRupiah(Number(selectedProject.budget))}</span>
                                 </p>
                             ) : (
-                                <p className="mt-0.5 text-sm text-muted-foreground">Pilih project terlebih dahulu</p>
+                                <p className="mt-0.5 text-sm text-muted-foreground">Masukkan jumlah tagihan</p>
                             )}
                         </div>
 
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                            {/* Percentage Field */}
-                            {selectedProject && (
+                            {/* Percentage — hanya tampil kalau fromProject dan ada budget */}
+                            {fromProject && selectedProject && (
                                 <Field>
                                     <FieldLabel>Persentase dari Budget (%)</FieldLabel>
                                     <Input
@@ -310,7 +350,8 @@ export function InvoiceForm({ data, errors, initialProject, fromProject, isEdit,
                             </div>
 
                             <div className="flex w-full items-center gap-2 md:w-auto">
-                                {data.project_id > 0 && (
+                                {/* Import billable hanya tersedia kalau ada project */}
+                                {fromProject && data.project_id && (
                                     <>
                                         {showBillablePicker ? (
                                             <Button type="button" variant="secondary" className="flex-1 lg:w-40 lg:flex-none" onClick={() => setShowBillablePicker((v) => !v)}>
@@ -341,7 +382,7 @@ export function InvoiceForm({ data, errors, initialProject, fromProject, isEdit,
                             </div>
                         </div>
 
-                        {showBillablePicker && data.project_id > 0 && (
+                        {showBillablePicker && fromProject && data.project_id && (
                             <div className="rounded-lg bg-primary/10 p-4 dark:bg-muted/40">
                                 <p className="mb-3 text-sm font-medium text-foreground">Pengeluaran billable yang belum ditagihkan</p>
                                 <BillableExpensePicker
@@ -377,7 +418,6 @@ export function InvoiceForm({ data, errors, initialProject, fromProject, isEdit,
                         <p className="mt-0.5 text-sm text-muted-foreground">Tambahkan catatan atau instruksi pembayaran untuk invoice ini</p>
                     </div>
 
-                    {/* Notes */}
                     <Field>
                         <FieldLabel>Catatan</FieldLabel>
                         <Textarea
@@ -389,7 +429,6 @@ export function InvoiceForm({ data, errors, initialProject, fromProject, isEdit,
                         />
                     </Field>
 
-                    {/* Payment Instructions */}
                     <Field>
                         <FieldLabel>Instruksi Pembayaran</FieldLabel>
                         <Textarea

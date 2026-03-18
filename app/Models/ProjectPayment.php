@@ -14,6 +14,7 @@ class ProjectPayment extends Model
 
     protected $fillable = [
         'invoice_id',
+        'receipt_number',
         'amount',
         'payment_date',
         'payment_method',
@@ -22,6 +23,7 @@ class ProjectPayment extends Model
         'status',
         'notes',
         'rejection_reason',
+        'file_path',
         'verified_by',
         'verified_at',
     ];
@@ -103,11 +105,22 @@ class ProjectPayment extends Model
     public function verify(User $verifier): void
     {
         $this->update([
-            'status'      => 'verified',
-            'verified_by' => $verifier->id,
-            'verified_at' => now(),
+            'status'         => 'verified',
+            'verified_by'    => $verifier->id,
+            'verified_at'    => now(),
             'rejection_reason' => null,
+            'receipt_number' => static::generateReceiptNumber(),
         ]);
+
+        try {
+            $filePath = app(\App\Services\Pdf\ReceiptPdfService::class)->generate($this->fresh());
+            $this->update(['receipt_file' => $filePath]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Receipt PDF generation failed', [
+                'payment_id' => $this->id,
+                'error'      => $e->getMessage(),
+            ]);
+        }
 
         $invoice   = $this->invoice;
         $totalPaid = $invoice->payments()->where('status', 'verified')->sum('amount');
@@ -125,5 +138,25 @@ class ProjectPayment extends Model
             'verified_at'      => null,
             'rejection_reason' => $reason,
         ]);
+    }
+
+    public static function generateReceiptNumber(): string
+    {
+        $prefix = 'RCP-' . now()->format('Ym') . '-';
+
+        $last = static::withTrashed()
+            ->whereNotNull('receipt_number')
+            ->where('receipt_number', 'like', $prefix . '%')
+            ->orderBy('receipt_number', 'desc')
+            ->first();
+
+        if (!$last) {
+            return $prefix . '0001';
+        }
+
+        $lastNumber = (int) substr($last->receipt_number, -4);
+        $newNumber  = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+
+        return $prefix . $newNumber;
     }
 }

@@ -16,6 +16,7 @@ class ProjectInvoice extends Model
 
     protected $fillable = [
         'project_id',
+        'customer_id',
         'invoice_number',
         'type',
         'invoice_date',
@@ -31,11 +32,12 @@ class ProjectInvoice extends Model
         'status',
         'notes',
         'payment_instructions',
+        'file_path',
     ];
 
     protected $casts = [
         'percentage'       => 'decimal:2',
-        'subtotal'           => 'decimal:2',
+        'subtotal'         => 'decimal:2',
         'tax_percent'      => 'decimal:2',
         'tax_amount'       => 'decimal:2',
         'discount_percent' => 'decimal:2',
@@ -66,10 +68,14 @@ class ProjectInvoice extends Model
     |--------------------------------------------------------------------------
     */
 
-
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class);
     }
 
     public function items(): HasMany
@@ -115,7 +121,7 @@ class ProjectInvoice extends Model
 
     /*
     |--------------------------------------------------------------------------
-    | COMPUTED 
+    | COMPUTED
     |--------------------------------------------------------------------------
     */
 
@@ -145,7 +151,7 @@ class ProjectInvoice extends Model
 
     public function getTotalPaidAttribute(): float
     {
-        return (float) $this->payments()->where('status', 'verified')->sum('subtotal');
+        return (float) $this->payments()->where('status', 'verified')->sum('amount');
     }
 
     public function getRemainingAmountAttribute(): float
@@ -167,15 +173,15 @@ class ProjectInvoice extends Model
     public function calculateTotals(): void
     {
         if ($this->isAdditional()) {
-            $this->subtotal          = $this->items()->sum('subtotal');
+            $this->subtotal        = $this->items()->sum('subtotal');
             $this->discount_amount = $this->items()->sum('discount_amount');
             $this->tax_amount      = $this->items()->sum('tax_amount');
-            $this->total_amount    = $this->items()->sum('total');
+            $this->total_amount    = $this->items()->sum('total_amount');
         } else {
-            $subtotal              = (float) $this->subtotal;
-            $discountAmount        = $subtotal * ($this->discount_percent / 100);
-            $afterDiscount         = $subtotal - $discountAmount;
-            $taxAmount             = $afterDiscount * ($this->tax_percent / 100);
+            $subtotal       = (float) $this->subtotal;
+            $discountAmount = $subtotal * ($this->discount_percent / 100);
+            $afterDiscount  = $subtotal - $discountAmount;
+            $taxAmount      = $afterDiscount * ($this->tax_percent / 100);
 
             $this->discount_amount = $discountAmount;
             $this->tax_amount      = $taxAmount;

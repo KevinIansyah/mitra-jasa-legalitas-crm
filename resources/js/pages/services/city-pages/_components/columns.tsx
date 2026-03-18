@@ -1,6 +1,6 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
-import { CONTENT_STATUSES_MAP, type ServiceCityPage } from '@/types/service';
+import { CONTENT_STATUSES_MAP, type ServiceCityPage } from '@/types/services';
 import { Actions } from './actions';
 
 export default function getColumns(): ColumnDef<ServiceCityPage>[] {

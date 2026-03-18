@@ -1,5 +1,5 @@
 import { router } from '@inertiajs/react';
-import { Download, FileArchive, FileCheck, FileSpreadsheet, FileText, FileType, Image, Pencil } from 'lucide-react';
+import { ArrowDownToLine, FileArchive, FileCheck, FileSpreadsheet, FileText, FileType, Image, Pencil } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -140,7 +140,7 @@ export function DeliverableCard({ deliverable, projectId }: DeliverableCardProps
                                 <Tooltip>
                                     <TooltipTrigger asChild>
                                         <Button variant="secondary" className="h-8 w-8" onClick={handleDownload}>
-                                            <Download className="size-3.5" />
+                                            <ArrowDownToLine className="size-3.5" />
                                         </Button>
                                     </TooltipTrigger>
                                     <TooltipContent>Unduh File</TooltipContent>

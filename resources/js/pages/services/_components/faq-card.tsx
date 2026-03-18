@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 
-import type { ServiceStatus } from '@/types/service';
+import type { ServiceStatus } from '@/types/services';
 
 export type LocalFaq = {
     id?: number;

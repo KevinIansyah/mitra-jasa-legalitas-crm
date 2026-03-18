@@ -1,5 +1,5 @@
 import { Head, usePage } from '@inertiajs/react';
-import { FileDown } from 'lucide-react';
+import { ArrowDownToLine } from 'lucide-react';
 
 import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
@@ -82,7 +82,7 @@ export default function Page() {
                     <AsOfFilterSheet asOf={formatDate(filters.as_of)} routeUrl={reportRoutes.balanceSheet().url} />
                     <Button className="flex-1 md:w-30 md:flex-none" asChild>
                         <a href={`${finances.reports.balanceSheet.pdf.url({ query: { as_of: filters.as_of } })}`} target="_blank" rel="noopener noreferrer">
-                            <FileDown className="size-3.5" />
+                            <ArrowDownToLine className="size-3.5" />
                             Export PDF
                         </a>
                     </Button>

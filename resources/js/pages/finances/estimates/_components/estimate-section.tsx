@@ -3,8 +3,8 @@ import { useState } from 'react';
 
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatRupiah } from '@/lib/service';
+import type { Estimate, EstimateSummaryData } from '@/types/estimates';
 import type { Paginator } from '@/types/paginator';
-import type { Estimate, EstimateSummaryData } from '@/types/quotes';
 
 import { DataTable } from './datatable';
 

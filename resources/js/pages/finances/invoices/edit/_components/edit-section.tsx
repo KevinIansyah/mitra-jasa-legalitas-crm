@@ -2,6 +2,7 @@ import { router } from '@inertiajs/react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import finances from '@/routes/finances';
+import type { Customer } from '@/types/contacts';
 import type { Project, ProjectInvoice, ProjectInvoiceFormData } from '@/types/projects';
 import { InvoiceForm } from '../../_components/invoice-form';
 import { InvoiceSummary } from '../../_components/invoice-summary';
@@ -11,12 +12,14 @@ type EditSectionProps = {
     invoice: ProjectInvoice;
     selectedProject: Project | null;
     fromProject: boolean;
+    selectedCustomer: Customer | null;
     isEdit: boolean;
 };
 
 function invoiceToFormData(invoice: ProjectInvoice): ProjectInvoiceFormData {
     return {
-        project_id: invoice.project_id,
+        project_id: invoice.project_id ?? null,
+        customer_id: invoice.customer_id ?? null,
         type: invoice.type,
         invoice_date: invoice.invoice_date,
         due_date: invoice.due_date,
@@ -37,7 +40,7 @@ function invoiceToFormData(invoice: ProjectInvoice): ProjectInvoiceFormData {
     };
 }
 
-export default function EditSection({ invoice, selectedProject, fromProject, isEdit }: EditSectionProps) {
+export default function EditSection({ invoice, selectedProject, fromProject, selectedCustomer, isEdit }: EditSectionProps) {
     const [data, setData] = useState<ProjectInvoiceFormData>(() => invoiceToFormData(invoice));
     const [errors, setErrors] = useState<InvoiceFormErrors>({});
     const [processing, setProcessing] = useState(false);
@@ -72,7 +75,7 @@ export default function EditSection({ invoice, selectedProject, fromProject, isE
     return (
         <div className="space-y-6">
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_280px]">
-                <InvoiceForm data={data} errors={errors} initialProject={selectedProject} fromProject={fromProject} isEdit={isEdit} onChange={handleChange} />
+                <InvoiceForm data={data} errors={errors} initialProject={selectedProject} fromProject={fromProject} initialCustomer={selectedCustomer} isEdit={isEdit} onChange={handleChange} />
 
                 <InvoiceSummary
                     subtotal={data.subtotal}

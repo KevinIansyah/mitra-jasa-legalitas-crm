@@ -14,9 +14,16 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         $isAdditional = $this->input('type') === 'additional';
+        $fromProject  = $this->boolean('from_project');
 
         return [
-            'project_id'           => 'sometimes|required|exists:projects,id',
+            'project_id'  => $fromProject
+                ? 'required|exists:projects,id'
+                : 'nullable|exists:projects,id',
+
+            'customer_id' => $fromProject
+                ? 'nullable'
+                : 'required|exists:customers,id',
 
             'type'                 => 'required|in:dp,progress,final,additional',
             'invoice_date'         => 'required|date',
@@ -24,18 +31,18 @@ class StoreRequest extends FormRequest
             'notes'                => 'nullable|string',
             'payment_instructions' => 'nullable|string',
 
-            'percentage'           => 'nullable|numeric|min:0|max:100',
-            'subtotal'             => $isAdditional ? 'nullable|numeric|min:0' : 'required|numeric|min:0',
-            'tax_percent'          => 'nullable|numeric|min:0|max:100',
-            'discount_percent'     => 'nullable|numeric|min:0|max:100',
+            'percentage'      => 'nullable|numeric|min:0|max:100',
+            'subtotal'        => $isAdditional ? 'nullable|numeric|min:0' : 'required|numeric|min:0',
+            'tax_percent'     => 'nullable|numeric|min:0|max:100',
+            'discount_percent' => 'nullable|numeric|min:0|max:100',
 
-            'items'                        => $isAdditional ? 'required|array|min:1' : 'nullable|array',
-            'items.*.expense_id'           => 'nullable|integer|exists:expenses,id',
-            'items.*.description'          => $isAdditional ? 'required|string|max:500' : 'nullable|string|max:500',
-            'items.*.quantity'             => $isAdditional ? 'required|numeric|min:0.01' : 'nullable|numeric|min:0.01',
-            'items.*.unit_price'           => $isAdditional ? 'required|numeric|min:0' : 'nullable|numeric|min:0',
-            'items.*.tax_percent'          => 'nullable|numeric|min:0|max:100',
-            'items.*.discount_percent'     => 'nullable|numeric|min:0|max:100',
+            'items'                    => $isAdditional ? 'required|array|min:1' : 'nullable|array',
+            'items.*.expense_id'       => 'nullable|integer|exists:expenses,id',
+            'items.*.description'      => $isAdditional ? 'required|string|max:500' : 'nullable|string|max:500',
+            'items.*.quantity'         => $isAdditional ? 'required|numeric|min:0.01' : 'nullable|numeric|min:0.01',
+            'items.*.unit_price'       => $isAdditional ? 'required|numeric|min:0' : 'nullable|numeric|min:0',
+            'items.*.tax_percent'      => 'nullable|numeric|min:0|max:100',
+            'items.*.discount_percent' => 'nullable|numeric|min:0|max:100',
         ];
     }
 
@@ -44,6 +51,9 @@ class StoreRequest extends FormRequest
         return [
             'project_id.required'      => 'Project wajib dipilih.',
             'project_id.exists'        => 'Project tidak ditemukan.',
+
+            'customer_id.required'     => 'Customer wajib dipilih.',
+            'customer_id.exists'       => 'Customer tidak ditemukan.',
 
             'type.required'            => 'Jenis invoice wajib dipilih.',
             'type.in'                  => 'Jenis invoice tidak valid.',

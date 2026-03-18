@@ -11,7 +11,7 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 
 import type { ProjectDocumentFormData } from '@/types/projects';
-import { DOCUMENT_FORMAT_OPTIONS } from '@/types/service';
+import { DOCUMENT_FORMAT_OPTIONS } from '@/types/services';
 
 type DocumentFormProps = {
     initial: ProjectDocumentFormData;

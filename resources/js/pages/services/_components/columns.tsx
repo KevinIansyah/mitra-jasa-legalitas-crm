@@ -1,6 +1,6 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
-import type { Service } from '@/types/service';
+import type { Service } from '@/types/services';
 import Actions from './actions';
 
 export default function getColumns(): ColumnDef<Service>[] {

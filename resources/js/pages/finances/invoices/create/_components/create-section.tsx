@@ -14,7 +14,8 @@ type CreateSectionProps = {
 };
 
 const EMPTY_FORM: ProjectInvoiceFormData = {
-    project_id: 0,
+    project_id: null,
+    customer_id: null,
     type: 'dp',
     invoice_date: '',
     due_date: '',
@@ -30,7 +31,7 @@ const EMPTY_FORM: ProjectInvoiceFormData = {
 export default function CreateSection({ selectedProject, fromProject }: CreateSectionProps) {
     const [data, setData] = useState<ProjectInvoiceFormData>({
         ...EMPTY_FORM,
-        project_id: selectedProject ? Number(selectedProject.id) : 0,
+        project_id: selectedProject ? Number(selectedProject.id) : null,
     });
     const [errors, setErrors] = useState<InvoiceFormErrors>({});
     const [processing, setProcessing] = useState(false);

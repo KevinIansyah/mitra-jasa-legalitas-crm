@@ -2,7 +2,7 @@
  * Project Template Management System - TypeScript Definitions
  */
 
-import type { Service } from './service';
+import type { Service } from './services';
 
 // ============================================================
 // CORE TYPES

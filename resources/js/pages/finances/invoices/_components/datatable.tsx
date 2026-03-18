@@ -22,6 +22,11 @@ import { INVOICE_STATUSES, INVOICE_TYPES } from '@/types/projects';
 import getColumns from './columns';
 import InvoiceDetail from './invoice-detail';
 
+const SOURCE_OPTIONS = [
+    { value: 'project', label: 'Dari Project' },
+    { value: 'customer', label: 'Dari Customer' },
+];
+
 interface DataTableProps {
     data: ProjectInvoice[];
     pageIndex: number;
@@ -29,7 +34,7 @@ interface DataTableProps {
     totalPages: number;
     totalItems: number;
     perPage: number;
-    initialFilters?: { search?: string; status?: string; type?: string };
+    initialFilters?: { search?: string; status?: string; type?: string; source?: string };
 }
 
 export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItems, perPage, initialFilters = {} }: DataTableProps) {
@@ -49,9 +54,9 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
         });
 
     const columns = getColumns(expandedRow, setExpandedRow);
-
     const selectedStatus = INVOICE_STATUSES.find((s) => s.value === filters.status);
     const selectedType = INVOICE_TYPES.find((t) => t.value === filters.type);
+    const selectedSource = SOURCE_OPTIONS.find((s) => s.value === filters.source);
 
     const table = useReactTable({
         data,
@@ -65,11 +70,9 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
 
     return (
         <>
-            {/* ───────────────── Search and Filter Section ───────────────── */}
             <div className="flex flex-col gap-4 pb-4">
                 <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
                     <div className="flex w-full flex-1 items-center gap-2 md:w-auto">
-                        {/* Search */}
                         <InputGroup className="max-w-sm">
                             <InputGroupInput placeholder="Cari nomor invoice / project..." value={searchValue} onChange={handleSearchChange} />
                             <InputGroupAddon>
@@ -77,7 +80,6 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                             </InputGroupAddon>
                         </InputGroup>
 
-                        {/* Filter */}
                         <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
                             <SheetTrigger asChild>
                                 <Button variant="secondary" className="relative gap-1.5 lg:w-30">
@@ -93,11 +95,11 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                             <SheetContent>
                                 <SheetHeader>
                                     <SheetTitle>Filter Invoice</SheetTitle>
-                                    <SheetDescription>Saring data invoice berdasarkan status atau tipe</SheetDescription>
+                                    <SheetDescription>Saring data invoice berdasarkan status, tipe, atau sumber</SheetDescription>
                                 </SheetHeader>
                                 <div className="space-y-4 px-4">
                                     <Field>
-                                        <FieldLabel htmlFor="status">Status</FieldLabel>
+                                        <FieldLabel>Status</FieldLabel>
                                         <Select value={filters.status || ''} onValueChange={(v) => updateFilter('status', v || undefined)}>
                                             <SelectTrigger className="w-full">
                                                 <SelectValue placeholder="Pilih status..." />
@@ -114,8 +116,9 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                                             </SelectContent>
                                         </Select>
                                     </Field>
+
                                     <Field>
-                                        <FieldLabel htmlFor="type">Tipe</FieldLabel>
+                                        <FieldLabel>Tipe</FieldLabel>
                                         <Select value={filters.type || ''} onValueChange={(v) => updateFilter('type', v || undefined)}>
                                             <SelectTrigger className="w-full">
                                                 <SelectValue placeholder="Pilih tipe..." />
@@ -132,6 +135,26 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                                             </SelectContent>
                                         </Select>
                                     </Field>
+
+                                    <Field>
+                                        <FieldLabel>Sumber</FieldLabel>
+                                        <Select value={filters.source || ''} onValueChange={(v) => updateFilter('source', v || undefined)}>
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Pilih sumber..." />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    <SelectLabel>Sumber</SelectLabel>
+                                                    {SOURCE_OPTIONS.map((item) => (
+                                                        <SelectItem key={item.value} value={item.value}>
+                                                            {item.label}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    </Field>
+
                                     {activeFiltersCount > 0 && (
                                         <Button className="w-full" onClick={resetFilters}>
                                             Reset Filter
@@ -143,7 +166,6 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                     </div>
 
                     <div className="flex w-full gap-2 md:w-auto">
-                        {/* Column Visibility */}
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" className="flex-1 gap-1.5 md:w-30">
@@ -162,7 +184,6 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                             </DropdownMenuContent>
                         </DropdownMenu>
 
-                        {/* Add Invoice */}
                         <HasPermission permission="create-finance-invoices">
                             <Button className="flex-1 gap-1.5 md:w-30" asChild>
                                 <Link href={finances.invoices.create().url}>
@@ -174,7 +195,6 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                     </div>
                 </div>
 
-                {/* Active Filters */}
                 {activeFiltersCount > 0 && (
                     <div className="flex flex-wrap items-center gap-2">
                         <span className="text-sm text-muted-foreground">Filter aktif:</span>
@@ -202,6 +222,14 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                                 </Button>
                             </Badge>
                         )}
+                        {filters.source && (
+                            <Badge variant="secondary" className="gap-2">
+                                Sumber: {selectedSource?.label}
+                                <Button variant="ghost" size="sm" className="h-6 w-6 text-xs" onClick={() => updateFilter('source', undefined)}>
+                                    <X className="size-3" />
+                                </Button>
+                            </Badge>
+                        )}
                         <Button variant="ghost" size="sm" className="h-7.5 text-xs" onClick={resetFilters}>
                             Reset semua
                         </Button>
@@ -209,7 +237,6 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                 )}
             </div>
 
-            {/* ───────────────── Table Section ───────────────── */}
             <div className="overflow-hidden rounded-t-md border-b">
                 <Table>
                     <TableHeader>
@@ -250,7 +277,6 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                 </Table>
             </div>
 
-            {/* ───────────────── Pagination Section ───────────────── */}
             <div className="flex items-center justify-between gap-8 pt-4">
                 <div className="hidden flex-1 text-sm md:flex">
                     Menampilkan {Math.min(pageIndex * perPage + 1, totalItems)} sampai {Math.min((pageIndex + 1) * perPage, totalItems)} dari {totalItems} hasil

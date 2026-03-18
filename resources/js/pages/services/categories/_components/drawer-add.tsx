@@ -8,7 +8,7 @@ import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import categories from '@/routes/services/categories';
-import type { ServiceCategoryFormData } from '@/types/service';
+import type { ServiceCategoryFormData } from '@/types/services';
 
 export function DrawerAdd() {
     const [open, setOpen] = React.useState(false);

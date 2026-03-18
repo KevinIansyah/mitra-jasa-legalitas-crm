@@ -22,7 +22,7 @@ import search from '@/routes/search';
 import { CATEGORY_BUSINESS, STATUS_LEGAL, TIER, TIER_MAP, type Company, type Customer } from '@/types/contacts';
 import type { ProjectTemplate } from '@/types/project-templates';
 import type { Quote } from '@/types/quotes';
-import type { Service, ServicePackage } from '@/types/service';
+import type { Service, ServicePackage } from '@/types/services';
 
 type CompanyMode = 'none' | 'search' | 'create';
 
@@ -533,6 +533,7 @@ export function CreateSection({ services, quote }: CreateSectionProps) {
                                     )}
                                 </>
                             )}
+                            
                             {errors.customer_id && <FieldError>{errors.customer_id}</FieldError>}
                         </Field>
                     )}

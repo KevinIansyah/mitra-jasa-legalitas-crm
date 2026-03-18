@@ -1,5 +1,5 @@
-import { router } from '@inertiajs/react';
-import { ChevronDown, ChevronUp, FileCheck, Pencil } from 'lucide-react';
+import { Link, router } from '@inertiajs/react';
+import { ChevronDown, ChevronUp, Eye, FileCheck, Pencil } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -82,24 +82,49 @@ export default function Actions({ payment, isExpanded, onToggleExpand }: Actions
                 </Tooltip>
 
                 <HasPermission permission="view-finance-payments">
-                    {payment.proof_file && (
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button
-                                    variant="secondary"
-                                    className="h-8 w-8"
-                                    onClick={() => {
-                                        if (payment.proof_file) {
-                                            handleView(payment.proof_file);
-                                        }
-                                    }}
-                                >
-                                    <FileCheck className="size-3.5" />
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                variant="secondary"
+                                className="h-8 w-8"
+                                disabled={!payment.proof_file}
+                                onClick={() => {
+                                    if (payment.proof_file) {
+                                        handleView(payment.proof_file);
+                                    }
+                                }}
+                            >
+                                <FileCheck className="size-3.5" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Lihat Bukti Pembayaran</TooltipContent>
+                    </Tooltip>
+                </HasPermission>
+
+                <HasPermission permission="view-finance-payments">
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            {!isVerified ? (
+                                <Button variant="secondary" size="sm" className="h-8 w-8" disabled>
+                                    <Eye className="size-3.5" />
                                 </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Lihat Bukti Pembayaran</TooltipContent>
-                        </Tooltip>
-                    )}
+                            ) : (
+                                <Button variant="secondary" size="sm" className="h-8 w-8" asChild>
+                                    <Link
+                                        href={
+                                            finances.invoices.payments.show({
+                                                invoice: payment.invoice_id,
+                                                payment: payment.id,
+                                            }).url
+                                        }
+                                    >
+                                        <Eye className="size-3.5" />
+                                    </Link>
+                                </Button>
+                            )}
+                        </TooltipTrigger>
+                        <TooltipContent>{!isVerified ? 'Pembayaran belum diverifikasi' : 'Lihat Kwitansi'}</TooltipContent>
+                    </Tooltip>
                 </HasPermission>
 
                 <HasPermission permission="edit-finance-payments">

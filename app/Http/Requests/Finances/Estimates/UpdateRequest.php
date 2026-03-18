@@ -14,7 +14,8 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'valid_until'          => 'nullable|date',
+            'estimate_date'        => 'required|date',
+            'valid_until'          => 'required|date',
             'tax_percent'          => 'nullable|numeric|min:0|max:100',
             'discount_percent'     => 'nullable|numeric|min:0|max:100',
             'notes'                => 'nullable|string',
@@ -32,6 +33,9 @@ class UpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'estimate_date.required'         => 'Tanggal estimate wajib diisi.',
+            'estimate_date.date'             => 'Tanggal estimate tidak valid.',
+            'valid_until.required'           => 'Tanggal berlaku wajib diisi.',
             'valid_until.date'               => 'Tanggal berlaku tidak valid.',
             'tax_percent.numeric'            => 'Pajak harus berupa angka.',
             'tax_percent.max'                => 'Pajak maksimal 100%.',

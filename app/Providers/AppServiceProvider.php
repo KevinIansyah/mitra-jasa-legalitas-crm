@@ -67,10 +67,12 @@ class AppServiceProvider extends ServiceProvider
         Service::observe(ServiceObserver::class);
         ServiceCategory::observe(ServiceCategoryObserver::class);
     }
-
     protected function configureDefaults(): void
     {
         Date::use(CarbonImmutable::class);
+
+        \Carbon\Carbon::setLocale('id');
+        \Carbon\CarbonImmutable::setLocale('id');
 
         DB::prohibitDestructiveCommands(
             app()->isProduction(),

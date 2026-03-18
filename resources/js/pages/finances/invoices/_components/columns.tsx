@@ -2,7 +2,8 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
 import { formatRupiah } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
-import { INVOICE_TYPES_MAP, type ProjectInvoice } from '@/types/projects';
+import { TIER_MAP } from '@/types/contacts';
+import { INVOICE_TYPES_MAP, PROJECT_STATUSES_MAP, type ProjectInvoice } from '@/types/projects';
 import Actions from './actions';
 
 export default function getColumns(expandedRow: string | null, setExpandedRow: (id: string | null) => void): ColumnDef<ProjectInvoice>[] {
@@ -15,23 +16,36 @@ export default function getColumns(expandedRow: string | null, setExpandedRow: (
                 const typeInfo = type ? INVOICE_TYPES_MAP[type] : null;
                 return (
                     <div className="space-y-1">
-                        <p className="text-sm font-medium">{invoice_number || '-'}</p>
+                        <p className="text-sm">{invoice_number || '-'}</p>
                         {typeInfo && <Badge className={typeInfo.classes}>{typeInfo.label}</Badge>}
                     </div>
                 );
             },
         },
         {
-            accessorKey: 'project',
-            header: 'Project',
-            cell: ({ row }) => {
-                const { project } = row.original;
-                return (
-                    <div className="space-y-0.5">
-                        <p className="text-sm font-medium">{project?.name || '-'}</p>
-                        {project?.customer && <p className="text-xs text-muted-foreground">{project.customer.name}</p>}
-                    </div>
-                );
+            accessorKey: 'source',
+            header: 'Project/Pelanggan',
+            cell: ({ row }) => {    
+                const { project, customer } = row.original;
+
+                if (project)
+                    return (
+                        <div className="space-y-0.5">
+                            <p className="text-sm font-medium">{project.name}</p>
+                            <p className="text-xs text-muted-foreground">{project.customer?.name}</p>
+                            {project.status && <Badge className={PROJECT_STATUSES_MAP[project.status]?.classes}>{PROJECT_STATUSES_MAP[project.status]?.label}</Badge>}
+                        </div>
+                    );
+
+                if (customer)
+                    return (
+                        <div className="space-y-0.5">
+                            <p className="text-sm font-medium">{customer.name}</p>
+                            {customer.tier && <Badge className={TIER_MAP[customer.tier]?.classes}>{customer.tier}</Badge>}
+                        </div>
+                    );
+
+                return <span className="text-sm text-muted-foreground">-</span>;
             },
         },
         {
@@ -42,7 +56,7 @@ export default function getColumns(expandedRow: string | null, setExpandedRow: (
                 const hasBreakdown = Number(discount_amount) > 0 || Number(tax_amount) > 0;
                 return (
                     <div className="space-y-0.5">
-                        <span className="text-sm font-medium tabular-nums">{formatRupiah(Number(total_amount))}</span>
+                        <span className="text-sm tabular-nums">{formatRupiah(Number(total_amount))}</span>
                         {hasBreakdown && <p className="text-xs text-muted-foreground tabular-nums">Harga asli: {formatRupiah(Number(subtotal))}</p>}
                         {Number(discount_amount) > 0 && (
                             <p className="text-xs text-destructive tabular-nums">

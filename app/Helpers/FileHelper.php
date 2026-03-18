@@ -67,7 +67,10 @@ class FileHelper
    */
   public static function getSignedUrl(string $filePath, int $expiresInMinutes = 30): string
   {
-    return Storage::disk('r2')->temporaryUrl(
+    /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+    $disk = Storage::disk('r2');
+
+    return $disk->temporaryUrl(
       $filePath,
       now()->addMinutes($expiresInMinutes)
     );
@@ -78,7 +81,10 @@ class FileHelper
    */
   public static function getR2Url(string $filePath): string
   {
-    return Storage::disk('r2_public')->url($filePath);
+    /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+    $disk = Storage::disk('r2_public');
+
+    return $disk->url($filePath);
   }
 
   /**
@@ -93,6 +99,14 @@ class FileHelper
     }
 
     return $content;
+  }
+
+  /**
+   * Download public file from R2
+   */
+  public static function downloadFromR2Public(string $filePath): string
+  {
+    return Storage::disk('r2_public')->get($filePath);
   }
 
   /**

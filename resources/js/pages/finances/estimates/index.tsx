@@ -3,8 +3,8 @@ import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
 import finances from '@/routes/finances';
 import type { BreadcrumbItem } from '@/types';
+import type { Estimate, EstimateSummaryData } from '@/types/estimates';
 import type { Paginator } from '@/types/paginator';
-import type { Estimate, EstimateSummaryData } from '@/types/quotes';
 import { EstimateSection } from './_components/estimate-section';
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Estimates', href: finances.estimates.index().url }];

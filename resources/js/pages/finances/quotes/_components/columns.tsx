@@ -49,6 +49,11 @@ export default function getColumns(expandedRow: string | null, setExpandedRow: (
             },
         },
         {
+            accessorKey: 'estimates_count',
+            header: 'Estimasi',
+            cell: ({ row }) => <span className="text-sm tabular-nums">{row.original.estimates_count ?? 0} estimasi</span>,
+        },
+        {
             accessorKey: 'action',
             header: 'Aksi',
             cell: ({ row }) => <Actions quote={row.original} isExpanded={expandedRow === row.id} onToggleExpand={() => setExpandedRow(expandedRow === row.id ? null : row.id)} />,

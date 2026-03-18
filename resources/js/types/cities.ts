@@ -2,7 +2,7 @@
  * City Master Data Management System - TypeScript Definitions
  */
 
-import type { ServiceCityPage } from './service';
+import type { ServiceCityPage } from './services';
 
 // ============================================================
 // CORE TYPES

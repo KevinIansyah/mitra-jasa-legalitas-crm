@@ -28,6 +28,7 @@ class QuoteController extends Controller
                 'servicePackage:id,name',
                 'activeEstimate',
             ])
+            ->withCount('estimates')
             ->when($search, fn($q) => $q->search($search))
             ->when($status, fn($q) => $q->byStatus($status))
             ->when($timeline, fn($q) => $q->where('timeline', $timeline))
@@ -138,6 +139,10 @@ class QuoteController extends Controller
     {
         if ($quote->status === 'converted') {
             return back()->withErrors('error', 'Quote yang sudah dikonversi tidak dapat dihapus.');
+        }
+
+        if ($quote->estimates()->exists()) {
+            return back()->withErrors(['error' => 'Quote tidak dapat dihapus karena masih memiliki estimate.']);
         }
 
         $quote->delete();

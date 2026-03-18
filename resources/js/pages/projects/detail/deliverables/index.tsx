@@ -1,5 +1,5 @@
 import { File, FileCheck, FileLock, FileText, Plus } from 'lucide-react';
-import { Download } from 'lucide-react';
+import { ArrowDownToLine } from 'lucide-react';
 import { useState } from 'react';
 
 import { HasPermission } from '@/components/has-permission';
@@ -92,7 +92,7 @@ export default function Deliverables({ project }: DeliverablesProps) {
                         <HasPermission permission="view-project-deliverables">
                             <Button variant="secondary" className="flex-1 md:min-w-40 md:flex-none" asChild>
                                 <a href={projects.documents.downloadAll(project.id).url}>
-                                    <Download className="size-3.5" />
+                                    <ArrowDownToLine className="size-3.5" />
                                     Unduh Semua
                                 </a>
                             </Button>

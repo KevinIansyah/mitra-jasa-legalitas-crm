@@ -3,195 +3,164 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Laporan Laba Rugi</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,300;8..144,400;8..144,500;8..144,600;8..144,700&display=swap"
+    rel="stylesheet">
   <style>
     * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+      font-family: 'Roboto Flex', sans-serif;
     }
 
     body {
-      font-family: 'DejaVu Sans', sans-serif;
-      font-size: 11px;
-      color: #1a1a1a;
-      padding: 40px;
-      line-height: 1.5;
+      background: white;
+      margin: 0;
+      padding: 0;
+      position: relative;
     }
 
-    .header {
-      margin-bottom: 28px;
-      border-bottom: 2px solid #1a1a1a;
-      padding-bottom: 14px;
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-image: url("{{ \App\Helpers\FileHelper::getR2Url($settings->company_logo) }}");
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: 520px;
+      opacity: 0.07;
+      pointer-events: none;
+      z-index: 0;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
     }
 
-    .header h1 {
-      font-size: 18px;
-      font-weight: 700;
+    body>* {
+      position: relative;
+      z-index: 1;
     }
 
-    .header .subtitle {
-      font-size: 11px;
-      color: #555;
-      margin-top: 4px;
-    }
-
-    .section {
-      margin-bottom: 22px;
-    }
-
-    .section-title {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 5px 8px;
-      margin-bottom: 4px;
-    }
-
-    .section-title.revenue {
-      background: #d1fae5;
-      color: #065f46;
-    }
-
-    .section-title.expense {
-      background: #ffedd5;
-      color: #9a3412;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    td {
-      padding: 5px 8px;
-      border-bottom: 1px solid #e5e7eb;
-    }
-
-    td.code {
-      color: #888;
-      width: 70px;
-      font-family: monospace;
-      font-size: 10px;
-    }
-
-    td.amount {
-      text-align: right;
-      font-variant-numeric: tabular-nums;
-    }
-
-    tr.total td {
-      font-weight: 700;
-      border-top: 2px solid #1a1a1a;
-      border-bottom: none;
-      padding-top: 7px;
-    }
-
-    .net-box {
-      margin-top: 24px;
-      padding: 14px 16px;
-      border: 2px solid;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .net-box.profit {
-      border-color: #10b981;
-      background: #f0fdf4;
-    }
-
-    .net-box.loss {
-      border-color: #ef4444;
-      background: #fef2f2;
-    }
-
-    .net-box .label {
-      font-weight: 700;
-      font-size: 13px;
-    }
-
-    .net-box .value {
-      font-weight: 700;
-      font-size: 15px;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .net-box.profit .value {
-      color: #065f46;
-    }
-
-    .net-box.loss .value {
-      color: #991b1b;
-    }
-
-    .footer {
-      margin-top: 40px;
-      font-size: 10px;
-      color: #888;
-      text-align: right;
-      border-top: 1px solid #e5e7eb;
-      padding-top: 10px;
+    .no-break {
+      page-break-inside: avoid;
+      break-inside: avoid;
     }
   </style>
 </head>
 
 <body>
-  <div class="header">
-    <h1>Laporan Laba Rugi</h1>
-    <div class="subtitle">
-      Periode {{ $report['period']['from'] }} s/d {{ $report['period']['to'] }}
+  <div class="mx-auto w-full max-w-[794px]">
+
+    {{-- Header --}}
+    <div class="flex items-start justify-between border-b border-zinc-900/30 pb-10">
+      <div class="flex items-start gap-4">
+        @if ($settings->company_logo)
+          <img src="{{ \App\Helpers\FileHelper::getR2Url($settings->company_logo) }}" alt="{{ $settings->company_name }}"
+            class="h-14 w-auto object-contain">
+        @endif
+        <div>
+          <h2 class="text-base font-semibold text-zinc-900">{{ $settings->company_name }}</h2>
+          @if ($settings->company_tagline)
+            <p class="text-xs text-zinc-500">{{ $settings->company_tagline }}</p>
+          @endif
+          <div class="mt-1 space-y-0.5 text-xs text-zinc-500">
+            @if ($settings->company_address)
+              <p>{{ $settings->company_address }}</p>
+            @endif
+            @if ($settings->company_city || $settings->company_province)
+              <p>
+                {{ collect([$settings->company_city, $settings->company_province, $settings->company_postal_code])->filter()->join(', ') }}
+              </p>
+            @endif
+            @if ($settings->company_phone)
+              <p>Telp: {{ $settings->company_phone }}</p>
+            @endif
+            @if ($settings->company_email)
+              <p>{{ $settings->company_email }}</p>
+            @endif
+          </div>
+        </div>
+      </div>
+      <div class="text-right">
+        <h1 class="text-2xl font-semibold text-zinc-900">LABA RUGI</h1>
+        <p class="mt-1 text-xs text-zinc-500">
+          Periode {{ \Carbon\Carbon::parse($report['period']['from'])->translatedFormat('d F Y') }} s/d
+          {{ \Carbon\Carbon::parse($report['period']['to'])->translatedFormat('d F Y') }}
+        </p>
+      </div>
     </div>
-  </div>
 
-  {{-- Pendapatan --}}
-  <div class="section">
-    <div class="section-title revenue">Pendapatan</div>
-    <table>
-      @foreach ($report['revenue']['detail'] as $item)
-        <tr>
-          <td class="code">{{ $item['code'] }}</td>
-          <td>{{ $item['name'] }}</td>
-          <td class="amount">{{ number_format($item['amount'], 0, ',', '.') }}</td>
-        </tr>
-      @endforeach
-      <tr class="total">
-        <td class="code"></td>
-        <td>Total Pendapatan</td>
-        <td class="amount">Rp {{ number_format($report['revenue']['total'], 0, ',', '.') }}</td>
-      </tr>
-    </table>
-  </div>
+    {{-- Pendapatan --}}
+    <div class="mt-10 no-break">
+      <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-zinc-600">Pendapatan</p>
+      <table class="w-full text-sm">
+        <tbody class="divide-y divide-zinc-100">
+          @foreach ($report['revenue']['detail'] as $item)
+            <tr>
+              <td class="py-2 text-xs text-zinc-400 w-20">{{ $item['code'] }}</td>
+              <td class="py-2 text-zinc-700">{{ $item['name'] }}</td>
+              <td class="py-2 text-right text-zinc-700">Rp {{ number_format($item['amount'], 0, ',', '.') }}</td>
+            </tr>
+          @endforeach
+        </tbody>
+        <tfoot>
+          <tr class="border-t border-zinc-900">
+            <td class="pt-2 w-20"></td>
+            <td class="pt-2 font-semibold text-zinc-900">Total Pendapatan</td>
+            <td class="pt-2 text-right font-semibold text-zinc-900">Rp
+              {{ number_format($report['revenue']['total'], 0, ',', '.') }}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
 
-  {{-- Beban --}}
-  <div class="section">
-    <div class="section-title expense">Beban</div>
-    <table>
-      @foreach ($report['expense']['detail'] as $item)
-        <tr>
-          <td class="code">{{ $item['code'] }}</td>
-          <td>{{ $item['name'] }}</td>
-          <td class="amount">{{ number_format($item['amount'], 0, ',', '.') }}</td>
-        </tr>
-      @endforeach
-      <tr class="total">
-        <td class="code"></td>
-        <td>Total Beban</td>
-        <td class="amount">Rp {{ number_format($report['expense']['total'], 0, ',', '.') }}</td>
-      </tr>
-    </table>
-  </div>
+    {{-- Beban --}}
+    <div class="mt-10 no-break">
+      <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-zinc-600">Beban</p>
+      <table class="w-full text-sm">
+        <tbody class="divide-y divide-zinc-100">
+          @foreach ($report['expense']['detail'] as $item)
+            <tr>
+              <td class="py-2 text-xs text-zinc-400 w-20">{{ $item['code'] }}</td>
+              <td class="py-2 text-zinc-700">{{ $item['name'] }}</td>
+              <td class="py-2 text-right text-zinc-700">Rp {{ number_format($item['amount'], 0, ',', '.') }}</td>
+            </tr>
+          @endforeach
+        </tbody>
+        <tfoot>
+          <tr class="border-t border-zinc-900">
+            <td class="pt-2 w-20"></td>
+            <td class="pt-2 font-semibold text-zinc-900">Total Beban</td>
+            <td class="pt-2 text-right font-semibold text-zinc-900">Rp
+              {{ number_format($report['expense']['total'], 0, ',', '.') }}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
 
-  {{-- Net --}}
-  <div class="net-box {{ $report['is_profitable'] ? 'profit' : 'loss' }}">
-    <span class="label">{{ $report['is_profitable'] ? 'Laba Bersih' : 'Rugi Bersih' }}</span>
-    <span class="value">Rp {{ number_format(abs($report['net_profit']), 0, ',', '.') }}</span>
-  </div>
+    {{-- Net --}}
+    <div
+      class="mt-10 no-break rounded-lg border p-6 {{ $report['is_profitable'] ? 'border-emerald-500 bg-emerald-50' : 'border-red-500 bg-red-50' }}">
+      <div class="flex items-center justify-between">
+        <span class="text-sm font-semibold {{ $report['is_profitable'] ? 'text-emerald-500' : 'text-red-500' }}">
+          {{ $report['is_profitable'] ? 'Laba Bersih' : 'Rugi Bersih' }}
+        </span>
+        <span class="text-base font-semibold {{ $report['is_profitable'] ? 'text-emerald-500' : 'text-red-500' }}">
+          Rp {{ number_format(abs($report['net_profit']), 0, ',', '.') }}
+        </span>
+      </div>
+    </div>
 
-  <div class="footer">
-    Dicetak pada {{ now()->format('d/m/Y H:i') }}
+    {{-- Footer --}}
+    <div class="mt-10 text-right text-xs text-zinc-400">
+      @if ($settings->legal_npwp)
+        <span class="mr-4">NPWP: {{ $settings->legal_npwp }}</span>
+      @endif
+      Dicetak pada {{ now()->format('d/m/Y H:i') }}
+    </div>
+
   </div>
 </body>
 

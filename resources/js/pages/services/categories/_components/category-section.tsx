@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { Paginator } from '@/types/paginator';
-import type { ServiceCategory } from '@/types/service';
+import type { ServiceCategory } from '@/types/services';
 import { DataTable } from './datatable';
 
 interface CategorySectionProps {

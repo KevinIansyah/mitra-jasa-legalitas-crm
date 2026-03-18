@@ -5,7 +5,7 @@ import projects from '@/routes/projects';
 import type { BreadcrumbItem } from '@/types';
 import type { Paginator } from '@/types/paginator';
 import type { ProjectTemplate, ProjectTemplateSummary } from '@/types/project-templates';
-import type { Service } from '@/types/service';
+import type { Service } from '@/types/services';
 import { TemplateSection } from './_components/template-section';
 
 const breadcrumbs: BreadcrumbItem[] = [

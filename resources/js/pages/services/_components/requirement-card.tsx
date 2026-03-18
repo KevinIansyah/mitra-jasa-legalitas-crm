@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import { uid } from '@/lib/service';
-import { DOCUMENT_FORMAT_OPTIONS, type ServiceStatus } from '@/types/service';
+import { DOCUMENT_FORMAT_OPTIONS, type ServiceStatus } from '@/types/services';
 
 export type LocalRequirementItem = {
     id?: number;

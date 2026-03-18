@@ -4,7 +4,7 @@ import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } 
 import type { Company, Customer } from '@/types/contacts';
 import type { Paginator } from '@/types/paginator';
 import type { Project, ProjectSummary } from '@/types/projects';
-import type { Service } from '@/types/service';
+import type { Service } from '@/types/services';
 import { DataTable } from './datatable';
 
 interface ProjectSectionProps {

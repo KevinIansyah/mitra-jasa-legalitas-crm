@@ -20,7 +20,7 @@ import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
 import projects from '@/routes/projects';
 import type { Company, Customer } from '@/types/contacts';
 import { PROJECT_STATUSES, type Project } from '@/types/projects';
-import type { Service } from '@/types/service';
+import type { Service } from '@/types/services';
 import getColumns from './columns';
 import ProjectDetail from './project-detail';
 

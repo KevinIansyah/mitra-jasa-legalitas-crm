@@ -4,8 +4,9 @@ import { Badge } from '@/components/ui/badge';
 import { formatRupiah } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
 import { CATEGORY_BUSINESS_MAP, STATUS_LEGAL_MAP } from '@/types/contacts';
+import { ESTIMATE_STATUSES_MAP } from '@/types/estimates';
 import type { Quote } from '@/types/quotes';
-import { ESTIMATE_STATUSES_MAP, QUOTE_BUDGET_RANGES_MAP } from '@/types/quotes';
+import { QUOTE_BUDGET_RANGES_MAP } from '@/types/quotes';
 
 export default function QuoteDetail({ quote }: { quote: Quote }) {
     const estimates = quote.estimates ?? [];

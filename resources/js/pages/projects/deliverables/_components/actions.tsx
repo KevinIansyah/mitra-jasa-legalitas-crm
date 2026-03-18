@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp, Download, FileCheck } from 'lucide-react';
+import { ArrowDownToLine, ChevronDown, ChevronUp, FileCheck } from 'lucide-react';
 import { DialogDelete } from '@/components/dialog-delete';
 import { HasPermission } from '@/components/has-permission';
 import { Button } from '@/components/ui/button';
@@ -62,7 +62,7 @@ export default function Actions({ deliverable, isExpanded, onToggleExpand }: Act
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button variant="secondary" className="h-8 w-8" onClick={handleDownload}>
-                                    <Download className="size-3.5" />
+                                    <ArrowDownToLine className="size-3.5" />
                                 </Button>
                             </TooltipTrigger>
                             <TooltipContent>Unduh Hasil Akhir</TooltipContent>

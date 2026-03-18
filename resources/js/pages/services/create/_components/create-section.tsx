@@ -30,7 +30,7 @@ import {
     validateImageFile,
 } from '@/lib/service';
 import services from '@/routes/services';
-import type { ServiceCategory } from '@/types/service';
+import type { ServiceCategory } from '@/types/services';
 
 import { FaqCard, type LocalFaq } from '../../_components/faq-card';
 import { LegalBasisCard, type LocalLegalBasis } from '../../_components/legal-basis-card';

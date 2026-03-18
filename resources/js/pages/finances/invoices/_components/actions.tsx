@@ -1,5 +1,5 @@
 import { router } from '@inertiajs/react';
-import { ChevronDown, ChevronUp, Pencil } from 'lucide-react';
+import { ChevronDown, ChevronUp, Eye, Pencil } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -69,6 +69,17 @@ export default function Actions({ invoice, isExpanded, onToggleExpand }: Actions
                     </TooltipTrigger>
                     <TooltipContent>{isExpanded ? 'Tutup Detail' : 'Lihat Detail'}</TooltipContent>
                 </Tooltip>
+
+                <HasPermission permission="view-finance-invoices">
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button variant="secondary" className="h-8 w-8" onClick={() => router.visit(finances.invoices.show(invoice.id).url)}>
+                                <Eye className="size-3.5" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Detail Invoice</TooltipContent>
+                    </Tooltip>
+                </HasPermission>
 
                 <HasPermission permission="edit-finance-invoices">
                     <Tooltip>

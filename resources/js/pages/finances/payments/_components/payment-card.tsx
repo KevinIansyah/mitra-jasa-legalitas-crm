@@ -1,5 +1,5 @@
-import { router } from '@inertiajs/react';
-import { AlertTriangle, ChevronDown, FileCheck, Pencil, Plus, Wallet } from 'lucide-react';
+import { Link, router } from '@inertiajs/react';
+import { AlertTriangle, ChevronDown, Eye, FileCheck, Pencil, Plus, Wallet } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -16,7 +16,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 import { formatRupiah } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
-import invoices from '@/routes/finances/invoices';
+import finances from '@/routes/finances';
 import type { PaymentStatus, ProjectInvoice, ProjectPayment } from '@/types/projects';
 import { PAYMENT_METHODS_MAP, PAYMENT_STATUSES, PAYMENT_STATUSES_MAP } from '@/types/projects';
 import { PaymentAddDrawer } from './payment-add-drawer';
@@ -50,7 +50,7 @@ export function PaymentCard({ invoice }: PaymentCardProps) {
         const toastId = toast.loading('Memproses...', { description: 'Status pembayaran sedang diperbarui.' });
 
         router.patch(
-            invoices.payments.updateStatus({ invoice: invoice.id, payment: selectedPayment!.id }).url,
+            finances.invoices.payments.updateStatus({ invoice: invoice.id, payment: selectedPayment!.id }).url,
             {
                 status: confirmStatus,
                 ...(isRejecting ? { rejection_reason: rejectionReason } : {}),
@@ -154,26 +154,51 @@ export function PaymentCard({ invoice }: PaymentCardProps) {
                                             </div>
 
                                             <div className="order-1 flex shrink-0 flex-wrap items-center gap-1 lg:order-2">
-                                                {payment.proof_file && (
-                                                    <HasPermission permission="view-finance-payments">
-                                                        <Tooltip>
-                                                            <TooltipTrigger asChild>
-                                                                <Button
-                                                                    variant="secondary"
-                                                                    className="h-8 w-8"
-                                                                    onClick={() => {
-                                                                        if (payment.proof_file) {
-                                                                            handleView(payment.proof_file);
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    <FileCheck className="size-4" />
+                                                <HasPermission permission="view-finance-payments">
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <Button
+                                                                variant="secondary"
+                                                                className="h-8 w-8"
+                                                                disabled={!payment.proof_file}
+                                                                onClick={() => {
+                                                                    if (payment.proof_file) {
+                                                                        handleView(payment.proof_file);
+                                                                    }
+                                                                }}
+                                                            >
+                                                                <FileCheck className="size-4" />
+                                                            </Button>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>Lihat File</TooltipContent>
+                                                    </Tooltip>
+                                                </HasPermission>
+
+                                                <HasPermission permission="view-finance-payments">
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            {!isVerified ? (
+                                                                <Button variant="secondary" size="sm" className="h-8 w-8" disabled>
+                                                                    <Eye className="size-3.5" />
                                                                 </Button>
-                                                            </TooltipTrigger>
-                                                            <TooltipContent>Lihat File</TooltipContent>
-                                                        </Tooltip>
-                                                    </HasPermission>
-                                                )}
+                                                            ) : (
+                                                                <Button variant="secondary" size="sm" className="h-8 w-8" asChild>
+                                                                    <Link
+                                                                        href={
+                                                                            finances.invoices.payments.show({
+                                                                                invoice: payment.invoice_id,
+                                                                                payment: payment.id,
+                                                                            }).url
+                                                                        }
+                                                                    >
+                                                                        <Eye className="size-3.5" />
+                                                                    </Link>
+                                                                </Button>
+                                                            )}
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>{!isVerified ? 'Pembayaran belum diverifikasi' : 'Lihat Kwitansi'}</TooltipContent>
+                                                    </Tooltip>
+                                                </HasPermission>
 
                                                 <HasPermission permission="edit-finance-payments">
                                                     <Tooltip>
@@ -195,7 +220,7 @@ export function PaymentCard({ invoice }: PaymentCardProps) {
                                                 <HasPermission permission="delete-finance-payments">
                                                     <DialogDelete
                                                         description={`Pembayaran sebesar ${formatRupiah(Number(payment.amount))} akan dihapus secara permanen.`}
-                                                        deleteUrl={invoices.payments.destroy({ invoice: invoice.id, payment: payment.id }).url}
+                                                        deleteUrl={finances.invoices.payments.destroy({ invoice: invoice.id, payment: payment.id }).url}
                                                         tooltipText="Hapus Pembayaran"
                                                         isDisabled={loading || isVerified}
                                                     />

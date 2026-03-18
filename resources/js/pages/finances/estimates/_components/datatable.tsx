@@ -17,10 +17,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
 import finances from '@/routes/finances';
-import type { Estimate } from '@/types/quotes';
-import { ESTIMATE_STATUSES } from '@/types/quotes';
+import type { Estimate } from '@/types/estimates';
+import { ESTIMATE_STATUSES } from '@/types/estimates';
 import getColumns from './columns';
 import EstimateDetail from './estimate-detail';
+
+const SOURCE_OPTIONS = [
+    { value: 'quote', label: 'Dari Quote' },
+    { value: 'proposal', label: 'Dari Proposal' },
+    { value: 'customer', label: 'Dari Customer' },
+];
 
 interface DataTableProps {
     data: Estimate[];
@@ -29,7 +35,7 @@ interface DataTableProps {
     totalPages: number;
     totalItems: number;
     perPage: number;
-    initialFilters?: { search?: string; status?: string };
+    initialFilters?: { search?: string; status?: string; source?: string };
 }
 
 export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItems, perPage, initialFilters = {} }: DataTableProps) {
@@ -50,6 +56,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
 
     const columns = getColumns(expandedRow, setExpandedRow);
     const selectedStatus = ESTIMATE_STATUSES.find((s) => s.value === filters.status);
+    const selectedSource = SOURCE_OPTIONS.find((s) => s.value === filters.source);
 
     const table = useReactTable({
         data,
@@ -63,11 +70,9 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
 
     return (
         <>
-            {/* ───────────────── Search and Filter Section ───────────────── */}
             <div className="flex flex-col gap-4 pb-4">
                 <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
                     <div className="flex w-full flex-1 items-center gap-2 md:w-auto">
-                        {/* Search */}
                         <InputGroup className="max-w-sm">
                             <InputGroupInput placeholder="Cari nomor estimate / project..." value={searchValue} onChange={handleSearchChange} />
                             <InputGroupAddon>
@@ -75,7 +80,6 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                             </InputGroupAddon>
                         </InputGroup>
 
-                        {/* Filter */}
                         <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
                             <SheetTrigger asChild>
                                 <Button variant="secondary" className="relative gap-1.5 lg:w-30">
@@ -91,7 +95,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                             <SheetContent>
                                 <SheetHeader>
                                     <SheetTitle>Filter Estimate</SheetTitle>
-                                    <SheetDescription>Saring data berdasarkan status estimate</SheetDescription>
+                                    <SheetDescription>Saring data berdasarkan status dan sumber estimate</SheetDescription>
                                 </SheetHeader>
                                 <div className="space-y-4 px-4">
                                     <Field>
@@ -112,6 +116,26 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                                             </SelectContent>
                                         </Select>
                                     </Field>
+
+                                    <Field>
+                                        <FieldLabel>Sumber</FieldLabel>
+                                        <Select value={filters.source || ''} onValueChange={(v) => updateFilter('source', v || undefined)}>
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Pilih sumber..." />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    <SelectLabel>Sumber</SelectLabel>
+                                                    {SOURCE_OPTIONS.map((item) => (
+                                                        <SelectItem key={item.value} value={item.value}>
+                                                            {item.label}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    </Field>
+
                                     {activeFiltersCount > 0 && (
                                         <Button className="w-full" onClick={resetFilters}>
                                             Reset Filter
@@ -123,7 +147,6 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                     </div>
 
                     <div className="flex w-full gap-2 md:w-auto">
-                        {/* Column Visibility */}
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" className="flex-1 gap-1.5 md:w-30">
@@ -142,7 +165,6 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                             </DropdownMenuContent>
                         </DropdownMenu>
 
-                        {/* Add Estimate */}
                         <HasPermission permission="create-finance-estimates">
                             <Button className="flex-1 gap-1.5 md:w-30" asChild>
                                 <Link href={finances.estimates.create().url}>
@@ -154,7 +176,6 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                     </div>
                 </div>
 
-                {/* Active Filters */}
                 {activeFiltersCount > 0 && (
                     <div className="flex flex-wrap items-center gap-2">
                         <span className="text-sm text-muted-foreground">Filter aktif:</span>
@@ -174,6 +195,14 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                                 </Button>
                             </Badge>
                         )}
+                        {filters.source && (
+                            <Badge variant="secondary" className="gap-2">
+                                Sumber: {selectedSource?.label}
+                                <Button variant="ghost" size="sm" className="h-6 w-6 text-xs" onClick={() => updateFilter('source', undefined)}>
+                                    <X className="size-3" />
+                                </Button>
+                            </Badge>
+                        )}
                         <Button variant="ghost" size="sm" className="h-7.5 text-xs" onClick={resetFilters}>
                             Reset semua
                         </Button>
@@ -181,7 +210,6 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                 )}
             </div>
 
-            {/* ───────────────── Table Section ───────────────── */}
             <div className="overflow-hidden rounded-t-md border-b">
                 <Table>
                     <TableHeader>
@@ -224,7 +252,6 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                 </Table>
             </div>
 
-            {/* ───────────────── Pagination Section ───────────────── */}
             <div className="flex items-center justify-between gap-8 pt-4">
                 <div className="hidden flex-1 text-sm md:flex">
                     Menampilkan {Math.min(pageIndex * perPage + 1, totalItems)} sampai {Math.min((pageIndex + 1) * perPage, totalItems)} dari {totalItems} hasil

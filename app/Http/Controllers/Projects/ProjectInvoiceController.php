@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Projects;
 
+use App\Helpers\FileHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Projects\Invoices\StoreRequest;
 use App\Http\Requests\Projects\Invoices\UpdateRequest;
@@ -9,8 +10,12 @@ use App\Models\Expense;
 use App\Models\Project;
 use App\Models\ProjectInvoice;
 use App\Models\ProjectInvoiceItem;
+use App\Models\SiteSetting;
+use App\Services\Pdf\InvoicePdfService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class ProjectInvoiceController extends Controller
@@ -23,40 +28,40 @@ class ProjectInvoiceController extends Controller
         $search  = $request->get('search');
         $status  = $request->get('status');
         $type    = $request->get('type');
+        $source  = $request->get('source');
 
         $invoices = ProjectInvoice::with([
             'project:id,name,status,customer_id',
             'project.customer:id,name,tier',
+            'customer:id,name,tier',
             'items',
             'payments',
         ])
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('invoice_number', 'like', "%{$search}%")
-                        ->orWhereHas(
-                            'project',
-                            fn($q) =>
-                            $q->where('name', 'like', "%{$search}%")
-                        );
+                        ->orWhereHas('project', fn($q) => $q->where('name', 'like', "%{$search}%"))
+                        ->orWhereHas('customer', fn($q) => $q->where('name', 'like', "%{$search}%"));
                 });
             })
             ->when($status, fn($q, $status) => $q->where('status', $status))
-            ->when($type, fn($q, $type) => $q->where('type', $type))
-            ->orderByDesc('project_id')
-            ->orderByDesc('created_at')
+            ->when($type,   fn($q, $type)   => $q->where('type', $type))
+            ->when($source === 'project',  fn($q) => $q->whereNotNull('project_id'))
+            ->when($source === 'customer', fn($q) => $q->whereNull('project_id')->whereNotNull('customer_id'))
+            ->latest()
             ->paginate($perPage);
 
         $summary = ProjectInvoice::query()
             ->selectRaw("
-            COUNT(*) as total,
-            COALESCE(SUM(CASE WHEN status = 'draft'     THEN 1 ELSE 0 END), 0) as draft,
-            COALESCE(SUM(CASE WHEN status = 'sent'      THEN 1 ELSE 0 END), 0) as sent,
-            COALESCE(SUM(CASE WHEN status = 'paid'      THEN 1 ELSE 0 END), 0) as paid,
-            COALESCE(SUM(CASE WHEN status = 'overdue'   THEN 1 ELSE 0 END), 0) as overdue,
-            COALESCE(SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END), 0) as cancelled,
-            COALESCE(SUM(total_amount), 0) as total_amount,
-            COALESCE(SUM(CASE WHEN status = 'paid' THEN total_amount ELSE 0 END), 0) as paid_amount
-        ")
+                COUNT(*) as total,
+                COALESCE(SUM(CASE WHEN status = 'draft'     THEN 1 ELSE 0 END), 0) as draft,
+                COALESCE(SUM(CASE WHEN status = 'sent'      THEN 1 ELSE 0 END), 0) as sent,
+                COALESCE(SUM(CASE WHEN status = 'paid'      THEN 1 ELSE 0 END), 0) as paid,
+                COALESCE(SUM(CASE WHEN status = 'overdue'   THEN 1 ELSE 0 END), 0) as overdue,
+                COALESCE(SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END), 0) as cancelled,
+                COALESCE(SUM(total_amount), 0) as total_amount,
+                COALESCE(SUM(CASE WHEN status = 'paid' THEN total_amount ELSE 0 END), 0) as paid_amount
+            ")
             ->first();
 
         return Inertia::render('finances/invoices/index', [
@@ -67,7 +72,18 @@ class ProjectInvoiceController extends Controller
                 'per_page' => $perPage,
                 'status'   => $status,
                 'type'     => $type,
+                'source'   => $source,
             ],
+        ]);
+    }
+
+    public function show(ProjectInvoice $invoice)
+    {
+        $invoice->load(['project.customer', 'project.company', 'customer', 'items']);
+
+        return Inertia::render('finances/invoices/detail/index', [
+            'invoice' => $invoice,
+            'settings' => SiteSetting::get(),
         ]);
     }
 
@@ -87,32 +103,23 @@ class ProjectInvoiceController extends Controller
         ]);
     }
 
-    public function edit(Request $request, ProjectInvoice $invoice)
-    {
-        $invoice->load(['project.customer', 'items']);
-
-        $fromProject = $request->filled('project_id');
-
-        return Inertia::render('finances/invoices/edit/index', [
-            'invoice'  => $invoice,
-            'selectedProject' => $invoice->project,
-            'fromProject' => $fromProject,
-            'isEdit'   => true,
-        ]);
-    }
-
     public function store(StoreRequest $request)
     {
-        $validated = $request->validated();
+        $validated    = $request->validated();
+        $fromProject  = $request->boolean('from_project');
 
-        $project = Project::find($validated['project_id']);
-        if (!$project) {
-            return back()->withErrors(['error' => 'Project tidak ditemukan.']);
+        if ($fromProject) {
+            $project = Project::find($validated['project_id']);
+            if (!$project) {
+                return back()->withErrors(['error' => 'Project tidak ditemukan.']);
+            }
         }
 
-        $invoice = DB::transaction(function () use ($project, $request, $validated) {
-            $invoice = $project->invoices()->create([
+        $invoice = DB::transaction(function () use ($validated, $fromProject) {
+            $invoice = ProjectInvoice::create([
                 'invoice_number'       => ProjectInvoice::generateInvoiceNumber(),
+                'project_id'           => $validated['project_id'] ?? null,
+                'customer_id'          => $fromProject ? null : ($validated['customer_id'] ?? null),
                 'type'                 => $validated['type'],
                 'invoice_date'         => $validated['invoice_date'],
                 'due_date'             => $validated['due_date'],
@@ -133,10 +140,7 @@ class ProjectInvoiceController extends Controller
 
             if ($invoice->type === 'additional' && !empty($validated['items'])) {
                 $expenseIds = collect($validated['items'])
-                    ->pluck('expense_id')
-                    ->filter()
-                    ->values()
-                    ->toArray();
+                    ->pluck('expense_id')->filter()->values()->toArray();
 
                 if (!empty($expenseIds)) {
                     Expense::where('project_id', $invoice->project_id)
@@ -150,7 +154,19 @@ class ProjectInvoiceController extends Controller
             return $invoice;
         });
 
-        if ($request->boolean('from_project')) {
+        try {
+            $filePath = app(InvoicePdfService::class)->generate($invoice);
+            $invoice->update(['file_path' => $filePath]);
+        } catch (\Exception $e) {
+            Log::error('Invoice PDF generation failed', [
+                'invoice_id' => $invoice->id,
+                'error'      => $e->getMessage(),
+            ]);
+
+            return back()->withErrors(['error' => 'Gagal membuat invoice.']);
+        }
+
+        if ($fromProject) {
             return redirect()->route('projects.finance', $invoice->project_id)
                 ->with('success', 'Invoice berhasil ditambahkan.');
         }
@@ -159,13 +175,28 @@ class ProjectInvoiceController extends Controller
             ->with('success', 'Invoice berhasil dibuat.');
     }
 
+    public function edit(Request $request, ProjectInvoice $invoice)
+    {
+        $invoice->load(['project.customer', 'customer', 'items']);
+
+        $fromProject = $request->filled('project_id');
+
+        return Inertia::render('finances/invoices/edit/index', [
+            'invoice'         => $invoice,
+            'selectedProject' => $invoice->project,
+            'selectedCustomer' => $invoice->customer,
+            'fromProject'     => $fromProject,
+            'isEdit'          => true,
+        ]);
+    }
+
     public function update(UpdateRequest $request, ProjectInvoice $invoice)
     {
         if ($error = $this->validateNotPaid($invoice)) return $error;
 
         $validated = $request->validated();
 
-        DB::transaction(function () use ($invoice, $request, $validated) {
+        DB::transaction(function () use ($invoice, $validated) {
             $invoice->update([
                 'invoice_number'       => $validated['invoice_number'] ?? $invoice->invoice_number,
                 'type'                 => $validated['type'],
@@ -184,14 +215,10 @@ class ProjectInvoiceController extends Controller
             $invoice->refresh()->calculateTotals();
 
             if ($invoice->type === 'additional') {
-                Expense::where('invoice_id', $invoice->id)
-                    ->update(['invoice_id' => null]);
+                Expense::where('invoice_id', $invoice->id)->update(['invoice_id' => null]);
 
                 $expenseIds = collect($validated['items'] ?? [])
-                    ->pluck('expense_id')
-                    ->filter()
-                    ->values()
-                    ->toArray();
+                    ->pluck('expense_id')->filter()->values()->toArray();
 
                 if (!empty($expenseIds)) {
                     Expense::where('project_id', $invoice->project_id)
@@ -203,9 +230,23 @@ class ProjectInvoiceController extends Controller
             }
         });
 
+        try {
+            $pdfService = app(InvoicePdfService::class);
+            $pdfService->delete($invoice);
+            $filePath = $pdfService->generate($invoice->fresh());
+            $invoice->update(['file_path' => $filePath]);
+        } catch (\Exception $e) {
+            Log::error('Invoice PDF regeneration failed', [
+                'invoice_id' => $invoice->id,
+                'error'      => $e->getMessage(),
+            ]);
+
+            return back()->withErrors(['error' => 'Gagal memperbarui invoice.']);
+        }
+
         if ($request->boolean('from_project')) {
             return redirect()->route('projects.finance', $invoice->project_id)
-                ->with('success', 'Invoice berhasil ditambahkan.');
+                ->with('success', 'Invoice berhasil diperbarui.');
         }
 
         return redirect()->route('finances.invoices.index')
@@ -248,9 +289,48 @@ class ProjectInvoiceController extends Controller
     {
         if ($error = $this->validateNotPaid($invoice)) return $error;
 
+        if ($invoice->payments()->exists()) {
+            return back()->withErrors([
+                'error' => 'Invoice tidak dapat dihapus karena sudah memiliki pembayaran.'
+            ]);
+        }
+
         $invoice->delete();
 
         return back()->with('success', 'Invoice berhasil dihapus.');
+    }
+
+    // Tambahkan method ini di ProjectInvoiceController
+
+    public function regeneratePdf(ProjectInvoice $invoice)
+    {
+        try {
+            $pdfService = app(InvoicePdfService::class);
+
+            $pdfService->delete($invoice);
+
+            $filePath = $pdfService->generate($invoice->fresh());
+            $invoice->update(['file_path' => $filePath]);
+
+            return back()->with('success', 'PDF invoice berhasil di-generate ulang.');
+        } catch (\Exception $e) {
+            Log::error('Invoice PDF manual regeneration failed', [
+                'invoice_id' => $invoice->id,
+                'error'      => $e->getMessage(),
+            ]);
+
+            return back()->withErrors(['error' => 'Gagal generate PDF: ' . $e->getMessage()]);
+        }
+    }
+
+    public function download(ProjectInvoice $invoice)
+    {
+        $content = FileHelper::downloadFromR2Public($invoice->file_path);
+        $filename = 'invoice-' . $invoice->invoice_number . '.pdf';
+
+        return response($content, 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 
     private function syncItems(ProjectInvoice $invoice, array $validated): void

@@ -137,7 +137,7 @@ function buildNavData(userId: number): {
                         },
                         {
                             title: 'Proposal',
-                            url: '#',
+                            url: finances.proposals.index().url,
                             permission: 'view-finance-proposals',
                         },
                         {

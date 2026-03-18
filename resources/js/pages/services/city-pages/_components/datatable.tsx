@@ -17,7 +17,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
 import services from '@/routes/services';
 import type { City } from '@/types/cities';
-import type { Service, ServiceCityPage } from '@/types/service';
+import type { Service, ServiceCityPage } from '@/types/services';
 import { CityPageAddDrawer } from './city-pages-add-drawer';
 import getColumns from './columns';
 

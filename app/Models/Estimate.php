@@ -14,6 +14,8 @@ class Estimate extends Model
     protected $fillable = [
         'estimate_number',
         'quote_id',
+        'proposal_id',
+        'customer_id',
         'version',
         'is_active',
         'subtotal',
@@ -22,10 +24,12 @@ class Estimate extends Model
         'discount_percent',
         'discount_amount',
         'total_amount',
+        'estimate_date',
         'valid_until',
         'status',
         'notes',
         'rejected_reason',
+        'file_path',
     ];
 
     protected $casts = [
@@ -36,6 +40,7 @@ class Estimate extends Model
         'discount_percent' => 'decimal:2',
         'discount_amount'  => 'decimal:2',
         'total_amount'     => 'decimal:2',
+        'estimate_date'    => 'date',
         'valid_until'      => 'date',
     ];
 
@@ -60,6 +65,16 @@ class Estimate extends Model
     public function items(): HasMany
     {
         return $this->hasMany(EstimateItem::class)->orderBy('sort_order');
+    }
+
+    public function proposal(): BelongsTo
+    {
+        return $this->belongsTo(Proposal::class);
+    }
+
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class);
     }
 
     /*

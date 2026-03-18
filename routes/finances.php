@@ -6,6 +6,7 @@ use App\Http\Controllers\Finances\AccountController;
 use App\Http\Controllers\Finances\ManualJournalController;
 use App\Http\Controllers\Finances\OpeningBalanceController;
 use App\Http\Controllers\Finances\FinancialReportController;
+use App\Http\Controllers\Finances\ProposalController;
 use App\Http\Controllers\Projects\ProjectInvoiceController;
 use App\Http\Controllers\Projects\ProjectPaymentController;
 use App\Http\Controllers\Finances\QuoteController;
@@ -71,8 +72,19 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
     Route::patch('/{invoice}/status', [ProjectInvoiceController::class, 'updateStatus'])
       ->middleware('permission:edit-finance-invoices')
       ->name('update-status');
-  });
 
+    Route::post('{invoice}/regenerate-pdf', [ProjectInvoiceController::class, 'regeneratePdf'])
+      ->middleware('permission:edit-finance-invoices')
+      ->name('regenerate-pdf');
+
+    Route::get('/{invoice}/download', [ProjectInvoiceController::class, 'download'])
+      ->middleware('permission:view-finance-invoices')
+      ->name('download');
+
+    Route::get('/{invoice}', [ProjectInvoiceController::class, 'show'])
+      ->middleware('permission:view-finance-invoices')
+      ->name('show');
+  });
 
   /*
     |--------------------------------------------------------------------------
@@ -107,6 +119,18 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
     Route::patch('/{payment}/status', [ProjectPaymentController::class, 'updateStatus'])
       ->middleware('permission:edit-finance-payments')
       ->name('update-status');
+
+    Route::get('/{payment}/download-receipt', [ProjectPaymentController::class, 'downloadReceiptPdf'])
+      ->middleware('permission:view-finance-payments')
+      ->name('download-receipt');
+
+    Route::post('/{payment}/regenerate-receipt', [ProjectPaymentController::class, 'regenerateReceiptPdf'])
+      ->middleware('permission:edit-finance-payments')
+      ->name('regenerate-receipt');
+
+    Route::get('/{payment}', [ProjectPaymentController::class, 'show'])
+      ->middleware('permission:view-finance-payments')
+      ->name('show');
   });
 
 
@@ -263,6 +287,76 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
     Route::delete('/{estimate}', [EstimateController::class, 'destroy'])
       ->middleware('permission:delete-finance-estimates')
       ->name('destroy');
+
+    Route::post('{estimate}/regenerate-pdf', [EstimateController::class, 'regeneratePdf'])
+      ->middleware('permission:edit-finance-estimates')
+      ->name('regenerate-pdf');
+
+    Route::get('/{estimate}/download', [EstimateController::class, 'download'])
+      ->middleware('permission:view-finance-estimates')
+      ->name('download');
+
+    Route::get('/{estimate}', [EstimateController::class, 'show'])
+      ->middleware('permission:view-finance-estimates')
+      ->name('show');
+  });
+
+  /*
+    |--------------------------------------------------------------------------
+    | PROPOSALS
+    |--------------------------------------------------------------------------
+    |
+    | GET    /finances/proposals                    -> List proposals
+    | GET    /finances/proposals/create            -> Show create form
+    | POST   /finances/proposals                    -> Create proposal
+    | GET    /finances/proposals/{proposal}/edit    -> Show edit form
+    | PUT    /finances/proposals/{proposal}         -> Update proposal
+    | PATCH  /finances/proposals/{proposal}/status  -> Update proposal status
+    | DELETE /finances/proposals/{proposal}         -> Delete proposal
+    |
+    |--------------------------------------------------------------------------
+    */
+
+  Route::prefix('finances/proposals')->name('finances.proposals.')->group(function () {
+    Route::get('/', [ProposalController::class, 'index'])
+      ->middleware('permission:view-finance-proposals')
+      ->name('index');
+
+    Route::get('/create', [ProposalController::class, 'create'])
+      ->middleware('permission:create-finance-proposals')
+      ->name('create');
+
+    Route::post('/', [ProposalController::class, 'store'])
+      ->middleware('permission:create-finance-proposals')
+      ->name('store');
+
+    Route::get('/{proposal}/edit', [ProposalController::class, 'edit'])
+      ->middleware('permission:edit-finance-proposals')
+      ->name('edit');
+
+    Route::put('/{proposal}', [ProposalController::class, 'update'])
+      ->middleware('permission:edit-finance-proposals')
+      ->name('update');
+
+    Route::patch('/{proposal}/status', [ProposalController::class, 'updateStatus'])
+      ->middleware('permission:edit-finance-proposals')
+      ->name('update-status');
+
+    Route::delete('/{proposal}', [ProposalController::class, 'destroy'])
+      ->middleware('permission:delete-finance-proposals')
+      ->name('destroy');
+
+    Route::post('{proposal}/regenerate-pdf', [ProposalController::class, 'regeneratePdf'])
+      ->middleware('permission:edit-finance-proposals')
+      ->name('regenerate-pdf');
+
+    Route::get('/{proposal}/download', [ProposalController::class, 'download'])
+      ->middleware('permission:view-finance-proposals')
+      ->name('download');
+
+    Route::get('/{proposal}', [ProposalController::class, 'show'])
+      ->middleware('permission:view-finance-proposals')
+      ->name('show');
   });
 
   /*

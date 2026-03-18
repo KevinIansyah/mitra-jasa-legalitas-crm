@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { deleteItemAndReindex, moveItemDown, moveItemUp } from '@/lib/service';
 import templates from '@/routes/projects/templates';
 import type { ProjectTemplateStatus } from '@/types/project-templates';
-import type { Service } from '@/types/service';
+import type { Service } from '@/types/services';
 import type { LocalDocument } from '../../_components/document-card';
 import { DocumentCard } from '../../_components/document-card';
 import type { LocalMilestone } from '../../_components/milestone-card';

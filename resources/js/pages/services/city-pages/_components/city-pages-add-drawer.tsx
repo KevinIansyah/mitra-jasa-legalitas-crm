@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { Spinner } from '@/components/ui/spinner';
 import services from '@/routes/services';
 import type { City } from '@/types/cities';
-import type { Service } from '@/types/service';
+import type { Service } from '@/types/services';
 
 type CityPageAddDrawerProps = {
     services: Pick<Service, 'id' | 'name'>[];

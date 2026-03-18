@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Paginator } from '@/types/paginator';
 import type { ProjectTemplate, ProjectTemplateSummary } from '@/types/project-templates';
-import type { Service } from '@/types/service';
+import type { Service } from '@/types/services';
 import { DataTable } from './datatable';
 
 interface TemplateSectionProps {

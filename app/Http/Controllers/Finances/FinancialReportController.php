@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Finances;
 
 use App\Http\Controllers\Controller;
+use App\Models\SiteSetting;
 use App\Services\FinancialReportService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Inertia\Inertia;
+use Spatie\Browsershot\Browsershot;
 
 class FinancialReportController extends Controller
 {
@@ -90,25 +91,47 @@ class FinancialReportController extends Controller
             'to'   => 'nullable|date|after_or_equal:from',
         ]);
 
-        $from   = Carbon::parse($request->filled('from') ? $request->from : now()->startOfMonth())->startOfDay();
-        $to     = Carbon::parse($request->filled('to')   ? $request->to   : now()->endOfMonth())->endOfDay();
-        $report = FinancialReportService::labaRugi($from, $to);
+        $from     = Carbon::parse($request->filled('from') ? $request->from : now()->startOfMonth())->startOfDay();
+        $to       = Carbon::parse($request->filled('to')   ? $request->to   : now()->endOfMonth())->endOfDay();
+        $report   = FinancialReportService::labaRugi($from, $to);
+        $settings = SiteSetting::get();
 
-        return Pdf::loadView('pdf.finances.reports.profit-loss', compact('report'))
-            ->setPaper('a4', 'portrait')
-            ->download('laba-rugi-' . $from->format('Ymd') . '-' . $to->format('Ymd') . '.pdf');
+        $html = view('pdf.finances.reports.profit-loss', compact('report', 'settings'))->render();
+
+        $pdf = Browsershot::html($html)
+            ->format('A4')
+            ->margins(15, 15, 15, 15)
+            ->showBackground()
+            ->waitUntilNetworkIdle()
+            ->timeout(30)
+            ->pdf();
+
+        return response($pdf, 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'attachment; filename="laba-rugi-' . $from->format('Ymd') . '-' . $to->format('Ymd') . '.pdf"');
     }
 
     public function neracaPdf(Request $request)
     {
         $request->validate(['as_of' => 'nullable|date']);
 
-        $asOf   = Carbon::parse($request->filled('as_of') ? $request->as_of : now())->endOfDay();
-        $report = FinancialReportService::neraca($asOf);
+        $asOf     = Carbon::parse($request->filled('as_of') ? $request->as_of : now())->endOfDay();
+        $report   = FinancialReportService::neraca($asOf);
+        $settings = SiteSetting::get();
 
-        return Pdf::loadView('pdf.finances.reports.balance-sheet', compact('report'))
-            ->setPaper('a4', 'portrait')
-            ->download('neraca-' . $asOf->format('Ymd') . '.pdf');
+        $html = view('pdf.finances.reports.balance-sheet', compact('report', 'settings'))->render();
+
+        $pdf = Browsershot::html($html)
+            ->format('A4')
+            ->margins(15, 15, 15, 15)
+            ->showBackground()
+            ->waitUntilNetworkIdle()
+            ->timeout(30)
+            ->pdf();
+
+        return response($pdf, 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'attachment; filename="neraca-' . $asOf->format('Ymd') . '.pdf"');
     }
 
     public function cashFlowPdf(Request $request)
@@ -118,12 +141,23 @@ class FinancialReportController extends Controller
             'to'   => 'nullable|date|after_or_equal:from',
         ]);
 
-        $from   = Carbon::parse($request->filled('from') ? $request->from : now()->startOfMonth())->startOfDay();
-        $to     = Carbon::parse($request->filled('to')   ? $request->to   : now()->endOfMonth())->endOfDay();
-        $report = FinancialReportService::cashFlow($from, $to);
+        $from     = Carbon::parse($request->filled('from') ? $request->from : now()->startOfMonth())->startOfDay();
+        $to       = Carbon::parse($request->filled('to')   ? $request->to   : now()->endOfMonth())->endOfDay();
+        $report   = FinancialReportService::cashFlow($from, $to);
+        $settings = SiteSetting::get();
 
-        return Pdf::loadView('pdf.finances.reports.cash-flow', compact('report'))
-            ->setPaper('a4', 'portrait')
-            ->download('arus-kas-' . $from->format('Ymd') . '-' . $to->format('Ymd') . '.pdf');
+        $html = view('pdf.finances.reports.cash-flow', compact('report', 'settings'))->render();
+
+        $pdf = Browsershot::html($html)
+            ->format('A4')
+            ->margins(15, 15, 15, 15)
+            ->showBackground()
+            ->waitUntilNetworkIdle()
+            ->timeout(30)
+            ->pdf();
+
+        return response($pdf, 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'attachment; filename="arus-kas-' . $from->format('Ymd') . '-' . $to->format('Ymd') . '.pdf"');
     }
 }

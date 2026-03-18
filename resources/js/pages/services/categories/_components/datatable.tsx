@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
 import categories from '@/routes/services/categories';
-import type { ServiceCategory } from '@/types/service';
+import type { ServiceCategory } from '@/types/services';
 import getColumns from './columns';
 import { DrawerAdd } from './drawer-add';
 

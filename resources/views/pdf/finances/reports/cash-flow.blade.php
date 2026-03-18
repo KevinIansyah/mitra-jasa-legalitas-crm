@@ -4,239 +4,194 @@
 <head>
   <meta charset="UTF-8">
   <title>Laporan Arus Kas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,300;8..144,400;8..144,500;8..144,600;8..144,700&display=swap"
+    rel="stylesheet">
   <style>
     * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+      font-family: 'Roboto Flex', sans-serif;
     }
 
     body {
-      font-family: 'DejaVu Sans', sans-serif;
-      font-size: 11px;
-      color: #1a1a1a;
-      padding: 40px;
-      line-height: 1.5;
+      background: white;
+      margin: 0;
+      padding: 0;
+      position: relative;
     }
 
-    .header {
-      margin-bottom: 28px;
-      border-bottom: 2px solid #1a1a1a;
-      padding-bottom: 14px;
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-image: url("{{ \App\Helpers\FileHelper::getR2Url($settings->company_logo) }}");
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: 520px;
+      opacity: 0.07;
+      pointer-events: none;
+      z-index: 0;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
     }
 
-    .header h1 {
-      font-size: 18px;
-      font-weight: 700;
+    body>* {
+      position: relative;
+      z-index: 1;
     }
 
-    .header .subtitle {
-      font-size: 11px;
-      color: #555;
-      margin-top: 4px;
-    }
-
-    .summary-grid {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-
-    .summary-card {
-      flex: 1;
-      padding: 10px 12px;
-      border: 1px solid #e5e7eb;
-      border-radius: 4px;
-    }
-
-    .summary-card .label {
-      font-size: 10px;
-      color: #666;
-    }
-
-    .summary-card .value {
-      font-size: 13px;
-      font-weight: 700;
-      margin-top: 2px;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .summary-card.in .value {
-      color: #065f46;
-    }
-
-    .summary-card.out .value {
-      color: #9f1239;
-    }
-
-    .summary-card.net .value {
-      color: #1a1a1a;
-    }
-
-    .section {
-      margin-bottom: 22px;
-    }
-
-    .section-title {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 5px 8px;
-      margin-bottom: 4px;
-      background: #f3f4f6;
-      color: #374151;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th {
-      padding: 5px 8px;
-      text-align: left;
-      font-size: 10px;
-      font-weight: 600;
-      text-transform: uppercase;
-      color: #555;
-      border-bottom: 1px solid #d1d5db;
-    }
-
-    th.right,
-    td.right {
-      text-align: right;
-    }
-
-    td {
-      padding: 5px 8px;
-      border-bottom: 1px solid #e5e7eb;
-      font-variant-numeric: tabular-nums;
-    }
-
-    td.in {
-      color: #065f46;
-    }
-
-    td.out {
-      color: #9f1239;
-    }
-
-    td.net-pos {
-      color: #065f46;
-      font-weight: 600;
-    }
-
-    td.net-neg {
-      color: #991b1b;
-      font-weight: 600;
-    }
-
-    tr.total td {
-      font-weight: 700;
-      border-top: 2px solid #1a1a1a;
-      border-bottom: none;
-      padding-top: 7px;
-    }
-
-    .footer {
-      margin-top: 40px;
-      font-size: 10px;
-      color: #888;
-      text-align: right;
-      border-top: 1px solid #e5e7eb;
-      padding-top: 10px;
+    .no-break {
+      page-break-inside: avoid;
+      break-inside: avoid;
     }
   </style>
 </head>
 
 <body>
-  <div class="header">
-    <h1>Laporan Arus Kas</h1>
-    <div class="subtitle">
-      Periode {{ $report['period']['from'] }} s/d {{ $report['period']['to'] }}
-    </div>
-  </div>
+  <div class="mx-auto w-full max-w-[794px]">
 
-  {{-- Summary --}}
-  <div class="summary-grid">
-    <div class="summary-card in">
-      <div class="label">Total Kas Masuk</div>
-      <div class="value">Rp {{ number_format($report['cash_in'], 0, ',', '.') }}</div>
+    {{-- Header --}}
+    <div class="flex items-start justify-between border-b border-zinc-900/30 pb-10">
+      <div class="flex items-start gap-4">
+        @if ($settings->company_logo)
+          <img src="{{ \App\Helpers\FileHelper::getR2Url($settings->company_logo) }}" alt="{{ $settings->company_name }}"
+            class="h-14 w-auto object-contain">
+        @endif
+        <div>
+          <h2 class="text-base font-semibold text-zinc-900">{{ $settings->company_name }}</h2>
+          @if ($settings->company_tagline)
+            <p class="text-xs text-zinc-500">{{ $settings->company_tagline }}</p>
+          @endif
+          <div class="mt-1 space-y-0.5 text-xs text-zinc-500">
+            @if ($settings->company_address)
+              <p>{{ $settings->company_address }}</p>
+            @endif
+            @if ($settings->company_city || $settings->company_province)
+              <p>
+                {{ collect([$settings->company_city, $settings->company_province, $settings->company_postal_code])->filter()->join(', ') }}
+              </p>
+            @endif
+            @if ($settings->company_phone)
+              <p>Telp: {{ $settings->company_phone }}</p>
+            @endif
+            @if ($settings->company_email)
+              <p>{{ $settings->company_email }}</p>
+            @endif
+          </div>
+        </div>
+      </div>
+      <div class="text-right">
+        <h1 class="text-2xl font-semibold text-zinc-900">ARUS KAS</h1>
+        <p class="mt-1 text-xs text-zinc-500">
+          Periode {{ \Carbon\Carbon::parse($report['period']['from'])->translatedFormat('d F Y') }} s/d
+          {{ \Carbon\Carbon::parse($report['period']['to'])->translatedFormat('d F Y') }}
+        </p>
+      </div>
     </div>
-    <div class="summary-card out">
-      <div class="label">Total Kas Keluar</div>
-      <div class="value">Rp {{ number_format($report['cash_out'], 0, ',', '.') }}</div>
-    </div>
-    <div class="summary-card net">
-      <div class="label">Net Arus Kas</div>
-      <div class="value">Rp {{ number_format($report['net_cashflow'], 0, ',', '.') }}</div>
-    </div>
-  </div>
 
-  {{-- Per aktivitas --}}
-  <div class="section">
-    <div class="section-title">Rincian per Aktivitas</div>
-    <table>
-      <thead>
-        <tr>
-          <th>Aktivitas</th>
-          <th class="right">Kas Masuk</th>
-          <th class="right">Kas Keluar</th>
-          <th class="right">Net</th>
-        </tr>
-      </thead>
-      <tbody>
-        @foreach ($report['activities'] as $a)
-          <tr>
-            <td>{{ $a['label'] }}</td>
-            <td class="right in">{{ number_format($a['cash_in'], 0, ',', '.') }}</td>
-            <td class="right out">{{ number_format($a['cash_out'], 0, ',', '.') }}</td>
-            <td class="right {{ $a['net'] >= 0 ? 'net-pos' : 'net-neg' }}">
-              {{ number_format($a['net'], 0, ',', '.') }}
-            </td>
-          </tr>
-        @endforeach
-        <tr class="total">
-          <td>Total</td>
-          <td class="right">Rp {{ number_format($report['cash_in'], 0, ',', '.') }}</td>
-          <td class="right">Rp {{ number_format($report['cash_out'], 0, ',', '.') }}</td>
-          <td class="right">Rp {{ number_format($report['net_cashflow'], 0, ',', '.') }}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+    {{-- Summary Cards --}}
+    <div class="mt-10 grid grid-cols-3 gap-4 no-break">
+      <div class="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+        <p class="text-xs text-emerald-500">Total Kas Masuk</p>
+        <p class="mt-1 text-base font-semibold text-emerald-500">Rp
+          {{ number_format($report['cash_in'], 0, ',', '.') }}
+        </p>
+      </div>
+      <div class="rounded-lg border border-red-200 bg-red-50 p-4">
+        <p class="text-xs text-red-500">Total Kas Keluar</p>
+        <p class="mt-1 text-base font-semibold text-red-500">Rp {{ number_format($report['cash_out'], 0, ',', '.') }}
+        </p>
+      </div>
+      <div class="rounded-lg border border-zinc-200 bg-zinc-50 p-4">
+        <p class="text-xs text-zinc-600">Net Arus Kas</p>
+        <p
+          class="mt-1 text-base font-semibold {{ $report['net_cashflow'] >= 0 ? 'text-emerald-500' : 'text-red-500' }}">
+          Rp {{ number_format($report['net_cashflow'], 0, ',', '.') }}
+        </p>
+      </div>
+    </div>
 
-  {{-- Per bulan --}}
-  @if (count($report['monthly']) > 0)
-    <div class="section">
-      <div class="section-title">Rincian per Bulan</div>
-      <table>
+    {{-- Per Aktivitas --}}
+    <div class="mt-10 no-break">
+      <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-zinc-600">Rincian per Aktivitas</p>
+      <table class="w-full text-sm">
         <thead>
-          <tr>
-            <th>Bulan</th>
-            <th class="right">Kas Masuk</th>
-            <th class="right">Kas Keluar</th>
-            <th class="right">Net</th>
+          <tr class="border-b border-zinc-900">
+            <th class="py-2 text-left font-semibold text-zinc-900">Aktivitas</th>
+            <th class="py-2 text-right font-semibold text-zinc-900">Kas Masuk</th>
+            <th class="py-2 text-right font-semibold text-zinc-900">Kas Keluar</th>
+            <th class="py-2 text-right font-semibold text-zinc-900">Net</th>
           </tr>
         </thead>
-        <tbody>
-          @foreach ($report['monthly'] as $m)
+        <tbody class="divide-y divide-zinc-100">
+          @foreach ($report['activities'] as $a)
             <tr>
-              <td>{{ $m['label'] }}</td>
-              <td class="right in">{{ number_format($m['cash_in'], 0, ',', '.') }}</td>
-              <td class="right out">{{ number_format($m['cash_out'], 0, ',', '.') }}</td>
-              <td class="right {{ $m['net'] >= 0 ? 'net-pos' : 'net-neg' }}">
-                {{ number_format($m['net'], 0, ',', '.') }}
+              <td class="py-2 text-zinc-900">{{ $a['label'] }}</td>
+              <td class="py-2 text-right text-emerald-500">Rp {{ number_format($a['cash_in'], 0, ',', '.') }}</td>
+              <td class="py-2 text-right text-red-500">Rp {{ number_format($a['cash_out'], 0, ',', '.') }}</td>
+              <td class="py-2 text-right font-medium {{ $a['net'] >= 0 ? 'text-emerald-500' : 'text-red-500' }}">
+                Rp {{ number_format($a['net'], 0, ',', '.') }}
               </td>
             </tr>
           @endforeach
         </tbody>
+        <tfoot>
+          <tr class="border-t border-zinc-900">
+            <td class="pt-2 font-semibold text-zinc-900">Total</td>
+            <td class="pt-2 text-right font-semibold text-emerald-500">Rp
+              {{ number_format($report['cash_in'], 0, ',', '.') }}</td>
+            <td class="pt-2 text-right font-semibold text-red-500">Rp
+              {{ number_format($report['cash_out'], 0, ',', '.') }}</td>
+            <td
+              class="pt-2 text-right font-semibold {{ $report['net_cashflow'] >= 0 ? 'text-emerald-500' : 'text-red-500' }}">
+              Rp {{ number_format($report['net_cashflow'], 0, ',', '.') }}
+            </td>
+          </tr>
+        </tfoot>
       </table>
     </div>
-  @endif
 
-  <div class="footer">Dicetak pada {{ now()->format('d/m/Y H:i') }}</div>
+    {{-- Per Bulan --}}
+    @if (count($report['monthly']) > 0)
+      <div class="mt-10 no-break">
+        <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-zinc-600">Rincian per Bulan</p>
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-zinc-900">
+              <th class="py-2 text-left font-semibold text-zinc-900">Bulan</th>
+              <th class="py-2 text-right font-semibold text-zinc-900">Kas Masuk</th>
+              <th class="py-2 text-right font-semibold text-zinc-900">Kas Keluar</th>
+              <th class="py-2 text-right font-semibold text-zinc-900">Net</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-zinc-100">
+            @foreach ($report['monthly'] as $m)
+              <tr>
+                <td class="py-2 text-zinc-700">{{ $m['label'] }}</td>
+                <td class="py-2 text-right text-emerald-500">Rp {{ number_format($m['cash_in'], 0, ',', '.') }}</td>
+                <td class="py-2 text-right text-red-500">Rp {{ number_format($m['cash_out'], 0, ',', '.') }}</td>
+                <td class="py-2 text-right font-medium {{ $m['net'] >= 0 ? 'text-emerald-500' : 'text-red-500' }}">
+                  Rp {{ number_format($m['net'], 0, ',', '.') }}
+                </td>
+              </tr>
+            @endforeach
+          </tbody>
+        </table>
+      </div>
+    @endif
+
+    {{-- Footer --}}
+    <div class="mt-10 border-zinc-900/30 text-right text-xs text-zinc-600">
+      @if ($settings->legal_npwp)
+        <span class="mr-4">NPWP: {{ $settings->legal_npwp }}</span>
+      @endif
+      Dicetak pada {{ now()->format('d/m/Y H:i') }}
+    </div>
+
+  </div>
 </body>
 
 </html>

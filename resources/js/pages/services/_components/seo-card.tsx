@@ -21,7 +21,7 @@ import {
     type SitemapChangefreq,
     type SitemapPriority,
     type TwitterCard,
-} from '@/types/service';
+} from '@/types/services';
 
 const R2_PUBLIC_URL = import.meta.env.VITE_CLOUDFLARE_R2_PUBLIC_URL;
 

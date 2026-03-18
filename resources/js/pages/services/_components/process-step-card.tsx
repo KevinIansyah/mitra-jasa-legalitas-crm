@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { Textarea } from '@/components/ui/textarea';
 
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import type { ServiceStatus } from '@/types/service';
+import type { ServiceStatus } from '@/types/services';
 
 export type LocalProcessStep = {
     id?: number;

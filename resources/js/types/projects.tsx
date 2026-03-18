@@ -6,7 +6,7 @@ import { Ban, CheckCircle2, Circle, Clock, FileCheck, FileQuestion, FileX, XCirc
 import type { User } from './auth';
 import type { Company, Customer } from './contacts';
 import type { Expense } from './expenses';
-import type { Service, ServicePackage } from './service';
+import type { Service, ServicePackage } from './services';
 
 // ============================================================
 // CORE TYPES
@@ -180,13 +180,14 @@ export type ProjectInvoiceItem = {
     subtotal?: number;
     discount_amount?: number;
     tax_amount?: number;
-    total?: number;
+    total_amount?: number;
     sort_order?: number;
 };
 
 export type ProjectInvoice = {
     id: number;
-    project_id: number;
+    project_id: number | null;
+    customer_id: number | null;
     invoice_number: string;
     type: InvoiceType;
     invoice_date: string;
@@ -202,17 +203,20 @@ export type ProjectInvoice = {
     status: InvoiceStatus;
     notes: string | null;
     payment_instructions: string | null;
+    file_path: string | null;
     created_at: string;
 
     // Relations
     project?: Project;
     items?: ProjectInvoiceItem[];
     payments?: ProjectPayment[];
+    customer?: Customer;
 };
 
 export interface ProjectPayment {
     id: number;
     invoice_id: number;
+    receipt_number: string | null;
     amount: string;
     payment_date: string;
     payment_method: string | null;
@@ -221,6 +225,7 @@ export interface ProjectPayment {
     status: PaymentStatus;
     notes: string | null;
     rejection_reason: string | null;
+    file_path: string | null;
     verified_by: number | null;
     verified_at: string | null;
     created_at: string;
@@ -407,7 +412,8 @@ export interface ProjectMemberFormData {
 }
 
 export interface ProjectInvoiceFormData {
-    project_id: number;
+    project_id: number | null;
+    customer_id: number | null;
     type: InvoiceType;
     invoice_date: string;
     percentage?: number | null;

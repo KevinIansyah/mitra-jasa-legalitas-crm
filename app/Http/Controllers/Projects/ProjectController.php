@@ -476,6 +476,12 @@ class ProjectController extends Controller
     {
         $project->delete();
 
+        if ($project->invoices()->exists()) {
+            return back()->withErrors([
+                'error' => 'Project tidak dapat dihapus karena sudah memiliki invoice.'
+            ]);
+        }
+
         return back()->with('success', 'Project berhasil dihapus.');
     }
 

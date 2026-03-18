@@ -1,5 +1,5 @@
 import { router } from '@inertiajs/react';
-import { ChevronDown, ChevronUp, GitBranch, Pencil } from 'lucide-react';
+import { ChevronDown, ChevronUp, Eye, GitBranch, Pencil } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -12,8 +12,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import finances from '@/routes/finances';
-import type { Estimate, EstimateStatus } from '@/types/quotes';
-import { ESTIMATE_STATUSES, ESTIMATE_STATUSES_MAP } from '@/types/quotes';
+import { ESTIMATE_STATUSES, ESTIMATE_STATUSES_MAP } from '@/types/estimates';
+import type { Estimate, EstimateStatus } from '@/types/estimates';
 
 type ActionsProps = {
     estimate: Estimate;
@@ -89,6 +89,17 @@ export default function Actions({ estimate, isExpanded, onToggleExpand }: Action
                     </TooltipTrigger>
                     <TooltipContent>{isExpanded ? 'Tutup Detail' : 'Lihat Detail'}</TooltipContent>
                 </Tooltip>
+
+                <HasPermission permission="view-finance-estimates">
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button variant="secondary" className="h-8 w-8" onClick={() => router.visit(finances.estimates.show(estimate.id).url)}>
+                                <Eye className="size-3.5" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Detail Estimate</TooltipContent>
+                    </Tooltip>
+                </HasPermission>
 
                 <HasPermission permission="edit-finance-estimates">
                     <Tooltip>

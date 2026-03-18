@@ -18,7 +18,7 @@ class ProjectInvoiceItem extends Model
         'subtotal',
         'discount_amount',
         'tax_amount',
-        'total',
+        'total_amount',
         'sort_order',
     ];
 
@@ -30,7 +30,7 @@ class ProjectInvoiceItem extends Model
         'subtotal'         => 'decimal:2',
         'discount_amount'  => 'decimal:2',
         'tax_amount'       => 'decimal:2',
-        'total'            => 'decimal:2',
+        'total_amount'     => 'decimal:2',
     ];
 
     /*
@@ -65,7 +65,7 @@ class ProjectInvoiceItem extends Model
         $this->subtotal        = $subtotal;
         $this->discount_amount = $discountAmount;
         $this->tax_amount      = $taxAmount;
-        $this->total           = $afterDiscount + $taxAmount;
+        $this->total_amount    = $afterDiscount + $taxAmount;
 
         return $this;
     }

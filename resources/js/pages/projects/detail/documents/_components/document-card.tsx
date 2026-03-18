@@ -1,5 +1,5 @@
 import { router } from '@inertiajs/react';
-import { AlertTriangle, ArrowDown, ArrowUp, ChevronDown, Download, FileCheck, Lock, Pencil, Upload } from 'lucide-react';
+import { AlertTriangle, ArrowDown, ArrowDownToLine, ArrowUp, ArrowUpToLine, ChevronDown, FileCheck, Lock, Pencil } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -221,7 +221,7 @@ export function DocumentCard({ document, index, projectId, isFirst, isLast, onRe
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
                                                     <Button variant="secondary" className="h-8 w-8" onClick={handleDownload}>
-                                                        <Download className="size-3.5" />
+                                                        <ArrowDownToLine className="size-3.5" />
                                                     </Button>
                                                 </TooltipTrigger>
                                                 <TooltipContent>Unduh Dokumen</TooltipContent>
@@ -234,7 +234,7 @@ export function DocumentCard({ document, index, projectId, isFirst, isLast, onRe
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
                                                     <Button variant="secondary" className="h-8 w-8" disabled={loading} onClick={onUpload}>
-                                                        <Upload className="size-3.5" />
+                                                        <ArrowUpToLine className="size-3.5" />
                                                     </Button>
                                                 </TooltipTrigger>
                                                 <TooltipContent>{hasFile ? 'Ganti File' : 'Unggah Dokumen'}</TooltipContent>

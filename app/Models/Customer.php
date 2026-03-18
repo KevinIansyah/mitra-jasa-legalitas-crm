@@ -37,6 +37,16 @@ class Customer extends Model
             ->withTimestamps();
     }
 
+    public function invoices()
+    {
+        return $this->hasMany(ProjectInvoice::class);
+    }
+
+    public function proposals()
+    {
+        return $this->hasMany(Proposal::class);
+    }
+
     public function hasAccount(): bool
     {
         return !is_null($this->user_id);

@@ -1,5 +1,5 @@
 import { router } from '@inertiajs/react';
-import { ChevronDown, ChevronUp, Download, FileCheck, Lock, Upload } from 'lucide-react';
+import { ArrowDownToLine, ArrowUpToLine, ChevronDown, ChevronUp, FileCheck, Lock } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { DialogDelete } from '@/components/dialog-delete';
@@ -140,7 +140,7 @@ export default function Actions({ document, isExpanded, onToggleExpand }: Action
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button variant="secondary" className="h-8 w-8" disabled={!hasFile} onClick={handleDownload}>
-                                <Download className="size-3.5" />
+                                <ArrowDownToLine className="size-3.5" />
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>Unduh Dokumen</TooltipContent>
@@ -151,7 +151,7 @@ export default function Actions({ document, isExpanded, onToggleExpand }: Action
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button variant="secondary" className="h-8 w-8" disabled={loading || isVerified} onClick={() => setUploadingDocument(document)}>
-                                <Upload className="size-3.5" />
+                                <ArrowUpToLine className="size-3.5" />
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>{hasFile ? 'Ganti File' : 'Unggah Dokumen'}</TooltipContent>

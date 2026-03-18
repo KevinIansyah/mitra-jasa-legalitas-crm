@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import type { City } from '@/types/cities';
 import type { Paginator } from '@/types/paginator';
-import type { Service, ServiceCityPage, ServiceCityPageSummary } from '@/types/service';
+import type { Service, ServiceCityPage, ServiceCityPageSummary } from '@/types/services';
 import { DataTable } from './datatable';
 
 interface CityPageSectionProps {
