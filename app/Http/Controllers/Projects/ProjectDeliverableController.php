@@ -8,6 +8,7 @@ use App\Http\Requests\Projects\Deliverables\StoreRequest;
 use App\Http\Requests\Projects\Deliverables\UpdateRequest;
 use App\Models\Project;
 use App\Models\ProjectDeliverable;
+use App\Notifications\Client\NewDeliverableNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -66,7 +67,7 @@ class ProjectDeliverableController extends Controller
             encrypt: $isEncrypted,
         );
 
-        $project->deliverables()->create([
+        $deliverable = $project->deliverables()->create([
             'name'         => $validated['name'],
             'description'  => $validated['description'] ?? null,
             'version'      => $validated['version'] ?? null,
@@ -79,6 +80,12 @@ class ProjectDeliverableController extends Controller
             'uploaded_by'  => Auth::id(),
             'uploaded_at'  => now(),
         ]);
+
+        $deliverable->load(['project.customer.user']);
+
+        if ($project->customer?->user) {
+            $project->customer->user->notify(new NewDeliverableNotification($deliverable));
+        }
 
         return back()->with('success', 'Hasil akhir berhasil ditambahkan.');
     }

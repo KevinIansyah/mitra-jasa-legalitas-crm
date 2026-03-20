@@ -29,7 +29,7 @@ return new class extends Migration
             $table->date('valid_until')->nullable();
 
             // Status
-            $table->enum('status', ['draft', 'sent', 'accepted', 'rejected'])->default('draft');
+            $table->enum('status', ['draft', 'sent', 'accepted', 'rejected', 'expired'])->default('draft');
 
             $table->text('notes')->nullable();
             $table->text('rejected_reason')->nullable();

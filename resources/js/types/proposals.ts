@@ -8,7 +8,7 @@ import type { Customer } from './contacts';
 // CORE TYPES
 // ============================================================
 
-export type ProposalStatus = 'draft' | 'sent' | 'accepted' | 'rejected';
+export type ProposalStatus = 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired';
 
 // ============================================================
 // MODELS
@@ -52,7 +52,6 @@ export interface Proposal {
     updated_at: string;
 
     // Computed
-    is_expired: boolean;
     estimates_count: number;
 
     // Relations
@@ -107,6 +106,7 @@ export const PROPOSAL_STATUSES = [
     { value: 'sent', label: 'Sent', classes: 'bg-blue-500 text-white' },
     { value: 'accepted', label: 'Accepted', classes: 'bg-emerald-500 text-white' },
     { value: 'rejected', label: 'Rejected', classes: 'bg-red-500 text-white' },
+    { value: 'expired', label: 'Expired', classes: 'bg-yellow-500 text-white' },
 ] as const;
 
 export const PROPOSAL_STATUSES_MAP = Object.fromEntries(PROPOSAL_STATUSES.map((item) => [item.value, item]));

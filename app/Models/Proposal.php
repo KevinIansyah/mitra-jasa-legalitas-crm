@@ -40,8 +40,6 @@ class Proposal extends Model
         'valid_until'      => 'date',
     ];
 
-    protected $appends = ['is_expired'];
-
     protected function serializeDate(\DateTimeInterface $date): string
     {
         return $date->format('Y-m-d');
@@ -79,15 +77,9 @@ class Proposal extends Model
         return $query->where('status', 'sent');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | COMPUTED
-    |--------------------------------------------------------------------------
-    */
-
-    public function getIsExpiredAttribute(): bool
+    public function scopeExpired($query)
     {
-        return $this->valid_until && now()->isAfter($this->valid_until);
+        return $query->where('status', 'expired');
     }
 
     /*

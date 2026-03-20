@@ -10,7 +10,7 @@ import type { Quote } from './quotes';
 // CORE TYPES
 // ============================================================
 
-export type EstimateStatus = 'draft' | 'sent' | 'accepted' | 'rejected';
+export type EstimateStatus = 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired';
 
 // ============================================================
 // MODELS
@@ -58,7 +58,6 @@ export interface Estimate {
 
     // Computed
     version_label: string;
-    is_expired: boolean;
 
     // Relations
     items?: EstimateItem[];
@@ -114,6 +113,7 @@ export const ESTIMATE_STATUSES = [
     { value: 'sent', label: 'Sent', classes: 'bg-blue-500 text-white' },
     { value: 'accepted', label: 'Accepted', classes: 'bg-emerald-500 text-white' },
     { value: 'rejected', label: 'Rejected', classes: 'bg-red-500 text-white' },
+    { value: 'expired', label: 'Expired', classes: 'bg-yellow-500 text-white' },
 ] as const;
 
 export const ESTIMATE_STATUSES_MAP = Object.fromEntries(ESTIMATE_STATUSES.map((item) => [item.value, item]));

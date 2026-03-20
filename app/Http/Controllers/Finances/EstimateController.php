@@ -11,6 +11,7 @@ use App\Models\EstimateItem;
 use App\Models\Proposal;
 use App\Models\Quote;
 use App\Models\SiteSetting;
+use App\Notifications\Client\NewEstimateNotification;
 use App\Services\Pdf\EstimatePdfService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -278,7 +279,7 @@ class EstimateController extends Controller
         }
 
         $request->validate([
-            'status'          => 'required|in:draft,sent,accepted,rejected',
+            'status'          => 'required|in:draft,sent,accepted,rejected,expired',
             'rejected_reason' => 'required_if:status,rejected|nullable|string|max:500',
         ], [
             'status.required'             => 'Status wajib dipilih.',
@@ -302,11 +303,23 @@ class EstimateController extends Controller
             }
         }
 
+        if ($request->status === 'sent') {
+            $estimate->loadMissing(['customer.user', 'proposal.customer.user', 'quote.user', 'items']);
+            $user = $estimate->customer?->user
+                ?? $estimate->proposal?->customer?->user
+                ?? $estimate->quote?->user;
+
+            if ($user) {
+                $user->notify(new NewEstimateNotification($estimate->fresh()));
+            }
+        }
+
         $messages = [
             'draft'    => 'Estimate dikembalikan ke draft.',
             'sent'     => 'Estimate ditandai sudah dikirim.',
             'accepted' => 'Estimate berhasil diterima.',
             'rejected' => 'Estimate berhasil ditolak.',
+            'expired'  => 'Estimate telah kadaluarsa.',
         ];
 
         return back()->with('success', $messages[$request->status]);

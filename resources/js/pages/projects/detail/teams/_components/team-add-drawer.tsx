@@ -189,7 +189,7 @@ export function TeamAddDrawer({ projectId, open, onOpenChange }: TeamAddDrawerPr
                             {/* Type */}
                             <Field className="col-span-2 md:col-span-2">
                                 <FieldLabel>
-                                    Posisi <span className="text-destructive">*</span>
+                                    Posisi<span className="text-destructive">*</span>
                                 </FieldLabel>
                                 <Select value={data.role} onValueChange={(value) => setData('role', value as MemberRole)}>
                                     <SelectTrigger>

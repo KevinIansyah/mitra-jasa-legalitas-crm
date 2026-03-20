@@ -53,9 +53,11 @@
 
 <body>
   @php
-    $customer =
-        $estimate->customer ??
-        ($estimate->proposal?->customer ?? ($estimate->quote?->customer ?? $estimate->quote?->user));
+    $customer = $estimate->customer ?? ($estimate->proposal?->customer ?? $estimate->quote?->customer);
+
+    $name = $customer?->name ?? ($estimate->quote?->user?->name ?? '-');
+    $email = $customer?->email ?? ($estimate->quote?->user?->email ?? '-');
+    $phone = $customer?->phone ?? ($estimate->quote?->user?->phone ?? '-');
   @endphp
 
   <div class="mx-auto w-full max-w-[794px]">
@@ -102,13 +104,13 @@
       <div class="mt-10 grid grid-cols-2 gap-8">
         <div>
           <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-zinc-600">Ditujukan Kepada</p>
-          <p class="text-sm font-semibold text-zinc-900">{{ $customer?->name ?? '-' }}</p>
+          <p class="text-sm font-semibold text-zinc-900">{{ $name }}</p>
           <div class="text-sm text-zinc-600">
-            @if ($customer?->email)
-              <p>{{ $customer->email }}</p>
+            @if ($email)
+              <p>{{ $email }}</p>
             @endif
-            @if ($customer?->phone)
-              <p>{{ $customer->phone }}</p>
+            @if ($phone)
+              <p>{{ $phone }}</p>
             @endif
           </div>
           @if ($estimate->proposal)

@@ -1,5 +1,5 @@
 import { usePage } from '@inertiajs/react';
-import { ChartBar, Clock, Command, Database, DollarSign, LayoutGrid, MessageSquare, Newspaper, Settings, Settings2, Table2, Toolbox, Users } from 'lucide-react';
+import { Briefcase, ChartBar, Clock, Command, Database, DollarSign, LayoutGrid, MessageSquare, Newspaper, Settings, Settings2, Toolbox, Users } from 'lucide-react';
 import * as React from 'react';
 
 import { NavMain } from '@/components/nav-main';
@@ -72,7 +72,7 @@ function buildNavData(userId: number): {
                 {
                     title: 'Project',
                     url: projects.index().url,
-                    icon: Table2,
+                    icon: Briefcase,
                     permission: ['view-projects', 'view-project-templates'],
                     items: [
                         {

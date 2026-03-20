@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\TiptapController;
@@ -18,6 +19,26 @@ use Illuminate\Support\Facades\Storage;
 | Middleware: auth, verified, restrict_user (where required)
 |--------------------------------------------------------------------------
 */
+
+/*
+|--------------------------------------------------------------------------
+| NOTIFICATIONS
+|--------------------------------------------------------------------------
+| GET    /notifications                       -> List notifications
+| POST   /notifications/{id}/read            -> Mark notification as read
+| POST   /notifications/mark-all-read         -> Mark all notifications as read
+| DELETE /notifications/{id}                  -> Delete notification
+| DELETE /notifications                        -> Delete all notifications
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth')->prefix('notifications')->name('notifications.')->group(function () {
+    Route::get('/',                    [NotificationController::class, 'index'])->name('index');
+    Route::post('{id}/read',           [NotificationController::class, 'read'])->name('read');
+    Route::post('mark-all-read',       [NotificationController::class, 'markAllRead'])->name('markAllRead');
+    Route::delete('{id}',              [NotificationController::class, 'destroy'])->name('destroy');
+    Route::delete('/',                 [NotificationController::class, 'destroyAll'])->name('destroyAll');
+});
 
 
 /*

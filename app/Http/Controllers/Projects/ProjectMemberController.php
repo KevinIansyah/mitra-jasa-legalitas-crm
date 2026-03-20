@@ -7,6 +7,7 @@ use App\Http\Requests\Projects\Members\StoreRequest;
 use App\Http\Requests\Projects\Members\UpdateRequest;
 use App\Models\Project;
 use App\Models\ProjectMember;
+use App\Notifications\Staff\AssignedToProjectNotification;
 
 class ProjectMemberController extends Controller
 {
@@ -17,7 +18,10 @@ class ProjectMemberController extends Controller
         $validated['project_id'] = $project->id;
         $validated['assigned_at'] = now();
 
-        $project->members()->create($validated);
+        $member = $project->members()->create($validated);
+        $member->load(['project', 'user']);
+
+        $member->user->notify(new AssignedToProjectNotification($member));
 
         return back()->with('success', 'Anggota tim berhasil ditambahkan.');
     }

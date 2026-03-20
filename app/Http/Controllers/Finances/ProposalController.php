@@ -9,6 +9,7 @@ use App\Http\Requests\Finances\Proposals\UpdateRequest;
 use App\Models\Proposal;
 use App\Models\ProposalItem;
 use App\Models\SiteSetting;
+use App\Notifications\Client\NewProposalNotification;
 use App\Services\Pdf\ProposalPdfService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -174,7 +175,7 @@ class ProposalController extends Controller
         }
 
         $request->validate([
-            'status'          => 'required|in:draft,sent,accepted,rejected',
+            'status'          => 'required|in:draft,sent,accepted,rejected,expired',
             'rejected_reason' => 'required_if:status,rejected|nullable|string|max:500',
         ], [
             'status.required'             => 'Status wajib dipilih.',
@@ -190,11 +191,20 @@ class ProposalController extends Controller
             ]),
         };
 
+        if ($request->status === 'sent') {
+            $proposal->loadMissing(['customer.user', 'items']);
+
+            if ($proposal->customer?->user) {
+                $proposal->customer->user->notify(new NewProposalNotification($proposal->fresh()));
+            }
+        }
+
         $messages = [
             'draft'    => 'Proposal dikembalikan ke draft.',
             'sent'     => 'Proposal ditandai sudah dikirim.',
             'accepted' => 'Proposal berhasil diterima.',
             'rejected' => 'Proposal berhasil ditolak.',
+            'expired'  => 'Proposal telah kadaluarsa.',
         ];
 
         return back()->with('success', $messages[$request->status]);

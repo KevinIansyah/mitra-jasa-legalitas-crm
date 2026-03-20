@@ -44,7 +44,7 @@ class Estimate extends Model
         'valid_until'      => 'date',
     ];
 
-    protected $appends = ['version_label', 'is_expired'];
+    protected $appends = ['version_label'];
 
     protected function serializeDate(\DateTimeInterface $date): string
     {
@@ -93,6 +93,11 @@ class Estimate extends Model
         return $query->where('status', 'sent');
     }
 
+    public function scopeExpired($query)
+    {
+        return $query->where('status', 'expired');
+    }
+
     /*
     |--------------------------------------------------------------------------
     | COMPUTED
@@ -102,11 +107,6 @@ class Estimate extends Model
     public function getVersionLabelAttribute(): string
     {
         return "v.{$this->version}";
-    }
-
-    public function getIsExpiredAttribute(): bool
-    {
-        return $this->valid_until && now()->isAfter($this->valid_until);
     }
 
     /*

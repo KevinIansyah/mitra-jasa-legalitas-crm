@@ -43,14 +43,12 @@ export default function getColumns(expandedRow: string | null, setExpandedRow: (
             accessorKey: 'valid_until',
             header: 'Berlaku s/d',
             cell: ({ row }) => {
-                const { valid_until, is_expired, proposal_date } = row.original;
-                const isAccepted = row.original.status === 'accepted';
-                const isRejected = row.original.status === 'rejected';
+                const { valid_until, status, proposal_date } = row.original;
 
                 return (
                     <div className="space-y-0.5">
                         <p className="text-sm">{valid_until ? formatDate(valid_until) : '-'}</p>
-                        {is_expired && !isAccepted && !isRejected && <Badge variant="destructive">Expired</Badge>}
+                        {status === 'expired' && <Badge className="bg-yellow-500 text-white">Expired</Badge>}
                         <p className="text-xs text-muted-foreground">Dibuat: {formatDate(proposal_date)}</p>
                     </div>
                 );

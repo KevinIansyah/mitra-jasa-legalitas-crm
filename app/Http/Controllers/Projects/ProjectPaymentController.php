@@ -9,6 +9,8 @@ use App\Http\Requests\Projects\Payments\UpdateRequest;
 use App\Models\ProjectInvoice;
 use App\Models\ProjectPayment;
 use App\Models\SiteSetting;
+use App\Notifications\Client\PaymentAcceptedNotification;
+use App\Notifications\Client\PaymentRejectedNotification;
 use App\Services\Pdf\ReceiptPdfService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -157,6 +159,22 @@ class ProjectPaymentController extends Controller
             'verified' => $payment->verify(Auth::user()),
             'rejected' => $payment->reject($request->rejection_reason),
         };
+
+        $payment->loadMissing([
+            'invoice.project.customer.user',
+            'invoice.customer.user',
+            'verifier',
+        ]);
+
+        $user = $payment->invoice->customer?->user
+            ?? $payment->invoice->project?->customer?->user;
+
+        if ($user) {
+            match ($request->status) {
+                'verified' => $user->notify(new PaymentAcceptedNotification($payment->fresh())),
+                'rejected' => $user->notify(new PaymentRejectedNotification($payment->fresh())),
+            };
+        }
 
         $messages = [
             'verified' => 'Pembayaran berhasil diverifikasi.',

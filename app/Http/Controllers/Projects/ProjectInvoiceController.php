@@ -11,6 +11,7 @@ use App\Models\Project;
 use App\Models\ProjectInvoice;
 use App\Models\ProjectInvoiceItem;
 use App\Models\SiteSetting;
+use App\Notifications\Client\NewInvoiceNotification;
 use App\Services\Pdf\InvoicePdfService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -164,6 +165,13 @@ class ProjectInvoiceController extends Controller
             ]);
 
             return back()->withErrors(['error' => 'Gagal membuat invoice.']);
+        }
+
+        $invoice->loadMissing(['project.customer.user', 'customer.user']);
+        $user = $invoice->customer?->user ?? $invoice->project?->customer?->user;
+
+        if ($user) {
+            $user->notify(new NewInvoiceNotification($invoice));
         }
 
         if ($fromProject) {

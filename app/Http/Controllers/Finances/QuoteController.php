@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Finances;
 use App\Http\Controllers\Controller;
 use App\Models\Quote;
 use App\Models\Service;
+use App\Notifications\Client\QuoteRejectedNotification;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -92,14 +93,12 @@ class QuoteController extends Controller
             'rejected_reason.required_if' => 'Alasan penolakan wajib diisi.',
         ]);
 
-        match ($request->status) {
-            'contacted' => $quote->markAsContacted(),
-            'rejected'  => $quote->reject($request->rejected_reason),
-            default     => $quote->update([
-                'status' => $request->status,
-                'rejected_reason' => null,
-            ]),
-        };
+        if ($request->status === 'rejected') {
+            $quote->loadMissing(['user', 'service']);
+            if ($quote->user) {
+                $quote->user->notify(new QuoteRejectedNotification($quote->fresh()));
+            }
+        }
 
         $messages = [
             'pending'   => 'Status permintaan penawaran diubah ke menunggu.',

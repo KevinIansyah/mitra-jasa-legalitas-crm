@@ -1,8 +1,11 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PublicServiceController;
 use App\Http\Controllers\Api\QuoteController;
+use App\Http\Controllers\Finances\EstimateController;
+use App\Http\Controllers\Finances\ProposalController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -71,19 +74,77 @@ Route::prefix('auth')->name('auth.')->group(function () {
 | QUOTES
 |--------------------------------------------------------------------------
 | POST /quotes               -> Create quote
+| GET /quotes                -> List quotes
+| GET /quotes/{quote}        -> Show quote
+| DELETE /quotes/{quote}     -> Delete quote
 |--------------------------------------------------------------------------
 */
 
-// Route::middleware(['auth:sanctum'])->group(function () {
-//     Route::prefix('quotes')->name('quotes.')->group(function () {
-//         Route::post('/', [QuoteController::class, 'store'])->name('store');
-//     });
-// });
-
-Route::prefix('quotes')->name('quotes.')->group(function () {
-    Route::post('/', [QuoteController::class, 'store'])->name('store');
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::prefix('quotes')->name('quotes.')->group(function () {
+        Route::get('/', [QuoteController::class, 'index'])->name('index');
+        Route::post('/', [QuoteController::class, 'store'])->name('store');
+        Route::get('{quote}', [QuoteController::class, 'show'])->name('show');
+    });
 });
 
+// Route::prefix('quotes')->name('quotes.')->group(function () {
+//     Route::post('/', [QuoteController::class, 'store'])->name('store');
+// });
+
+/*
+|--------------------------------------------------------------------------
+| PAYMENTS
+|--------------------------------------------------------------------------
+| GET /invoices/{invoice}/payments              -> List payments
+| POST /invoices/{invoice}/payments             -> Create payment
+| DELETE /invoices/{invoice}/payments/{payment} -> Delete payment
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::prefix('invoices/{invoice}/payments')->group(function () {
+        Route::get('/',    [PaymentController::class, 'index']);
+        Route::post('/',   [PaymentController::class, 'store']);
+        Route::delete('{payment}', [PaymentController::class, 'destroy']);
+    });
+});
+
+/*
+|--------------------------------------------------------------------------
+| PROPOSALS
+|--------------------------------------------------------------------------
+| GET /proposals               -> List proposals
+| GET /proposals/{proposal}    -> Show proposal
+| PATCH /proposals/{proposal}/status -> Update proposal status
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::prefix('proposals')->group(function () {
+        Route::get('/',                        [ProposalController::class, 'index']);
+        Route::get('{proposal}',               [ProposalController::class, 'show']);
+        Route::patch('{proposal}/status',      [ProposalController::class, 'updateStatus']);
+    });
+});
+
+/*
+|--------------------------------------------------------------------------
+| ESTIMATES
+|--------------------------------------------------------------------------
+| GET /estimates               -> List estimates
+| GET /estimates/{estimate}    -> Show estimate
+| PATCH /estimates/{estimate}/status -> Update estimate status
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::prefix('estimates')->group(function () {
+        Route::get('/',                        [EstimateController::class, 'index']);
+        Route::get('{estimate}',               [EstimateController::class, 'show']);
+        Route::patch('{estimate}/status',      [EstimateController::class, 'updateStatus']);
+    });
+});
 
 /*
 |--------------------------------------------------------------------------

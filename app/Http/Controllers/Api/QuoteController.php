@@ -6,10 +6,34 @@ use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Quotes\StoreRequest;
 use App\Models\Quote;
+use App\Notifications\Staff\NewQuoteNotification;
+use App\Services\NotificationService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class QuoteController extends Controller
 {
+    public function index(Request $request)
+    {
+        $quotes = Quote::where('user_id', Auth::id())
+            ->with(['service', 'servicePackage', 'activeEstimate'])
+            ->latest()
+            ->get();
+
+        return ApiResponse::success($quotes);
+    }
+
+    public function show(Quote $quote)
+    {
+        if ($quote->user_id !== Auth::id()) {
+            return ApiResponse::forbidden();
+        }
+
+        $quote->load(['service', 'servicePackage', 'estimates', 'activeEstimate']);
+
+        return ApiResponse::success($quote);
+    }
+
     public function store(StoreRequest $request)
     {
         $validated = $request->validated();
@@ -28,8 +52,7 @@ class QuoteController extends Controller
 
         $quote = Quote::create([
             ...$validated,
-            // 'user_id'          => Auth::id(),
-            'user_id'          => $request['user_id'] ?? 9,
+            'user_id'          => Auth::id(),
             'reference_number' => Quote::generateReferenceNumber(),
             'source'           => 'portal',
             'status'           => 'pending',
@@ -37,9 +60,26 @@ class QuoteController extends Controller
 
         $quote->load(['service', 'servicePackage']);
 
+        NotificationService::notifyAllStaff(new NewQuoteNotification($quote));
+
         return ApiResponse::created(
             $quote,
             'Permintaan quote berhasil dikirim. Tim kami akan segera menghubungi Anda.'
         );
+    }
+
+    public function destroy(Quote $quote)
+    {
+        if ($quote->user_id !== Auth::id()) {
+            return ApiResponse::forbidden();
+        }
+
+        if (!in_array($quote->status, ['pending', 'rejected'])) {
+            return ApiResponse::error('Quote yang sedang diproses tidak dapat dihapus.', 422);
+        }
+
+        $quote->delete();
+
+        return ApiResponse::success(null, 'Quote berhasil dihapus.');
     }
 }

@@ -19,6 +19,8 @@ use App\Models\ProjectTask;
 use App\Models\ProjectTemplate;
 use App\Models\Quote;
 use App\Models\Service;
+use App\Notifications\Client\NewProjectNotification;
+use App\Notifications\Client\ProjectCompletedNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -225,6 +227,12 @@ class ProjectController extends Controller
 
             return $project;
         });
+
+        $project->loadMissing(['customer.user']);
+
+        if ($project->customer?->user) {
+            $project->customer->user->notify(new NewProjectNotification($project));
+        }
 
         if (!empty($validated['quote_id'])) {
             return to_route('projects.show', $project)
@@ -468,6 +476,15 @@ class ProjectController extends Controller
         };
 
         $project->update($data);
+
+        if ($status === 'completed') {
+            $project->loadMissing(['customer.user']);
+            
+            if ($project->customer?->user) {
+                $project->customer->user->notify(new ProjectCompletedNotification($project));
+            }
+        }
+
 
         return back()->with('success', 'Status project berhasil diperbarui.');
     }

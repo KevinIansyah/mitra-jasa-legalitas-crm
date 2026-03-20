@@ -9,6 +9,7 @@ use App\Http\Requests\Projects\Documents\UpdateRequest;
 use App\Http\Requests\Projects\Documents\UploadRequest;
 use App\Models\Project;
 use App\Models\ProjectDocument;
+use App\Notifications\Client\DocumentRejectedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -94,6 +95,16 @@ class ProjectDocumentController extends Controller
         ]);
 
         $status = request('status');
+
+        if ($status === 'rejected') {
+            $document->loadMissing(['project.customer.user']);
+            
+            if ($document->project->customer?->user) {
+                $document->project->customer->user->notify(
+                    new DocumentRejectedNotification($document->fresh())
+                );
+            }
+        }
 
         $data = [
             'status'           => $status,
