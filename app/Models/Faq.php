@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Faq extends Model
+{
+    protected $fillable = [
+        'question',
+        'answer',
+        'is_published',
+    ];
+
+    protected $casts = [
+        'is_published' => 'boolean',
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | SCOPES
+    |--------------------------------------------------------------------------
+    */
+
+    public function scopePublished($query)
+    {
+        return $query->where('is_published', true);
+    }
+}

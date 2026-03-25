@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { Spinner } from '@/components/ui/spinner';
 
 import accountsRoutes from '@/routes/finances/accounts';
-import { ACCOUNT_CATEGORIES, ACCOUNT_TYPES, type AccountCategory, type AccountFormData, type AccountNormalBalance, type AccountType } from '@/types/account';
+import { ACCOUNT_CATEGORIES, ACCOUNT_TYPES, type AccountCategory, type AccountFormData, type AccountNormalBalance, type AccountType } from '@/types/accounts';
 
 type AccountAddDrawerProps = {
     open: boolean;

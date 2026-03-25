@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Blogs;
 
-use App\Http\Controllers\Controller;
 use App\Helpers\FileHelper;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Blogs\StoreRequest;
 use App\Http\Requests\Blogs\UpdateBasicInformationRequest;
 use App\Http\Requests\Blogs\UpdateContentRequest;
 use App\Http\Requests\Blogs\UpdateSeoRequest;
+use App\Jobs\SendNewBlogPostNotification;
 use App\Models\Blog;
 use App\Models\BlogCategory;
 use App\Models\BlogSeo;
@@ -27,41 +28,41 @@ class BlogController extends Controller
         $perPage = $request->get('per_page', 20);
         $perPage = in_array($perPage, [20, 30, 40, 50]) ? $perPage : 20;
 
-        $search      = $request->get('search');
-        $category    = $request->get('category');
-        $tag         = $request->get('tag');
+        $search = $request->get('search');
+        $category = $request->get('category');
+        $tag = $request->get('tag');
         $isPublished = $request->get('is_published');
 
         $blogs = Blog::query()
             ->with(['category', 'author', 'tags'])
-            ->when($search, fn($q) => $q->where('title', 'like', "%{$search}%"))
-            ->when($category, fn($q) => $q->where('blog_category_id', $category))
-            ->when($tag, fn($q) => $q->whereHas('tags', fn($q) => $q->where('blog_tags.id', $tag)))
-            ->when($isPublished === 'published', fn($q) => $q->where('is_published', true))
-            ->when($isPublished === 'unpublished', fn($q) => $q->where('is_published', false))
+            ->when($search, fn ($q) => $q->where('title', 'like', "%{$search}%"))
+            ->when($category, fn ($q) => $q->where('blog_category_id', $category))
+            ->when($tag, fn ($q) => $q->whereHas('tags', fn ($q) => $q->where('blog_tags.id', $tag)))
+            ->when($isPublished === 'published', fn ($q) => $q->where('is_published', true))
+            ->when($isPublished === 'unpublished', fn ($q) => $q->where('is_published', false))
             ->latest()
             ->paginate($perPage);
 
         $categories = BlogCategory::orderBy('name')->get(['id', 'name']);
-        $tags       = BlogTag::active()->orderBy('name')->get(['id', 'name']);
+        $tags = BlogTag::active()->orderBy('name')->get(['id', 'name']);
 
         $summary = [
-            'total'     => Blog::count(),
+            'total' => Blog::count(),
             'published' => Blog::where('is_published', true)->count(),
-            'featured'  => Blog::where('is_featured', true)->count(),
-            'draft'     => Blog::where('is_published', false)->count(),
+            'featured' => Blog::where('is_featured', true)->count(),
+            'draft' => Blog::where('is_published', false)->count(),
         ];
 
         return Inertia::render('blogs/index', [
-            'blogs'      => $blogs,
-            'summary'    => $summary,
+            'blogs' => $blogs,
+            'summary' => $summary,
             'categories' => $categories,
-            'tags'       => $tags,
-            'filters'    => [
-                'search'       => $search,
-                'per_page'     => $perPage,
-                'category'     => $category,
-                'tag'          => $tag,
+            'tags' => $tags,
+            'filters' => [
+                'search' => $search,
+                'per_page' => $perPage,
+                'category' => $category,
+                'tag' => $tag,
                 'is_published' => $isPublished,
             ],
         ]);
@@ -70,13 +71,13 @@ class BlogController extends Controller
     public function create()
     {
         $categories = BlogCategory::orderBy('name')->get(['id', 'name']);
-        $tags       = BlogTag::active()->orderBy('name')->get(['id', 'name']);
-        $services   = Service::select('id', 'name', 'slug')->where('status', 'active')->where('is_published', true)->orderBy('name')->get();
+        $tags = BlogTag::active()->orderBy('name')->get(['id', 'name']);
+        $services = Service::select('id', 'name', 'slug')->where('status', 'active')->where('is_published', true)->orderBy('name')->get();
 
         return Inertia::render('blogs/create/index', [
             'categories' => $categories,
-            'tags'       => $tags,
-            'services'   => $services,
+            'tags' => $tags,
+            'services' => $services,
         ]);
     }
 
@@ -120,33 +121,30 @@ class BlogController extends Controller
                 $featuredImagePath = $fileData['path'];
             }
 
-            $isPublished = $validated['is_published'] ?? false;
+            // $isPublished = $validated['is_published'] ?? false;
+            $isPublished = false;
 
             $blog = Blog::create([
                 'blog_category_id' => $validated['blog_category_id'],
-                'author_id'        => Auth::id(),
-                'title'            => $validated['title'],
-                'slug'             => $slug,
+                'author_id' => Auth::id(),
+                'title' => $validated['title'],
+                'slug' => $slug,
                 'short_description' => $validated['short_description'] ?? null,
-                'content'          => $validated['content'] ?? null,
-                'featured_image'   => $featuredImagePath,
-                'is_published'     => $isPublished,
-                'is_featured'      => $validated['is_featured'] ?? false,
-                'published_at'     => $isPublished ? now() : null,
+                'content' => $validated['content'] ?? null,
+                'featured_image' => $featuredImagePath,
+                'is_published' => $isPublished,
+                'is_featured' => $validated['is_featured'] ?? false,
+                'published_at' => $isPublished ? now() : null,
             ]);
 
-            // Sync tags
-            if (!empty($validated['tag_ids'])) {
+            if (! empty($validated['tag_ids'])) {
                 $blog->tags()->sync($validated['tag_ids']);
             }
-
-            // Sync services
-            if (!empty($validated['service_ids'])) {
+            if (! empty($validated['service_ids'])) {
                 $blog->services()->sync($validated['service_ids']);
             }
 
-            // Create SEO
-            if (!empty($validated['seo'])) {
+            if (! empty($validated['seo'])) {
                 $seo = $validated['seo'];
 
                 $ogImagePath = null;
@@ -162,23 +160,23 @@ class BlogController extends Controller
                 }
 
                 BlogSeo::create([
-                    'blog_id'             => $blog->id,
-                    'meta_title'          => $seo['meta_title'] ?? null,
-                    'meta_description'    => $seo['meta_description'] ?? null,
-                    'canonical_url'       => $seo['canonical_url'] ?? null,
-                    'focus_keyword'       => $seo['focus_keyword'] ?? null,
-                    'secondary_keywords'  => $seo['secondary_keywords'] ?? [],
-                    'og_title'            => $seo['og_title'] ?? null,
-                    'og_description'      => $seo['og_description'] ?? null,
-                    'og_image'            => $ogImagePath,
-                    'twitter_card'        => $seo['twitter_card'] ?? 'summary_large_image',
-                    'twitter_title'       => $seo['twitter_title'] ?? null,
+                    'blog_id' => $blog->id,
+                    'meta_title' => $seo['meta_title'] ?? null,
+                    'meta_description' => $seo['meta_description'] ?? null,
+                    'canonical_url' => $seo['canonical_url'] ?? null,
+                    'focus_keyword' => $seo['focus_keyword'] ?? null,
+                    'secondary_keywords' => $seo['secondary_keywords'] ?? [],
+                    'og_title' => $seo['og_title'] ?? null,
+                    'og_description' => $seo['og_description'] ?? null,
+                    'og_image' => $ogImagePath,
+                    'twitter_card' => $seo['twitter_card'] ?? 'summary_large_image',
+                    'twitter_title' => $seo['twitter_title'] ?? null,
                     'twitter_description' => $seo['twitter_description'] ?? null,
-                    'twitter_image'       => $twitterImagePath,
-                    'robots'              => $seo['robots'] ?? 'index,follow',
-                    'in_sitemap'          => $seo['in_sitemap'] ?? true,
-                    'sitemap_priority'    => $seo['sitemap_priority'] ?? '0.7',
-                    'sitemap_changefreq'  => $seo['sitemap_changefreq'] ?? 'weekly',
+                    'twitter_image' => $twitterImagePath,
+                    'robots' => $seo['robots'] ?? 'index,follow',
+                    'in_sitemap' => $seo['in_sitemap'] ?? true,
+                    'sitemap_priority' => $seo['sitemap_priority'] ?? '0.7',
+                    'sitemap_changefreq' => $seo['sitemap_changefreq'] ?? 'weekly',
                 ]);
             }
 
@@ -197,14 +195,14 @@ class BlogController extends Controller
         $blog->load(['category', 'author', 'tags', 'seo', 'services']);
 
         $categories = BlogCategory::orderBy('name')->get(['id', 'name']);
-        $tags       = BlogTag::active()->orderBy('name')->get(['id', 'name']);
-        $services   = Service::select('id', 'name', 'slug')->where('status', 'active')->where('is_published', true)->orderBy('name')->get();
+        $tags = BlogTag::active()->orderBy('name')->get(['id', 'name']);
+        $services = Service::select('id', 'name', 'slug')->where('status', 'active')->where('is_published', true)->orderBy('name')->get();
 
         return Inertia::render('blogs/edit/index', [
-            'blog'       => $blog,
+            'blog' => $blog,
             'categories' => $categories,
-            'tags'       => $tags,
-            'services'   => $services,
+            'tags' => $tags,
+            'services' => $services,
         ]);
     }
 
@@ -251,23 +249,26 @@ class BlogController extends Controller
             $isPublished = $validated['is_published'] ?? $blog->is_published;
             $publishedAt = $blog->published_at;
 
-            if ($isPublished && !$blog->is_published) {
+            if ($isPublished && ! $blog->is_published) {
                 $publishedAt = now();
             }
 
             $blog->update([
-                'blog_category_id'  => $validated['blog_category_id'],
-                'title'             => $validated['title'],
+                'blog_category_id' => $validated['blog_category_id'],
+                'title' => $validated['title'],
                 'short_description' => $validated['short_description'] ?? null,
-                'featured_image'    => $featuredImagePath,
-                'is_published'      => $isPublished,
-                'is_featured'       => $validated['is_featured'] ?? $blog->is_featured,
-                'published_at'      => $publishedAt,
+                'featured_image' => $featuredImagePath,
+                'is_published' => $isPublished,
+                'is_featured' => $validated['is_featured'] ?? $blog->is_featured,
+                'published_at' => $publishedAt,
             ]);
 
-            // Sync tags
             $blog->tags()->sync($validated['tag_ids'] ?? []);
         });
+
+        if ($blog->wasChanged('is_published') && $blog->is_published) {
+            SendNewBlogPostNotification::dispatch($blog)->delay(now()->addMinutes(5));
+        }
 
         return back()->with('success', 'Informasi dasar berhasil diperbarui.');
     }
@@ -297,11 +298,11 @@ class BlogController extends Controller
 
         $seo = $blog->getSeoOrCreate();
 
-        if (empty($validated['og_title']) && !empty($validated['meta_title'])) {
+        if (empty($validated['og_title']) && ! empty($validated['meta_title'])) {
             $validated['og_title'] = $validated['meta_title'];
         }
 
-        if (empty($validated['twitter_title']) && !empty($validated['meta_title'])) {
+        if (empty($validated['twitter_title']) && ! empty($validated['meta_title'])) {
             $validated['twitter_title'] = $validated['meta_title'];
         }
 
@@ -311,7 +312,9 @@ class BlogController extends Controller
         }
 
         if ($request->hasFile('seo.og_image')) {
-            if ($seo->og_image) FileHelper::deleteFromR2($seo->og_image, isPublic: true);
+            if ($seo->og_image) {
+                FileHelper::deleteFromR2($seo->og_image, isPublic: true);
+            }
             $validated['og_image'] = FileHelper::uploadToR2Public($request->file('seo.og_image'), 'blogs/seo')['path'];
         }
 
@@ -321,7 +324,9 @@ class BlogController extends Controller
         }
 
         if ($request->hasFile('seo.twitter_image')) {
-            if ($seo->twitter_image) FileHelper::deleteFromR2($seo->twitter_image, isPublic: true);
+            if ($seo->twitter_image) {
+                FileHelper::deleteFromR2($seo->twitter_image, isPublic: true);
+            }
             $validated['twitter_image'] = FileHelper::uploadToR2Public($request->file('seo.twitter_image'), 'blogs/seo')['path'];
         }
 

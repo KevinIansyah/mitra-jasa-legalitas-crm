@@ -41,6 +41,7 @@ export interface AccountFormData {
     name: string;
     type: AccountType | '';
     category: AccountCategory | '';
+    status?: AccountStatus;
     normal_balance: AccountNormalBalance | '';
 }
 

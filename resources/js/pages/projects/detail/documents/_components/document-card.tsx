@@ -180,7 +180,7 @@ export function DocumentCard({ document, index, projectId, isFirst, isLast, onRe
                                     </div>
                                     <div className="flex items-center gap-2">
                                         {document.is_required && <Badge variant="destructive">Wajib</Badge>}
-                                        {document.is_encrypted && <Badge variant="secondary">Terenkripsi</Badge>}
+                                        {document.is_encrypted && <Badge className="bg-slate-500 text-white">Terenkripsi</Badge>}
                                     </div>
                                 </div>
 

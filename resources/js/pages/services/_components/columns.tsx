@@ -25,7 +25,7 @@ export default function getColumns(): ColumnDef<Service>[] {
             cell: ({ row }) => {
                 const isPublished = row.getValue<boolean>('is_published');
 
-                return isPublished ? <Badge className="bg-emerald-500 text-white">Published</Badge> : <Badge variant="secondary">Draft</Badge>;
+                return isPublished ? <Badge className="bg-emerald-500 text-white">Published</Badge> : <Badge className="bg-slate-500 text-white">Draft</Badge>;
             },
         },
         {

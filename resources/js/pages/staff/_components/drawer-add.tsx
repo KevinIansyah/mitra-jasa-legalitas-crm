@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 
+import { formatRupiahNoSymbol } from '@/lib/service';
 import staffRoutes from '@/routes/staff';
 import type { Role } from '@/types/roles';
 import { AVAILABILITY_STATUSES, type StaffCreateFormData } from '@/types/staff';
@@ -26,12 +27,15 @@ export function DrawerAdd({ roles }: { roles: Role[] }) {
         role: '',
         password: '',
         password_confirmation: '',
+        position: '',
+        bio: '',
         max_concurrent_projects: 5,
         availability_status: 'available',
         skills: '',
         leave_start_date: '',
         leave_end_date: '',
         notes: '',
+        daily_token_limit: 0,
     });
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -238,6 +242,29 @@ export function DrawerAdd({ roles }: { roles: Role[] }) {
                                 {errors.skills && <FieldError>{errors.skills}</FieldError>}
                             </Field>
 
+                            {/* Position */}
+                            <Field>
+                                <FieldLabel htmlFor="position">
+                                    Jabatan <span className="text-destructive">*</span>
+                                </FieldLabel>
+                                <Input
+                                    id="position"
+                                    type="text"
+                                    required
+                                    placeholder="Masukkan jabatan"
+                                    value={data.position}
+                                    onChange={(e) => setData('position', e.target.value)}
+                                />
+                            </Field>
+
+                            {/* Bio */}
+                            <Field>
+                                <FieldLabel htmlFor="bio">
+                                    Deskripsi <span className="text-destructive">*</span>
+                                </FieldLabel>
+                                <Textarea id="bio" required placeholder="Masukkan deskripsi" value={data.bio} onChange={(e) => setData('bio', e.target.value)} />
+                            </Field>
+
                             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                                 {/* Leave Start Date */}
                                 <Field>
@@ -265,6 +292,23 @@ export function DrawerAdd({ roles }: { roles: Role[] }) {
                                     onChange={(e) => setData('notes', e.target.value)}
                                 />
                                 {errors.notes && <FieldError>{errors.notes}</FieldError>}
+                            </Field>
+
+                            <p className="mt-2 text-sm font-medium tracking-wide text-muted-foreground uppercase">Pengaturan AI</p>
+
+                            {/* Daily Token Limit */}
+                            <Field>
+                                <FieldLabel htmlFor="daily_token_limit">Token Harian</FieldLabel>
+                                <Input
+                                    id="daily_token_limit"
+                                    type="number"
+                                    min={0}
+                                    placeholder="0"
+                                    value={data.daily_token_limit}
+                                    onChange={(e) => setData('daily_token_limit', Number(e.target.value))}
+                                />
+                                <p className="text-xs text-muted-foreground">{formatRupiahNoSymbol(data.daily_token_limit)}</p>
+                                {errors.daily_token_limit && <FieldError>{errors.daily_token_limit}</FieldError>}
                             </Field>
                         </div>
 

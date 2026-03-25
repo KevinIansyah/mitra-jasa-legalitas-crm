@@ -8,6 +8,7 @@ use App\Models\Project;
 use App\Models\ProjectTemplate;
 use App\Models\Quote;
 use App\Models\Service;
+use App\Models\ServiceCityPage;
 use App\Models\User;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
@@ -110,7 +111,13 @@ class SearchController extends Controller
         $search = $request->get('search', '');
         $projectId = $request->get('project_id');
 
-        $query = User::where('role', '!=', 'user');
+        $query = User::where('role', '!=', 'user')
+            ->where('status', 'active')
+            ->whereHas('staffProfile', fn ($q) => $q->where('availability_status', 'available'))
+            ->with('staffProfile')
+            ->withCount([
+                'projects as active_projects_count' => fn ($q) => $q->whereIn('status', ['planning', 'in_progress', 'on_hold']),
+            ]);
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -125,7 +132,25 @@ class SearchController extends Controller
 
         $users = $query->select('id', 'name', 'email', 'role')
             ->limit(10)
-            ->get();
+            ->get()
+            ->filter(function ($user) {
+                $maxProjects = $user->staffProfile?->max_concurrent_projects;
+
+                if (! $maxProjects) {
+                    return true;
+                }
+
+                return $user->active_projects_count < $maxProjects;
+            })
+            ->map(fn ($user) => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+                'active_project_count' => $user->active_projects_count,
+                'max_concurrent_project_count' => $user->staffProfile?->max_concurrent_projects,
+            ])
+            ->values();
 
         return response()->json([
             'users' => $users,
@@ -158,7 +183,7 @@ class SearchController extends Controller
             ->get();
 
         return response()->json([
-            'vendors' => $vendors
+            'vendors' => $vendors,
         ]);
     }
 
@@ -167,7 +192,7 @@ class SearchController extends Controller
         $search = $request->get('search', '');
 
         $quotes = Quote::with(['user:id,name', 'service:id,name'])
-            ->when($search, fn($q) => $q->where(function ($q) use ($search) {
+            ->when($search, fn ($q) => $q->where(function ($q) use ($search) {
                 $q->where('reference_number', 'like', "%{$search}%")
                     ->orWhere('project_name', 'like', "%{$search}%");
             }))
@@ -175,5 +200,24 @@ class SearchController extends Controller
             ->get(['id', 'reference_number', 'project_name', 'status', 'user_id', 'service_id']);
 
         return response()->json(['quotes' => $quotes]);
+    }
+
+    public function searchAvailableServicesByCityId(Request $request)
+    {
+        $cityId = $request->get('city_id');
+
+        if (! $cityId) {
+            return response()->json(['services' => []]);
+        }
+
+        $usedServiceIds = ServiceCityPage::where('city_id', $cityId)
+            ->pluck('service_id');
+
+        $services = Service::active()
+            ->whereNotIn('id', $usedServiceIds)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return response()->json(['services' => $services]);
     }
 }

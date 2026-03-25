@@ -21,7 +21,6 @@ use Inertia\Inertia;
 |--------------------------------------------------------------------------
 */
 
-
 /*
 |--------------------------------------------------------------------------
 | PROFILE (auth only)
@@ -42,7 +41,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('settings/profile', [ProfileController::class, 'update'])
         ->name('profile.update');
 });
-
 
 /*
 |--------------------------------------------------------------------------
@@ -71,7 +69,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('throttle:6,1')
         ->name('user-password.update');
 
-    Route::get('settings/appearance', fn() => Inertia::render('settings/appearance'))
+    Route::get('settings/appearance', fn () => Inertia::render('settings/appearance'))
         ->name('appearance.edit');
 
     Route::get('settings/two-factor', [TwoFactorAuthenticationController::class, 'show'])
@@ -96,6 +94,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 | GET    /settings/site/analytics         -> Halaman analytics & tracking
 | GET    /settings/site/social            -> Halaman social media
 | GET    /settings/site/maintenance       -> Halaman maintenance
+| GET    /settings/site/chatbot           -> Halaman AI Chatbot
 |
 | PATCH  /settings/site/company           -> Update company identity
 | PATCH  /settings/site/operational       -> Update operational info
@@ -109,6 +108,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 | PATCH  /settings/site/analytics         -> Update analytics & tracking
 | PATCH  /settings/site/social            -> Update social media
 | PATCH  /settings/site/maintenance       -> Update maintenance mode
+| PATCH  /settings/site/chatbot           -> Update AI Chatbot
 |--------------------------------------------------------------------------
 */
 
@@ -117,79 +117,85 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
         Route::redirect('/', '/settings/site/company');
 
         Route::middleware('permission:view-site-settings')->group(function () {
-            Route::get('/company',      [SiteController::class, 'company'])
+            Route::get('/company', [SiteController::class, 'company'])
                 ->name('company');
 
-            Route::get('/operational',  [SiteController::class, 'operational'])
+            Route::get('/operational', [SiteController::class, 'operational'])
                 ->name('operational');
 
-            Route::get('/meta',         [SiteController::class, 'meta'])
+            Route::get('/meta', [SiteController::class, 'meta'])
                 ->name('meta');
 
             Route::get('/organization', [SiteController::class, 'organization'])
                 ->name('organization');
 
-            Route::get('/stats',        [SiteController::class, 'stats'])
+            Route::get('/stats', [SiteController::class, 'stats'])
                 ->name('stats');
 
-            Route::get('/legal',        [SiteController::class, 'legal'])
+            Route::get('/legal', [SiteController::class, 'legal'])
                 ->name('legal');
 
-            Route::get('/bank',         [SiteController::class, 'bank'])
+            Route::get('/bank', [SiteController::class, 'bank'])
                 ->name('bank');
 
-            Route::get('/signer',       [SiteController::class, 'signer'])
+            Route::get('/signer', [SiteController::class, 'signer'])
                 ->name('signer');
 
-            Route::get('/document',     [SiteController::class, 'document'])
+            Route::get('/document', [SiteController::class, 'document'])
                 ->name('document');
 
-            Route::get('/analytics',    [SiteController::class, 'analytics'])
+            Route::get('/analytics', [SiteController::class, 'analytics'])
                 ->name('analytics');
 
-            Route::get('/social',       [SiteController::class, 'social'])
+            Route::get('/social', [SiteController::class, 'social'])
                 ->name('social');
 
-            Route::get('/maintenance',  [SiteController::class, 'maintenance'])
+            Route::get('/maintenance', [SiteController::class, 'maintenance'])
                 ->name('maintenance');
+
+            Route::get('/chatbot', [SiteController::class, 'chatbot'])
+                ->name('chatbot');
         });
 
         Route::middleware('permission:edit-site-settings')->group(function () {
-            Route::post('/company',      [SiteController::class, 'updateCompany'])
+            Route::post('/company', [SiteController::class, 'updateCompany'])
                 ->name('update.company');
 
-            Route::patch('/operational',  [SiteController::class, 'updateOperational'])
+            Route::patch('/operational', [SiteController::class, 'updateOperational'])
                 ->name('update.operational');
 
-            Route::patch('/meta',         [SiteController::class, 'updateMeta'])
+            Route::patch('/meta', [SiteController::class, 'updateMeta'])
                 ->name('update.meta');
 
             Route::patch('/organization', [SiteController::class, 'updateOrganization'])
                 ->name('update.organization');
 
-            Route::patch('/stats',        [SiteController::class, 'updateStats'])
+            Route::patch('/stats', [SiteController::class, 'updateStats'])
                 ->name('update.stats');
 
-            Route::patch('/legal',        [SiteController::class, 'updateLegal'])
+            Route::patch('/legal', [SiteController::class, 'updateLegal'])
                 ->name('update.legal');
 
-            Route::patch('/bank',         [SiteController::class, 'updateBank'])
+            Route::patch('/bank', [SiteController::class, 'updateBank'])
                 ->name('update.bank');
 
-            Route::post('/signer',       [SiteController::class, 'updateSigner'])
+            Route::post('/signer', [SiteController::class, 'updateSigner'])
                 ->name('update.signer');
 
-            Route::patch('/document',     [SiteController::class, 'updateDocument'])
+            Route::patch('/document', [SiteController::class, 'updateDocument'])
                 ->name('update.document');
 
-            Route::patch('/analytics',    [SiteController::class, 'updateAnalytics'])
+            Route::patch('/analytics', [SiteController::class, 'updateAnalytics'])
                 ->name('update.analytics');
 
-            Route::patch('/social',       [SiteController::class, 'updateSocial'])
+            Route::patch('/social', [SiteController::class, 'updateSocial'])
                 ->name('update.social');
 
-            Route::patch('/maintenance',  [SiteController::class, 'updateMaintenance'])
+            Route::patch('/maintenance', [SiteController::class, 'updateMaintenance'])
                 ->name('update.maintenance');
+
+            Route::patch('/chatbot', [SiteController::class, 'updateChatbot'])
+                ->name('update.chatbot');
         });
     });
 });

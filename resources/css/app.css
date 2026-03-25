@@ -321,18 +321,6 @@ body {
     @apply my-2 border-l-4 border-muted-foreground pl-4 text-muted-foreground italic;
 }
 
-/* .tiptap img {
-    @apply mx-auto my-4 block h-auto max-w-[50%] cursor-pointer rounded-lg;
-}
-
-.tiptap img:hover {
-    @apply ring-1 ring-border;
-}
-
-.tiptap img.ProseMirror-selectednode {
-    @apply ring-1 ring-border;
-} */
-
 .tiptap figure {
     @apply my-4 flex w-full flex-col items-center;
 }

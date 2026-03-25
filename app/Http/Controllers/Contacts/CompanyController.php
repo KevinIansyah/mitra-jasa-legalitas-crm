@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Contacts;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Contacts\Customers\AttachCompanyRequest;
 use App\Http\Requests\Contacts\Companies\StoreRequest;
 use App\Http\Requests\Contacts\Companies\UpdateRequest;
+use App\Http\Requests\Contacts\Customers\AttachCompanyRequest;
 use App\Models\Company;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -23,20 +23,20 @@ class CompanyController extends Controller
 
         $companies = Company::query()
             ->with([
-                'customers' => fn($q) =>
-                $q->withPivot('is_primary', 'position_at_company')
+                'customers' => fn ($q) => $q->withPivot('is_primary', 'position_at_company'),
             ])
             ->withCount('customers')
-            ->when($search, fn($q) => $q->search($search))
-            ->when($statusLegal, fn($q) => $q->where('status_legal', $statusLegal))
-            ->when($categoryBusiness, fn($q) => $q->where('category_business', $categoryBusiness))
+            ->withCount('projects')
+            ->when($search, fn ($q) => $q->search($search))
+            ->when($statusLegal, fn ($q) => $q->where('status_legal', $statusLegal))
+            ->when($categoryBusiness, fn ($q) => $q->where('category_business', $categoryBusiness))
             ->latest()
             ->paginate($perPage);
 
         $summary = [
-            'total'             => Company::count(),
-            'with_customers'    => Company::has('customers')->count(),
-            'with_npwp'         => Company::whereNotNull('npwp')->count(),
+            'total' => Company::count(),
+            'with_customers' => Company::has('customers')->count(),
+            'with_npwp' => Company::whereNotNull('npwp')->count(),
             'with_legal_status' => Company::whereNotNull('status_legal')
                 ->where('status_legal', '!=', 'belum_ada')
                 ->count(),
@@ -44,7 +44,7 @@ class CompanyController extends Controller
 
         return Inertia::render('contacts/companies/index', [
             'companies' => $companies,
-            'summary'   => $summary,
+            'summary' => $summary,
             'filters' => [
                 'search' => $search,
                 'per_page' => $perPage,
@@ -127,7 +127,7 @@ class CompanyController extends Controller
     public function updateCustomerPivot(Request $request, Company $company, $customerId)
     {
         $validated = $request->validate([
-            'is_primary'          => 'boolean',
+            'is_primary' => 'boolean',
             'position_at_company' => 'nullable|string|max:255',
         ], [
             'position_at_company.max' => 'Posisi maksimal 255 karakter.',

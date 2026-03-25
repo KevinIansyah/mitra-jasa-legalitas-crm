@@ -13,6 +13,11 @@ export const formatRupiah = (value: number) =>
         maximumFractionDigits: 0,
     }).format(value);
 
+export const formatRupiahNoSymbol = (value: number) =>
+    new Intl.NumberFormat('id-ID', {
+        maximumFractionDigits: 0,
+    }).format(value);
+
 // ============================================================
 // FILE UTILITIES
 // ============================================================

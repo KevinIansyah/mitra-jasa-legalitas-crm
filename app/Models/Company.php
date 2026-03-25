@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Customer;
 
 class Company extends Model
 {
@@ -33,6 +32,11 @@ class Company extends Model
         return $this->belongsToMany(Customer::class, 'company_customer')
             ->withPivot('is_primary', 'position_at_company')
             ->withTimestamps();
+    }
+
+    public function projects()
+    {
+        return $this->hasMany(Project::class);
     }
 
     // -----------------------------------------------------------

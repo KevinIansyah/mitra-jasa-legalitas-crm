@@ -1,4 +1,5 @@
 <?php
+
 // app/Models/SiteSetting.php
 
 namespace App\Models;
@@ -109,18 +110,25 @@ class SiteSetting extends Model
         'maintenance_mode',
         'maintenance_message',
         'maintenance_allowed_ips',
+
+        // AI Chatbot
+        'ai_chatbot_enabled',
+        'ai_chatbot_monthly_limit',
+        'ai_chatbot_used_tokens',
+        'ai_chatbot_whatsapp_number',
+        'ai_chatbot_offline_message',
     ];
 
     protected $casts = [
-        'stat_rating'            => 'float',
-        'stat_total_clients'     => 'integer',
-        'stat_total_documents'   => 'integer',
-        'stat_total_reviews'     => 'integer',
-        'stat_years_experience'  => 'integer',
-        'stat_total_services'    => 'integer',
-        'business_hours'         => 'array',
-        'org_service_types'      => 'array',
-        'maintenance_mode'       => 'boolean',
+        'stat_rating' => 'float',
+        'stat_total_clients' => 'integer',
+        'stat_total_documents' => 'integer',
+        'stat_total_reviews' => 'integer',
+        'stat_years_experience' => 'integer',
+        'stat_total_services' => 'integer',
+        'business_hours' => 'array',
+        'org_service_types' => 'array',
+        'maintenance_mode' => 'boolean',
     ];
 
     /*
@@ -142,7 +150,7 @@ class SiteSetting extends Model
 
     public function getPageTitle(string $pageTitle): string
     {
-        if (!$this->default_title_template) {
+        if (! $this->default_title_template) {
             return $pageTitle;
         }
 
@@ -182,27 +190,27 @@ class SiteSetting extends Model
     public function toOrganizationSchema(): array
     {
         return array_filter([
-            '@context'    => 'https://schema.org',
-            '@type'       => $this->org_type ?? 'Organization',
-            '@id'         => '#organization',
-            'name'        => $this->org_name ?? $this->company_name,
-            'url'         => $this->org_url ?? $this->company_website,
-            'logo'        => $this->org_logo_url ?? $this->company_logo,
+            '@context' => 'https://schema.org',
+            '@type' => $this->org_type ?? 'Organization',
+            '@id' => '#organization',
+            'name' => $this->org_name ?? $this->company_name,
+            'url' => $this->org_url ?? $this->company_website,
+            'logo' => $this->org_logo_url ?? $this->company_logo,
             'description' => $this->org_description,
             'foundingYear' => $this->org_founding_year,
-            'areaServed'  => $this->org_area_served,
-            'address'     => array_filter([
-                '@type'           => 'PostalAddress',
-                'streetAddress'   => $this->company_address,
+            'areaServed' => $this->org_area_served,
+            'address' => array_filter([
+                '@type' => 'PostalAddress',
+                'streetAddress' => $this->company_address,
                 'addressLocality' => $this->company_city,
-                'addressRegion'   => $this->company_province,
-                'postalCode'      => $this->company_postal_code,
-                'addressCountry'  => $this->company_country ?? 'ID',
+                'addressRegion' => $this->company_province,
+                'postalCode' => $this->company_postal_code,
+                'addressCountry' => $this->company_country ?? 'ID',
             ]),
             'contactPoint' => array_filter([
-                '@type'       => 'ContactPoint',
-                'telephone'   => $this->company_phone,
-                'email'       => $this->company_email,
+                '@type' => 'ContactPoint',
+                'telephone' => $this->company_phone,
+                'email' => $this->company_email,
                 'contactType' => 'customer service',
             ]),
             'sameAs' => $this->getSocialLinks(),

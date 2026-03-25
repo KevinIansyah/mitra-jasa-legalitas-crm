@@ -26,27 +26,27 @@ class CustomerController extends Controller
 
         $customers = Customer::query()
             ->with([
-                'companies' => fn($q) =>
-                $q->withPivot('is_primary', 'position_at_company')
+                'companies' => fn ($q) => $q->withPivot('is_primary', 'position_at_company'),
             ])
-            ->when($search, fn($q) => $q->search($search))
-            ->when($status, fn($q) => $q->where('status', $status))
-            ->when($tier, fn($q) => $q->where('tier', $tier))
-            ->when($haveAccount === 'registered', fn($q) => $q->haveAccount())
-            ->when($haveAccount === 'unregistered', fn($q) => $q->noAccount())
+            ->withCount('projects')
+            ->when($search, fn ($q) => $q->search($search))
+            ->when($status, fn ($q) => $q->where('status', $status))
+            ->when($tier, fn ($q) => $q->where('tier', $tier))
+            ->when($haveAccount === 'registered', fn ($q) => $q->haveAccount())
+            ->when($haveAccount === 'unregistered', fn ($q) => $q->noAccount())
             ->latest()
             ->paginate($perPage);
 
         $summary = [
-            'total'        => Customer::count(),
+            'total' => Customer::count(),
             'with_account' => Customer::whereNotNull('user_id')->count(),
             'with_company' => Customer::has('companies')->count(),
-            'active'       => Customer::where('status', 'active')->count(),
+            'active' => Customer::where('status', 'active')->count(),
         ];
 
         return Inertia::render('contacts/customers/index', [
             'customers' => $customers,
-            'summary'   => $summary,
+            'summary' => $summary,
             'filters' => [
                 'search' => $search,
                 'per_page' => $perPage,
@@ -101,19 +101,19 @@ class CustomerController extends Controller
 
         if ($customer->invoices()->exists()) {
             return back()->withErrors([
-                'error' => 'Customer tidak dapat dihapus karena sudah memiliki invoice.'
+                'error' => 'Customer tidak dapat dihapus karena sudah memiliki invoice.',
             ]);
         }
 
         if ($customer->proposals()->exists()) {
             return back()->withErrors([
-                'error' => 'Customer tidak dapat dihapus karena sudah memiliki proposal.'
+                'error' => 'Customer tidak dapat dihapus karena sudah memiliki proposal.',
             ]);
         }
 
         if ($customer->estimates()->exists()) {
             return back()->withErrors([
-                'error' => 'Customer tidak dapat dihapus karena sudah memiliki estimate.'
+                'error' => 'Customer tidak dapat dihapus karena sudah memiliki estimate.',
             ]);
         }
 
@@ -159,9 +159,9 @@ class CustomerController extends Controller
 
     public function checkAccount(Customer $customer)
     {
-        if (!$customer->email) {
+        if (! $customer->email) {
             return response()->json([
-                'status'  => 'no_email',
+                'status' => 'no_email',
                 'message' => 'Customer ini belum memiliki email.',
             ]);
         }
@@ -175,16 +175,16 @@ class CustomerController extends Controller
 
             if ($linkedCustomer) {
                 return response()->json([
-                    'status'  => 'linked_elsewhere',
+                    'status' => 'linked_elsewhere',
                     'message' => "Email ini sudah terhubung ke customer lain ({$linkedCustomer->name}).",
                 ]);
             }
 
             return response()->json([
                 'status' => 'exists',
-                'user'   => [
-                    'id'    => $existingUser->id,
-                    'name'  => $existingUser->name,
+                'user' => [
+                    'id' => $existingUser->id,
+                    'name' => $existingUser->name,
                     'email' => $existingUser->email,
                 ],
             ]);
@@ -199,7 +199,7 @@ class CustomerController extends Controller
             return response()->json(['message' => 'Customer sudah memiliki akun.'], 422);
         }
 
-        if (!$customer->email) {
+        if (! $customer->email) {
             return response()->json(['message' => 'Customer belum memiliki email.'], 422);
         }
 
@@ -211,8 +211,8 @@ class CustomerController extends Controller
 
         $user = DB::transaction(function () use ($customer, $password) {
             $user = User::create([
-                'name'     => $customer->name,
-                'email'    => $customer->email,
+                'name' => $customer->name,
+                'email' => $customer->email,
                 'password' => bcrypt($password),
             ]);
 
@@ -223,8 +223,8 @@ class CustomerController extends Controller
         });
 
         return response()->json([
-            'message'  => 'Akun berhasil dibuat.',
-            'email'    => $user->email,
+            'message' => 'Akun berhasil dibuat.',
+            'email' => $user->email,
             'password' => $password,
         ]);
     }
@@ -237,18 +237,17 @@ class CustomerController extends Controller
 
         $user = User::find($validated['user_id']);
 
-        if (!$user) {
+        if (! $user) {
             return response()->json([
-                'message' => 'Akun tidak ditemukan.'
+                'message' => 'Akun tidak ditemukan.',
             ], 422);
         }
 
-        if (!$user->hasRole('user')) {
+        if (! $user->hasRole('user')) {
             return response()->json([
-                'message' => 'Akun ini bukan role user dan tidak dapat dihubungkan ke customer.'
+                'message' => 'Akun ini bukan role user dan tidak dapat dihubungkan ke customer.',
             ], 422);
         }
-
 
         $customer->update(['user_id' => $user->id]);
 
@@ -257,9 +256,9 @@ class CustomerController extends Controller
 
     public function revokeAccount(Customer $customer)
     {
-        if (!$customer->user_id) {
+        if (! $customer->user_id) {
             return response()->json([
-                'message' => 'Customer tidak memiliki akun.'
+                'message' => 'Customer tidak memiliki akun.',
             ], 422);
         }
 
@@ -277,11 +276,11 @@ class CustomerController extends Controller
 
     private function generatePassword(): string
     {
-        $upper   = substr(str_shuffle('ABCDEFGHJKLMNPQRSTUVWXYZ'), 0, 2);
-        $lower   = substr(str_shuffle('abcdefghjkmnpqrstuvwxyz'), 0, 4);
+        $upper = substr(str_shuffle('ABCDEFGHJKLMNPQRSTUVWXYZ'), 0, 2);
+        $lower = substr(str_shuffle('abcdefghjkmnpqrstuvwxyz'), 0, 4);
         $numbers = substr(str_shuffle('23456789'), 0, 3);
         $special = substr(str_shuffle('!@#$%'), 0, 1);
 
-        return str_shuffle($upper . $lower . $numbers . $special);
+        return str_shuffle($upper.$lower.$numbers.$special);
     }
 }

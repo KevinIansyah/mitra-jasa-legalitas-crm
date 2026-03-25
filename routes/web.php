@@ -33,13 +33,12 @@ use Illuminate\Support\Facades\Storage;
 */
 
 Route::middleware('auth')->prefix('notifications')->name('notifications.')->group(function () {
-    Route::get('/',                    [NotificationController::class, 'index'])->name('index');
-    Route::post('{id}/read',           [NotificationController::class, 'read'])->name('read');
-    Route::post('mark-all-read',       [NotificationController::class, 'markAllRead'])->name('markAllRead');
-    Route::delete('{id}',              [NotificationController::class, 'destroy'])->name('destroy');
-    Route::delete('/',                 [NotificationController::class, 'destroyAll'])->name('destroyAll');
+    Route::get('/', [NotificationController::class, 'index'])->name('index');
+    Route::post('{id}/read', [NotificationController::class, 'read'])->name('read');
+    Route::post('mark-all-read', [NotificationController::class, 'markAllRead'])->name('markAllRead');
+    Route::delete('{id}', [NotificationController::class, 'destroy'])->name('destroy');
+    Route::delete('/', [NotificationController::class, 'destroyAll'])->name('destroyAll');
 });
-
 
 /*
 |--------------------------------------------------------------------------
@@ -53,7 +52,6 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
 
     Route::get('/', [DashboardController::class, 'index'])
         ->name('dashboard.index');
-
 
     /*
     |--------------------------------------------------------------------------
@@ -102,7 +100,6 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
         });
     });
 
-
     /*
     |--------------------------------------------------------------------------
     | SEARCH
@@ -115,6 +112,7 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
     | GET /search/users/staff                           -> Search staff users
     | GET /search/projects                              -> Search projects
     | GET /search/vendors                               -> Search vendors
+    | GET /search/services/available-by-city-id         -> Search available services by city id
     |--------------------------------------------------------------------------
     */
 
@@ -146,9 +144,11 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
 
         Route::get('/quotes', [SearchController::class, 'searchQuotes'])
             ->name('quotes');
+
+        Route::get('/services/available-by-city-id', [SearchController::class, 'searchAvailableServicesByCityId'])
+            ->name('services.available-by-city-id');
     });
 });
-
 
 /*
 |--------------------------------------------------------------------------
@@ -174,7 +174,6 @@ Route::get('/files/{path}', [FileController::class, 'show'])
     ->where('path', '.*')
     ->middleware(['auth', 'verified', 'permission:view-projects']);
 
-
 /*
 |--------------------------------------------------------------------------
 | R2 STORAGE (Testing)
@@ -186,29 +185,32 @@ Route::prefix('test-r2')->group(function () {
     Route::get('/upload', function () {
         try {
             Storage::disk('r2_public')->put('test/test-file.txt', 'Test file content from Laravel');
+
             return 'File uploaded successfully! Path: test/test-file.txt';
         } catch (\Exception $e) {
-            return 'Error: ' . $e->getMessage();
+            return 'Error: '.$e->getMessage();
         }
     });
 
     Route::get('/read', function () {
         try {
             $path = 'test/test-file.txt';
+
             return Storage::disk('r2_public')->exists($path)
-                ? 'File content: ' . Storage::disk('r2_public')->get($path)
+                ? 'File content: '.Storage::disk('r2_public')->get($path)
                 : 'File not found';
         } catch (\Exception $e) {
-            return 'Error: ' . $e->getMessage();
+            return 'Error: '.$e->getMessage();
         }
     });
 
     Route::get('/delete', function () {
         try {
             Storage::disk('r2')->delete('projects/1/expenses/1771752214_notebook-used-by-ai-it-experts-close-up (1).jpg');
+
             return 'File deleted successfully!';
         } catch (\Exception $e) {
-            return 'Error: ' . $e->getMessage();
+            return 'Error: '.$e->getMessage();
         }
     });
 
@@ -221,18 +223,19 @@ Route::prefix('test-r2')->group(function () {
     // });
 });
 
-
 /*
 |--------------------------------------------------------------------------
 | ADDITIONAL ROUTE FILES
 |--------------------------------------------------------------------------
 */
 
-require __DIR__ . '/settings.php';
-require __DIR__ . '/contacts.php';
-require __DIR__ . '/services.php';
-require __DIR__ . '/projects.php';
-require __DIR__ . '/finances.php';
-require __DIR__ . '/staff.php';
-require __DIR__ . '/master-data.php';
-require __DIR__ . '/blogs.php';
+require __DIR__.'/settings.php';
+require __DIR__.'/contacts.php';
+require __DIR__.'/services.php';
+require __DIR__.'/projects.php';
+require __DIR__.'/finances.php';
+require __DIR__.'/staff.php';
+require __DIR__.'/master-data.php';
+require __DIR__.'/blogs.php';
+require __DIR__.'/ai.php';
+require __DIR__.'/contents.php';

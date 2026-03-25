@@ -2,9 +2,9 @@ import { Head, usePage } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
-import type { Account, AccountSummary } from '@/types/account';
 import type { Paginator } from '@/types/paginator';
 import { AccountSection } from './_components/account-section';
+import type { Account, AccountSummary } from '@/types/accounts';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Keuangan', href: '#' },

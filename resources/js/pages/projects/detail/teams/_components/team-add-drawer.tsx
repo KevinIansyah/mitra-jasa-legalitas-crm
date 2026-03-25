@@ -4,6 +4,7 @@ import { Search, X } from 'lucide-react';
 import * as React from 'react';
 import { toast } from 'sonner';
 
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
@@ -12,11 +13,14 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/in
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 
+import { getInitials } from '@/lib/service';
 import projects from '@/routes/projects';
 import search from '@/routes/search';
 import type { User } from '@/types';
 import type { MemberRole, ProjectMemberFormData } from '@/types/projects';
 import { MEMBER_ROLES } from '@/types/projects';
+
+const R2_PUBLIC_URL = import.meta.env.VITE_R2_PUBLIC_URL;
 
 type TeamAddDrawerProps = {
     projectId: number;
@@ -37,6 +41,9 @@ export function TeamAddDrawer({ projectId, open, onOpenChange }: TeamAddDrawerPr
         can_approve_documents: false,
     });
 
+    // ============================================================
+    // SEACRH HANDLERS
+    // ============================================================
     const searchTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
     const handleSearch = (query: string) => {
@@ -90,6 +97,9 @@ export function TeamAddDrawer({ projectId, open, onOpenChange }: TeamAddDrawerPr
         setData('user_id', 0);
     };
 
+    // ============================================================
+    // SUBMIT HANDLER
+    // ============================================================
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -137,9 +147,24 @@ export function TeamAddDrawer({ projectId, open, onOpenChange }: TeamAddDrawerPr
                                 {selectedUser ? (
                                     <div className="flex items-center justify-between rounded-md border border-primary bg-card p-3 dark:border-none">
                                         <div className="flex-1">
-                                            <p className="text-sm font-medium">{selectedUser.name}</p>
-                                            <p className="mb-2 text-sm text-muted-foreground">{selectedUser.email || 'Tidak ada info kontak'}</p>
-                                            {selectedUser.role && <Badge>{selectedUser.role}</Badge>}
+                                            <div className="flex items-center gap-3">
+                                                <Avatar className="rounded-full">
+                                                    <AvatarImage src={`${R2_PUBLIC_URL}/${selectedUser.avatar}`} alt={selectedUser.name} />
+                                                    <AvatarFallback className="bg-primary/10 text-xs text-primary">{getInitials(selectedUser.name)}</AvatarFallback>
+                                                </Avatar>
+                                                <div>
+                                                    <p className="text-sm font-medium">{selectedUser.name}</p>
+                                                    <p className="mb-2 text-sm text-muted-foreground">{selectedUser.email || 'Tidak ada info kontak'}</p>
+                                                    {selectedUser.role && <Badge>{selectedUser.role.replace('-', ' ').replace(/\b\w/g, (l) => l.toUpperCase())}</Badge>}
+                                                    {(selectedUser.active_project_count || selectedUser.max_concurrent_project_count) && (
+                                                        <div className="mt-2">
+                                                            <Badge className="bg-emerald-500 text-white">
+                                                                Project Aktif: {selectedUser.active_project_count ?? 0} / {selectedUser.max_concurrent_project_count ?? '∞'}
+                                                            </Badge>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
                                         </div>
                                         <Button type="button" variant="ghost" size="sm" className="h-8 w-8" onClick={handleRemoveUser}>
                                             <X className="size-4" />
@@ -167,11 +192,22 @@ export function TeamAddDrawer({ projectId, open, onOpenChange }: TeamAddDrawerPr
                                                         onClick={() => handleSelectUser(user)}
                                                         className="flex w-full items-center gap-2 rounded-md bg-primary/10 p-2 text-left hover:bg-primary/20 dark:bg-muted/40 dark:hover:bg-muted/50"
                                                     >
+                                                        <Avatar className="rounded-full">
+                                                            <AvatarImage src={`${R2_PUBLIC_URL}/${user.avatar}`} alt={user.name} />
+                                                            <AvatarFallback className="bg-primary/10 text-sm text-primary">{getInitials(user.name)}</AvatarFallback>
+                                                        </Avatar>
                                                         <div className="flex-1">
                                                             <p className="text-sm font-medium">{user.name}</p>
                                                             <p className="text-sm text-muted-foreground">{user.email || 'Tidak ada info kontak'}</p>
+                                                            {(user.active_project_count || user.max_concurrent_project_count) && (
+                                                                <div className="mt-2">
+                                                                    <Badge className="bg-emerald-500 text-white">
+                                                                        Project Aktif: {user.active_project_count ?? 0} / {user.max_concurrent_project_count ?? '∞'}
+                                                                    </Badge>
+                                                                </div>
+                                                            )}
                                                         </div>
-                                                        {user.role && <Badge>{user.role}</Badge>}
+                                                        {user.role && <Badge>{user.role.replace('-', ' ').replace(/\b\w/g, (l) => l.toUpperCase())}</Badge>}
                                                     </button>
                                                 ))}
                                             </div>

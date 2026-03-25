@@ -15,7 +15,7 @@ export default function getColumns(expandedRow: string | null, setExpandedRow: (
                         <p className="text-sm font-medium whitespace-normal">{name || '-'}</p>
                         <div className="flex items-center gap-1">
                             {is_required && <Badge variant="destructive">Wajib</Badge>}
-                            {is_encrypted && <Badge variant="secondary">Terenkripsi</Badge>}
+                            {is_encrypted && <Badge className="bg-slate-500 text-white">Terenkripsi</Badge>}
                         </div>
                     </div>
                 );

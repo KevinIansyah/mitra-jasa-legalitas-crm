@@ -3,8 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Company;
-use App\Models\User;
 
 class Customer extends Model
 {
@@ -24,10 +22,14 @@ class Customer extends Model
     |--------------------------------------------------------------------------
     */
 
-
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function projects()
+    {
+        return $this->hasMany(Project::class);
     }
 
     public function companies()
@@ -49,7 +51,7 @@ class Customer extends Model
 
     public function hasAccount(): bool
     {
-        return !is_null($this->user_id);
+        return ! is_null($this->user_id);
     }
 
     /*

@@ -17,7 +17,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
 import finances from '@/routes/finances';
-import type { Account } from '@/types/account';
+import type { Account } from '@/types/accounts';
 import { JOURNAL_REFERENCE_TYPES, type JournalEntry } from '@/types/journal-entries';
 import getColumns from './columns';
 import { JournalAddDrawer } from './journal-add-drawer';

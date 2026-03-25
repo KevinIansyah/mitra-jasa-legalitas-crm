@@ -5,6 +5,12 @@
 import type { User } from './auth';
 
 // ============================================================
+// CORE TYPES
+// ============================================================
+
+export type ContactMessageStatus = 'unread' | 'read' | 'contacted';
+
+// ============================================================
 // CORE MODELS
 // ============================================================
 
@@ -27,6 +33,9 @@ export interface Company {
     deleted_at: string | null;
     customers?: Customer[];
     customers_count?: number;
+
+    // computed
+    projects_count?: number;
 }
 
 export interface Customer {
@@ -44,6 +53,9 @@ export interface Customer {
     user?: User;
     companies?: Company[];
     pivot?: CustomerCompanyPivot;
+
+    // computed
+    projects_count?: number;
 }
 
 export interface CustomerCompanyPivot {
@@ -51,6 +63,18 @@ export interface CustomerCompanyPivot {
     customer: number;
     is_primary: boolean;
     position_at_company: string | null;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface ContactMessage {
+    id: number;
+    name: string;
+    whatsapp_number: string;
+    email: string | null;
+    topic: string | null;
+    message: string;
+    status: ContactMessageStatus;
     created_at: string;
     updated_at: string;
 }
@@ -83,6 +107,13 @@ export interface CustomerSummary {
     with_account: number;
     with_company: number;
     active: number;
+}
+
+export interface ContactMessageSummary {
+    total: number;
+    unread: number;
+    read: number;
+    contacted: number;
 }
 
 // ============================================================
@@ -128,13 +159,25 @@ export interface SyncCustomerToCompanyFormData {
     }>;
 }
 
+export interface ContactMessageFormData {
+    name: string;
+    whatsapp_number: string;
+    email?: string;
+    topic?: string;
+    message: string;
+}
+
+export interface ContactMessageUpdateStatusFormData {
+    status: ContactMessageStatus;
+}
+
 // ============================================================
 // CONSTANTS
 // ============================================================
 
 export const TIER = [
     { value: 'bronze', label: 'Bronze', classes: 'bg-amber-700 text-white' },
-    { value: 'silver', label: 'Silver', classes: 'bg-slate-400 text-slate-900' },
+    { value: 'silver', label: 'Silver', classes: 'bg-slate-400 text-white' },
     { value: 'gold', label: 'Gold', classes: 'bg-yellow-500 text-white' },
     { value: 'platinum', label: 'Platinum', classes: 'bg-indigo-600 text-white' },
 ] as const;
@@ -186,3 +229,11 @@ export const STATUS_LEGAL = [
 ] as const;
 
 export const STATUS_LEGAL_MAP = Object.fromEntries(STATUS_LEGAL.map((item) => [item.value, item]));
+
+export const CONTACT_MESSAGE_STATUS = [
+    { value: 'unread', label: 'Belum Dibaca', classes: 'bg-slate-500 text-white' },
+    { value: 'read', label: 'Sudah Dibaca', classes: 'bg-emerald-500 text-white' },
+    { value: 'contacted', label: 'Sudah Dihubungi', classes: 'bg-blue-600 text-white' },
+] as const;
+
+export const CONTACT_MESSAGE_STATUS_MAP = Object.fromEntries(CONTACT_MESSAGE_STATUS.map((item) => [item.value, item]));

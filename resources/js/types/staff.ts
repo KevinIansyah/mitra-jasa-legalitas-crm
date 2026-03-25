@@ -2,7 +2,7 @@
  * Staff Management System - TypeScript Definitions
  */
 
-import type { User } from './auth';
+import type { User, UserStatus } from './auth';
 import type { TaskStatus } from './projects';
 
 // ============================================================
@@ -18,6 +18,8 @@ export type AvailabilityStatus = 'available' | 'busy' | 'on_leave';
 export interface StaffProfile {
     id: number;
     user_id: number;
+    position: string | null;
+    bio: string | null;
     max_concurrent_projects: number;
     availability_status: AvailabilityStatus;
     skills: string[] | null;
@@ -72,12 +74,15 @@ export interface StaffCreateFormData {
     email: string;
     password: string;
     password_confirmation: string;
+    position: string;
+    bio: string;
     max_concurrent_projects: number | string;
     availability_status: AvailabilityStatus;
     skills: string;
     leave_start_date: string;
     leave_end_date: string;
     notes: string;
+    daily_token_limit: number;
 }
 
 export interface StaffUpdateFormData {
@@ -85,14 +90,18 @@ export interface StaffUpdateFormData {
     phone: string;
     role: string;
     email: string;
+    status: UserStatus;
     password: string;
     password_confirmation: string;
+    position: string;
+    bio: string;
     max_concurrent_projects: number | string;
     availability_status: AvailabilityStatus;
     skills: string;
     leave_start_date: string;
     leave_end_date: string;
     notes: string;
+    daily_token_limit: number;
 }
 
 export interface UpdateTaskStatusFormData {

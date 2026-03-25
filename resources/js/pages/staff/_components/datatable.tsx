@@ -16,6 +16,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
 import staffRoutes from '@/routes/staff';
+import { USER_STATUS } from '@/types/auth';
 import type { Role } from '@/types/roles';
 import type { Staff } from '@/types/staff';
 import { AVAILABILITY_STATUSES } from '@/types/staff';
@@ -33,6 +34,7 @@ interface DataTableProps {
     initialFilters?: {
         search?: string;
         availability_status?: string;
+        status?: string;
     };
 }
 
@@ -104,6 +106,26 @@ export function DataTable({ data, roles, pageIndex, setPageIndex, totalPages, to
 
                                 <div className="space-y-4 px-4">
                                     <Field>
+                                        <FieldLabel htmlFor="status">Status Akun</FieldLabel>
+                                        <Select value={filters.status || ''} onValueChange={(value) => updateFilter('status', value || undefined)}>
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Pilih status" />
+                                            </SelectTrigger>
+
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    <SelectLabel>Status Akun</SelectLabel>
+                                                    {USER_STATUS.map((item) => (
+                                                        <SelectItem key={item.value} value={item.value}>
+                                                            {item.label}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    </Field>
+
+                                    <Field>
                                         <FieldLabel htmlFor="availability_status">Status Ketersediaan</FieldLabel>
                                         <Select value={filters.availability_status || ''} onValueChange={(value) => updateFilter('availability_status', value || undefined)}>
                                             <SelectTrigger className="w-full">
@@ -173,8 +195,16 @@ export function DataTable({ data, roles, pageIndex, setPageIndex, totalPages, to
                         )}
                         {filters.availability_status && (
                             <Badge variant="secondary" className="flex items-center gap-2 capitalize">
-                                Status: {filters.availability_status.replace('_', ' ')}
+                                Status Ketersediaan: {filters.availability_status.replace('_', ' ')}
                                 <Button variant="ghost" size="sm" className="h-6 w-6 text-xs" onClick={() => updateFilter('availability_status', undefined)}>
+                                    <X className="size-3" />
+                                </Button>
+                            </Badge>
+                        )}
+                        {filters.status && (
+                            <Badge variant="secondary" className="flex items-center gap-2 capitalize">
+                                Status Akun: {filters.status.replace('_', ' ')}
+                                <Button variant="ghost" size="sm" className="h-6 w-6 text-xs" onClick={() => updateFilter('status', undefined)}>
                                     <X className="size-3" />
                                 </Button>
                             </Badge>

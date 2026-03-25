@@ -158,7 +158,7 @@ export function DetailSection({ payment, settings }: DetailSectionProps) {
                         {payment.receipt_number ? (
                             <p className="text-lg font-semibold text-muted-foreground">{payment.receipt_number}</p>
                         ) : (
-                            <Badge variant="secondary">Belum Terverifikasi</Badge>
+                            <Badge className="bg-slate-500 text-white">Belum Terverifikasi</Badge>
                         )}
                     </div>
                 </div>

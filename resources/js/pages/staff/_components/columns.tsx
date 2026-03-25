@@ -3,9 +3,11 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 
-import { getInitials } from '@/lib/service';
+import { formatRupiahNoSymbol, getInitials } from '@/lib/service';
+import type { UserStatus } from '@/types/auth';
+import { USER_STATUS_MAP } from '@/types/auth';
 import type { Role } from '@/types/roles';
-import type { Staff } from '@/types/staff';
+import type { AvailabilityStatus, Staff } from '@/types/staff';
 import { AVAILABILITY_STATUSES_MAP } from '@/types/staff';
 import Actions from './actions';
 
@@ -47,10 +49,17 @@ export default function getColumns(roles: Role[]): ColumnDef<Staff>[] {
             accessorKey: 'staff_profile.availability_status',
             header: 'Status',
             cell: ({ row }) => {
-                const status = row.original.staff_profile?.availability_status;
-                if (!status) return <Badge variant="secondary">-</Badge>;
-                const info = AVAILABILITY_STATUSES_MAP[status];
-                return <Badge className={info?.classes ?? 'bg-muted text-muted-foreground'}>{info?.label ?? status}</Badge>;
+                const statusAvailability = row.original.staff_profile?.availability_status as AvailabilityStatus;
+                const statusUser = row.original.status as UserStatus;
+
+                return (
+                    <div className="flex items-center gap-2">
+                        <Badge className={AVAILABILITY_STATUSES_MAP[statusAvailability]?.classes ?? 'bg-muted text-muted-foreground'}>
+                            {AVAILABILITY_STATUSES_MAP[statusAvailability]?.label ?? statusAvailability}
+                        </Badge>
+                        <Badge className={USER_STATUS_MAP[statusUser]?.classes ?? 'bg-muted text-muted-foreground'}>{USER_STATUS_MAP[statusUser]?.label ?? statusUser}</Badge>
+                    </div>
+                );
             },
         },
         {
@@ -58,11 +67,11 @@ export default function getColumns(roles: Role[]): ColumnDef<Staff>[] {
             header: 'Maks. Project',
             cell: ({ row }) => {
                 const max = row.original.staff_profile?.max_concurrent_projects;
-                const active = row.original.active_projects_count;
+                const active = row.original.active_project_count;
 
                 return (
                     <span className="text-sm">
-                        {active ?? 0} / {max ?? '-'}
+                        {active ?? 0} / {max ?? '-'} project
                     </span>
                 );
             },
@@ -85,6 +94,23 @@ export default function getColumns(roles: Role[]): ColumnDef<Staff>[] {
                                 +{skills.length - 3}
                             </Badge>
                         )}
+                    </div>
+                );
+            },
+        },
+        {
+            accessorKey: 'daily_token_limit',
+            header: 'Token AI',
+            cell: ({ row }) => {
+                const dailyTokenLimit = row.original.staff_profile?.daily_token_limit ?? 0;
+                const usedTokens = row.original.staff_profile?.used_tokens_today ?? 0;
+                const remaining = dailyTokenLimit - usedTokens;
+
+                return (
+                    <div className="space-y-0.5">
+                        <p className="text-sm">Terpakai: {formatRupiahNoSymbol(usedTokens)}</p>
+                        <p className="text-xs text-muted-foreground">Token Harian: {formatRupiahNoSymbol(dailyTokenLimit)}</p>
+                        <p className="text-xs text-muted-foreground">Sisa: {formatRupiahNoSymbol(remaining)}</p>
                     </div>
                 );
             },

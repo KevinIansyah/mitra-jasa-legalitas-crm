@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Settings;
 
-use App\Http\Controllers\Controller;
 use App\Helpers\FileHelper;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\UpdateAnalyticsRequest;
 use App\Http\Requests\Settings\UpdateBankRequest;
+use App\Http\Requests\Settings\UpdateChatbotRequest;
 use App\Http\Requests\Settings\UpdateCompanyRequest;
 use App\Http\Requests\Settings\UpdateDocumentRequest;
 use App\Http\Requests\Settings\UpdateLegalRequest;
@@ -17,6 +18,7 @@ use App\Http\Requests\Settings\UpdateSignerRequest;
 use App\Http\Requests\Settings\UpdateSocialRequest;
 use App\Http\Requests\Settings\UpdateStatsRequest;
 use App\Models\SiteSetting;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 
 class SiteController extends Controller
@@ -105,9 +107,16 @@ class SiteController extends Controller
         ]);
     }
 
+    public function chatbot()
+    {
+        return Inertia::render('settings/sites/chatbot', [
+            'settings' => SiteSetting::get(),
+        ]);
+    }
+
     public function updateCompany(UpdateCompanyRequest $request)
     {
-        $settings  = SiteSetting::get();
+        $settings = SiteSetting::get();
         $validated = $request->validated();
 
         if ($request->boolean('remove_logo') && $settings->company_logo) {
@@ -150,7 +159,7 @@ class SiteController extends Controller
 
     public function updateMeta(UpdateMetaRequest $request)
     {
-        $settings  = SiteSetting::get();
+        $settings = SiteSetting::get();
         $validated = $request->validated();
 
         if ($request->boolean('remove_og_image') && $settings->default_og_image) {
@@ -201,7 +210,7 @@ class SiteController extends Controller
 
     public function updateSigner(UpdateSignerRequest $request)
     {
-        $settings  = SiteSetting::get();
+        $settings = SiteSetting::get();
         $validated = $request->validated();
 
         foreach (['signature_image', 'stamp_image'] as $field) {
@@ -250,5 +259,14 @@ class SiteController extends Controller
         SiteSetting::get()->update($request->validated());
 
         return back()->with('success', 'Mode maintenance berhasil diperbarui.');
+    }
+
+    public function updateChatbot(UpdateChatbotRequest $request)
+    {
+        SiteSetting::get()->update($request->validated());
+
+        Cache::forget('chatbot_system_prompt');
+
+        return back()->with('success', 'Pengaturan chatbot berhasil diperbarui.');
     }
 }

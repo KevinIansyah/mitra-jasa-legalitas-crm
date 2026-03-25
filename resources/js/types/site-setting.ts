@@ -125,6 +125,14 @@ export interface SiteSetting {
     maintenance_message: string | null;
     maintenance_allowed_ips: string | null;
 
+    // AI Chatbot
+    ai_chatbot_enabled: boolean;
+    ai_chatbot_monthly_limit: number;
+    ai_chatbot_whatsapp_number: string | null;
+    ai_chatbot_offline_message: string | null;
+    ai_chatbot_used_tokens: number;
+    ai_chatbot_reset_date: string | null;
+
     created_at: string;
     updated_at: string;
 }
@@ -153,6 +161,7 @@ export type UpdateCompanyFormData = Partial<
         | 'company_website'
     >
 >;
+
 export type UpdateOperationalFormData = Partial<Pick<SiteSetting, 'business_hours' | 'maps_embed_url' | 'maps_coordinates' | 'maps_place_id'>>;
 
 export type UpdateMetaFormData = Partial<Pick<SiteSetting, 'default_title_template' | 'default_meta_description' | 'default_keywords' | 'default_og_image'>>;
@@ -190,6 +199,8 @@ export type UpdateSocialFormData = Partial<
 >;
 
 export type UpdateMaintenanceFormData = Partial<Pick<SiteSetting, 'maintenance_mode' | 'maintenance_message' | 'maintenance_allowed_ips'>>;
+
+export type UpdateChatbotFormData = Partial<Pick<SiteSetting, 'ai_chatbot_enabled' | 'ai_chatbot_monthly_limit' | 'ai_chatbot_whatsapp_number' | 'ai_chatbot_offline_message'>>;
 
 // ============================================================
 // CONSTANTS
@@ -229,3 +240,13 @@ export const LEGAL_ENTITY_TYPES = [
 ] as const;
 
 export const LEGAL_ENTITY_TYPES_MAP = Object.fromEntries(LEGAL_ENTITY_TYPES.map((item) => [item.value, item]));
+
+export const TOKEN_LIMIT_OPTIONS = [
+    { value: 1000000, label: '1 Juta token', estimated: '~450 pesan/bulan' },
+    { value: 5000000, label: '5 Juta token', estimated: '~2.270 pesan/bulan' },
+    { value: 10000000, label: '10 Juta token', estimated: '~4.500 pesan/bulan' },
+    { value: 20000000, label: '20 Juta token', estimated: '~9.000 pesan/bulan' },
+    { value: 50000000, label: '50 Juta token', estimated: '~22.700 pesan/bulan' },
+];
+
+export const TOKEN_LIMIT_OPTIONS_MAP = Object.fromEntries(TOKEN_LIMIT_OPTIONS.map((item) => [item.value, item]));

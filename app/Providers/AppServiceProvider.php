@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Blog;
 use App\Models\City;
 use App\Models\Expense;
 use App\Models\ProjectInvoice;
@@ -13,6 +14,7 @@ use App\Models\ServiceFaq;
 use App\Models\ServicePackage;
 use App\Models\ServiceProcessStep;
 use App\Models\SiteSetting;
+use App\Observers\BlogObserver;
 use App\Observers\CityObserver as ObserversCityObserver;
 use App\Observers\ExpenseObserver;
 use App\Observers\ProjectInvoiceObserver;
@@ -42,8 +44,8 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(AiServiceInterface::class, function () {
             return match (config('ai.provider', 'gemini')) {
-                'lovable' => new LovableAiService(),
-                default   => new GeminiAiService(),
+                'lovable' => new LovableAiService,
+                default => new GeminiAiService,
             };
         });
     }
@@ -66,7 +68,9 @@ class AppServiceProvider extends ServiceProvider
         SiteSetting::observe(SiteSettingObserver::class);
         Service::observe(ServiceObserver::class);
         ServiceCategory::observe(ServiceCategoryObserver::class);
+        Blog::observe(BlogObserver::class);
     }
+
     protected function configureDefaults(): void
     {
         Date::use(CarbonImmutable::class);
@@ -79,13 +83,13 @@ class AppServiceProvider extends ServiceProvider
         );
 
         Password::defaults(
-            fn(): ?Password => app()->isProduction()
+            fn (): ?Password => app()->isProduction()
                 ? Password::min(12)
-                ->mixedCase()
-                ->letters()
-                ->numbers()
-                ->symbols()
-                ->uncompromised()
+                    ->mixedCase()
+                    ->letters()
+                    ->numbers()
+                    ->symbols()
+                    ->uncompromised()
                 : null
         );
     }

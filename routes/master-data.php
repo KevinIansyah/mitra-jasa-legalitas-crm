@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CityController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,45 +17,64 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
-  Route::prefix('master-data')->name('master-data.')->group(function () {
+    Route::prefix('master-data')->name('master-data.')->group(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | CITIES 
-    |--------------------------------------------------------------------------
-    | GET    /master-data/cities              -> List cities
-    | GET    /master-data/cities/create       -> Show create form
-    | POST   /master-data/cities              -> Store city
-    | GET    /master-data/cities/{city}/edit  -> Show edit form
-    | PATCH  /master-data/cities/{city}       -> Update city
-    | DELETE /master-data/cities/{city}       -> Delete city
-    |--------------------------------------------------------------------------
-    */
-    Route::prefix('cities')->name('cities.')->group(function () {
+        /*
+        |--------------------------------------------------------------------------
+        | CITIES
+        |--------------------------------------------------------------------------
+        | GET    /master-data/cities              -> List cities
+        | GET    /master-data/cities/create       -> Show create form
+        | POST   /master-data/cities              -> Store city
+        | GET    /master-data/cities/{city}/edit  -> Show edit form
+        | PATCH  /master-data/cities/{city}       -> Update city
+        | DELETE /master-data/cities/{city}       -> Delete city
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('cities')->name('cities.')->group(function () {
 
-      Route::get('/', [CityController::class, 'index'])
-        ->middleware('permission:view-master-cities')
-        ->name('index');
+            Route::get('/', [CityController::class, 'index'])
+                ->middleware('permission:view-master-cities')
+                ->name('index');
 
-      Route::get('/create', [CityController::class, 'create'])
-        ->middleware('permission:create-master-cities')
-        ->name('create');
+            Route::get('/create', [CityController::class, 'create'])
+                ->middleware('permission:create-master-cities')
+                ->name('create');
 
-      Route::post('/', [CityController::class, 'store'])
-        ->middleware('permission:create-master-cities')
-        ->name('store');
+            Route::post('/', [CityController::class, 'store'])
+                ->middleware('permission:create-master-cities')
+                ->name('store');
 
-      Route::get('/{city}/edit', [CityController::class, 'edit'])
-        ->middleware('permission:edit-master-cities')
-        ->name('edit');
+            Route::get('/{city}/edit', [CityController::class, 'edit'])
+                ->middleware('permission:edit-master-cities')
+                ->name('edit');
 
-      Route::patch('/{city}', [CityController::class, 'update'])
-        ->middleware('permission:edit-master-cities')
-        ->name('update');
+            Route::patch('/{city}', [CityController::class, 'update'])
+                ->middleware('permission:edit-master-cities')
+                ->name('update');
 
-      Route::delete('/{city}', [CityController::class, 'destroy'])
-        ->middleware('permission:delete-master-cities')
-        ->name('destroy');
+            Route::delete('/{city}', [CityController::class, 'destroy'])
+                ->middleware('permission:delete-master-cities')
+                ->name('destroy');
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | USERS
+        |--------------------------------------------------------------------------
+        | GET    /master-data/users                      -> List users
+        | PATCH  /master-data/users/{user}/status        -> Update status
+        |--------------------------------------------------------------------------
+        */
+
+        Route::prefix('users')->name('users.')->group(function () {
+            Route::get('/', [UserController::class, 'index'])
+                ->middleware('permission:view-master-users')
+                ->name('index');
+
+            Route::patch('/{user}/status', [UserController::class, 'updateStatus'])
+                ->middleware('permission:edit-master-users')
+                ->name('updateStatus');
+        });
     });
-  });
 });

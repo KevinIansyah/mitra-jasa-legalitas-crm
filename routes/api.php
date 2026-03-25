@@ -1,7 +1,11 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BlogSubscriberController;
+use App\Http\Controllers\Api\ChatbotController;
+use App\Http\Controllers\Api\ContactMessageController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\PublicBlogController;
 use App\Http\Controllers\Api\PublicServiceController;
 use App\Http\Controllers\Api\QuoteController;
 use App\Http\Controllers\Finances\EstimateController;
@@ -48,9 +52,11 @@ Route::prefix('auth')->name('auth.')->group(function () {
         ->name('verify-email');
 
     Route::post('/resend-verification-otp', [AuthController::class, 'resendVerificationOtp'])
+        ->middleware('throttle:5,1')
         ->name('resend-verification-otp');
 
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])
+        ->middleware('throttle:5,1')
         ->name('forgot-password');
 
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])
@@ -104,8 +110,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('invoices/{invoice}/payments')->group(function () {
-        Route::get('/',    [PaymentController::class, 'index']);
-        Route::post('/',   [PaymentController::class, 'store']);
+        Route::get('/', [PaymentController::class, 'index']);
+        Route::post('/', [PaymentController::class, 'store']);
         Route::delete('{payment}', [PaymentController::class, 'destroy']);
     });
 });
@@ -122,9 +128,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('proposals')->group(function () {
-        Route::get('/',                        [ProposalController::class, 'index']);
-        Route::get('{proposal}',               [ProposalController::class, 'show']);
-        Route::patch('{proposal}/status',      [ProposalController::class, 'updateStatus']);
+        Route::get('/', [ProposalController::class, 'index']);
+        Route::get('{proposal}', [ProposalController::class, 'show']);
+        Route::patch('{proposal}/status', [ProposalController::class, 'updateStatus']);
     });
 });
 
@@ -140,9 +146,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('estimates')->group(function () {
-        Route::get('/',                        [EstimateController::class, 'index']);
-        Route::get('{estimate}',               [EstimateController::class, 'show']);
-        Route::patch('{estimate}/status',      [EstimateController::class, 'updateStatus']);
+        Route::get('/', [EstimateController::class, 'index']);
+        Route::get('{estimate}', [EstimateController::class, 'show']);
+        Route::patch('{estimate}/status', [EstimateController::class, 'updateStatus']);
     });
 });
 
@@ -154,14 +160,72 @@ Route::middleware('auth:sanctum')->group(function () {
 | GET /layanan/kategori/{categorySlug}  → List services by category
 | GET /layanan/kota/{citySlug}          → List services by city
 | GET /layanan/{serviceSlug}/{citySlug} → Service details for a specific city
-| GET /layanan/{serviceSlug}            → Service details 
+| GET /layanan/{serviceSlug}            → Service details
 |--------------------------------------------------------------------------
 */
 
 Route::prefix('layanan')->group(function () {
-    Route::get('/',                              [PublicServiceController::class, 'index']);
-    Route::get('/kategori/{categorySlug}',       [PublicServiceController::class, 'byCategory']);
-    Route::get('/kota/{citySlug}',               [PublicServiceController::class, 'byCity']);
-    Route::get('/{serviceSlug}/{citySlug}',      [PublicServiceController::class, 'showCityPage']);
-    Route::get('/{serviceSlug}',                 [PublicServiceController::class, 'show']);
+    Route::get('/', [PublicServiceController::class, 'index']);
+    Route::get('/kategori/{categorySlug}', [PublicServiceController::class, 'byCategory']);
+    Route::get('/kota/{citySlug}', [PublicServiceController::class, 'byCity']);
+    Route::get('/{serviceSlug}/{citySlug}', [PublicServiceController::class, 'showCityPage']);
+    Route::get('/{serviceSlug}', [PublicServiceController::class, 'show']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| PUBLIC BLOG API ROUTES
+|--------------------------------------------------------------------------
+| GET /blog                          → List all blogs
+| GET /blog/{blogSlug}            → Blog details
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('blog')->group(function () {
+    Route::get('/', [PublicBlogController::class, 'index']);
+    Route::get('/{blogSlug}', [PublicBlogController::class, 'show']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| CHATBOT API ROUTES
+|--------------------------------------------------------------------------
+| POST  /api/chat/session              → Buat / ambil sesi
+| POST  /api/chat/{sessionToken}/send  → Kirim pesan
+| PATCH /api/chat/{sessionToken}/lead  → Update data lead
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('chat')->group(function () {
+    Route::post('/session', [ChatbotController::class, 'session']);
+    Route::post('/{sessionToken}/send', [ChatbotController::class, 'send']);
+    Route::patch('/{sessionToken}/lead', [ChatbotController::class, 'updateLead']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| CONTACT MESSAGES API ROUTES
+|--------------------------------------------------------------------------
+| POST /api/contact-messages               -> Create contact message
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('contact-messages')->group(function () {
+    Route::post('/', [ContactMessageController::class, 'store']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| BLOG SUBSCRIBER API ROUTES
+|--------------------------------------------------------------------------
+| POST /api/blog/subscribe               -> Subscribe to blog
+| GET /api/blog/subscribe/verify/{token} -> Verify blog subscription
+| GET /api/blog/unsubscribe/{token}      -> Unsubscribe from blog
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('blog')->group(function () {
+    Route::post('/subscribe', [BlogSubscriberController::class, 'subscribe']);
+    Route::get('/subscribe/verify/{token}', [BlogSubscriberController::class, 'verify']);
+    Route::get('/unsubscribe/{token}', [BlogSubscriberController::class, 'unsubscribe']);
 });

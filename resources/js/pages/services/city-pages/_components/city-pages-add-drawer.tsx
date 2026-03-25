@@ -1,5 +1,7 @@
 import { useForm } from '@inertiajs/react';
+import axios from 'axios';
 import { Info, Plus } from 'lucide-react';
+import * as React from 'react';
 import { toast } from 'sonner';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -8,12 +10,13 @@ import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, Dr
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
+
+import search from '@/routes/search';
 import services from '@/routes/services';
 import type { City } from '@/types/cities';
 import type { Service } from '@/types/services';
 
 type CityPageAddDrawerProps = {
-    services: Pick<Service, 'id' | 'name'>[];
     cities: Pick<City, 'id' | 'name' | 'province'>[];
 };
 
@@ -22,12 +25,40 @@ type FormData = {
     city_id: number | null;
 };
 
-export function CityPageAddDrawer({ services: serviceList, cities }: CityPageAddDrawerProps) {
+export function CityPageAddDrawer({ cities }: CityPageAddDrawerProps) {
+    const [availableServices, setAvailableServices] = React.useState<Pick<Service, 'id' | 'name'>[]>([]);
+    const [fetchingServices, setFetchingServices] = React.useState(false);
+
     const { data, setData, post, processing, errors, reset } = useForm<FormData>({
         service_id: null,
         city_id: null,
     });
 
+    // ============================================================
+    // FETCH SERVICES
+    // ============================================================
+    const handleCityChange = async (cityId: string) => {
+        setData('city_id', Number(cityId));
+        setData('service_id', null);
+        setAvailableServices([]);
+        setFetchingServices(true);
+
+        try {
+            const { data } = await axios.get(search.services.availableByCityId().url, {
+                params: { city_id: cityId },
+            });
+
+            setAvailableServices(data.services ?? []);
+        } catch {
+            toast.error('Terjadi kesalahan saat memuat layanan, coba lagi.');
+        } finally {
+            setFetchingServices(false);
+        }
+    };
+
+    // ============================================================
+    // SUBMIT
+    // ============================================================
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
 
@@ -38,6 +69,7 @@ export function CityPageAddDrawer({ services: serviceList, cities }: CityPageAdd
             onSuccess: () => {
                 toast.success('Berhasil', { description: 'Halaman kota berhasil ditambahkan.' });
                 reset();
+                setAvailableServices([]);
             },
             onError: () => {
                 const errorMessage = Object.values(errors)[0] ?? 'Terjadi kesalahan saat menambahkan halaman kota, coba lagi.';
@@ -59,40 +91,17 @@ export function CityPageAddDrawer({ services: serviceList, cities }: CityPageAdd
                 <div className="flex flex-1 flex-col overflow-hidden">
                     <DrawerHeader>
                         <DrawerTitle>Tambah Halaman Kota</DrawerTitle>
-                        <DrawerDescription>Pilih layanan dan kota untuk membuat halaman SEO lokal baru.</DrawerDescription>
+                        <DrawerDescription>Pilih kota terlebih dahulu, lalu pilih layanan yang tersedia.</DrawerDescription>
                     </DrawerHeader>
 
                     <form onSubmit={handleSubmit} className="flex flex-1 flex-col overflow-hidden">
                         <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
-                            {/* Service */}
-                            <Field>
-                                <FieldLabel>
-                                    Layanan <span className="text-destructive">*</span>
-                                </FieldLabel>
-                                <Select value={data.service_id ? String(data.service_id) : ''} onValueChange={(value) => setData('service_id', Number(value))}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Pilih layanan..." />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            <SelectLabel>Layanan</SelectLabel>
-                                            {serviceList.map((service) => (
-                                                <SelectItem key={service.id} value={String(service.id)}>
-                                                    {service.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-                                {errors.service_id && <FieldError>{errors.service_id}</FieldError>}
-                            </Field>
-
-                            {/* City */}
+                            {/* City — pilih duluan */}
                             <Field>
                                 <FieldLabel>
                                     Kota <span className="text-destructive">*</span>
                                 </FieldLabel>
-                                <Select value={data.city_id ? String(data.city_id) : ''} onValueChange={(value) => setData('city_id', Number(value))}>
+                                <Select value={data.city_id ? String(data.city_id) : ''} onValueChange={handleCityChange}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Pilih kota..." />
                                     </SelectTrigger>
@@ -111,6 +120,43 @@ export function CityPageAddDrawer({ services: serviceList, cities }: CityPageAdd
                                 {errors.city_id && <FieldError>{errors.city_id}</FieldError>}
                             </Field>
 
+                            {/* Service — muncul setelah city dipilih */}
+                            <Field>
+                                <FieldLabel>
+                                    Layanan <span className="text-destructive">*</span>
+                                </FieldLabel>
+                                <Select
+                                    value={data.service_id ? String(data.service_id) : ''}
+                                    onValueChange={(v) => setData('service_id', Number(v))}
+                                    disabled={!data.city_id || fetchingServices}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue
+                                            placeholder={
+                                                !data.city_id
+                                                    ? 'Pilih kota terlebih dahulu'
+                                                    : fetchingServices
+                                                      ? 'Memuat layanan...'
+                                                      : availableServices.length === 0
+                                                        ? 'Semua layanan sudah ditambahkan'
+                                                        : 'Pilih layanan...'
+                                            }
+                                        />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            <SelectLabel>Layanan tersedia</SelectLabel>
+                                            {availableServices.map((service) => (
+                                                <SelectItem key={service.id} value={String(service.id)}>
+                                                    {service.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                                {errors.service_id && <FieldError>{errors.service_id}</FieldError>}
+                            </Field>
+
                             <Alert className="border-primary bg-primary/20">
                                 <Info />
                                 <AlertTitle className="font-medium text-foreground">Informasi</AlertTitle>
@@ -121,7 +167,7 @@ export function CityPageAddDrawer({ services: serviceList, cities }: CityPageAdd
                         </div>
 
                         <DrawerFooter>
-                            <Button type="submit" disabled={processing || !data.service_id || !data.city_id}>
+                            <Button type="submit" disabled={processing || !data.service_id || !data.city_id || availableServices.length === 0}>
                                 {processing ? (
                                     <>
                                         <Spinner className="mr-2" />

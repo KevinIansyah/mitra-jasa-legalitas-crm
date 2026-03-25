@@ -314,7 +314,7 @@ export default function Overviews({ project, services }: OverviewsProps) {
                         <InfoRow label="Email" value={project.customer?.email} />
                         <InfoRow label="Nomor Telepon" value={project.customer?.phone} />
                         <InfoRow label="Kepemilikan Akun">
-                            {project.customer?.user_id ? <Badge className="bg-emerald-500 text-white">Terdaftar</Badge> : <Badge variant="secondary">Belum Terdaftar</Badge>}
+                            {project.customer?.user_id ? <Badge className="bg-emerald-500 text-white">Terdaftar</Badge> : <Badge className="bg-slate-500 text-white">Belum Terdaftar</Badge>}
                         </InfoRow>
                         <InfoRow label="Tier">
                             <Badge className={tier ? (TIER_MAP[tier]?.classes ?? 'bg-muted text-muted-foreground') : 'bg-muted text-muted-foreground'}>

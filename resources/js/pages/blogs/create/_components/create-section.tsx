@@ -8,17 +8,16 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
-import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { formatSize, readImageAsDataURL, validateImageFile } from '@/lib/service';
 import blogs from '@/routes/blogs';
 import type { BlogCategory, BlogRelatedService, BlogTag } from '@/types/blogs';
-import { defaultSeo, SeoCard, type LocalServiceSeo } from '../../_components/seo-card';
+import type { LocalBlogSeo} from '../../_components/seo-card';
+import { defaultSeo, SeoCard } from '../../_components/seo-card';
 
 type FormData = {
     blog_category_id: number | '';
@@ -31,7 +30,7 @@ type FormData = {
     is_featured: boolean;
     tag_ids: number[];
     service_ids: number[];
-    seo: LocalServiceSeo;
+    seo: LocalBlogSeo;
 };
 
 type CreateSectionProps = {
@@ -336,7 +335,7 @@ export function CreateSection({ categories, tags, services }: CreateSectionProps
                             </Field>
 
                             {/* Publication Settings */}
-                            <Field>
+                            {/* <Field>
                                 <FieldLabel>Pengaturan Tampilan</FieldLabel>
                                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                                     <div className="flex items-start gap-4 rounded-lg border border-primary bg-transparent p-4 dark:bg-input/30">
@@ -359,7 +358,7 @@ export function CreateSection({ categories, tags, services }: CreateSectionProps
                                         </div>
                                     </div>
                                 </div>
-                            </Field>
+                            </Field> */}
                         </div>
                     </div>
                 </TabsContent>

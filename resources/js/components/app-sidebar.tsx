@@ -1,5 +1,23 @@
 import { usePage } from '@inertiajs/react';
-import { Briefcase, ChartBar, Clock, Command, Database, DollarSign, LayoutGrid, MessageSquare, Newspaper, Settings, Settings2, Toolbox, Users } from 'lucide-react';
+import {
+    Briefcase,
+    ChartBar,
+    CircleHelp,
+    Clock,
+    Command,
+    Database,
+    DollarSign,
+    Inbox,
+    LayoutGrid,
+    MessageSquare,
+    Newspaper,
+    Settings,
+    Settings2,
+    Star,
+    Toolbox,
+    Trophy,
+    Users,
+} from 'lucide-react';
 import * as React from 'react';
 
 import { NavMain } from '@/components/nav-main';
@@ -9,6 +27,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { usePermission } from '@/hooks/use-permission';
 import blogs from '@/routes/blogs';
 import contacts from '@/routes/contacts';
+import contents from '@/routes/contents';
 import dashboard from '@/routes/dashboard';
 import finances from '@/routes/finances';
 import masterData from '@/routes/master-data';
@@ -21,6 +40,7 @@ import siteSettings from '@/routes/site-settings';
 import staffRoutes from '@/routes/staff';
 import type { NavItem, NavSection } from '@/types';
 import type { SharedData } from '@/types';
+import ai from '@/routes/ai';
 
 function buildNavData(userId: number): {
     navMain: NavSection;
@@ -66,6 +86,12 @@ function buildNavData(userId: number): {
                             title: 'Perusahaan',
                             url: contacts.companies.index().url,
                             permission: 'view-contact-companies',
+                        },
+                        {
+                            title: 'Pesan Masuk',
+                            url: contacts.messages.index().url,
+                            icon: Inbox,
+                            permission: 'view-contact-messages',
                         },
                     ],
                 },
@@ -237,7 +263,7 @@ function buildNavData(userId: number): {
                     title: 'Blog',
                     url: '#',
                     icon: Newspaper,
-                    permission: ['view-blogs', 'view-blog-categories', 'view-blog-tags'],
+                    permission: ['view-blogs', 'view-blog-categories', 'view-blog-tags', 'view-blog-subscribers'],
                     items: [
                         {
                             title: 'Semua Blog',
@@ -254,7 +280,30 @@ function buildNavData(userId: number): {
                             url: blogs.tags.index().url,
                             permission: 'view-blog-tags',
                         },
+                        {
+                            title: 'Subscriber',
+                            url: blogs.subscribers.index().url,
+                            permission: 'view-blog-subscribers',
+                        },
                     ],
+                },
+                {
+                    title: 'FAQ',
+                    url: contents.faqs.index().url,
+                    icon: CircleHelp,
+                    permission: 'view-content-faqs',
+                },
+                {
+                    title: 'Testimoni',
+                    url: contents.testimonials.index().url,
+                    icon: Star,
+                    permission: 'view-content-testimonials',
+                },
+                {
+                    title: 'Kisah Sukses',
+                    url: contents.clientSuccessStories.index().url,
+                    icon: Trophy,
+                    permission: 'view-content-client-success-stories',
                 },
                 // {
                 //     title: 'SEO',
@@ -277,9 +326,11 @@ function buildNavData(userId: number): {
                     url: '#',
                     icon: MessageSquare,
                     items: [
-                        { title: 'Knowledge Base', url: '#' },
-                        { title: 'Chat Analytics', url: '#' },
-                        { title: 'Routing', url: '#' },
+                        {
+                            title: 'Riwayat Chat',
+                            url: ai.chatSessions.index().url,
+                            permission: 'view-ai-chat-sessions',
+                        },
                     ],
                 },
             ],
@@ -298,6 +349,11 @@ function buildNavData(userId: number): {
                             title: 'Kota',
                             url: masterData.cities.index().url,
                             permission: 'view-master-cities',
+                        },
+                        {
+                            title: 'User',
+                            url: masterData.users.index().url,
+                            permission: 'view-master-users',
                         },
                     ],
                 },

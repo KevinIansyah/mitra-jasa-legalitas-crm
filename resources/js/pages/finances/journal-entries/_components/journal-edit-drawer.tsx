@@ -16,7 +16,7 @@ import { Textarea } from '@/components/ui/textarea';
 
 import { formatRupiah } from '@/lib/service';
 import finances from '@/routes/finances';
-import type { Account } from '@/types/account';
+import type { Account } from '@/types/accounts';
 import type { JournalEntry, JournalLineFormData, ManualJournalFormData, ManualJournalFormErrors } from '@/types/journal-entries';
 
 const EMPTY_LINE: JournalLineFormData = { account_id: '', debit: 0, credit: 0, notes: '' };

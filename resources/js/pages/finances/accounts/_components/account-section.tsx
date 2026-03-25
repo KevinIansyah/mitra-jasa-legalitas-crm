@@ -1,9 +1,9 @@
 import { BookOpen, CheckCircle, TrendingDown, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import type { Account, AccountSummary } from '@/types/account';
 import type { Paginator } from '@/types/paginator';
 import { DataTable } from './datatable';
+import type { Account, AccountSummary } from '@/types/accounts';
 
 interface AccountSectionProps {
     accounts: Paginator<Account>;

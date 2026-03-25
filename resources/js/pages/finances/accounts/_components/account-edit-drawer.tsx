@@ -10,7 +10,8 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { Spinner } from '@/components/ui/spinner';
 
 import accountsRoutes from '@/routes/finances/accounts';
-import { ACCOUNT_CATEGORIES, ACCOUNT_TYPES, type Account, type AccountCategory, type AccountFormData, type AccountNormalBalance, type AccountType } from '@/types/account';
+import type { AccountCategory, AccountNormalBalance, AccountStatus, AccountType } from '@/types/accounts';
+import { ACCOUNT_CATEGORIES, ACCOUNT_TYPES, type Account, type AccountFormData } from '@/types/accounts';
 
 type AccountEditDrawerProps = {
     account: Account;
@@ -27,6 +28,7 @@ export function AccountEditDrawer({ account, open, onOpenChange }: AccountEditDr
         name: account.name,
         type: account.type,
         category: account.category,
+        status: account.status,
         normal_balance: account.normal_balance,
     });
 
@@ -37,6 +39,7 @@ export function AccountEditDrawer({ account, open, onOpenChange }: AccountEditDr
             ...data,
             type: val,
             category: '',
+            status: 'active',
             normal_balance: val === 'asset' ? 'debit' : 'credit',
         });
     };
@@ -80,6 +83,24 @@ export function AccountEditDrawer({ account, open, onOpenChange }: AccountEditDr
                     <form onSubmit={handleSubmit} className="flex flex-1 flex-col px-4">
                         <div className="grid gap-4">
                             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                                {/* Status */}
+                                <Field className="col-span-2">
+                                    <FieldLabel htmlFor="status">Status {isSystem && <span className="ml-2 text-xs text-muted-foreground">(tidak dapat diubah)</span>}</FieldLabel>
+                                    <Select value={data.status} onValueChange={(val) => setData('status', val as AccountStatus)} disabled={isSystem}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Pilih status..." />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectLabel>Status</SelectLabel>
+                                                <SelectItem value="active">Active</SelectItem>
+                                                <SelectItem value="inactive">Inactive</SelectItem>
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                    {errors.status && <FieldError>{errors.status}</FieldError>}
+                                </Field>
+
                                 {/* Name */}
                                 <Field>
                                     <FieldLabel htmlFor="name">

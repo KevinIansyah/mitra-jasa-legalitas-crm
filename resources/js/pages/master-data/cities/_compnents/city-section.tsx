@@ -42,7 +42,7 @@ export function CitySection({ cities, provinces, summary, filters }: CitySection
             ),
         },
         {
-            label: 'Memiliki Halaman Layanan',
+            label: 'Memiliki Layanan',
             value: summary.with_city_pages,
             badge: 'bg-blue-600 text-white',
             icon: <Globe className="size-3.5" />,

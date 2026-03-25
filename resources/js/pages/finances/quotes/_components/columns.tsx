@@ -29,7 +29,7 @@ export default function getColumns(expandedRow: string | null, setExpandedRow: (
                     <div className="space-y-0.5">
                         <p className="text-sm font-medium">{user?.name ?? '-'}</p>
                         <p className="text-xs text-muted-foreground">{user?.email ?? '-'}</p>
-                        {sourceInfo && <Badge variant="secondary">{sourceInfo.label}</Badge>}
+                        {sourceInfo && <Badge className="bg-slate-500 text-white">{sourceInfo.label}</Badge>}
                     </div>
                 );
             },

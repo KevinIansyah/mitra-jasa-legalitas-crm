@@ -71,7 +71,7 @@ export default function getColumns(): ColumnDef<Expense>[] {
                                 <Badge className="bg-yellow-500 text-white">Belum Ditagihkan</Badge>
                             )
                         ) : (
-                            <Badge variant="secondary">Non-billable</Badge>
+                            <Badge className="bg-slate-500 text-white">Non-billable</Badge>
                         )}
                     </div>
                 );

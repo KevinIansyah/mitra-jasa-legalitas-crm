@@ -1,5 +1,5 @@
 import { router, usePage } from '@inertiajs/react';
-import { Bell, BriefcaseIcon, FileText, ReceiptText, TriangleAlert } from 'lucide-react';
+import { Bell, BriefcaseIcon, FileText, Mail, ReceiptText, TriangleAlert } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ type Props = {
 };
 
 const ICON_MAP: Record<string, React.ReactNode> = {
+    inbox: <Mail className="size-4 text-emerald-500" />,
     briefcase: <BriefcaseIcon className="size-4 text-blue-500" />,
     invoice: <ReceiptText className="size-4 text-orange-500" />,
     document: <FileText className="size-4 text-violet-500" />,

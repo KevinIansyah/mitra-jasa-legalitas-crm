@@ -11,7 +11,9 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 
+import { formatRupiahNoSymbol } from '@/lib/service';
 import staffRoutes from '@/routes/staff';
+import { USER_STATUS } from '@/types/auth';
 import type { Role } from '@/types/roles';
 import { AVAILABILITY_STATUSES, type Staff, type StaffUpdateFormData } from '@/types/staff';
 
@@ -30,14 +32,18 @@ export function DrawerEdit({ staff, roles, open, onOpenChange }: DrawerEditProps
         email: staff.email || '',
         phone: staff.phone || '',
         role: staff.role || '',
+        status: staff.status || 'active',
         password: '',
         password_confirmation: '',
+        position: staff.staff_profile?.position ?? '',
+        bio: staff.staff_profile?.bio ?? '',
         max_concurrent_projects: staff.staff_profile?.max_concurrent_projects ?? 5,
         availability_status: staff.staff_profile?.availability_status ?? 'available',
         skills: staff.staff_profile?.skills?.join(', ') ?? '',
         leave_start_date: staff.staff_profile?.leave_start_date ?? '',
         leave_end_date: staff.staff_profile?.leave_end_date ?? '',
         notes: staff.staff_profile?.notes ?? '',
+        daily_token_limit: staff.staff_profile?.daily_token_limit ?? 0,
     });
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -85,6 +91,30 @@ export function DrawerEdit({ staff, roles, open, onOpenChange }: DrawerEditProps
                             <p className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">Informasi Akun</p>
 
                             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                                {/* Status */}
+                                <Field className="col-span-2">
+                                    <FieldLabel htmlFor="status">
+                                        Status Akun <span className="text-destructive">*</span>
+                                    </FieldLabel>
+                                    <Select required value={data.status} onValueChange={(value) => setData('status', value as typeof data.status)}>
+                                        <SelectTrigger id="status">
+                                            <SelectValue placeholder="Pilih status" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectLabel>Status</SelectLabel>
+                                                {USER_STATUS.map((item) => (
+                                                    <SelectItem key={item.value} value={item.value}>
+                                                        <span className={`mr-2 inline-block h-2 w-2 rounded-full ${item.classes.replace('text-white', '')}`} />
+                                                        {item.label}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                    {errors.status && <FieldError>{errors.status}</FieldError>}
+                                </Field>
+
                                 {/* Name */}
                                 <Field>
                                     <FieldLabel htmlFor="name">
@@ -229,6 +259,29 @@ export function DrawerEdit({ staff, roles, open, onOpenChange }: DrawerEditProps
                                 {errors.skills && <FieldError>{errors.skills}</FieldError>}
                             </Field>
 
+                            {/* Position */}
+                            <Field>
+                                <FieldLabel htmlFor="position">
+                                    Jabatan <span className="text-destructive">*</span>
+                                </FieldLabel>
+                                <Input
+                                    id="position"
+                                    type="text"
+                                    required
+                                    placeholder="Masukkan jabatan"
+                                    value={data.position}
+                                    onChange={(e) => setData('position', e.target.value)}
+                                />
+                            </Field>
+
+                            {/* Bio */}
+                            <Field>
+                                <FieldLabel htmlFor="bio">
+                                    Deskripsi <span className="text-destructive">*</span>
+                                </FieldLabel>
+                                <Textarea id="bio" required placeholder="Masukkan deskripsi" value={data.bio} onChange={(e) => setData('bio', e.target.value)} />
+                            </Field>
+
                             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                                 {/* Leave Start Date */}
                                 <Field>
@@ -256,6 +309,23 @@ export function DrawerEdit({ staff, roles, open, onOpenChange }: DrawerEditProps
                                     onChange={(e) => setData('notes', e.target.value)}
                                 />
                                 {errors.notes && <FieldError>{errors.notes}</FieldError>}
+                            </Field>
+
+                            <p className="mt-2 text-sm font-medium tracking-wide text-muted-foreground uppercase">Pengaturan AI</p>
+
+                            {/* Daily Token Limit */}
+                            <Field>
+                                <FieldLabel htmlFor="daily_token_limit">Token Harian</FieldLabel>
+                                <Input
+                                    id="daily_token_limit"
+                                    type="number"
+                                    min={0}
+                                    placeholder="0"
+                                    value={data.daily_token_limit}
+                                    onChange={(e) => setData('daily_token_limit', Number(e.target.value))}
+                                />
+                                {data.daily_token_limit > 0 && <p className="mt-0.5 text-xs text-muted-foreground">{formatRupiahNoSymbol(data.daily_token_limit)}</p>}
+                                {errors.daily_token_limit && <FieldError>{errors.daily_token_limit}</FieldError>}
                             </Field>
                         </div>
 

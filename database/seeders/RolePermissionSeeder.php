@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 
 class RolePermissionSeeder extends Seeder
@@ -31,6 +31,10 @@ class RolePermissionSeeder extends Seeder
             'create-contact-customers',
             'edit-contact-customers',
             'delete-contact-customers',
+
+            'view-contact-messages',
+            'edit-contact-messages',
+            'delete-contact-messages',
 
             'view-services',
             'create-services',
@@ -61,6 +65,24 @@ class RolePermissionSeeder extends Seeder
             'create-blog-tags',
             'edit-blog-tags',
             'delete-blog-tags',
+
+            'view-blog-subscribers',
+            'delete-blog-subscribers',
+
+            'view-content-client-success-stories',
+            'create-content-client-success-stories',
+            'edit-content-client-success-stories',
+            'delete-content-client-success-stories',
+
+            'view-content-faqs',
+            'create-content-faqs',
+            'edit-content-faqs',
+            'delete-content-faqs',
+
+            'view-content-testimonials',
+            'create-content-testimonials',
+            'edit-content-testimonials',
+            'delete-content-testimonials',
 
             'view-projects',
             'create-projects',
@@ -161,35 +183,40 @@ class RolePermissionSeeder extends Seeder
 
             'view-finance-reports',
 
+            'view-ai-chat-sessions',
+            'delete-ai-chat-sessions',
+
             'view-master-cities',
             'create-master-cities',
             'edit-master-cities',
             'delete-master-cities',
+
+            'view-master-users',
+            'edit-master-users',
 
             'view-site-settings',
             'edit-site-settings',
 
             'create-ai-generate',
 
-
         ];
 
         foreach ($permissions as $permission) {
             Permission::firstOrCreate([
-                'name'       => $permission,
+                'name' => $permission,
                 'guard_name' => 'web',
             ]);
         }
 
         $roleAdmin = Role::firstOrCreate([
-            'name'       => 'super-admin',
+            'name' => 'super-admin',
             'guard_name' => 'web',
         ]);
 
         $roleAdmin->syncPermissions(Permission::all());
 
         $roleStaff = Role::firstOrCreate([
-            'name'       => 'staff',
+            'name' => 'staff',
             'guard_name' => 'web',
         ]);
 
@@ -201,7 +228,7 @@ class RolePermissionSeeder extends Seeder
         ]);
 
         Role::firstOrCreate([
-            'name'       => 'user',
+            'name' => 'user',
             'guard_name' => 'web',
         ]);
 

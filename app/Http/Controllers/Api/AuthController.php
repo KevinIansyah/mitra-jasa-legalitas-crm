@@ -10,8 +10,9 @@ use App\Http\Requests\Api\Auth\RegisterRequest;
 use App\Http\Requests\Api\Auth\ResendOtpRequest;
 use App\Http\Requests\Api\Auth\ResetPasswordRequest;
 use App\Http\Requests\Api\Auth\VerifyEmailRequest;
+use App\Models\Customer;
 use App\Models\User;
-use App\Services\OtpService;
+use App\Services\Api\OtpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -19,16 +20,29 @@ class AuthController extends Controller
 {
     public function __construct(protected OtpService $otpService) {}
 
-    /**
-     * Register a new user and send an email verification OTP.
-     */
     public function register(RegisterRequest $request)
     {
+        $user = User::where('email', $request->email)->first();
+
+        if ($user && $user->hasVerifiedEmail()) {
+            return ApiResponse::error('Email sudah terdaftar.', 422);
+        }
+
+        if ($user && ! $user->hasVerifiedEmail()) {
+            $this->otpService->send($user, 'email_verification');
+
+            return ApiResponse::success(
+                ['email' => $user->email],
+                'Email sudah terdaftar tapi belum diverifikasi. Kode OTP baru telah dikirim.',
+                200
+            );
+        }
+
         $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
+            'name' => $request->name,
+            'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role'     => 'visitor',
+            'role' => 'visitor',
         ]);
 
         $this->otpService->send($user, 'email_verification');
@@ -40,9 +54,6 @@ class AuthController extends Controller
         );
     }
 
-    /**
-     * Verify the user's email using the OTP code.
-     */
     public function verifyEmail(VerifyEmailRequest $request)
     {
         $user = User::where('email', $request->email)->firstOrFail();
@@ -53,28 +64,29 @@ class AuthController extends Controller
 
         $valid = $this->otpService->verify($user, $request->otp, 'email_verification');
 
-        if (!$valid) {
+        if (! $valid) {
             return ApiResponse::error('Kode OTP tidak valid atau sudah kadaluarsa.', 422);
         }
 
         $user->markEmailAsVerified();
+
+        Customer::where('email', $user->email)
+            ->whereNull('user_id')
+            ->update(['user_id' => $user->id]);
 
         $deviceName = $request->device_name ?? $request->userAgent() ?? 'web';
         $token = $user->createToken($deviceName)->plainTextToken;
 
         return ApiResponse::success(
             [
-                'user'       => $user,
-                'token'      => $token,
+                'user' => $user,
+                'token' => $token,
                 'token_type' => 'Bearer',
             ],
             'Email berhasil diverifikasi.'
         );
     }
 
-    /**
-     * Resend the email verification OTP.
-     */
     public function resendVerificationOtp(ResendOtpRequest $request)
     {
         $user = User::where('email', $request->email)->firstOrFail();
@@ -88,18 +100,15 @@ class AuthController extends Controller
         return ApiResponse::success(null, 'Kode OTP baru telah dikirim ke email Anda.');
     }
 
-    /**
-     * Authenticate the user and return an access token.
-     */
     public function login(LoginRequest $request)
     {
         $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (! $user || ! Hash::check($request->password, $user->password)) {
             return ApiResponse::error('Email atau password salah.', 401);
         }
 
-        if (!$user->hasVerifiedEmail()) {
+        if (! $user->hasVerifiedEmail()) {
             $this->otpService->send($user, 'email_verification');
 
             return ApiResponse::error(
@@ -114,25 +123,19 @@ class AuthController extends Controller
 
         return ApiResponse::success(
             [
-                'user'       => $user,
-                'token'      => $token,
+                'user' => $user,
+                'token' => $token,
                 'token_type' => 'Bearer',
             ],
             'Login berhasil.'
         );
     }
 
-    /**
-     * Return the authenticated user's data.
-     */
     public function me(Request $request)
     {
         return ApiResponse::success($request->user(), 'Data pengguna berhasil diambil.');
     }
 
-    /**
-     * Revoke the current access token (logout from current device).
-     */
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
@@ -140,9 +143,6 @@ class AuthController extends Controller
         return ApiResponse::success(null, 'Logout berhasil.');
     }
 
-    /**
-     * Revoke all access tokens (logout from all devices).
-     */
     public function logoutAllDevices(Request $request)
     {
         $request->user()->tokens()->delete();
@@ -150,9 +150,6 @@ class AuthController extends Controller
         return ApiResponse::success(null, 'Logout dari semua perangkat berhasil.');
     }
 
-    /**
-     * Send a password reset OTP to the user's email.
-     */
     public function forgotPassword(ForgotPasswordRequest $request)
     {
         $user = User::where('email', $request->email)->firstOrFail();
@@ -165,16 +162,13 @@ class AuthController extends Controller
         );
     }
 
-    /**
-     * Reset the user's password using a valid OTP.
-     */
     public function resetPassword(ResetPasswordRequest $request)
     {
         $user = User::where('email', $request->email)->firstOrFail();
 
         $valid = $this->otpService->verify($user, $request->otp, 'password_reset');
 
-        if (!$valid) {
+        if (! $valid) {
             return ApiResponse::error('Kode OTP tidak valid atau sudah kadaluarsa.', 422);
         }
 

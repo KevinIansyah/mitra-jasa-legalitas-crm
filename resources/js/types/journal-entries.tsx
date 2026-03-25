@@ -2,7 +2,7 @@
  * Journal Entry - TypeScript Definitions
  */
 
-import type { Account } from './account';
+import type { Account } from './accounts';
 
 // ============================================================
 // CORE TYPES

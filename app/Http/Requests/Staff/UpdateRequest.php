@@ -16,17 +16,21 @@ class UpdateRequest extends FormRequest
         $staffId = $this->route('staff')->id;
 
         return [
-            'name'                    => 'required|string|max:255',
-            'email'                   => "required|email|unique:users,email,$staffId",
-            'phone'                   => 'required|string|max:255',
-            'role'                    => 'nullable|exists:roles,name',
-            'password'                => 'nullable|min:8|confirmed',
+            'name' => 'required|string|max:255',
+            'email' => "required|email|unique:users,email,$staffId",
+            'phone' => 'required|string|max:255',
+            'role' => 'nullable|exists:roles,name',
+            'status' => 'nullable|in:active,inactive,suspended',
+            'password' => 'nullable|min:8|confirmed',
+            'position' => 'nullable|string|max:255',
+            'bio' => 'nullable|string',
             'max_concurrent_projects' => 'nullable|integer|min:1|max:20',
-            'availability_status'     => 'nullable|in:available,busy,on_leave',
-            'skills'                  => 'nullable|string',
-            'leave_start_date'        => 'nullable|date',
-            'leave_end_date'          => 'nullable|date|after_or_equal:leave_start_date',
-            'notes'                   => 'nullable|string',
+            'availability_status' => 'nullable|in:available,busy,on_leave',
+            'skills' => 'nullable|string',
+            'leave_start_date' => 'nullable|date',
+            'leave_end_date' => 'nullable|date|after_or_equal:leave_start_date',
+            'notes' => 'nullable|string',
+            'daily_token_limit' => 'nullable|integer|min:0',
         ];
     }
 
@@ -45,8 +49,16 @@ class UpdateRequest extends FormRequest
 
             'role.exists' => 'Role yang dipilih tidak valid.',
 
+            'status.in' => 'Status akun tidak valid.',
+
             'password.min' => 'Password minimal :min karakter.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
+
+            'position.string' => 'Jabatan harus berupa teks.',
+            'position.max' => 'Jabatan maksimal :max karakter.',
+
+            'bio.string' => 'Deskripsi harus berupa teks.',
+            'bio.max' => 'Deskripsi maksimal :max karakter.',
 
             'max_concurrent_projects.integer' => 'Maksimal project harus berupa angka.',
             'max_concurrent_projects.min' => 'Minimal project adalah :min.',
@@ -59,6 +71,9 @@ class UpdateRequest extends FormRequest
             'leave_end_date.after_or_equal' => 'Tanggal selesai cuti harus setelah atau sama dengan tanggal mulai.',
 
             'notes.string' => 'Catatan harus berupa teks.',
+
+            'daily_token_limit.integer' => 'Token harian harus berupa angka.',
+            'daily_token_limit.min' => 'Token harian minimal adalah :min.',
         ];
     }
 }

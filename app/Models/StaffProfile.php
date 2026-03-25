@@ -11,18 +11,23 @@ class StaffProfile extends Model
 
     protected $fillable = [
         'user_id',
+        'position',
+        'bio',
         'max_concurrent_projects',
         'availability_status',
         'skills',
         'leave_start_date',
         'leave_end_date',
         'notes',
+        'daily_token_limit',
+        'used_tokens_today',
+        'token_usage_reset_date',
     ];
 
     protected $casts = [
-        'skills'           => 'array',
+        'skills' => 'array',
         'leave_start_date' => 'date',
-        'leave_end_date'   => 'date',
+        'leave_end_date' => 'date',
     ];
 
     /*
@@ -54,16 +59,21 @@ class StaffProfile extends Model
 
     /*
     |--------------------------------------------------------------------------
-    | COMPUTED 
+    | COMPUTED
     |--------------------------------------------------------------------------
     */
 
     public function isOnLeave(): bool
     {
-        if ($this->availability_status !== 'on_leave') return false;
-        if (!$this->leave_start_date || !$this->leave_end_date) return false;
+        if ($this->availability_status !== 'on_leave') {
+            return false;
+        }
+        if (! $this->leave_start_date || ! $this->leave_end_date) {
+            return false;
+        }
 
         $today = now()->toDateString();
+
         return $today >= $this->leave_start_date && $today <= $this->leave_end_date;
     }
 
@@ -74,13 +84,14 @@ class StaffProfile extends Model
 
     /*
     |--------------------------------------------------------------------------
-    | HELPERS 
+    | HELPERS
     |--------------------------------------------------------------------------
     */
 
     public function hasTokenQuota(int $estimatedTokens = 0): bool
     {
         $this->resetDailyTokensIfNeeded();
+
         return ($this->used_tokens_today + $estimatedTokens) <= $this->daily_token_limit;
     }
 
@@ -93,6 +104,7 @@ class StaffProfile extends Model
     public function remainingTokens(): int
     {
         $this->resetDailyTokensIfNeeded();
+
         return max(0, $this->daily_token_limit - $this->used_tokens_today);
     }
 
@@ -102,8 +114,8 @@ class StaffProfile extends Model
 
         if ($this->token_usage_reset_date !== $today) {
             $this->update([
-                'used_tokens_today'       => 0,
-                'token_usage_reset_date'  => $today,
+                'used_tokens_today' => 0,
+                'token_usage_reset_date' => $today,
             ]);
         }
     }

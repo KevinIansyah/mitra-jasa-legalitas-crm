@@ -14,14 +14,14 @@ class AccountController extends Controller
     public function index(Request $request)
     {
         $search = $request->get('search');
-        $type   = $request->get('type');
+        $type = $request->get('type');
         $status = $request->get('status');
 
         $accounts = Account::query()
-            ->when($search, fn($q) => $q->where('name', 'like', "%{$search}%")
+            ->when($search, fn ($q) => $q->where('name', 'like', "%{$search}%")
                 ->orWhere('code', 'like', "%{$search}%"))
-            ->when($type,   fn($q) => $q->where('type', $type))
-            ->when($status, fn($q) => $q->where('status', $status))
+            ->when($type, fn ($q) => $q->where('type', $type))
+            ->when($status, fn ($q) => $q->where('status', $status))
             ->withCount('journalLines')
             ->orderBy('code')
             ->paginate(20);
@@ -41,10 +41,10 @@ class AccountController extends Controller
 
         return Inertia::render('finances/accounts/index', [
             'accounts' => $accounts,
-            'summary'  => $summary,
-            'filters'  => [
+            'summary' => $summary,
+            'filters' => [
                 'search' => $search,
-                'type'   => $type,
+                'type' => $type,
                 'status' => $status,
             ],
         ]);
@@ -73,34 +73,42 @@ class AccountController extends Controller
         return back()->with('success', 'Akun berhasil diperbarui.');
     }
 
-    public function toggleStatus(Request $request, Account $account)
+    public function updateStatus(Request $request, Account $account)
     {
         if ($account->is_system) {
             return back()->withErrors([
-                'error' => 'Akun sistem tidak dapat dinonaktifkan.'
+                'error' => 'Akun sistem tidak dapat diubah statusnya.',
             ]);
         }
 
-        $account->update([
-            'status' => $account->status === 'active' ? 'inactive' : 'active',
+        $request->validate([
+            'status' => 'required|in:active,inactive',
+        ], [
+            'status.required' => 'Status wajib dipilih.',
+            'status.in' => 'Status yang dipilih tidak valid.',
         ]);
 
-        $label = $account->status === 'active' ? 'diaktifkan' : 'dinonaktifkan';
+        $account->update(['status' => $request->status]);
 
-        return back()->with('success', "Akun berhasil {$label}.");
+        $messages = [
+            'active' => 'Akun berhasil diaktifkan.',
+            'inactive' => 'Akun berhasil dinonaktifkan.',
+        ];
+
+        return back()->with('success', $messages[$request->status]);
     }
 
     public function destroy(Account $account)
     {
         if ($account->is_system) {
             return back()->withErrors([
-                'error' => 'Akun sistem tidak dapat dihapus.'
+                'error' => 'Akun sistem tidak dapat dihapus.',
             ]);
         }
 
         if ($account->journalLines()->exists()) {
             return back()->withErrors([
-                'error' => 'Akun yang sudah memiliki transaksi tidak dapat dihapus. Nonaktifkan akun jika tidak ingin digunakan.'
+                'error' => 'Akun yang sudah memiliki transaksi tidak dapat dihapus. Nonaktifkan akun jika tidak ingin digunakan.',
             ]);
         }
 

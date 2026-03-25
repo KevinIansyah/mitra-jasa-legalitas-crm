@@ -3,7 +3,8 @@ import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
 import blogs from '@/routes/blogs';
 import type { BreadcrumbItem } from '@/types';
-import type { Blog, BlogCategory, BlogRelatedService, BlogTag } from '@/types/blogs';
+import type { Blog, BlogCategory, BlogTag } from '@/types/blogs';
+import type { Service } from '@/types/services';
 import { EditSection } from './_components/edit-section';
 
 export default function Page() {
@@ -11,7 +12,7 @@ export default function Page() {
         blog: Blog;
         categories: BlogCategory[];
         tags: BlogTag[];
-        services: BlogRelatedService[];
+        services: Service[];
     }>().props;
 
     const breadcrumbs: BreadcrumbItem[] = [
@@ -20,7 +21,7 @@ export default function Page() {
             href: blogs.index().url,
         },
         {
-            title: blog.title ?? 'Edit',
+            title: 'Edit',
             href: '#',
         },
     ];
@@ -29,7 +30,7 @@ export default function Page() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Edit Blog - ${blog.title}`} />
             <div className="p-4 md:p-6">
-                <Heading title="Edit Blog" description={`Mengedit blog: ${blog.title}`} />
+                <Heading title="Edit Blog" description='Perbarui informasi dan pengaturan blog yang sudah ada.' />
                 <EditSection blog={blog} categories={categories} tags={tags} services={services} />
             </div>
         </AppLayout>

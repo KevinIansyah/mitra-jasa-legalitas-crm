@@ -121,7 +121,7 @@ export function DeliverableCard({ deliverable, projectId }: DeliverableCardProps
                                 <div className="mt-2 flex flex-wrap items-center gap-2">
                                     {deliverable.version && <Badge className="bg-blue-600 text-white">{deliverable.version}</Badge>}
                                     {deliverable.is_final && <Badge className="bg-emerald-500 text-white">Final</Badge>}
-                                    {deliverable.is_encrypted && <Badge variant="secondary">Terenkripsi</Badge>}
+                                    {deliverable.is_encrypted && <Badge className="bg-slate-500 text-white">Terenkripsi</Badge>}
                                 </div>
                             </div>
                         </div>

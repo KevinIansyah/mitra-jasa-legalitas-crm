@@ -163,7 +163,7 @@ export default function Actions({ payment, isExpanded, onToggleExpand }: Actions
                                     <DropdownMenuItem key={s.value} disabled={s.value === payment.status} onSelect={() => setConfirmStatus(s.value as PaymentStatus)}>
                                         <span className={`mr-2 inline-block h-2 w-2 rounded-full ${s.classes}`} />
                                         {s.label}
-                                    </DropdownMenuItem>
+                                    </DropdownMenuItem> 
                                 ))}
                             </DropdownMenuContent>
                         </DropdownMenu>

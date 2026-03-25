@@ -335,7 +335,7 @@ export function DetailSection({ quote }: { quote: Quote }) {
                             <div className="grid grid-cols-[130px_1fr] gap-x-2 gap-y-2">
                                 <InfoRow label="Nama Project" value={quote.project.name} />
                                 <InfoRow label="Status">
-                                    <Badge variant="secondary">{quote.project.status}</Badge>
+                                    <Badge className="bg-slate-500 text-white">{quote.project.status}</Badge>
                                 </InfoRow>
                                 <InfoRow label="Dikonversi" value={quote.converted_at ? formatDate(quote.converted_at) : '-'} />
                             </div>

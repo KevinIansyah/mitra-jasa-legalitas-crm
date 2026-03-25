@@ -40,7 +40,13 @@ export default function getColumns(): ColumnDef<Customer>[] {
         {
             accessorKey: 'user_id',
             header: 'Akun',
-            cell: ({ row }) => (row.original.user_id ? <Badge className="bg-emerald-500 text-white">Terdaftar</Badge> : <Badge variant="secondary">Belum Terdaftar</Badge>),
+            cell: ({ row }) =>
+                row.original.user_id ? <Badge className="bg-emerald-500 text-white">Terdaftar</Badge> : <Badge className="bg-slate-500 text-white">Belum Terdaftar</Badge>,
+        },
+        {
+            accessorKey: 'projects_count',
+            header: 'Project',
+            cell: ({ row }) => <span className="text-sm tabular-nums">{row.original.projects_count} project</span>,
         },
         {
             accessorKey: 'action',

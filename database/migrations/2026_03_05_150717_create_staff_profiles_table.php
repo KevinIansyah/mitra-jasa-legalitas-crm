@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('staff_profiles', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->unique()->constrained('users')->cascadeOnDelete();
+
             $table->unsignedInteger('max_concurrent_projects')->default(5);
             $table->enum('availability_status', ['available', 'busy', 'on_leave'])->default('available');
             $table->json('skills')->nullable();
@@ -22,7 +23,6 @@ return new class extends Migration
             $table->unsignedBigInteger('daily_token_limit')->default(100000);
             $table->unsignedBigInteger('used_tokens_today')->default(0);
             $table->date('token_usage_reset_date')->nullable();
-
 
             $table->timestamps();
         });

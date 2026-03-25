@@ -224,6 +224,13 @@ export interface BlogSubscriberSummary {
     unverified: number;
 }
 
+export const BLOG_SUBSCRIBER_VERIFIED_FILTER = [
+    { value: '1', label: 'Terverifikasi', classes: 'bg-emerald-500 text-white' },
+    { value: '0', label: 'Belum Verifikasi', classes: 'bg-slate-500 text-white' },
+] as const;
+
+export const BLOG_SUBSCRIBER_VERIFIED_FILTER_MAP = Object.fromEntries(BLOG_SUBSCRIBER_VERIFIED_FILTER.map((item) => [item.value, item]));
+
 // ============================================================
 // UTILITY TYPES
 // ============================================================

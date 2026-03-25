@@ -77,6 +77,10 @@ export default function PermissionSection({ role, allPermissions }: PermissionSe
                     const serviceType = resource.replace('contact-', '');
 
                     switch (serviceType) {
+                        case 'messages':
+                            itemName = 'Pesan Masuk';
+                            break;
+
                         case 'companies':
                             itemName = 'Perusahaan';
                             break;
@@ -223,13 +227,46 @@ export default function PermissionSection({ role, allPermissions }: PermissionSe
                     if (resource === 'blogs') {
                         itemName = 'Semua Blog';
                     }
-                    
+
                     if (resource === 'blog-categories') {
                         itemName = 'Kategori';
                     }
 
                     if (resource === 'blog-tags') {
                         itemName = 'Tag';
+                    }
+
+                    if (resource === 'blog-subscribers') {
+                        itemName = 'Subscriber Blog';
+                    }
+
+                    break;
+                }
+
+                // Content Management
+                case resource.startsWith('content'): {
+                    groupName = 'Manajemen Konten';
+                    if (resource === 'content-client-success-stories') {
+                        itemName = 'Kisah Sukses Klien';
+                    }
+
+                    if (resource === 'content-faqs') {
+                        itemName = 'FAQ';
+                    }
+
+                    if (resource === 'content-testimonials') {
+                        itemName = 'Testimoni';
+                    }
+
+                    break;
+                }
+
+                // AI Chat Management
+                case resource.startsWith('ai-chat'): {
+                    groupName = 'Manajemen AI Chat';
+
+                    if (resource === 'ai-chat-sessions') {
+                        itemName = 'Riwayat Chat';
                     }
 
                     break;
@@ -241,6 +278,10 @@ export default function PermissionSection({ role, allPermissions }: PermissionSe
 
                     if (resource === 'master-cities') {
                         itemName = 'Kota';
+                    }
+
+                    if (resource === 'master-users') {
+                        itemName = 'User';
                     }
 
                     break;
@@ -410,7 +451,10 @@ export default function PermissionSection({ role, allPermissions }: PermissionSe
 
                                     {/* Group Items */}
                                     {group.items.map((item, itemIndex) => (
-                                        <TableRow key={`item-${groupIndex}-${itemIndex}`} className={itemIndex === group.items.length - 1 ? 'text-muted-foreground' : 'text-muted-foreground border-b-0'}>
+                                        <TableRow
+                                            key={`item-${groupIndex}-${itemIndex}`}
+                                            className={itemIndex === group.items.length - 1 ? 'text-muted-foreground' : 'border-b-0 text-muted-foreground'}
+                                        >
                                             <TableCell>{item.name}</TableCell>
 
                                             {/* Toggle All */}

@@ -39,7 +39,7 @@ export function PaymentEditDrawer({ invoice, payment, open, onOpenChange }: Paym
     const [filePreview, setFilePreview] = React.useState<{ src?: string; name: string; size: number; isImage: boolean } | null>(
         payment.proof_file
             ? {
-                  src: payment.proof_url ?? undefined,
+                  src: `/files/${payment.proof_file}`,
                   name: payment.proof_file.split('/').pop() || 'file',
                   size: 0,
                   isImage: /\.(jpg|jpeg|png|webp)$/i.test(payment.proof_file),
@@ -100,6 +100,7 @@ export function PaymentEditDrawer({ invoice, payment, open, onOpenChange }: Paym
     }, []);
 
     const handleDragOver = (e: React.DragEvent) => e.preventDefault();
+
     const handleDrop = (e: React.DragEvent) => {
         e.preventDefault();
         setIsDragging(false);

@@ -1,6 +1,6 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
-import { ACCOUNT_CATEGORIES_MAP, ACCOUNT_TYPES_MAP, type Account } from '@/types/account';
+import { ACCOUNT_CATEGORIES_MAP, ACCOUNT_TYPES_MAP, type Account } from '@/types/accounts';
 import Actions from './actions';
 
 export default function getColumns(): ColumnDef<Account>[] {
@@ -14,7 +14,7 @@ export default function getColumns(): ColumnDef<Account>[] {
                     <div className="space-y-0.5">
                         <div className="flex items-center gap-2">
                             <span className="text-sm font-medium">{name}</span>
-                            {is_system && <Badge variant="secondary">Sistem</Badge>}
+                            {is_system && <Badge className="bg-slate-500 text-white">Sistem</Badge>}
                         </div>
                         <p className="text-xs text-muted-foreground">{code}</p>
                     </div>

@@ -23,6 +23,17 @@ class BlogSubscriber extends Model
         'token',
     ];
 
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function ($subscriber) {
+            if (empty($subscriber->token)) {
+                $subscriber->token = \Illuminate\Support\Str::random(64);
+            }
+        });
+    }
+
     /*
     |--------------------------------------------------------------------------
     | SCOPES
@@ -50,7 +61,7 @@ class BlogSubscriber extends Model
         $this->update([
             'is_verified' => true,
             'verified_at' => now(),
-            'token'       => null,
+            'token' => null,
         ]);
     }
 

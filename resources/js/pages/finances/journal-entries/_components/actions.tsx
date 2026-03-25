@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import finances from '@/routes/finances';
-import type { Account } from '@/types/account';
+import type { Account } from '@/types/accounts';
 import type { JournalEntry } from '@/types/journal-entries';
 import { JournalEditDrawer } from './journal-edit-drawer';
 

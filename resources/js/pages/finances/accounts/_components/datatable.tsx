@@ -16,9 +16,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
 import accountsRoutes from '@/routes/finances/accounts';
-import { ACCOUNT_TYPES, type Account } from '@/types/account';
 import { AccountAddDrawer } from './account-add-drawer';
 import getColumns from './columns';
+import { ACCOUNT_TYPES, type Account } from '@/types/accounts';
 
 interface DataTableProps {
     data: Account[];

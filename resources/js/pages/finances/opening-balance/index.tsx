@@ -21,7 +21,7 @@ import { formatRupiah } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
 import finances from '@/routes/finances';
 import type { BreadcrumbItem } from '@/types';
-import { ACCOUNT_TYPES_MAP, type Account } from '@/types/account';
+import { ACCOUNT_TYPES_MAP, type Account } from '@/types/accounts';
 import type { ExistingOpeningBalance, OpeningBalanceFormData, OpeningBalanceFormErrors, OpeningBalanceItemFormData } from '@/types/journal-entries';
 
 const breadcrumbs: BreadcrumbItem[] = [

@@ -24,7 +24,7 @@ export default function getColumns(): ColumnDef<Blog>[] {
             cell: ({ row }) => {
                 const category = row.original.category;
                 return category ? (
-                    <Badge variant="secondary">{category.name}</Badge>
+                    <Badge className="bg-slate-500 text-white">{category.name}</Badge>
                 ) : (
                     <span className="text-sm text-muted-foreground">-</span>
                 );
@@ -38,7 +38,7 @@ export default function getColumns(): ColumnDef<Blog>[] {
                 return isPublished ? (
                     <Badge className="bg-emerald-500 text-white">Published</Badge>
                 ) : (
-                    <Badge variant="secondary">Draft</Badge>
+                    <Badge className="bg-slate-500 text-white">Draft</Badge>
                 );
             },
         },

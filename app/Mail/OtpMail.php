@@ -4,12 +4,13 @@ namespace App\Mail;
 
 use App\Models\User;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class OtpMail extends Mailable
+class OtpMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
@@ -23,8 +24,8 @@ class OtpMail extends Mailable
     {
         $subject = match ($this->type) {
             'email_verification' => 'Kode Verifikasi Email',
-            'password_reset'     => 'Kode Reset Password',
-            default              => 'Kode OTP',
+            'password_reset' => 'Kode Reset Password',
+            default => 'Kode OTP',
         };
 
         return new Envelope(subject: $subject);
@@ -32,7 +33,7 @@ class OtpMail extends Mailable
 
     public function content(): Content
     {
-        return new Content(view: 'emails.otp');
+        return new Content(view: 'emails.client.otp');
     }
 
     public function attachments(): array
