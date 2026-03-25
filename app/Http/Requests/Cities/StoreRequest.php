@@ -19,7 +19,6 @@ class StoreRequest extends FormRequest
             'province'    => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'status'      => 'nullable|in:active,inactive',
-            'sort_order'  => 'nullable|integer|min:0',
         ];
     }
 

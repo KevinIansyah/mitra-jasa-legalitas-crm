@@ -122,8 +122,6 @@ class ProposalController extends Controller
     {
         $proposal->load(['items', 'customer:id,name,tier,email,phone']);
 
-        Log::info('proposal', $proposal->toArray());
-
         return Inertia::render('finances/proposals/edit/index', [
             'proposal'         => $proposal,
             'selectedCustomer' => $proposal->customer,

@@ -48,8 +48,6 @@ export function EstimateForm({ data, errors, initialQuote, initialProposal, init
     const [isCustomerSearching, setIsCustomerSearching] = React.useState(false);
     const [selectedCustomer, setSelectedCustomer] = React.useState<Customer | null>(initialCustomer ?? null);
 
-    console.log('selectedProposal', selectedProposal);
-
     const customerSearchTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const isDirect = !fromQuote && !fromProposal && !selectedQuote && !selectedProposal;

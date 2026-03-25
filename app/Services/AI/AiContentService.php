@@ -84,8 +84,6 @@ class AiContentService
 
     $result = $this->generateWithQuota($user, $prompt, $this->systemPrompt(), 4000);
 
-    Log::info('Gemini raw response', ['content' => $result['content']]);
-
     $parsed = $this->parseJson($result['content']);
 
     return [
@@ -148,8 +146,6 @@ class AiContentService
     $prompt = $prompt($context);
 
     $result = $this->generateWithQuota($user, $prompt, $this->systemPrompt(), 3000);
-
-    Log::info('Gemini raw response', ['content' => $result['content']]);
 
     $parsed = $this->parseJson($result['content']);
 
@@ -265,8 +261,6 @@ class AiContentService
     $prompt = $prompt($context);
 
     $result = $this->generateWithQuota($user, $prompt, $this->systemPrompt(), 5000);
-
-    Log::info('AI blog content raw response', ['content' => $result['content']]);
 
     $parsed = $this->parseJson($result['content']);
 

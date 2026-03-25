@@ -237,7 +237,6 @@ export function CreateSection({ categories }: CreateSectionProps) {
                 handleCancel();
             },
             onError: (errors) => {
-                console.log(errors);
                 const msg = Object.values(errors)[0] ?? 'Terjadi kesalahan saat menambahkan layanan, coba lagi.';
                 toast.error('Gagal', {
                     description: String(msg),

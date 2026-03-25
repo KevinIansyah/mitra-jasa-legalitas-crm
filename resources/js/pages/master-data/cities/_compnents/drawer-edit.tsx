@@ -28,7 +28,6 @@ export function DrawerEdit({ city, open, onOpenChange }: DrawerEditProps) {
         province: city.province || '',
         description: city.description || '',
         status: city.status || 'active',
-        sort_order: city.sort_order ?? 0,
     });
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -126,33 +125,19 @@ export function DrawerEdit({ city, open, onOpenChange }: DrawerEditProps) {
                                     </FieldLabel>
                                     <Select required value={data.status} onValueChange={(value) => setData('status', value as 'active' | 'inactive')}>
                                         <SelectTrigger id="status">
-                                            <SelectValue placeholder="Pilih status" />
+                                            <SelectValue placeholder="Pilih status..." />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
                                                 <SelectLabel>Status</SelectLabel>
-                                                <SelectItem value="active">Aktif</SelectItem>
-                                                <SelectItem value="inactive">Tidak Aktif</SelectItem>
+                                                <SelectItem value="active">Active</SelectItem>
+                                                <SelectItem value="inactive">Inactive</SelectItem>
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
                                     {errors.status && <FieldError>{errors.status}</FieldError>}
                                 </Field>
                             </div>
-
-                            <Field>
-                                <FieldLabel htmlFor="sort_order">Urutan</FieldLabel>
-                                <Input
-                                    id="sort_order"
-                                    type="number"
-                                    name="sort_order"
-                                    placeholder="0"
-                                    min={0}
-                                    value={data.sort_order ?? 0}
-                                    onChange={(e) => setData('sort_order', Number(e.target.value))}
-                                />
-                                {errors.sort_order && <FieldError>{errors.sort_order}</FieldError>}
-                            </Field>
 
                             <Field>
                                 <FieldLabel htmlFor="description">Deskripsi</FieldLabel>

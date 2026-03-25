@@ -23,7 +23,6 @@ export function DrawerAdd() {
         province: '',
         description: '',
         status: 'active',
-        sort_order: 0,
     });
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -128,28 +127,14 @@ export function DrawerAdd() {
                                         <SelectContent>
                                             <SelectGroup>
                                                 <SelectLabel>Status</SelectLabel>
-                                                <SelectItem value="active">Aktif</SelectItem>
-                                                <SelectItem value="inactive">Tidak Aktif</SelectItem>
+                                                <SelectItem value="active">Active</SelectItem>
+                                                <SelectItem value="inactive">Inactive</SelectItem>
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
                                     {errors.status && <FieldError>{errors.status}</FieldError>}
                                 </Field>
                             </div>
-
-                            <Field>
-                                <FieldLabel htmlFor="sort_order">Urutan</FieldLabel>
-                                <Input
-                                    id="sort_order"
-                                    type="number"
-                                    name="sort_order"
-                                    placeholder="0"
-                                    min={0}
-                                    value={data.sort_order ?? 0}
-                                    onChange={(e) => setData('sort_order', Number(e.target.value))}
-                                />
-                                {errors.sort_order && <FieldError>{errors.sort_order}</FieldError>}
-                            </Field>
 
                             <Field>
                                 <FieldLabel htmlFor="description">Deskripsi</FieldLabel>

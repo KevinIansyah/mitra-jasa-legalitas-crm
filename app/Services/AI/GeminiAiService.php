@@ -22,11 +22,6 @@ class GeminiAiService implements AiServiceInterface
   {
     $url = "{$this->baseUrl}/{$this->model}:generateContent?key={$this->apiKey}";
 
-    Log::info('Gemini request', [
-      'model'     => $this->model,
-      'maxTokens' => $maxTokens,
-    ]);
-
     $body = [
       'contents' => [
         ['role' => 'user', 'parts' => [['text' => $prompt]]],
@@ -47,8 +42,12 @@ class GeminiAiService implements AiServiceInterface
     $response = Http::timeout(60)->post($url, $body);
 
     if (!$response->successful()) {
-      Log::error('Gemini API error', ['status' => $response->status(), 'body' => $response->body()]);
-      throw new Exception("Gemini API error: {$response->status()} — {$response->body()}");
+      $errorBody = $response->json();
+
+      $message = $errorBody['error']['message']
+        ?? $response->body();
+
+      throw new Exception("Gemini API error: {$response->status()} - {$message}");
     }
 
     $data    = $response->json();

@@ -165,7 +165,6 @@ export function EditSection({ cityPage }: EditSectionProps) {
                 form.clearErrors();
             },
             onError: (errors) => {
-                console.log(errors);
                 const msg = Object.values(errors)[0] ?? 'Gagal memperbarui. Periksa kembali data yang diisi.';
                 toast.error('Gagal', { description: String(msg) });
             },

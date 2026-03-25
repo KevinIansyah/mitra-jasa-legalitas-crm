@@ -14,7 +14,6 @@ class City extends Model
         'province',
         'description',
         'status',
-        'sort_order',
     ];
 
     /*

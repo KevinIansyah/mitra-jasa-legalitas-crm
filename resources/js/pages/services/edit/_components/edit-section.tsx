@@ -96,6 +96,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
               }
             : null,
     );
+
     const [imageError, setImageError] = useState<string | null>(null);
     const [isDragging, setIsDragging] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -1313,11 +1314,11 @@ export function EditSection({ service, categories }: EditSectionProps) {
                         {processStepsForm.data.process_steps.length === 0 ? (
                             <div className="rounded-xl bg-sidebar p-6 shadow md:p-6 dark:shadow-none">
                                 <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border py-16 text-muted-foreground">
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                        <ClipboardList className="size-5 text-primary" />
+                                    </div>
                                     <p className="text-sm">Belum ada tahapan proses</p>
                                     <Button type="button" onClick={addProcessStep} className="gap-2">
-                                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                                            <ClipboardList className="size-5 text-primary" />
-                                        </div>
                                         <Plus className="size-4" />
                                         Tambah Tahap Pertama
                                     </Button>
