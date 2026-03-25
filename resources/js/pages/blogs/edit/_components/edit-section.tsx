@@ -100,7 +100,7 @@ export function EditSection({ blog, categories, tags, services }: EditSectionPro
     } = useForm<BasicInfoFormData>({
         blog_category_id: blog.blog_category_id ?? '',
         title: blog.title ?? '',
-    
+
         short_description: blog.short_description ?? '',
         featured_image: null,
         remove_image: false,
@@ -270,11 +270,16 @@ export function EditSection({ blog, categories, tags, services }: EditSectionPro
     const handleAiApply = (data: Record<string, unknown>) => {
         if (data.short_description !== undefined) setBasicData('short_description', data.short_description as string);
         if (data.content !== undefined) contentForm.setData('content', data.content as string);
-        if (data.meta_title !== undefined) setSeoData('seo', { ...seoData.seo, meta_title: data.meta_title as string });
-        if (data.meta_description !== undefined) setSeoData('seo', { ...seoData.seo, meta_description: data.meta_description as string });
-        if (data.focus_keyword !== undefined) setSeoData('seo', { ...seoData.seo, focus_keyword: data.focus_keyword as string });
-    };
 
+        const seoUpdates: Partial<LocalBlogSeo> = {};
+        if (data.meta_title !== undefined) seoUpdates.meta_title = data.meta_title as string;
+        if (data.meta_description !== undefined) seoUpdates.meta_description = data.meta_description as string;
+        if (data.focus_keyword !== undefined) seoUpdates.focus_keyword = data.focus_keyword as string;
+
+        if (Object.keys(seoUpdates).length > 0) {
+            setSeoData('seo', { ...seoData.seo, ...seoUpdates });
+        }
+    };
     // ============================================================
     // RENDER
     // ============================================================
@@ -367,7 +372,12 @@ export function EditSection({ blog, categories, tags, services }: EditSectionPro
                                 {/* Service */}
                                 <Field>
                                     <FieldLabel>Layanan</FieldLabel>
-                                    <MultiSelect options={serviceOptions} selected={basicData.service_ids} onChange={(ids) => setBasicData('service_ids', ids)} placeholder="Pilih layanan blog..." />
+                                    <MultiSelect
+                                        options={serviceOptions}
+                                        selected={basicData.service_ids}
+                                        onChange={(ids) => setBasicData('service_ids', ids)}
+                                        placeholder="Pilih layanan blog..."
+                                    />
                                     {basicErrors.service_ids && <FieldError>{basicErrors.service_ids}</FieldError>}
                                 </Field>
 

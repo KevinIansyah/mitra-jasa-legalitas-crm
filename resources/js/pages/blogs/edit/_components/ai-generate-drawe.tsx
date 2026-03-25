@@ -110,7 +110,6 @@ export function AiGenerateDrawer({ open, onOpenChange, type, blogId, onApply }: 
 
     const getMappedResult = (): Record<string, unknown> => {
         if (!result) return {};
-        // content & seo fields are flat — no mapping needed
         return result;
     };
 
