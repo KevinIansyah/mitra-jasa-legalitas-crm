@@ -414,6 +414,7 @@ class PublicHomeController extends Controller
                 'id' => $service->category->id,
                 'name' => $service->category->name,
                 'slug' => $service->category->slug,
+                'palette_color' => $service->category->palette_color,
             ] : null,
             'cheapest_package' => $service->cheapestPackage ? [
                 'id' => $service->cheapestPackage->id,
