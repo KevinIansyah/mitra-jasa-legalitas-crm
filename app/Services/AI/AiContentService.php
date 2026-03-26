@@ -252,7 +252,7 @@ class AiContentService
   /**
    * Generate short description and content of the blog.
    *
-   * @return array{ short_description: string, content: string, tokens_used: int }
+   * @return array{ short_description: string, content: string, reading_time: int, tokens_used: int }
    */
   public function generateBlogContent(User $user, array $context): array
   {
@@ -266,6 +266,7 @@ class AiContentService
     return [
       'short_description' => $parsed['short_description'] ?? '',
       'content'           => $parsed['content'] ?? '',
+      'reading_time'      => $parsed['reading_time'] ?? 0,
       'tokens_used'       => $result['tokens_used'],
     ];
   }

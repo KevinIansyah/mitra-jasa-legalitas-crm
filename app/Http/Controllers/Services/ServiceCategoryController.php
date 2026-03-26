@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Services;
 use App\Http\Controllers\Controller;
 use App\Models\ServiceCategory;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class ServiceCategoryController extends Controller
@@ -35,11 +34,14 @@ class ServiceCategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:service_categories,name',
+            'palette_color' => 'nullable|string|max:50',
             'status' => 'nullable|in:active,inactive',
         ], [
             'name.required' => 'Nama kategori wajib diisi.',
             'name.max'      => 'Nama kategori maksimal 255 karakter.',
             'name.unique'   => 'Nama kategori sudah digunakan.',
+            'palette_color.string' => 'Palette color harus berupa string.',
+            'palette_color.max' => 'Palette color maksimal 50 karakter.',
             'status.in'     => 'Status tidak valid.',
         ]);
 
@@ -59,11 +61,14 @@ class ServiceCategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:service_categories,name,' . $category->id,
+            'palette_color' => 'nullable|string|max:50',
             'status' => 'nullable|in:active,inactive',
         ], [
             'name.required' => 'Nama kategori wajib diisi.',
             'name.max'      => 'Nama kategori maksimal 255 karakter.',
             'name.unique'   => 'Nama kategori sudah digunakan.',
+            'palette_color.string' => 'Palette color harus berupa string.',
+            'palette_color.max' => 'Palette color maksimal 50 karakter.',
             'status.in'     => 'Status tidak valid.',
         ]);
 

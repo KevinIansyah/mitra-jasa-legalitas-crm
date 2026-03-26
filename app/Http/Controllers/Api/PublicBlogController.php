@@ -119,6 +119,7 @@ class PublicBlogController extends Controller
             'featured_image' => $blog->featured_image ? "{$r2Url}/{$blog->featured_image}" : null,
             'is_featured' => $blog->is_featured,
             'views' => $blog->views,
+            'reading_time' => $blog->reading_time,
             'published_at' => $blog->published_at,
             'category' => $blog->category ? [
                 'id' => $blog->category->id,
@@ -176,6 +177,7 @@ class PublicBlogController extends Controller
             'featured_image' => $blog->featured_image ? "{$r2Url}/{$blog->featured_image}" : null,
             'is_featured' => $blog->is_featured,
             'views' => $blog->views,
+            'reading_time' => $blog->reading_time,
             'published_at' => $blog->published_at,
             'category' => $blog->category ? [
                 'id' => $blog->category->id,

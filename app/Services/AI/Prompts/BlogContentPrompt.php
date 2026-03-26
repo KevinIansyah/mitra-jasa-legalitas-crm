@@ -20,15 +20,19 @@ Tulis konten untuk artikel blog "{$title}" di website jasa legalitas.
 - Perusahaan: {$company}
 
 **INSTRUKSI:**
-1. Tulis 2 bagian: "short_description" dan "content"
+1. Tulis 3 bagian: "short_description", "content", dan "reading_time"
 2. Short Description: 1-2 kalimat ringkasan artikel (100-150 karakter), plain text tanpa HTML
 3. Content: artikel blog lengkap (600-900 kata)
-4. Integrasikan keyword "{$keyword}" secara natural minimal 3x
-5. Tone: edukatif, informatif, dan mudah dipahami pembaca awam
-6. Sertakan struktur yang jelas: pembukaan, isi (dengan sub-heading), dan penutup
-7. Jangan menyebut harga spesifik
-8. JANGAN tulis ulang judul "{$title}" sebagai heading di awal content — judul sudah ditampilkan terpisah oleh sistem
-9. Mulai content langsung dengan paragraf pembukaan, bukan heading yang sama dengan judul
+4. Hitung "reading_time" berdasarkan estimasi waktu baca:
+   - Gunakan standar 200 kata = 1 menit
+   - Bulatkan ke atas (ceil)
+   - Contoh: 650 kata ≈ 4 menit
+5. Integrasikan keyword "{$keyword}" secara natural minimal 3x
+6. Tone: edukatif, informatif, dan mudah dipahami pembaca awam
+7. Sertakan struktur yang jelas: pembukaan, isi (dengan sub-heading), dan penutup
+8. Jangan menyebut harga spesifik
+9. JANGAN tulis ulang judul "{$title}" sebagai heading di awal content — judul sudah ditampilkan terpisah oleh sistem
+10. Mulai content langsung dengan paragraf pembukaan, bukan heading yang sama dengan judul
 
 **FORMAT HTML YANG DIIZINKAN:**
 - Paragraf: <p>
@@ -47,7 +51,8 @@ Tulis konten untuk artikel blog "{$title}" di website jasa legalitas.
 **OUTPUT FORMAT (JSON saja, tanpa teks lain):**
 {
   "short_description": "...",
-  "content": "<h2>...</h2><p>...</p><ul><li>...</li></ul>"
+  "content": "<h2>...</h2><p>...</p><ul><li>...</li></ul>",
+  "reading_time": 4
 }
 PROMPT;
 };

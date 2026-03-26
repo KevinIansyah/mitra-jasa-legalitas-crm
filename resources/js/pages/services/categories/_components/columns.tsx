@@ -19,6 +19,23 @@ export default function getColumns(): ColumnDef<ServiceCategory>[] {
             },
         },
         {
+            accessorKey: 'palette_color',
+            header: 'Palette Color',
+            cell: ({ row }) => {
+                const { palette_color } = row.original;
+                if (!palette_color) return <span>-</span>;
+
+                return (
+                    <div
+                        className="h-8 w-8 rounded-xl"
+                        style={{
+                            backgroundColor: palette_color,
+                        }}
+                    ></div>
+                );
+            },
+        },
+        {
             accessorKey: 'status',
             header: 'Status',
             cell: ({ row }) => {

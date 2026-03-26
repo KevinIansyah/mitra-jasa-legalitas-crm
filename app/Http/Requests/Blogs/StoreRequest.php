@@ -24,6 +24,7 @@ class StoreRequest extends FormRequest
             'featured_image'    => 'nullable|image|mimes:jpg,jpeg,png,webp,gif,svg|max:5120',
             'is_published'      => 'boolean',
             'is_featured'       => 'boolean',
+            'reading_time'      => 'nullable|integer|min:0',
 
             // Tags
             'tag_ids'   => 'nullable|array',
@@ -69,6 +70,9 @@ class StoreRequest extends FormRequest
             'featured_image.image' => 'File gambar tidak valid.',
             'featured_image.mimes' => 'Format gambar harus jpg, jpeg, png, webp, gif, atau svg.',
             'featured_image.max'   => 'Ukuran gambar maksimal 5MB.',
+
+            'reading_time.integer' => 'Waktu baca harus berupa angka.',
+            'reading_time.min'     => 'Waktu baca minimal 0 menit.',
 
             // Tags
             'tag_ids.array'  => 'Format tag tidak valid.',

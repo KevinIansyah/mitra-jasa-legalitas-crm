@@ -20,6 +20,7 @@ class Service extends Model
         'short_description',
         'introduction',
         'content',
+        'icon',
         'featured_image',
         'gallery_images',
         'is_published',

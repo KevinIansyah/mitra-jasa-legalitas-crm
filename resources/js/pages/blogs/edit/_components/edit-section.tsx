@@ -38,6 +38,7 @@ type BasicInfoFormData = {
     remove_image: boolean;
     is_published: boolean;
     is_featured: boolean;
+    reading_time: number;
     tag_ids: number[];
     service_ids: number[];
 };
@@ -100,12 +101,12 @@ export function EditSection({ blog, categories, tags, services }: EditSectionPro
     } = useForm<BasicInfoFormData>({
         blog_category_id: blog.blog_category_id ?? '',
         title: blog.title ?? '',
-
         short_description: blog.short_description ?? '',
         featured_image: null,
         remove_image: false,
         is_published: blog.is_published ?? false,
         is_featured: blog.is_featured ?? false,
+        reading_time: blog.reading_time ?? 0,
         tag_ids: existingTagIds,
         service_ids: existingServiceIds,
     });
@@ -270,6 +271,7 @@ export function EditSection({ blog, categories, tags, services }: EditSectionPro
     const handleAiApply = (data: Record<string, unknown>) => {
         if (data.short_description !== undefined) setBasicData('short_description', data.short_description as string);
         if (data.content !== undefined) contentForm.setData('content', data.content as string);
+        if (data.reading_time !== undefined) setBasicData('reading_time', data.reading_time as number);
 
         const seoUpdates: Partial<LocalBlogSeo> = {};
         if (data.meta_title !== undefined) seoUpdates.meta_title = data.meta_title as string;
@@ -379,6 +381,21 @@ export function EditSection({ blog, categories, tags, services }: EditSectionPro
                                         placeholder="Pilih layanan blog..."
                                     />
                                     {basicErrors.service_ids && <FieldError>{basicErrors.service_ids}</FieldError>}
+                                </Field>
+
+                                {/* Reading Time */}
+                                <Field>
+                                    <FieldLabel>Waktu Baca</FieldLabel>
+                                    <Input
+                                        id="reading_time"
+                                        type="number"
+                                        min={0}
+                                        name="reading_time"
+                                        placeholder="0"
+                                        value={basicData.reading_time}
+                                        onChange={(e) => setBasicData('reading_time', Number(e.target.value))}
+                                    />
+                                    {basicErrors.reading_time && <FieldError>{basicErrors.reading_time}</FieldError>}
                                 </Field>
 
                                 {/* Short Description */}

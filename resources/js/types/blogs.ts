@@ -54,6 +54,7 @@ export interface Blog {
     is_published: boolean;
     is_featured: boolean;
     views: number;
+    reading_time: number | null;
     published_at: string | null;
     created_at: string;
     updated_at: string;
@@ -179,6 +180,7 @@ export interface BlogFormData {
     featured_image?: string | null;
     is_published?: boolean;
     is_featured?: boolean;
+    reading_time?: number | 0;
     published_at?: string | null;
     tag_ids?: number[];
 }

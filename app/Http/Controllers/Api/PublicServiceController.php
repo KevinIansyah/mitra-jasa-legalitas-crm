@@ -41,7 +41,7 @@ class PublicServiceController extends Controller
         }
 
         $services = Service::query()
-            ->with(['category:id,name,slug'])
+            ->with(['category:id,name,slug,palette_color'])
             ->where('is_published', true)
             ->where('status', 'active')
             ->when(
@@ -361,6 +361,7 @@ class PublicServiceController extends Controller
                 'id' => $service->category->id,
                 'name' => $service->category->name,
                 'slug' => $service->category->slug,
+                'palette_color' => $service->category->palette_color,
             ] : null,
         ];
     }

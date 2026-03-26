@@ -23,7 +23,7 @@ export interface ServiceCategory {
     id: number;
     name: string;
     slug: string;
-    sort_order: number;
+    palette_color: string | null;
     status: ServiceStatus;
     created_at: string;
     updated_at: string;
@@ -40,13 +40,13 @@ export interface Service {
     introduction: string | null;
     content: string | null;
     featured_image: string | null;
+    icon: string | null;
     gallery_images: string[] | null;
     is_published: boolean;
     is_featured: boolean;
     is_popular: boolean;
     published_at: string | null;
     status: ServiceStatus;
-    sort_order: number;
     created_at: string;
     updated_at: string;
 
@@ -347,6 +347,7 @@ export interface ServiceCityPageWithRelations extends ServiceCityPage {
 
 export interface ServiceCategoryFormData {
     name: string;
+    palette_color: string;
     sort_order?: number;
     status?: ServiceStatus;
 }
@@ -359,6 +360,7 @@ export interface ServiceFormData {
     introduction?: string | null;
     content?: string | null;
     featured_image?: string | null;
+    icon?: string | null;
     gallery_images?: string[] | null;
     is_published?: boolean;
     is_featured?: boolean;

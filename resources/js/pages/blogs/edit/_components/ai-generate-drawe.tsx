@@ -147,6 +147,8 @@ export function AiGenerateDrawer({ open, onOpenChange, type, blogId, onApply }: 
             case 'content': {
                 const shortDescription = result.short_description as string;
                 const content = result.content as string;
+                const readingTime = result.reading_time as number;
+                const readingTimeText = readingTime > 0 ? `${readingTime} menit` : 'Tidak diketahui';
 
                 return (
                     <div className="space-y-2">
@@ -156,6 +158,10 @@ export function AiGenerateDrawer({ open, onOpenChange, type, blogId, onApply }: 
 
                         <PreviewCard label="Konten Utama" applied={!!applied['content']} onApply={() => applyField('content', content)}>
                             <p className="line-clamp-4">{stripHtml(content)}</p>
+                        </PreviewCard>
+
+                        <PreviewCard label="Waktu Baca" applied={!!applied['reading_time']} onApply={() => applyField('reading_time', readingTime)}>
+                            <p className="text-sm text-muted-foreground">{readingTimeText}</p>
                         </PreviewCard>
                     </div>
                 );

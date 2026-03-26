@@ -18,6 +18,7 @@ class UpdateBasicInformationRequest extends FormRequest
             'service_category_id' => 'required|exists:service_categories,id',
             'name'                => 'required|string|max:255',
             'short_description'   => 'nullable|string',
+            'icon'                => 'nullable|string|max:255',
             'featured_image'      => 'nullable|image|mimes:jpg,jpeg,png,webp,gif,svg|max:5120',
             'remove_image'        => 'boolean',
             'is_published'        => 'boolean',
@@ -38,6 +39,8 @@ class UpdateBasicInformationRequest extends FormRequest
             'name.max'      => 'Nama layanan maksimal 255 karakter.',
 
             'short_description.string' => 'Deskripsi singkat harus berupa teks.',
+
+            'icon.string' => 'Icon harus berupa emoticon.',
 
             'featured_image.image' => 'File harus berupa gambar.',
             'featured_image.mimes' => 'Format gambar harus jpg, jpeg, png, webp, gif, atau svg.',

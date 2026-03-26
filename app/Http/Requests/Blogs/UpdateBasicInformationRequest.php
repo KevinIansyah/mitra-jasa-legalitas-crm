@@ -21,6 +21,7 @@ class UpdateBasicInformationRequest extends FormRequest
             'remove_image'      => 'boolean',
             'is_published'      => 'boolean',
             'is_featured'       => 'boolean',
+            'reading_time'      => 'nullable|integer|min:0',
 
             // Tags
             'tag_ids'   => 'nullable|array',
@@ -51,6 +52,9 @@ class UpdateBasicInformationRequest extends FormRequest
             'remove_image.boolean' => 'Status hapus gambar tidak valid.',
             'is_published.boolean' => 'Status publikasi tidak valid.',
             'is_featured.boolean'  => 'Status unggulan tidak valid.',
+
+            'reading_time.integer' => 'Waktu baca harus berupa angka.',
+            'reading_time.min'     => 'Waktu baca minimal 0 menit.',
 
             'tag_ids.array'    => 'Format tag tidak valid.',
             'tag_ids.*.exists' => 'Tag yang dipilih tidak valid.',

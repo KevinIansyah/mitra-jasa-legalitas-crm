@@ -43,7 +43,7 @@ class PublicHomeController extends Controller
             ->published()
             ->featured()
             ->with([
-                'category:id,name,slug',
+                'category:id,name,slug,palette_color',
                 'cheapestPackage' => function ($q) {
                     $q->with(['includedFeatures']);
                 }
@@ -58,12 +58,22 @@ class PublicHomeController extends Controller
             ->withCount(['services' => fn($q) => $q->published()])
             ->limit(self::SERVICE_CATEGORIES_LIMIT)
             ->latest()
-            ->get(['id', 'name', 'slug'])
+            ->get(['id', 'name', 'slug', 'palette_color'])
             ->map(fn(ServiceCategory $cat) => [
                 'id' => $cat->id,
                 'name' => $cat->name,
                 'slug' => $cat->slug,
                 'published_services_count' => $cat->services_count,
+            ]);
+
+        $allServices = Service::query()
+            ->published()
+            ->get(['id', 'name', 'slug', 'icon'])
+            ->map(fn(Service $s) => [
+                'id' => $s->id,
+                'name' => $s->name,
+                'slug' => $s->slug,
+                'icon' => $s->icon,
             ]);
 
         $totalServices = Service::query()
@@ -143,6 +153,7 @@ class PublicHomeController extends Controller
         return ApiResponse::success([
             'stats' => $this->buildStats($site, $totalServices),
             'featured_services' => $featuredServices,
+            'all_services' => $allServices,
             'service_categories' => $serviceCategories,
             'testimonials' => $testimonials,
             'faqs' => $faqs,
@@ -404,6 +415,20 @@ class PublicHomeController extends Controller
                 'name' => $service->category->name,
                 'slug' => $service->category->slug,
             ] : null,
+            'cheapest_package' => $service->cheapestPackage ? [
+                'id' => $service->cheapestPackage->id,
+                'name' => $service->cheapestPackage->name,
+                'slug' => $service->cheapestPackage->slug,
+                'price' => $service->cheapestPackage->price,
+                'duration' => $service->cheapestPackage->duration,
+                'duration_days' => $service->cheapestPackage->duration_days,
+            ] : null,
+            'included_features' => $service->cheapestPackage?->includedFeatures->map(fn($feature) => [
+                'id' => $feature->id,
+                'feature_name' => $feature->feature_name,
+                'is_included' => $feature->is_included,
+                'sort_order' => $feature->sort_order,
+            ]),
         ];
     }
 
@@ -417,6 +442,7 @@ class PublicHomeController extends Controller
             'featured_image' => $this->publicAssetUrl($blog->featured_image, $r2Url),
             'is_featured' => $blog->is_featured,
             'views' => $blog->views,
+            'reading_time' => $blog->reading_time,
             'published_at' => $blog->published_at,
             'category' => $blog->category ? [
                 'id' => $blog->category->id,

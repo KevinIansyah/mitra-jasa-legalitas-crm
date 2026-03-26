@@ -15,6 +15,7 @@ export function DrawerAdd() {
 
     const { data, setData, post, processing, errors, reset } = useForm<ServiceCategoryFormData>({
         name: '',
+        palette_color: '',
     });
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -63,7 +64,7 @@ export function DrawerAdd() {
 
                     <form onSubmit={handleSubmit} className="flex flex-1 flex-col px-4">
                         {/* Content */}
-                        <div>
+                        <div className="space-y-4">
                             <Field>
                                 <FieldLabel htmlFor="name">
                                     Nama <span className="text-destructive">*</span>
@@ -80,6 +81,19 @@ export function DrawerAdd() {
                                 />
 
                                 {errors.name && <FieldError>{errors.name}</FieldError>}
+                            </Field>
+
+                            <Field>
+                                <FieldLabel htmlFor="palette_color">Palette Color</FieldLabel>
+                                <Input
+                                    id="palette_color"
+                                    type="text"
+                                    name="palette_color"
+                                    placeholder="Masukkan palette color kategori layanan"
+                                    value={data.palette_color}
+                                    onChange={(e) => setData('palette_color', e.target.value)}
+                                />
+                                {errors.palette_color && <FieldError>{errors.palette_color}</FieldError>}
                             </Field>
                         </div>
 

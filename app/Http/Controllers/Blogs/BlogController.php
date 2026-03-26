@@ -135,6 +135,7 @@ class BlogController extends Controller
                 'is_published' => $isPublished,
                 'is_featured' => $validated['is_featured'] ?? false,
                 'published_at' => $isPublished ? now() : null,
+                'reading_time' => $validated['reading_time'] ?? 0,
             ]);
 
             if (! empty($validated['tag_ids'])) {
@@ -261,6 +262,7 @@ class BlogController extends Controller
                 'is_published' => $isPublished,
                 'is_featured' => $validated['is_featured'] ?? $blog->is_featured,
                 'published_at' => $publishedAt,
+                'reading_time' => $validated['reading_time'] ?? $blog->reading_time,
             ]);
 
             $blog->tags()->sync($validated['tag_ids'] ?? []);

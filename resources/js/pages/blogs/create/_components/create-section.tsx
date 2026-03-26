@@ -16,7 +16,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { formatSize, readImageAsDataURL, validateImageFile } from '@/lib/service';
 import blogs from '@/routes/blogs';
 import type { BlogCategory, BlogRelatedService, BlogTag } from '@/types/blogs';
-import type { LocalBlogSeo} from '../../_components/seo-card';
+import type { LocalBlogSeo } from '../../_components/seo-card';
 import { defaultSeo, SeoCard } from '../../_components/seo-card';
 
 type FormData = {
@@ -28,6 +28,7 @@ type FormData = {
     featured_image: File | null;
     is_published: boolean;
     is_featured: boolean;
+    reading_time: number;
     tag_ids: number[];
     service_ids: number[];
     seo: LocalBlogSeo;
@@ -54,12 +55,13 @@ export function CreateSection({ categories, tags, services }: CreateSectionProps
         featured_image: null,
         is_published: false,
         is_featured: false,
+        reading_time: 0,
         tag_ids: [],
         service_ids: [],
         seo: defaultSeo(),
     });
 
-    const tagOptions     = tags.map((t) => ({ id: t.id, label: t.name }));
+    const tagOptions = tags.map((t) => ({ id: t.id, label: t.name }));
     const serviceOptions = services.map((s) => ({ id: s.id, label: s.name }));
 
     // ============================================================
@@ -213,12 +215,7 @@ export function CreateSection({ categories, tags, services }: CreateSectionProps
                             {/* Tags */}
                             <Field>
                                 <FieldLabel>Tag</FieldLabel>
-                                <MultiSelect
-                                    options={tagOptions}
-                                    selected={data.tag_ids}
-                                    onChange={(ids) => setData('tag_ids', ids)}
-                                    placeholder="Pilih tag blog..."
-                                />
+                                <MultiSelect options={tagOptions} selected={data.tag_ids} onChange={(ids) => setData('tag_ids', ids)} placeholder="Pilih tag blog..." />
                                 {errors.tag_ids && <FieldError>{errors.tag_ids}</FieldError>}
                             </Field>
 
@@ -232,6 +229,21 @@ export function CreateSection({ categories, tags, services }: CreateSectionProps
                                     placeholder="Pilih layanan terkait..."
                                 />
                                 {errors.service_ids && <FieldError>{errors.service_ids}</FieldError>}
+                            </Field>
+
+                            {/* Reading Time */}
+                            <Field>
+                                <FieldLabel>Waktu Baca</FieldLabel>
+                                <Input
+                                    id="reading_time"
+                                    type="number"
+                                    min={0}
+                                    name="reading_time"
+                                    placeholder="0"
+                                    value={data.reading_time}
+                                    onChange={(e) => setData('reading_time', Number(e.target.value))}
+                                />
+                                {errors.reading_time && <FieldError>{errors.reading_time}</FieldError>}
                             </Field>
 
                             {/* Short Description */}
@@ -255,9 +267,15 @@ export function CreateSection({ categories, tags, services }: CreateSectionProps
                                     <AlertTitle>Panduan Ukuran Gambar Ideal</AlertTitle>
                                     <AlertDescription>
                                         <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-foreground/70">
-                                            <li><strong>Open Graph / Thumbnail:</strong> 1200×630px (Rasio 1.91:1)</li>
-                                            <li><strong>Hero / Banner:</strong> 1920×1080px (16:9)</li>
-                                            <li><strong>Format:</strong> JPG/PNG/WEBP · Maks. 5MB</li>
+                                            <li>
+                                                <strong>Open Graph / Thumbnail:</strong> 1200×630px (Rasio 1.91:1)
+                                            </li>
+                                            <li>
+                                                <strong>Hero / Banner:</strong> 1920×1080px (16:9)
+                                            </li>
+                                            <li>
+                                                <strong>Format:</strong> JPG/PNG/WEBP · Maks. 5MB
+                                            </li>
                                         </ul>
                                     </AlertDescription>
                                 </Alert>

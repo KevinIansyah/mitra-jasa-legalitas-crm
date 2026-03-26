@@ -20,6 +20,7 @@ class StoreRequest extends FormRequest
             'name'                 => 'required|string|max:255',
             'slug'                 => 'nullable|string|max:255|unique:services,slug',
             'short_description'    => 'nullable|string',
+            'icon'                 => 'nullable|string|max:255',
             'introduction'         => 'nullable|string',
             'content'              => 'nullable|string',
             'featured_image'       => 'nullable|image|mimes:jpg,jpeg,png,webp,gif,svg|max:5120',
@@ -121,6 +122,8 @@ class StoreRequest extends FormRequest
             'slug.string' => 'Slug harus berupa teks.',
             'slug.max'    => 'Slug maksimal 255 karakter.',
             'slug.unique' => 'Slug sudah digunakan, silakan gunakan slug lain.',
+
+            'icon.string' => 'Icon harus berupa emoticon.',
 
             'featured_image.image' => 'File gambar tidak valid.',
             'featured_image.mimes' => 'Format gambar harus jpg, jpeg, png, webp, gif, atau svg.',

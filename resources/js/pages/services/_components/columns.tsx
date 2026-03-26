@@ -20,6 +20,22 @@ export default function getColumns(): ColumnDef<Service>[] {
             },
         },
         {
+            accessorKey: 'flags',
+            header: 'Flags',
+            cell: ({ row }) => {
+                const { is_featured: isFeatured, is_popular: isPopular } = row.original;
+
+                return isFeatured || isPopular ? (
+                    <div className="flex flex-col gap-1">
+                        {isFeatured && <Badge className="bg-blue-600 text-white">Unggulan</Badge>}
+                        {isPopular && <Badge className="bg-rose-500 text-white">Populer</Badge>}
+                    </div>
+                ) : (
+                    <span>-</span>
+                );
+            },
+        },
+        {
             accessorKey: 'is_published',
             header: 'Publikasi',
             cell: ({ row }) => {

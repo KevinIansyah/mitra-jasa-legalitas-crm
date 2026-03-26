@@ -44,6 +44,7 @@ type FormData = {
     name: string;
     slug: string;
     short_description: string;
+    icon: string;
     introduction: string;
     content: string;
     featured_image: File | null;
@@ -73,6 +74,7 @@ export function CreateSection({ categories }: CreateSectionProps) {
         name: '',
         slug: '',
         short_description: '',
+        icon: '',
         introduction: '',
         content: '',
         featured_image: null,
@@ -349,6 +351,20 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                     onChange={(e) => setData('short_description', e.target.value)}
                                 />
                                 {errors.short_description && <FieldError>{errors.short_description}</FieldError>}
+                            </Field>
+
+                            {/* Icon */}
+                            <Field>
+                                <FieldLabel htmlFor="icon">Icon</FieldLabel>
+                                <Input
+                                    id="icon"
+                                    type="text"
+                                    name="icon"
+                                    placeholder="Masukkan icon layanan (emoticon)"
+                                    value={data.icon}
+                                    onChange={(e) => setData('icon', e.target.value)}
+                                />
+                                {errors.icon && <FieldError>{errors.icon}</FieldError>}
                             </Field>
 
                             {/* Featured Image */}

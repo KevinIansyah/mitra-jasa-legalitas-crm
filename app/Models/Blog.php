@@ -20,6 +20,7 @@ class Blog extends Model
         'is_published',
         'is_featured',
         'views',
+        'reading_time',
         'published_at',
     ];
 
@@ -28,6 +29,7 @@ class Blog extends Model
         'is_featured' => 'boolean',
         'published_at' => 'datetime',
         'views' => 'integer',
+        'reading_time' => 'integer',
     ];
 
     /*

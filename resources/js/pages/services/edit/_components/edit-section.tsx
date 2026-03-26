@@ -44,6 +44,7 @@ type BasicInfoFormData = {
     service_category_id: number;
     name: string;
     short_description: string;
+    icon: string;
     featured_image: File | null;
     remove_image: boolean;
     is_published: boolean;
@@ -113,6 +114,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
         service_category_id: service.service_category_id,
         name: service.name,
         short_description: service.short_description || '',
+        icon: service.icon || '',
         featured_image: null,
         remove_image: false,
         is_published: service.is_published,
@@ -755,6 +757,20 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                         onChange={(e) => basicInfoForm.setData('short_description', e.target.value)}
                                     />
                                     {basicInfoForm.errors.short_description && <FieldError>{basicInfoForm.errors.short_description}</FieldError>}
+                                </Field>
+
+                                {/* Icon */}
+                                <Field>
+                                    <FieldLabel htmlFor="icon">Icon</FieldLabel>
+                                    <Input
+                                        id="icon"
+                                        type="text"
+                                        name="icon"
+                                        placeholder="Masukkan icon layanan (emoticon)"
+                                        value={basicInfoForm.data.icon}
+                                        onChange={(e) => basicInfoForm.setData('icon', e.target.value)}
+                                    />
+                                    {basicInfoForm.errors.icon && <FieldError>{basicInfoForm.errors.icon}</FieldError>}
                                 </Field>
 
                                 {/* Featured Image */}

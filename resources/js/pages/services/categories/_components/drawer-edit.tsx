@@ -1,7 +1,9 @@
 import { useForm } from '@inertiajs/react';
+import { Info } from 'lucide-react';
 import * as React from 'react';
 import { toast } from 'sonner';
 
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
@@ -23,6 +25,7 @@ export function DrawerEdit({ category, open, onOpenChange }: DrawerEditProps) {
 
     const { data, setData, patch, processing, errors } = useForm<ServiceCategoryFormData>({
         name: category.name || '',
+        palette_color: category.palette_color || '',
         status: category.status || 'active',
     });
 
@@ -71,6 +74,20 @@ export function DrawerEdit({ category, open, onOpenChange }: DrawerEditProps) {
                     <form onSubmit={handleSubmit} className="flex flex-1 flex-col px-4">
                         <div className="space-y-4">
                             <Field>
+                                <FieldLabel htmlFor="status">Status</FieldLabel>
+                                <Select value={data.status} onValueChange={(value) => setData('status', value as 'active' | 'inactive')} disabled={processing}>
+                                    <SelectTrigger id="status">
+                                        <SelectValue placeholder="Pilih status..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="active">Active</SelectItem>
+                                        <SelectItem value="inactive">Inactive</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                {errors.status && <FieldError>{errors.status}</FieldError>}
+                            </Field>
+
+                            <Field>
                                 <FieldLabel htmlFor="name">
                                     Label <span className="text-destructive">*</span>
                                 </FieldLabel>
@@ -89,18 +106,40 @@ export function DrawerEdit({ category, open, onOpenChange }: DrawerEditProps) {
                                 {errors.name && <FieldError>{errors.name}</FieldError>}
                             </Field>
 
+                            {/* Palette Color */}
                             <Field>
-                                <FieldLabel htmlFor="status">Status</FieldLabel>
-                                <Select value={data.status} onValueChange={(value) => setData('status', value as 'active' | 'inactive')} disabled={processing}>
-                                    <SelectTrigger id="status">
-                                        <SelectValue placeholder="Pilih status..." />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="active">Active</SelectItem>
-                                        <SelectItem value="inactive">Inactive</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                {errors.status && <FieldError>{errors.status}</FieldError>}
+                                <FieldLabel htmlFor="palette_color">Palette Color</FieldLabel>
+                                <Alert className="border-primary bg-primary/20">
+                                    <Info />
+                                    <AlertTitle>Panduan Warna Kategori (palette_color)</AlertTitle>
+                                    <AlertDescription>
+                                        <ul className="mt-2 list-inside list-disc space-y-1.5 text-sm text-foreground/70">
+                                            <li>
+                                                <strong>Pilihan Warna:</strong> Gunakan nilai <code>Oklch</code> untuk palette_color.
+                                            </li>
+                                            <li>
+                                                <strong>Referensi:</strong> Bisa dilihat di{' '}
+                                                <a href="https://tailwindcss.com/docs/colors" target="_blank" className="text-primary underline">
+                                                    Tailwind CSS Colors
+                                                </a>{' '}
+                                                untuk contoh nilai Oklch.
+                                            </li>
+                                            <li>
+                                                <strong>Tips:</strong> Pilih warna yang harmonis antar kategori untuk konsistensi UI.
+                                            </li>
+                                        </ul>
+                                    </AlertDescription>
+                                </Alert>
+
+                                <Input
+                                    id="palette_color"
+                                    type="text"
+                                    name="palette_color"
+                                    placeholder="Masukkan palette color kategori layanan"
+                                    value={data.palette_color}
+                                    onChange={(e) => setData('palette_color', e.target.value)}
+                                />
+                                {errors.palette_color && <FieldError>{errors.palette_color}</FieldError>}
                             </Field>
                         </div>
 
