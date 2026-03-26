@@ -1,17 +1,20 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BlogCategoryController;
 use App\Http\Controllers\Api\BlogSubscriberController;
 use App\Http\Controllers\Api\ChatbotController;
 use App\Http\Controllers\Api\ContactMessageController;
+use App\Http\Controllers\Api\EstimateController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\ProposalController;
 use App\Http\Controllers\Api\PublicBlogController;
 use App\Http\Controllers\Api\PublicHomeController;
 use App\Http\Controllers\Api\PublicNavigationController;
 use App\Http\Controllers\Api\PublicServiceController;
 use App\Http\Controllers\Api\QuoteController;
-use App\Http\Controllers\Finances\EstimateController;
-use App\Http\Controllers\Finances\ProposalController;
+use App\Http\Controllers\Api\ServiceCategoryController;
+use App\Http\Controllers\Api\CityController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -243,3 +246,25 @@ Route::prefix('blogs')->group(function () {
     Route::get('/subscribers/verify/{token}', [BlogSubscriberController::class, 'verify']);
     Route::get('/subscribers/unsubscribe/{token}', [BlogSubscriberController::class, 'unsubscribe']);
 });
+
+
+/*
+|--------------------------------------------------------------------------
+| PUBLIC 
+|--------------------------------------------------------------------------
+| GET /cities                          → List all cities
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('cities')->group(function () {
+    Route::get('/', [CityController::class, 'index']);
+});
+
+Route::prefix('blog-categories')->group(function () {
+    Route::get('/', [BlogCategoryController::class, 'index']);
+});
+
+Route::prefix('service-categories')->group(function () {
+    Route::get('/', [ServiceCategoryController::class, 'index']);
+});
+

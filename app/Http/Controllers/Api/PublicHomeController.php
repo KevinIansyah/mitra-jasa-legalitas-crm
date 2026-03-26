@@ -46,7 +46,7 @@ class PublicHomeController extends Controller
                 'category:id,name,slug,palette_color',
                 'cheapestPackage' => function ($q) {
                     $q->with(['includedFeatures']);
-                }
+                },
             ])
             ->limit(self::FEATURED_SERVICES_LIMIT)
             ->latest()
@@ -64,6 +64,7 @@ class PublicHomeController extends Controller
                 'name' => $cat->name,
                 'slug' => $cat->slug,
                 'published_services_count' => $cat->services_count,
+                'palette_color' => $cat->palette_color,
             ]);
 
         $allServices = Service::query()

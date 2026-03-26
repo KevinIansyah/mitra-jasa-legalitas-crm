@@ -5,26 +5,27 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Blog;
+use App\Models\SiteSetting;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PublicBlogController extends Controller
 {
     // ========================================================================
-    // GET /blog
+    // GET /blogs
     // List all blogs
     // Query params:
-    //   ?kategori[]=slug1&kategori[]=slug2   → multi kategori
+    //   ?category[]=slug1&category[]=slug2   → multi category
     //   ?tag[]=slug1&tag[]=slug2             → multi tag
     // ========================================================================
 
     public function index(Request $request): JsonResponse
     {
-        $kategoriSlugs = $request->input('kategori', []);
+        $categorySlugs = $request->input('category', []);
         $tagSlugs = $request->input('tag', []);
 
-        if (is_string($kategoriSlugs)) {
-            $kategoriSlugs = [$kategoriSlugs];
+        if (is_string($categorySlugs)) {
+            $categorySlugs = [$categorySlugs];
         }
         if (is_string($tagSlugs)) {
             $tagSlugs = [$tagSlugs];
@@ -39,24 +40,25 @@ class PublicBlogController extends Controller
                 'tags:id,name,slug',
             ])
             ->when(
-                ! empty($kategoriSlugs),
-                fn ($q) => $q->whereHas(
+                ! empty($categorySlugs),
+                fn($q) => $q->whereHas(
                     'category',
-                    fn ($q) => $q->whereIn('slug', $kategoriSlugs)
+                    fn($q) => $q->whereIn('slug', $categorySlugs)
                 )
             )
             ->when(
                 ! empty($tagSlugs),
-                fn ($q) => $q->whereHas(
+                fn($q) => $q->whereHas(
                     'tags',
-                    fn ($q) => $q->whereIn('slug', $tagSlugs)
+                    fn($q) => $q->whereIn('slug', $tagSlugs)
                 )
             )
             ->latest('published_at')
             ->paginate(20);
 
         return ApiResponse::success([
-            'blogs' => $blogs->map(fn ($blog) => $this->formatBlogCard($blog)),
+            'seo' => $this->buildSeoListBlog(),
+            'blogs' => $blogs->map(fn($blog) => $this->formatBlogCard($blog)),
             'meta' => [
                 'current_page' => $blogs->currentPage(),
                 'last_page' => $blogs->lastPage(),
@@ -67,7 +69,7 @@ class PublicBlogController extends Controller
     }
 
     // ========================================================================
-    // GET /blog/{slug}
+    // GET /blogs/{slug}
     // Detail blog + related blogs
     // ========================================================================
 
@@ -99,16 +101,16 @@ class PublicBlogController extends Controller
             ])
             ->when(
                 $tagIds->isNotEmpty(),
-                fn ($q) => $q->whereHas(
+                fn($q) => $q->whereHas(
                     'tags',
-                    fn ($q) => $q->whereIn('blog_tags.id', $tagIds)
+                    fn($q) => $q->whereIn('blog_tags.id', $tagIds)
                 ),
-                fn ($q) => $q->where('blog_category_id', $blog->blog_category_id)
+                fn($q) => $q->where('blog_category_id', $blog->blog_category_id)
             )
             ->latest('published_at')
             ->limit(4)
             ->get()
-            ->map(fn ($b) => $this->formatBlogCard($b));
+            ->map(fn($b) => $this->formatBlogCard($b));
 
         return ApiResponse::success([
             'id' => $blog->id,
@@ -133,7 +135,7 @@ class PublicBlogController extends Controller
                 'position' => $blog->author->staffProfile?->position,
                 'bio' => $blog->author->staffProfile?->bio,
             ] : null,
-            'tags' => $blog->tags->map(fn ($tag) => [
+            'tags' => $blog->tags->map(fn($tag) => [
                 'id' => $tag->id,
                 'name' => $tag->name,
                 'slug' => $tag->slug,
@@ -191,11 +193,70 @@ class PublicBlogController extends Controller
                 'position' => $blog->author->staffProfile?->position,
                 'bio' => $blog->author->staffProfile?->bio,
             ] : null,
-            'tags' => $blog->tags->map(fn ($tag) => [
+            'tags' => $blog->tags->map(fn($tag) => [
                 'id' => $tag->id,
                 'name' => $tag->name,
                 'slug' => $tag->slug,
             ]),
+        ];
+    }
+
+    private function buildSeoListBlog(): array
+    {
+        $site = SiteSetting::get();
+        $r2Url = rtrim(config('filesystems.disks.r2_public.url', ''), '/');
+        $base = rtrim((string) ($site->org_url ?? $site->company_website ?? config('app.url')), '/');
+        $pageUrl = $base . '/blog';
+
+        $metaTitle = 'Blog - ' . ($site->company_name ?? '');
+        $metaDescription = 'Baca artikel dan tips terbaru seputar legalitas bisnis, perizinan, dan layanan perusahaan.';
+        $ogImage = $site->default_og_image
+            ? "{$r2Url}/{$site->default_og_image}"
+            : ($site->company_logo ? "{$r2Url}/{$site->company_logo}" : null);
+
+        $breadcrumb = [
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => [
+                ['@type' => 'ListItem', 'position' => 1, 'name' => 'Beranda', 'item' => $base],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => 'Blog', 'item' => $pageUrl],
+            ],
+        ];
+
+        $webPage = [
+            '@type' => 'WebPage',
+            'url' => $pageUrl,
+            'name' => $metaTitle,
+            'description' => $metaDescription,
+            'inLanguage' => 'id-ID',
+            'isPartOf' => ['@id' => $base . '#website'],
+        ];
+
+        return [
+            'meta_title' => $metaTitle,
+            'meta_description' => $metaDescription,
+            'canonical_url' => $pageUrl,
+            'robots' => 'index, follow',
+            'in_sitemap' => true,
+            'sitemap_priority' => '0.7',
+            'open_graph' => array_filter([
+                'og:type' => 'website',
+                'og:site_name' => $site->company_name,
+                'og:title' => $metaTitle,
+                'og:description' => $metaDescription,
+                'og:url' => $pageUrl,
+                'og:image' => $ogImage,
+                'og:locale' => 'id_ID',
+            ]),
+            'twitter' => array_filter([
+                'twitter:card' => 'summary_large_image',
+                'twitter:title' => $metaTitle,
+                'twitter:description' => $metaDescription,
+                'twitter:image' => $ogImage,
+            ]),
+            'json_ld' => [
+                '@context' => 'https://schema.org',
+                '@graph' => [$breadcrumb, $webPage],
+            ],
         ];
     }
 }
