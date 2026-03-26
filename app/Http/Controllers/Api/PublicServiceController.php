@@ -442,6 +442,20 @@ class PublicServiceController extends Controller
                 'slug' => $service->category->slug,
                 'palette_color' => $service->category->palette_color,
             ] : null,
+            'cheapest_package' => $service->cheapestPackage ? [
+                'id' => $service->cheapestPackage->id,
+                'name' => $service->cheapestPackage->name,
+                'price' => $service->cheapestPackage->price,
+                'duration' => $service->cheapestPackage->duration,
+                'duration_days' => $service->cheapestPackage->duration_days,
+                'short_description' => $service->cheapestPackage->short_description,
+                'features' => $service->cheapestPackage->features->map(fn($feature) => [
+                    'feature_name' => $feature->feature_name,
+                    'description' => $feature->description,
+                    'is_included' => $feature->is_included,
+                    'sort_order' => $feature->sort_order,
+                ]),
+            ] : null,
             'city_pages' => $service->cityPages->map(fn($cityPage) => [
                 'id' => $cityPage->id,
                 'name' => $cityPage->city->name,
