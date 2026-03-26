@@ -1,5 +1,6 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
+import { formatRupiahNoSymbol } from '@/lib/service';
 import type { Blog } from '@/types/blogs';
 import Actions from './actions';
 
@@ -23,11 +24,15 @@ export default function getColumns(): ColumnDef<Blog>[] {
             header: 'Kategori',
             cell: ({ row }) => {
                 const category = row.original.category;
-                return category ? (
-                    <Badge className="bg-slate-500 text-white">{category.name}</Badge>
-                ) : (
-                    <span className="text-sm text-muted-foreground">-</span>
-                );
+                return category ? <Badge className="bg-slate-500 text-white">{category.name}</Badge> : <span className="text-sm text-muted-foreground">-</span>;
+            },
+        },
+        {
+            accessorKey: 'views',
+            header: 'Pengunjung',
+            cell: ({ row }) => {
+                const views = row.original.views;
+                return <span className="text-sm tabular-nums">{formatRupiahNoSymbol(Number(views))}</span>;
             },
         },
         {
@@ -35,11 +40,7 @@ export default function getColumns(): ColumnDef<Blog>[] {
             header: 'Publikasi',
             cell: ({ row }) => {
                 const isPublished = row.getValue<boolean>('is_published');
-                return isPublished ? (
-                    <Badge className="bg-emerald-500 text-white">Published</Badge>
-                ) : (
-                    <Badge className="bg-slate-500 text-white">Draft</Badge>
-                );
+                return isPublished ? <Badge className="bg-emerald-500 text-white">Published</Badge> : <Badge className="bg-slate-500 text-white">Draft</Badge>;
             },
         },
         {
@@ -47,11 +48,7 @@ export default function getColumns(): ColumnDef<Blog>[] {
             header: 'Unggulan',
             cell: ({ row }) => {
                 const isFeatured = row.getValue<boolean>('is_featured');
-                return isFeatured ? (
-                    <Badge className="bg-blue-600 text-white">Featured</Badge>
-                ) : (
-                    <span className="text-sm text-muted-foreground">-</span>
-                );
+                return isFeatured ? <Badge className="bg-blue-600 text-white">Featured</Badge> : <span className="text-sm text-muted-foreground">-</span>;
             },
         },
         {

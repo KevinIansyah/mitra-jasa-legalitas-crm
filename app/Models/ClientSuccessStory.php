@@ -37,9 +37,4 @@ class ClientSuccessStory extends Model
     {
         return $query->where('is_published', true);
     }
-
-    public function scopeOrdered($query)
-    {
-        return $query->latest('id');
-    }
 }

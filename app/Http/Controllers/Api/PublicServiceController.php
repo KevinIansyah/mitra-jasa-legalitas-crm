@@ -46,9 +46,9 @@ class PublicServiceController extends Controller
             ->where('status', 'active')
             ->when(
                 ! empty($kategoriSlugs),
-                fn ($q) => $q->whereHas(
+                fn($q) => $q->whereHas(
                     'category',
-                    fn ($q) => $q->whereIn('slug', $kategoriSlugs)
+                    fn($q) => $q->whereIn('slug', $kategoriSlugs)
                 )
             )
             ->when(
@@ -61,9 +61,9 @@ class PublicServiceController extends Controller
                                     $method = $index === 0 ? 'where' : 'orWhere';
                                     match ((string) $range) {
                                         '1' => $q->{$method}('price', '<', 1_000_000),
-                                        '2' => $q->{$method.'Between'}('price', [1_000_000, 2_999_999]),
-                                        '3' => $q->{$method.'Between'}('price', [3_000_000, 4_999_999]),
-                                        '4' => $q->{$method.'Between'}('price', [5_000_000, 9_999_999]),
+                                        '2' => $q->{$method . 'Between'}('price', [1_000_000, 2_999_999]),
+                                        '3' => $q->{$method . 'Between'}('price', [3_000_000, 4_999_999]),
+                                        '4' => $q->{$method . 'Between'}('price', [5_000_000, 9_999_999]),
                                         '5' => $q->{$method}('price', '>=', 10_000_000),
                                         default => null,
                                     };
@@ -76,7 +76,7 @@ class PublicServiceController extends Controller
             ->latest()
             ->orderBy('name')
             ->get(['id', 'service_category_id', 'name', 'slug', 'short_description', 'featured_image', 'is_featured', 'is_popular'])
-            ->map(fn ($service) => $this->formatServiceCard($service));
+            ->map(fn($service) => $this->formatServiceCard($service));
 
         return ApiResponse::success($services);
     }
@@ -99,7 +99,7 @@ class PublicServiceController extends Controller
             ->orderBy('name')
             ->latest()
             ->get(['id', 'service_category_id', 'name', 'slug', 'short_description', 'featured_image', 'is_featured', 'is_popular'])
-            ->map(fn ($service) => $this->formatServiceCard($service));
+            ->map(fn($service) => $this->formatServiceCard($service));
 
         return ApiResponse::success([
             'category' => [
@@ -142,9 +142,9 @@ class PublicServiceController extends Controller
                     ->where('status', 'active')
                     ->when(
                         ! empty($kategoriSlugs),
-                        fn ($q) => $q->whereHas(
+                        fn($q) => $q->whereHas(
                             'category',
-                            fn ($q) => $q->whereIn('slug', $kategoriSlugs)
+                            fn($q) => $q->whereIn('slug', $kategoriSlugs)
                         )
                     )
                     ->when(
@@ -157,9 +157,9 @@ class PublicServiceController extends Controller
                                             $method = $index === 0 ? 'where' : 'orWhere';
                                             match ((string) $range) {
                                                 '1' => $q->{$method}('price', '<', 1_000_000),
-                                                '2' => $q->{$method.'Between'}('price', [1_000_000, 2_999_999]),
-                                                '3' => $q->{$method.'Between'}('price', [3_000_000, 4_999_999]),
-                                                '4' => $q->{$method.'Between'}('price', [5_000_000, 9_999_999]),
+                                                '2' => $q->{$method . 'Between'}('price', [1_000_000, 2_999_999]),
+                                                '3' => $q->{$method . 'Between'}('price', [3_000_000, 4_999_999]),
+                                                '4' => $q->{$method . 'Between'}('price', [5_000_000, 9_999_999]),
                                                 '5' => $q->{$method}('price', '>=', 10_000_000),
                                                 default => null,
                                             };
@@ -170,13 +170,13 @@ class PublicServiceController extends Controller
                     );
             })
             ->with([
-                'service' => fn ($query) => $query
+                'service' => fn($query) => $query
                     ->where('is_published', true)
                     ->where('status', 'active')
                     ->with('category:id,name,slug'),
             ])
             ->get()
-            ->filter(fn ($page) => $page->service !== null);
+            ->filter(fn($page) => $page->service !== null);
 
         $r2Url = rtrim(config('filesystems.disks.r2_public.url', ''), '/');
 
@@ -187,7 +187,7 @@ class PublicServiceController extends Controller
                 'slug' => $city->slug,
                 'province' => $city->province,
             ],
-            'services' => $cityPages->map(fn ($page) => [
+            'services' => $cityPages->map(fn($page) => [
                 'id' => $page->service->id,
                 'name' => $page->service->name,
                 'slug' => $page->service->slug,
@@ -221,15 +221,16 @@ class PublicServiceController extends Controller
             ->with([
                 'category:id,name,slug',
                 'seo',
-                'packages' => fn ($query) => $query->where('status', 'active')->orderBy('sort_order')->with([
-                    'features' => fn ($query) => $query->orderBy('sort_order'),
+                'packages' => fn($query) => $query->where('status', 'active')->orderBy('sort_order')->with([
+                    'features' => fn($query) => $query->orderBy('sort_order'),
                 ]),
-                'processSteps' => fn ($query) => $query->where('status', 'active')->orderBy('sort_order'),
-                'requirementCategories' => fn ($query) => $query->where('status', 'active')->orderBy('sort_order')->with([
-                    'requirements' => fn ($query) => $query->where('status', 'active')->orderBy('sort_order'),
+                'processSteps' => fn($query) => $query->where('status', 'active')->orderBy('sort_order'),
+                'requirementCategories' => fn($query) => $query->where('status', 'active')->orderBy('sort_order')->with([
+                    'requirements' => fn($query) => $query->where('status', 'active')->orderBy('sort_order'),
                 ]),
-                'legalBases' => fn ($query) => $query->where('status', 'active')->orderBy('sort_order'),
-                'faqs' => fn ($query) => $query->where('status', 'active')->orderBy('sort_order'),
+                'legalBases' => fn($query) => $query->where('status', 'active')->orderBy('sort_order'),
+                'faqs' => fn($query) => $query->where('status', 'active')->orderBy('sort_order'),
+                'cityPages.city:id,name,province',
             ])
             ->firstOrFail();
 
@@ -268,7 +269,7 @@ class PublicServiceController extends Controller
             'process_steps' => $this->formatProcessSteps($service->processSteps),
             'requirement_categories' => $this->formatRequirementCategories($service->requirementCategories),
             'legal_bases' => $this->formatLegalBases($service->legalBases),
-            'faqs' => $service->faqs->map(fn ($faq) => [
+            'faqs' => $service->faqs->map(fn($faq) => [
                 'question' => $faq->question,
                 'answer' => $faq->answer,
                 'sort_order' => $faq->sort_order,
@@ -287,20 +288,20 @@ class PublicServiceController extends Controller
             ->where('is_published', true)
             ->where('status', 'active')
             ->with([
-                'packages' => fn ($query) => $query->where('status', 'active')->orderBy('sort_order')->with([
-                    'features' => fn ($query) => $query->orderBy('sort_order'),
+                'packages' => fn($query) => $query->where('status', 'active')->orderBy('sort_order')->with([
+                    'features' => fn($query) => $query->orderBy('sort_order'),
                 ]),
-                'processSteps' => fn ($query) => $query->where('status', 'active')->orderBy('sort_order'),
-                'requirementCategories' => fn ($query) => $query->where('status', 'active')->orderBy('sort_order')->with([
-                    'requirements' => fn ($query) => $query->where('status', 'active')->orderBy('sort_order'),
+                'processSteps' => fn($query) => $query->where('status', 'active')->orderBy('sort_order'),
+                'requirementCategories' => fn($query) => $query->where('status', 'active')->orderBy('sort_order')->with([
+                    'requirements' => fn($query) => $query->where('status', 'active')->orderBy('sort_order'),
                 ]),
-                'legalBases' => fn ($query) => $query->where('status', 'active')->orderBy('sort_order'),
+                'legalBases' => fn($query) => $query->where('status', 'active')->orderBy('sort_order'),
             ])
             ->firstOrFail();
 
         $cityPage = ServiceCityPage::where('service_id', $service->id)
             ->where('is_published', true)
-            ->whereHas('city', fn ($query) => $query->where('slug', $citySlug))
+            ->whereHas('city', fn($query) => $query->where('slug', $citySlug))
             ->with('city:id,name,slug,province')
             ->firstOrFail();
 
@@ -366,7 +367,7 @@ class PublicServiceController extends Controller
 
     private function formatPackages($packages): array
     {
-        return $packages->map(fn ($package) => [
+        return $packages->map(fn($package) => [
             'name' => $package->name,
             'price' => $package->price,
             'original_price' => $package->original_price,
@@ -376,7 +377,7 @@ class PublicServiceController extends Controller
             'is_highlighted' => $package->is_highlighted,
             'badge' => $package->badge,
             'sort_order' => $package->sort_order,
-            'features' => $package->features->map(fn ($feature) => [
+            'features' => $package->features->map(fn($feature) => [
                 'feature_name' => $feature->feature_name,
                 'description' => $feature->description,
                 'is_included' => $feature->is_included,
@@ -387,7 +388,7 @@ class PublicServiceController extends Controller
 
     private function formatProcessSteps($steps): array
     {
-        return $steps->map(fn ($step) => [
+        return $steps->map(fn($step) => [
             'title' => $step->title,
             'description' => $step->description,
             'duration' => $step->duration,
@@ -401,11 +402,11 @@ class PublicServiceController extends Controller
 
     private function formatRequirementCategories($categories): array
     {
-        return $categories->map(fn ($category) => [
+        return $categories->map(fn($category) => [
             'name' => $category->name,
             'description' => $category->description,
             'sort_order' => $category->sort_order,
-            'requirements' => $category->requirements->map(fn ($requirement) => [
+            'requirements' => $category->requirements->map(fn($requirement) => [
                 'name' => $requirement->name,
                 'description' => $requirement->description,
                 'is_required' => $requirement->is_required,
@@ -418,7 +419,7 @@ class PublicServiceController extends Controller
 
     private function formatLegalBases($legalBases): array
     {
-        return $legalBases->map(fn ($legalBasis) => [
+        return $legalBases->map(fn($legalBasis) => [
             'document_type' => $legalBasis->document_type,
             'document_number' => $legalBasis->document_number,
             'title' => $legalBasis->title,

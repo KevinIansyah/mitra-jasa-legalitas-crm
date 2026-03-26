@@ -53,6 +53,7 @@ export interface Blog {
     featured_image: string | null;
     is_published: boolean;
     is_featured: boolean;
+    views: number;
     published_at: string | null;
     created_at: string;
     updated_at: string;

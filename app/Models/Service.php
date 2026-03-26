@@ -27,7 +27,6 @@ class Service extends Model
         'is_popular',
         'published_at',
         'status',
-        'sort_order',
     ];
 
     protected $casts = [
@@ -36,7 +35,6 @@ class Service extends Model
         'is_featured' => 'boolean',
         'is_popular' => 'boolean',
         'published_at' => 'datetime',
-        'sort_order' => 'integer',
     ];
 
     /*
@@ -69,7 +67,7 @@ class Service extends Model
 
     public function activePackages(): HasMany
     {
-        return $this->hasMany(ServicePackage::class)->active()->ordered();
+        return $this->hasMany(ServicePackage::class)->active();
     }
 
     public function faqs(): HasMany
@@ -79,7 +77,7 @@ class Service extends Model
 
     public function activeFaqs(): HasMany
     {
-        return $this->hasMany(ServiceFaq::class)->active()->ordered();
+        return $this->hasMany(ServiceFaq::class)->active();
     }
 
     public function legalBases(): HasMany
@@ -89,7 +87,7 @@ class Service extends Model
 
     public function activeLegalBases(): HasMany
     {
-        return $this->hasMany(ServiceLegalBasis::class)->active()->ordered();
+        return $this->hasMany(ServiceLegalBasis::class)->active();
     }
 
     public function requirementCategories(): HasMany
@@ -99,7 +97,7 @@ class Service extends Model
 
     public function activeRequirementCategories(): HasMany
     {
-        return $this->hasMany(ServiceRequirementCategory::class)->active()->ordered();
+        return $this->hasMany(ServiceRequirementCategory::class)->active();
     }
 
     public function processSteps(): HasMany
@@ -109,7 +107,7 @@ class Service extends Model
 
     public function activeProcessSteps(): HasMany
     {
-        return $this->hasMany(ServiceProcessStep::class)->active()->ordered();
+        return $this->hasMany(ServiceProcessStep::class)->active();
     }
 
     public function projectTemplates(): HasMany
@@ -159,11 +157,6 @@ class Service extends Model
     public function scopeActive($query)
     {
         return $query->where('status', 'active');
-    }
-
-    public function scopeOrdered($query)
-    {
-        return $query->orderBy('sort_order');
     }
 
     public function scopeSearch($query, $search)

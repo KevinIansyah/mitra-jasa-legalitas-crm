@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ChatbotController;
 use App\Http\Controllers\Api\ContactMessageController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PublicBlogController;
+use App\Http\Controllers\Api\PublicHomeController;
 use App\Http\Controllers\Api\PublicServiceController;
 use App\Http\Controllers\Api\QuoteController;
 use App\Http\Controllers\Finances\EstimateController;
@@ -154,20 +155,30 @@ Route::middleware('auth:sanctum')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| PUBLIC SERVICE API ROUTES
+| PUBLIC HOME / BERANDA
 |--------------------------------------------------------------------------
-| GET /layanan                          → List all services
-| GET /layanan/kategori/{categorySlug}  → List services by category
-| GET /layanan/kota/{citySlug}          → List services by city
-| GET /layanan/{serviceSlug}/{citySlug} → Service details for a specific city
-| GET /layanan/{serviceSlug}            → Service details
+| GET /home                          → Data halaman beranda (stats, layanan, SEO, dll.)
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('layanan')->group(function () {
+Route::get('/home', [PublicHomeController::class, 'index']);
+
+/*
+|--------------------------------------------------------------------------
+| PUBLIC SERVICE API ROUTES
+|--------------------------------------------------------------------------
+| GET /services                          → List all services
+| GET /services/categories/{categorySlug}  → List services by category
+| GET /services/cities/{citySlug}          → List services by city
+| GET /services/{serviceSlug}/{citySlug} → Service details for a specific city
+| GET /services/{serviceSlug}            → Service details
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('services')->group(function () {
     Route::get('/', [PublicServiceController::class, 'index']);
-    Route::get('/kategori/{categorySlug}', [PublicServiceController::class, 'byCategory']);
-    Route::get('/kota/{citySlug}', [PublicServiceController::class, 'byCity']);
+    Route::get('/categories/{categorySlug}', [PublicServiceController::class, 'byCategory']);
+    Route::get('/cities/{citySlug}', [PublicServiceController::class, 'byCity']);
     Route::get('/{serviceSlug}/{citySlug}', [PublicServiceController::class, 'showCityPage']);
     Route::get('/{serviceSlug}', [PublicServiceController::class, 'show']);
 });
@@ -176,12 +187,12 @@ Route::prefix('layanan')->group(function () {
 |--------------------------------------------------------------------------
 | PUBLIC BLOG API ROUTES
 |--------------------------------------------------------------------------
-| GET /blog                          → List all blogs
-| GET /blog/{blogSlug}            → Blog details
+| GET /blogs                          → List all blogs
+| GET /blogs/{blogSlug}            → Blog details
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('blog')->group(function () {
+Route::prefix('blogs')->group(function () {
     Route::get('/', [PublicBlogController::class, 'index']);
     Route::get('/{blogSlug}', [PublicBlogController::class, 'show']);
 });
@@ -190,13 +201,13 @@ Route::prefix('blog')->group(function () {
 |--------------------------------------------------------------------------
 | CHATBOT API ROUTES
 |--------------------------------------------------------------------------
-| POST  /api/chat/session              → Buat / ambil sesi
-| POST  /api/chat/{sessionToken}/send  → Kirim pesan
-| PATCH /api/chat/{sessionToken}/lead  → Update data lead
+| POST  /api/chatbots/session              → Buat / ambil sesi
+| POST  /api/chatbots/{sessionToken}/send  → Kirim pesan
+| PATCH /api/chatbots/{sessionToken}/lead  → Update data lead
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('chat')->group(function () {
+Route::prefix('chatbots')->group(function () {
     Route::post('/session', [ChatbotController::class, 'session']);
     Route::post('/{sessionToken}/send', [ChatbotController::class, 'send']);
     Route::patch('/{sessionToken}/lead', [ChatbotController::class, 'updateLead']);
@@ -218,14 +229,14 @@ Route::prefix('contact-messages')->group(function () {
 |--------------------------------------------------------------------------
 | BLOG SUBSCRIBER API ROUTES
 |--------------------------------------------------------------------------
-| POST /api/blog/subscribe               -> Subscribe to blog
-| GET /api/blog/subscribe/verify/{token} -> Verify blog subscription
-| GET /api/blog/unsubscribe/{token}      -> Unsubscribe from blog
+| POST /api/blog/subscribers               -> Subscribe to blog
+| GET /api/blog/subscribers/verify/{token} -> Verify blog subscription
+| GET /api/blog/subscribers/unsubscribe/{token}      -> Unsubscribe from blog
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('blog')->group(function () {
-    Route::post('/subscribe', [BlogSubscriberController::class, 'subscribe']);
-    Route::get('/subscribe/verify/{token}', [BlogSubscriberController::class, 'verify']);
-    Route::get('/unsubscribe/{token}', [BlogSubscriberController::class, 'unsubscribe']);
+Route::prefix('blogs')->group(function () {
+    Route::post('/subscribers', [BlogSubscriberController::class, 'subscribe']);
+    Route::get('/subscribers/verify/{token}', [BlogSubscriberController::class, 'verify']);
+    Route::get('/subscribers/unsubscribe/{token}', [BlogSubscriberController::class, 'unsubscribe']);
 });

@@ -60,15 +60,15 @@ class AppServiceProvider extends ServiceProvider
         ProjectInvoice::observe(ProjectInvoiceObserver::class);
         ProjectPayment::observe(ProjectPaymentObserver::class);
         Expense::observe(ExpenseObserver::class);
+        Service::observe(ServiceObserver::class);
+        ServiceCategory::observe(ServiceCategoryObserver::class);
         ServiceFaq::observe(ServiceFaqObserver::class);
         ServiceProcessStep::observe(ServiceProcessStepObserver::class);
         ServicePackage::observe(ServicePackageObserver::class);
         ServiceCityPage::observe(ServiceCityPageObserver::class);
         City::observe(ObserversCityObserver::class);
-        SiteSetting::observe(SiteSettingObserver::class);
-        Service::observe(ServiceObserver::class);
-        ServiceCategory::observe(ServiceCategoryObserver::class);
         Blog::observe(BlogObserver::class);
+        SiteSetting::observe(SiteSettingObserver::class);
     }
 
     protected function configureDefaults(): void
@@ -83,13 +83,13 @@ class AppServiceProvider extends ServiceProvider
         );
 
         Password::defaults(
-            fn (): ?Password => app()->isProduction()
+            fn(): ?Password => app()->isProduction()
                 ? Password::min(12)
-                    ->mixedCase()
-                    ->letters()
-                    ->numbers()
-                    ->symbols()
-                    ->uncompromised()
+                ->mixedCase()
+                ->letters()
+                ->numbers()
+                ->symbols()
+                ->uncompromised()
                 : null
         );
     }

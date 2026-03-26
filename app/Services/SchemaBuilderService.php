@@ -30,8 +30,8 @@ class SchemaBuilderService
             }
 
             $output .= '<script type="application/ld+json">'
-              .json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)
-              .'</script>'.PHP_EOL;
+                . json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)
+                . '</script>' . PHP_EOL;
         }
 
         return $output;
@@ -84,16 +84,14 @@ class SchemaBuilderService
             ];
         }
 
-        if ($settings->org_area_served) {
-            $schema['areaServed'] = $settings->org_area_served;
-        }
+        $schema['areaServed'] = self::buildAreaServed($service, $settings);
 
         $packages = $service->relationLoaded('packages')
-          ? $service->packages
-          : $service->packages()->where('status', 'active')->get();
+            ? $service->packages
+            : $service->packages()->where('status', 'active')->get();
 
         if ($packages->isNotEmpty()) {
-            $schema['offers'] = $packages->map(fn ($pkg) => array_filter([
+            $schema['offers'] = $packages->map(fn($pkg) => array_filter([
                 '@type' => 'Offer',
                 'name' => $pkg->name,
                 'price' => (string) $pkg->price,
@@ -104,6 +102,30 @@ class SchemaBuilderService
         }
 
         return $schema;
+    }
+
+    private static function buildAreaServed(Service $service, SiteSetting $settings): array|string
+    {
+        $cities = $service->relationLoaded('cityPages')
+            ? $service->cityPages->filter(fn($p) => $p->is_published)->map(fn($p) => $p->city)
+            : $service->cityPages()->where('is_published', true)->with('city:id,name,province')->get()->pluck('city');
+
+        if ($cities->isEmpty()) {
+            return $settings->org_area_served ?? 'Indonesia';
+        }
+
+        return $cities->map(fn($city) => [
+            '@type' => 'City',
+            'name'  => $city->name,
+            'containedInPlace' => [
+                '@type' => 'AdministrativeArea',
+                'name'  => $city->province,
+                'containedInPlace' => [
+                    '@type' => 'Country',
+                    'name'  => 'Indonesia',
+                ],
+            ],
+        ])->values()->toArray();
     }
 
     private static function buildBreadcrumb(Service $service, SiteSetting $settings): array
@@ -139,8 +161,8 @@ class SchemaBuilderService
     private static function buildFaq(Service $service): array
     {
         $faqs = $service->relationLoaded('faqs')
-          ? $service->faqs
-          : $service->faqs()->where('status', 'active')->orderBy('sort_order')->get();
+            ? $service->faqs
+            : $service->faqs()->where('status', 'active')->orderBy('sort_order')->get();
 
         if ($faqs->isEmpty()) {
             return [];
@@ -149,7 +171,7 @@ class SchemaBuilderService
         return [
             '@context' => 'https://schema.org',
             '@type' => 'FAQPage',
-            'mainEntity' => $faqs->map(fn ($faq) => [
+            'mainEntity' => $faqs->map(fn($faq) => [
                 '@type' => 'Question',
                 'name' => $faq->question,
                 'acceptedAnswer' => [
@@ -163,8 +185,8 @@ class SchemaBuilderService
     private static function buildHowTo(Service $service): array
     {
         $steps = $service->relationLoaded('processSteps')
-          ? $service->processSteps
-          : $service->processSteps()->where('status', 'active')->orderBy('sort_order')->get();
+            ? $service->processSteps
+            : $service->processSteps()->where('status', 'active')->orderBy('sort_order')->get();
 
         if ($steps->isEmpty()) {
             return [];
@@ -177,7 +199,7 @@ class SchemaBuilderService
             '@type' => 'HowTo',
             'name' => "Cara / Proses {$service->name}",
             'description' => $seo?->meta_description ?? $service->short_description ?? '',
-            'step' => $steps->map(fn ($step, $index) => array_filter([
+            'step' => $steps->map(fn($step, $index) => array_filter([
                 '@type' => 'HowToStep',
                 'position' => $index + 1,
                 'name' => $step->title,

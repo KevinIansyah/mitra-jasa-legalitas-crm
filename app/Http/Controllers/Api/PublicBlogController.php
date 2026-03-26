@@ -84,6 +84,8 @@ class PublicBlogController extends Controller
             ])
             ->firstOrFail();
 
+        $blog->increment('views');
+
         $r2Url = rtrim(config('filesystems.disks.r2_public.url', ''), '/');
 
         $tagIds = $blog->tags->pluck('id');
@@ -116,6 +118,7 @@ class PublicBlogController extends Controller
             'content' => $blog->content,
             'featured_image' => $blog->featured_image ? "{$r2Url}/{$blog->featured_image}" : null,
             'is_featured' => $blog->is_featured,
+            'views' => $blog->views,
             'published_at' => $blog->published_at,
             'category' => $blog->category ? [
                 'id' => $blog->category->id,
@@ -172,6 +175,7 @@ class PublicBlogController extends Controller
             'short_description' => $blog->short_description,
             'featured_image' => $blog->featured_image ? "{$r2Url}/{$blog->featured_image}" : null,
             'is_featured' => $blog->is_featured,
+            'views' => $blog->views,
             'published_at' => $blog->published_at,
             'category' => $blog->category ? [
                 'id' => $blog->category->id,

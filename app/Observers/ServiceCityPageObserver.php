@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\ServiceCityPage;
 use App\Services\CityPageSchemaBuilderService;
+use App\Services\SchemaBuilderService;
 
 class ServiceCityPageObserver
 {
@@ -24,12 +25,42 @@ class ServiceCityPageObserver
     $hasRelevantChanges = collect($rebuildTriggers)
       ->some(fn(string $field) => $cityPage->wasChanged($field));
 
-    if (!$hasRelevantChanges) return;
+    if (! $hasRelevantChanges) return;
 
     $cityPage->loadMissing(['service', 'city']);
 
     $cityPage->updateQuietly([
       'schema_markup' => CityPageSchemaBuilderService::build($cityPage),
+    ]);
+  }
+
+  public function created(ServiceCityPage $cityPage): void
+  {
+    $this->rebuildServiceSchema($cityPage);
+  }
+
+  public function deleted(ServiceCityPage $cityPage): void
+  {
+    $this->rebuildServiceSchema($cityPage);
+  }
+
+  public function updated(ServiceCityPage $cityPage): void
+  {
+    if (! $cityPage->wasChanged('is_published')) return;
+
+    $this->rebuildServiceSchema($cityPage);
+  }
+
+  private function rebuildServiceSchema(ServiceCityPage $cityPage): void
+  {
+    $cityPage->loadMissing(['service.seo', 'service.packages', 'service.processSteps', 'service.faqs']);
+
+    $service = $cityPage->service;
+
+    if (! $service || ! $service->seo) return;
+
+    $service->seo->updateQuietly([
+      'schema_markup' => SchemaBuilderService::build($service),
     ]);
   }
 }

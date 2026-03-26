@@ -14,12 +14,7 @@ class ServiceCategory extends Model
     protected $fillable = [
         'name',
         'slug',
-        'sort_order',
         'status',
-    ];
-
-    protected $casts = [
-        'sort_order' => 'integer',
     ];
 
     protected static function booted(): void
@@ -44,12 +39,12 @@ class ServiceCategory extends Model
 
     public function activeServices(): HasMany
     {
-        return $this->hasMany(Service::class)->active()->ordered();
+        return $this->hasMany(Service::class)->active();
     }
 
     public function publishedServices(): HasMany
     {
-        return $this->hasMany(Service::class)->published()->ordered();
+        return $this->hasMany(Service::class)->published();
     }
 
     /*
@@ -61,11 +56,6 @@ class ServiceCategory extends Model
     public function scopeActive($query)
     {
         return $query->where('status', 'active');
-    }
-
-    public function scopeOrdered($query)
-    {
-        return $query->orderBy('sort_order');
     }
 
     public function scopeWithServicesCount($query)

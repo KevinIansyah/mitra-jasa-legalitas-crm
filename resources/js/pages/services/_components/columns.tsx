@@ -16,7 +16,7 @@ export default function getColumns(): ColumnDef<Service>[] {
             cell: ({ row }) => {
                 const category = row.original.category;
 
-                return category ? <Badge>{category.name}</Badge> : <span>-</span>;
+                return category ? <Badge className="bg-slate-500 text-white">{category.name}</Badge> : <span>-</span>;
             },
         },
         {

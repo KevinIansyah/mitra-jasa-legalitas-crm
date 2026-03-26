@@ -82,7 +82,7 @@ class AiContentService
     $prompt = require __DIR__ . '/Prompts/ServiceContentPrompt.php';
     $prompt = $prompt($context);
 
-    $result = $this->generateWithQuota($user, $prompt, $this->systemPrompt(), 4000);
+    $result = $this->generateWithQuota($user, $prompt, $this->systemPrompt(), 5000);
 
     $parsed = $this->parseJson($result['content']);
 

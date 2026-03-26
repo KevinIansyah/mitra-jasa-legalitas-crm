@@ -53,6 +53,14 @@ class CityPageSchemaBuilderService
         'areaServed'  => [
           '@type' => 'City',
           'name'  => $city->name,
+          'containedInPlace' => [
+            '@type' => 'AdministrativeArea',
+            'name'  => $city->province,
+            'containedInPlace' => [
+              '@type' => 'Country',
+              'name'  => 'Indonesia',
+            ],
+          ],
         ],
         'provider'    => [
           '@type' => $settings->org_type ?? 'LocalBusiness',

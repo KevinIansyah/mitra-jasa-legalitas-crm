@@ -19,13 +19,15 @@ class Blog extends Model
         'featured_image',
         'is_published',
         'is_featured',
+        'views',
         'published_at',
     ];
 
     protected $casts = [
-        'is_published'  => 'boolean',
-        'is_featured'   => 'boolean',
-        'published_at'  => 'datetime',
+        'is_published' => 'boolean',
+        'is_featured' => 'boolean',
+        'published_at' => 'datetime',
+        'views' => 'integer',
     ];
 
     /*
@@ -79,7 +81,7 @@ class Blog extends Model
 
     /*
     |--------------------------------------------------------------------------
-    | COMPUTED 
+    | COMPUTED
     |--------------------------------------------------------------------------
     */
 
