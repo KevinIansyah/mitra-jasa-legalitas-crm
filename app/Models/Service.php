@@ -70,6 +70,13 @@ class Service extends Model
         return $this->hasMany(ServicePackage::class)->active();
     }
 
+    public function cheapestPackage(): HasOne
+    {
+        return $this->hasOne(ServicePackage::class)
+            ->active()
+            ->orderBy('price', 'asc');
+    }
+
     public function faqs(): HasMany
     {
         return $this->hasMany(ServiceFaq::class);

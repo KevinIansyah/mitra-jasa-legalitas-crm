@@ -122,7 +122,7 @@ class AiContentService
     $prompt = require __DIR__ . '/Prompts/ServiceSeoPrompt.php';
     $prompt = $prompt($context);
 
-    $result = $this->generateWithQuota($user, $prompt, $this->systemPrompt(), 1000);
+    $result = $this->generateWithQuota($user, $prompt, $this->systemPrompt(), 2000);
 
     $parsed = $this->parseJson($result['content']);
 
@@ -144,7 +144,7 @@ class AiContentService
     $prompt = require __DIR__ . '/Prompts/ServicePackagesPrompt.php';
     $prompt = $prompt($context);
 
-    $result = $this->generateWithQuota($user, $prompt, $this->systemPrompt(), 3000);
+    $result = $this->generateWithQuota($user, $prompt, $this->systemPrompt(), 4000);
 
     $parsed = $this->parseJson($result['content']);
 
@@ -164,7 +164,7 @@ class AiContentService
     $prompt = require __DIR__ . '/Prompts/ServiceProcessStepsPrompt.php';
     $prompt = $prompt($context);
 
-    $result = $this->generateWithQuota($user, $prompt, $this->systemPrompt(), 3000);
+    $result = $this->generateWithQuota($user, $prompt, $this->systemPrompt(), 4000);
 
     $parsed = $this->parseJson($result['content']);
 
@@ -184,7 +184,7 @@ class AiContentService
     $prompt = require __DIR__ . '/Prompts/ServiceRequirementsPrompt.php';
     $prompt = $prompt($context);
 
-    $result = $this->generateWithQuota($user, $prompt, $this->systemPrompt(), 3000);
+    $result = $this->generateWithQuota($user, $prompt, $this->systemPrompt(), 4000);
 
     $parsed = $this->parseJson($result['content']);
 
@@ -204,7 +204,7 @@ class AiContentService
     $prompt = require __DIR__ . '/Prompts/ServiceLegalBasesPrompt.php';
     $prompt = $prompt($context);
 
-    $result = $this->generateWithQuota($user, $prompt, $this->systemPrompt(), 3000);
+    $result = $this->generateWithQuota($user, $prompt, $this->systemPrompt(), 4000);
 
     $parsed = $this->parseJson($result['content']);
 

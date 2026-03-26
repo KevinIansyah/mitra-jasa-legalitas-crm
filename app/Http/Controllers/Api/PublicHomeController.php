@@ -42,7 +42,12 @@ class PublicHomeController extends Controller
         $featuredServices = Service::query()
             ->published()
             ->featured()
-            ->with(['category:id,name,slug'])
+            ->with([
+                'category:id,name,slug',
+                'cheapestPackage' => function ($q) {
+                    $q->with(['includedFeatures']);
+                }
+            ])
             ->limit(self::FEATURED_SERVICES_LIMIT)
             ->latest()
             ->get(['id', 'service_category_id', 'name', 'slug', 'short_description', 'featured_image', 'is_featured', 'is_popular'])
@@ -60,6 +65,10 @@ class PublicHomeController extends Controller
                 'slug' => $cat->slug,
                 'published_services_count' => $cat->services_count,
             ]);
+
+        $totalServices = Service::query()
+            ->published()
+            ->count();
 
         $testimonials = Testimonial::query()
             ->published()
@@ -132,7 +141,7 @@ class PublicHomeController extends Controller
             ->toArray();
 
         return ApiResponse::success([
-            'stats' => $this->buildStats($site),
+            'stats' => $this->buildStats($site, $totalServices),
             'featured_services' => $featuredServices,
             'service_categories' => $serviceCategories,
             'testimonials' => $testimonials,
@@ -148,7 +157,7 @@ class PublicHomeController extends Controller
     // PRIVATE BUILDERS
     // ========================================================================
 
-    private function buildStats(SiteSetting $site): array
+    private function buildStats(SiteSetting $site, int $totalServices): array
     {
         return [
             'total_clients' => $site->stat_total_clients,
@@ -156,7 +165,7 @@ class PublicHomeController extends Controller
             'rating' => $site->stat_rating,
             'total_reviews' => $site->stat_total_reviews,
             'years_experience' => $site->stat_years_experience,
-            'total_services' => $site->stat_total_services,
+            'total_services' => $totalServices,
         ];
     }
 
