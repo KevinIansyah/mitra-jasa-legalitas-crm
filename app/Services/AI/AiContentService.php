@@ -5,7 +5,6 @@ namespace App\Services\AI;
 use App\Models\StaffProfile;
 use App\Models\User;
 use Exception;
-use Illuminate\Support\Facades\Log;
 
 class AiContentService
 {

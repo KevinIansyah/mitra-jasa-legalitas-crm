@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\ContactMessageController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PublicBlogController;
 use App\Http\Controllers\Api\PublicHomeController;
+use App\Http\Controllers\Api\PublicNavigationController;
 use App\Http\Controllers\Api\PublicServiceController;
 use App\Http\Controllers\Api\QuoteController;
 use App\Http\Controllers\Finances\EstimateController;
@@ -158,10 +159,12 @@ Route::middleware('auth:sanctum')->group(function () {
 | PUBLIC HOME / BERANDA
 |--------------------------------------------------------------------------
 | GET /home                          → Data halaman beranda (stats, layanan, SEO, dll.)
+| GET /navigation                    → Data navigasi global: kategori layanan + layanan per kategori, layanan unggulan, WhatsApp CTA, dan social media.
 |--------------------------------------------------------------------------
 */
 
 Route::get('/home', [PublicHomeController::class, 'index']);
+Route::get('/navigation', [PublicNavigationController::class, 'index'])->name('navigation');
 
 /*
 |--------------------------------------------------------------------------
