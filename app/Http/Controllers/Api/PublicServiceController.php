@@ -89,17 +89,17 @@ class PublicServiceController extends Controller
             $services->orderBy('name', 'asc');
         } elseif ($sort === 'price_asc') {
             $services->orderBy(
-                Service::select('price')->from('packages')
-                    ->whereColumn('packages.service_id', 'services.id')
-                    ->where('packages.status', 'active')
+                ServicePackage::select('price')
+                    ->whereColumn('service_id', 'services.id')
+                    ->where('status', 'active')
                     ->orderBy('price', 'asc')
                     ->limit(1)
             );
         } elseif ($sort === 'price_desc') {
             $services->orderByDesc(
-                Service::select('price')->from('packages')
-                    ->whereColumn('packages.service_id', 'services.id')
-                    ->where('packages.status', 'active')
+                ServicePackage::select('price')
+                    ->whereColumn('service_id', 'services.id')
+                    ->where('status', 'active')
                     ->orderBy('price', 'asc')
                     ->limit(1)
             );
