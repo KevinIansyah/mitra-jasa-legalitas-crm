@@ -22,8 +22,12 @@ return [
     'allowed_origins' => [
         'http://localhost:3000',
         'http://127.0.0.1:3000',
-        'https://keviniansyah.site',
-        'https://www.keviniansyah.site'
+        'https://mitra-jasa-legalitas.keviniansyah.site',
+        'https://www.mitra-jasa-legalitas.keviniansyah.site',
+        'https://mitra-jasa-legalitas.co.id',
+        'https://www.mitra-jasa-legalitas.co.id',
+        'https://mitra-jasa-legalitas.com',
+        'https://www.mitra-jasa-legalitas.com',
     ],
 
     'allowed_origins_patterns' => [],

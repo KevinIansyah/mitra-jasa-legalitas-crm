@@ -143,7 +143,11 @@ class PublicServiceController extends Controller
     {
         $city = City::where('slug', $citySlug)
             ->where('status', 'active')
-            ->firstOrFail();
+            ->first();
+
+        if (!$city) {
+            return ApiResponse::error('Kota tidak ditemukan', 404);
+        }
 
         $categorySlugs = $request->input('category', []);
         $priceRanges = $request->input('price', []);
@@ -306,7 +310,11 @@ class PublicServiceController extends Controller
                     'city' => fn($q) => $q->select('id', 'name', 'province', 'slug'),
                 ]),
             ])
-            ->firstOrFail();
+            ->first();
+
+        if (!$service) {
+            return ApiResponse::error('Layanan tidak ditemukan', 404);
+        }
 
         $r2Url = rtrim(config('filesystems.disks.r2_public.url', ''), '/');
 
@@ -378,13 +386,21 @@ class PublicServiceController extends Controller
                 ]),
                 'legalBases' => fn($query) => $query->where('status', 'active')->orderBy('sort_order'),
             ])
-            ->firstOrFail();
+            ->first();
+
+        if (!$service) {
+            return ApiResponse::error('Layanan tidak ditemukan', 404);
+        }
 
         $cityPage = ServiceCityPage::where('service_id', $service->id)
             ->where('is_published', true)
             ->whereHas('city', fn($query) => $query->where('slug', $citySlug))
             ->with('city:id,name,slug,province')
-            ->firstOrFail();
+            ->first();
+
+        if (!$cityPage) {
+            return ApiResponse::error('Halaman kota tidak ditemukan', 404);
+        }
 
         $r2Url = rtrim(config('filesystems.disks.r2_public.url', ''), '/');
 

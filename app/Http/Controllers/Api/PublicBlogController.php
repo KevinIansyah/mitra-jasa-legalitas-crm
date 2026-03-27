@@ -84,7 +84,11 @@ class PublicBlogController extends Controller
                 'tags:id,name,slug',
                 'seo',
             ])
-            ->firstOrFail();
+            ->first();
+
+        if (!$blog) {
+            return ApiResponse::error('Artikel tidak ditemukan', 404);
+        }
 
         $blog->increment('views');
 

@@ -69,7 +69,11 @@ class ChatbotController extends Controller
             'message' => 'required|string|max:1000',
         ]);
 
-        $session = ChatSession::where('session_token', $sessionToken)->firstOrFail();
+        $session = ChatSession::where('session_token', $sessionToken)->first();
+
+        if (!$session) {
+            return ApiResponse::error('Sesi tidak ditemukan', 404);
+        }
 
         try {
             $result = $this->chatbot->chat($session, $request->input('message'));
@@ -101,7 +105,11 @@ class ChatbotController extends Controller
             'phone' => 'nullable|string|max:20',
         ]);
 
-        $session = ChatSession::where('session_token', $sessionToken)->firstOrFail();
+        $session = ChatSession::where('session_token', $sessionToken)->first();
+
+        if (!$session) {
+            return ApiResponse::error('Sesi tidak ditemukan', 404);
+        }
 
         $session->update(array_filter([
             'name' => $request->input('name'),
