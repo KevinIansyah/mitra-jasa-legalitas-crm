@@ -31,7 +31,7 @@ Tulis konten untuk artikel blog "{$title}" di website jasa legalitas.
 6. Tone: edukatif, informatif, dan mudah dipahami pembaca awam
 7. Sertakan struktur yang jelas: pembukaan, isi (dengan sub-heading), dan penutup
 8. Jangan menyebut harga spesifik
-9. JANGAN tulis ulang judul "{$title}" sebagai heading di awal content — judul sudah ditampilkan terpisah oleh sistem
+9. JANGAN tulis ulang judul "{$title}" sebagai heading di awal content - judul sudah ditampilkan terpisah oleh sistem
 10. Mulai content langsung dengan paragraf pembukaan, bukan heading yang sama dengan judul
 
 **FORMAT HTML YANG DIIZINKAN:**

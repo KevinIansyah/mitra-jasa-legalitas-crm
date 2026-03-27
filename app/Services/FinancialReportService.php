@@ -152,7 +152,7 @@ class FinancialReportService
         if (round($currentNetIncome, 2) !== 0.0) {
             $label = $currentNetIncome >= 0 ? 'Laba Berjalan' : 'Rugi Berjalan';
             $equity->push([
-                'code'    => '—',
+                'code'    => '-',
                 'name'    => $label,
                 'amount' => $currentNetIncome,
             ]);

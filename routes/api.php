@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\PublicServiceController;
 use App\Http\Controllers\Api\QuoteController;
 use App\Http\Controllers\Api\ServiceCategoryController;
 use App\Http\Controllers\Api\CityController;
+use App\Http\Controllers\Api\CompanyInformationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -253,6 +254,9 @@ Route::prefix('blogs')->group(function () {
 | PUBLIC 
 |--------------------------------------------------------------------------
 | GET /cities                          → List all cities
+| GET /blog-categories                 → List all blog categories
+| GET /service-categories              → List all service categories
+| GET /company-information             → Company information
 |--------------------------------------------------------------------------
 */
 
@@ -266,5 +270,9 @@ Route::prefix('blog-categories')->group(function () {
 
 Route::prefix('service-categories')->group(function () {
     Route::get('/', [ServiceCategoryController::class, 'index']);
+});
+
+Route::prefix('company-information')->group(function () {
+    Route::get('/', [CompanyInformationController::class, 'index']);
 });
 

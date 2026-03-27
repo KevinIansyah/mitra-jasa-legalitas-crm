@@ -15,7 +15,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function SiteSettingsAnalytics({ settings }: { settings: SiteSetting }) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Analytics & Tracking — Pengaturan Website" />
+            <Head title="Analytics & Tracking - Pengaturan Website" />
             <SiteSettingsLayout>
                 <Heading variant="small" title="Analytics & Tracking" description="Kode tracking dan verifikasi mesin pencari" />
                 <AnalyticsSection settings={settings} />

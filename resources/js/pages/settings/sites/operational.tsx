@@ -15,7 +15,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function SiteSettingsOperational({ settings }: { settings: SiteSetting }) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Operasional — Pengaturan Website" />
+            <Head title="Operasional - Pengaturan Website" />
             <SiteSettingsLayout>
                 <Heading variant="small" title="Operasional" description="Jam operasional dan informasi lokasi" />
                 <OperationalSection settings={settings} />

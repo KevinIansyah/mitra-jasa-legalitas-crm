@@ -19,7 +19,7 @@ Buat meta SEO untuk artikel blog informatif berjudul "{$title}".
 
 **KONTEKS PENTING:**
 Ini adalah artikel blog edukatif/informatif, BUKAN halaman landing page layanan.
-Nada penulisan harus seperti artikel/konten editorial — informatif, engaging, dan mengundang pembaca untuk membaca.
+Nada penulisan harus seperti artikel/konten editorial - informatif, engaging, dan mengundang pembaca untuk membaca.
 JANGAN tulis seperti iklan layanan atau promosi produk.
 
 **INSTRUKSI:**

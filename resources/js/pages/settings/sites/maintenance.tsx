@@ -15,7 +15,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function SiteSettingsMaintenance({ settings }: { settings: SiteSetting }) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Maintenance — Pengaturan Website" />
+            <Head title="Maintenance - Pengaturan Website" />
             <SiteSettingsLayout>
                 <Heading variant="small" title="Mode Maintenance" description="Nonaktifkan akses publik sementara" />
                 <MaintenanceSection settings={settings} />

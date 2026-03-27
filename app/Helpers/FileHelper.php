@@ -136,7 +136,7 @@ class FileHelper
   }
 
   /**
-   * Resolve file ownership — throws 404 if path doesn't belong to any known record.
+   * Resolve file ownership - throws 404 if path doesn't belong to any known record.
    */
   public static function resolveFile(string $path): void
   {

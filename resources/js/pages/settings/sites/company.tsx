@@ -15,7 +15,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function SiteSettingsCompany({ settings }: { settings: SiteSetting }) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Identitas Perusahaan — Pengaturan Website" />
+            <Head title="Identitas Perusahaan - Pengaturan Website" />
             <SiteSettingsLayout>
                 <Heading variant="small" title="Identitas Perusahaan" description="Logo, nama, dan informasi kontak perusahaan" />
                 <CompanySection settings={settings} />

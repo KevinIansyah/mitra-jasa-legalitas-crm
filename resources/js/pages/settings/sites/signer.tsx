@@ -15,7 +15,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function SiteSettingsSigner({ settings }: { settings: SiteSetting }) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="TTD & Stempel — Pengaturan Website" />
+            <Head title="TTD & Stempel - Pengaturan Website" />
             <SiteSettingsLayout>
                 <Heading variant="small" title="Tanda Tangan & Stempel" description="Digunakan pada dokumen proposal, invoice, surat, dan kontrak" />
                 <SignerSection settings={settings} />

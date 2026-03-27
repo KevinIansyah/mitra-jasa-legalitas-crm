@@ -15,7 +15,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function SiteSettingsMeta({ settings }: { settings: SiteSetting }) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Default Meta Tags — Pengaturan Website" />
+            <Head title="Default Meta Tags - Pengaturan Website" />
             <SiteSettingsLayout>
                 <Heading variant="small" title="Default Meta Tags" description="Template meta tags untuk semua halaman" />
                 <MetaSection settings={settings} />

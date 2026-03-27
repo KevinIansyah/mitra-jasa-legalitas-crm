@@ -164,7 +164,7 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
             Route::patch('/operational', [SiteController::class, 'updateOperational'])
                 ->name('update.operational');
 
-            Route::patch('/meta', [SiteController::class, 'updateMeta'])
+            Route::post('/meta', [SiteController::class, 'updateMeta'])
                 ->name('update.meta');
 
             Route::patch('/organization', [SiteController::class, 'updateOrganization'])

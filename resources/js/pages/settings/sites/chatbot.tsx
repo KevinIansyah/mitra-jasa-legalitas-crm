@@ -12,7 +12,7 @@ const breadcrumbs: BreadcrumbItem[] = [{ title: 'Chatbot AI', href: siteSettings
 export default function SiteSettingsChatbot({ settings }: { settings: SiteSetting }) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Chatbot AI — Pengaturan Website" />
+            <Head title="Chatbot AI - Pengaturan Website" />
             <SiteSettingsLayout>
                 <Heading variant="small" title="Chatbot AI" description="Konfigurasi asisten virtual dan batas penggunaan token" />
                 <ChatbotSection settings={settings} />

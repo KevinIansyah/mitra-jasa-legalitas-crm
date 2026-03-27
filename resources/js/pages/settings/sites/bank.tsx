@@ -15,7 +15,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function SiteSettingsBank({ settings }: { settings: SiteSetting }) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Informasi Bank — Pengaturan Website" />
+            <Head title="Informasi Bank - Pengaturan Website" />
             <SiteSettingsLayout>
                 <Heading variant="small" title="Informasi Bank" description="Rekening untuk instruksi pembayaran" />
                 <BankSection settings={settings} />

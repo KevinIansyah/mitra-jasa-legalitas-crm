@@ -15,7 +15,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function SiteSettingsOrganization({ settings }: { settings: SiteSetting }) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Schema.org — Pengaturan Website" />
+            <Head title="Schema.org - Pengaturan Website" />
             <SiteSettingsLayout>
                 <Heading variant="small" title="Schema.org / Organization" description="Structured data untuk meningkatkan tampilan di mesin pencari" />
                 <OrganizationSection settings={settings} />

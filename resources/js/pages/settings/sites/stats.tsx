@@ -15,7 +15,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function SiteSettingsStats({ settings }: { settings: SiteSetting }) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Statistik & Trust — Pengaturan Website" />
+            <Head title="Statistik & Trust - Pengaturan Website" />
             <SiteSettingsLayout>
                 <Heading variant="small" title="Statistik & Trust" description="Ditampilkan di halaman publik untuk meningkatkan kepercayaan" />
                 <StatsSection settings={settings} />

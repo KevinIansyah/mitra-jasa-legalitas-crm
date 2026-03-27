@@ -39,7 +39,7 @@ class LovableAiService implements AiServiceInterface
 
     if (!$response->successful()) {
       Log::error('Lovable AI Gateway error', ['status' => $response->status(), 'body' => $response->body()]);
-      throw new Exception("Lovable AI error: {$response->status()} — {$response->body()}");
+      throw new Exception("Lovable AI error: {$response->status()} - {$response->body()}");
     }
 
     $data       = $response->json();

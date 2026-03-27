@@ -209,7 +209,7 @@ class PublicHomeController extends Controller
             ?? $this->publicAssetUrl($site->company_logo, $r2Url);
 
         // ----------------------------------------------------------------
-        // Organization schema — tanpa @context karena masuk ke @graph
+        // Organization schema - tanpa @context karena masuk ke @graph
         // ----------------------------------------------------------------
         $orgId = $base . '#organization';
         $organization = $site->toOrganizationSchema();
@@ -246,7 +246,7 @@ class PublicHomeController extends Controller
         }
 
         // ----------------------------------------------------------------
-        // WebSite schema — tanpa @context
+        // WebSite schema - tanpa @context
         // ----------------------------------------------------------------
         $websiteId = $base . '#website';
         $websiteSchema = array_filter([
@@ -260,7 +260,7 @@ class PublicHomeController extends Controller
         ]);
 
         // ----------------------------------------------------------------
-        // WebPage schema — tanpa @context
+        // WebPage schema - tanpa @context
         // ----------------------------------------------------------------
         $webPageId = $base . '#webpage';
         $webPageSchema = array_filter([
@@ -275,7 +275,7 @@ class PublicHomeController extends Controller
         ]);
 
         // ----------------------------------------------------------------
-        // @graph — @context hanya di root, tidak duplikat di tiap item
+        // @graph - @context hanya di root, tidak duplikat di tiap item
         // ----------------------------------------------------------------
         $jsonLd = [
             '@context' => 'https://schema.org',

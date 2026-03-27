@@ -15,7 +15,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function SiteSettingsDocument({ settings }: { settings: SiteSetting }) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Kustomisasi Dokumen — Pengaturan Website" />
+            <Head title="Kustomisasi Dokumen - Pengaturan Website" />
             <SiteSettingsLayout>
                 <Heading variant="small" title="Kustomisasi Dokumen" description="Teks default untuk dokumen perusahaan" />
                 <DocumentSection settings={settings} />

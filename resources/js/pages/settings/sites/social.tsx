@@ -15,7 +15,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function SiteSettingsSocial({ settings }: { settings: SiteSetting }) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Social Media — Pengaturan Website" />
+            <Head title="Social Media - Pengaturan Website" />
             <SiteSettingsLayout>
                 <Heading variant="small" title="Social Media" description="Hubungkan akun social media perusahaan" />
                 <SocialSection settings={settings} />

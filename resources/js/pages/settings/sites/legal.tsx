@@ -15,7 +15,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function SiteSettingsLegal({ settings }: { settings: SiteSetting }) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Informasi Legal — Pengaturan Website" />
+            <Head title="Informasi Legal - Pengaturan Website" />
             <SiteSettingsLayout>
                 <Heading variant="small" title="Informasi Legal" description="Data legalitas untuk dokumen resmi" />
                 <LegalSection settings={settings} />
