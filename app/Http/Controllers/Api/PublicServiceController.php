@@ -161,8 +161,8 @@ class PublicServiceController extends Controller
         $cityPages = ServiceCityPage::where('city_id', $city->id)
             ->where('service_city_pages.is_published', true)
             ->whereHas('service', function ($q) use ($categorySlugs, $priceRanges) {
-                $q->where('is_published', true)
-                    ->where('status', 'active')
+                $q->where('services.is_published', true)
+                    ->where('services.status', 'active')
                     ->when(
                         !empty($categorySlugs),
                         fn($q) => $q->whereHas(
