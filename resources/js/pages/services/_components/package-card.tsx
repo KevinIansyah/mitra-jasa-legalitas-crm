@@ -230,12 +230,12 @@ export function PackageCard({ pkg, index, totalItems, onChange, onDelete, onMove
                     </Label>
                     <Switch id={`highlight-${pkg._key}`} checked={pkg.is_highlighted} onCheckedChange={(val) => update({ is_highlighted: val })} />
                 </div>
-                <div className="flex items-center justify-between">
+                {/* <div className="flex items-center justify-between">
                     <Label htmlFor={`badge-${pkg._key}`} className="cursor-pointer text-sm">
                         Badge Populer
                     </Label>
                     <Switch id={`badge-${pkg._key}`} checked={pkg.badge === 'Populer'} onCheckedChange={(val) => update({ badge: val ? 'Populer' : null })} />
-                </div>
+                </div> */}
             </div>
         </div>
     );

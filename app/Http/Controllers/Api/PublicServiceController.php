@@ -159,7 +159,7 @@ class PublicServiceController extends Controller
         $priceRanges = array_filter($priceRanges, fn($v) => in_array((string)$v, ['1', '2', '3', '4', '5']));
 
         $cityPages = ServiceCityPage::where('city_id', $city->id)
-            ->where('is_published', true)
+            ->where('service_city_pages.is_published', true)
             ->whereHas('service', function ($q) use ($categorySlugs, $priceRanges) {
                 $q->where('is_published', true)
                     ->where('status', 'active')
@@ -200,10 +200,12 @@ class PublicServiceController extends Controller
 
         if ($sort === 'popular') {
             $cityPages->join('services', 'services.id', '=', 'service_city_pages.service_id')
-                ->orderByDesc('services.is_popular');
+                ->orderByDesc('services.is_popular')
+                ->select('service_city_pages.*');
         } elseif ($sort === 'name_asc') {
             $cityPages->join('services', 'services.id', '=', 'service_city_pages.service_id')
-                ->orderBy('services.name', 'asc');
+                ->orderBy('services.name', 'asc')
+                ->select('service_city_pages.*');
         } elseif ($sort === 'price_asc') {
             $cityPages->orderBy(
                 ServicePackage::select('price')
@@ -472,6 +474,7 @@ class PublicServiceController extends Controller
             'duration_days' => $package->duration_days,
             'short_description' => $package->short_description,
             'is_highlighted' => $package->is_highlighted,
+            'badge' => $package->badge,
             'sort_order' => $package->sort_order,
             'features' => $package->features->map(fn($feature) => [
                 'feature_name' => $feature->feature_name,
