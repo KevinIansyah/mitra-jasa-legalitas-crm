@@ -17,6 +17,7 @@ class RegisterRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email'],
+            'phone' => ['required', 'string', 'max:255'],
             'password' => ['required', 'confirmed', Password::min(8)],
         ];
     }
@@ -27,6 +28,9 @@ class RegisterRequest extends FormRequest
             'name.required' => 'Nama wajib diisi.',
             'email.required' => 'Email wajib diisi.',
             'email.email' => 'Format email tidak valid.',
+            'phone.required' => 'Nomor telepon wajib diisi.',
+            'phone.string' => 'Nomor telepon harus berupa string.',
+            'phone.max' => 'Nomor telepon maksimal 255 karakter.',
             'password.required' => 'Password wajib diisi.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
             'password.min' => 'Password minimal 8 karakter.',
