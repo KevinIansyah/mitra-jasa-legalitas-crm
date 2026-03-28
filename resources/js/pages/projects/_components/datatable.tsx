@@ -277,24 +277,32 @@ export function DataTable({ data, customers, companies, services, pageIndex, set
                         ))}
                     </TableHeader>
                     <TableBody>
-                        {table.getRowModel().rows.map((row) => (
-                            <React.Fragment key={row.id}>
-                                <TableRow data-state={row.getIsSelected() && 'selected'} className={expandedRow === row.id ? 'border-none' : ''}>
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-                                    ))}
-                                </TableRow>
-                                {expandedRow === row.id && (
-                                    <TableRow className="hover:bg-transparent">
-                                        <TableCell colSpan={columns.length} className="pb-4">
-                                            <div className="rounded-lg bg-primary/10 dark:bg-muted/40">
-                                                <ProjectDetail project={row.original} />
-                                            </div>
-                                        </TableCell>
+                        {table.getRowModel().rows?.length ? (
+                            table.getRowModel().rows.map((row) => (
+                                <React.Fragment key={row.id}>
+                                    <TableRow data-state={row.getIsSelected() && 'selected'} className={expandedRow === row.id ? 'border-none' : ''}>
+                                        {row.getVisibleCells().map((cell) => (
+                                            <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                                        ))}
                                     </TableRow>
-                                )}
-                            </React.Fragment>
-                        ))}
+                                    {expandedRow === row.id && (
+                                        <TableRow className="hover:bg-transparent">
+                                            <TableCell colSpan={columns.length} className="pb-4">
+                                                <div className="rounded-lg bg-primary/10 dark:bg-muted/40">
+                                                    <ProjectDetail project={row.original} />
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                                </React.Fragment>
+                            ))
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={columns.length} className="h-24 text-center">
+                                    {searchValue ? 'Tidak ada hasil yang ditemukan' : 'Tidak ada data'}
+                                </TableCell>
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
             </div>

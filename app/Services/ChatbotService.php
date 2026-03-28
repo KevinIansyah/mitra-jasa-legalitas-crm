@@ -51,9 +51,11 @@ class ChatbotService
             'tokens_used' => 0,
         ]);
 
+        $this->tryExtractLead($session, $userMessage);
+
         $recentMessages = $session->getRecentMessages(10);
 
-        $contents = $recentMessages->map(fn ($message) => [
+        $contents = $recentMessages->map(fn($message) => [
             'role' => $message->role === 'assistant' ? 'model' : 'user',
             'parts' => [['text' => $message->content]],
         ])->toArray();
@@ -90,12 +92,11 @@ class ChatbotService
             $address = $settings->company_address ?? '';
             $phone = $settings->company_phone ?? '';
             $whatsapp = $settings->ai_chatbot_whatsapp_number ?? $phone;
-            $city = $settings->company_city ?? 'Surabaya';
             $website = $settings->company_website ?? '';
 
             $services = Service::with([
-                'packages' => fn ($query) => $query->where('status', 'active')->orderBy('price')->limit(1),
-                'cityPages' => fn ($query) => $query->where('is_published', true)->with('city:id,name'),
+                'packages' => fn($query) => $query->where('status', 'active')->orderBy('price')->limit(1),
+                'cityPages' => fn($query) => $query->where('is_published', true)->with('city:id,name'),
             ])
                 ->where('is_published', true)
                 ->where('status', 'active')
@@ -104,7 +105,7 @@ class ChatbotService
             $serviceList = $services->map(function ($service) use ($website) {
                 $minPrice = $service->packages->first()?->price;
                 $cities = $service->cityPages->pluck('city.name')->filter()->implode(', ');
-                $priceText = $minPrice ? 'mulai Rp '.number_format($minPrice, 0, ',', '.') : 'hubungi kami';
+                $priceText = $minPrice ? 'mulai Rp ' . number_format($minPrice, 0, ',', '.') : 'hubungi kami';
                 $cityText = $cities ? "Tersedia di: {$cities}" : '';
                 $link = "{$website}/layanan/{$service->slug}";
 
@@ -112,7 +113,7 @@ class ChatbotService
             })->implode("\n\n");
 
             return <<<PROMPT
-Kamu adalah asisten virtual {$companyName}, perusahaan jasa legalitas profesional di {$city}, Indonesia.
+Kamu adalah asisten virtual {$companyName}, perusahaan jasa legalitas profesional di Indonesia.
 
 INFORMASI PERUSAHAAN:
 - Nama      : {$companyName}
@@ -177,7 +178,7 @@ PROMPT;
         $data = $response->json();
         $content = $data['candidates'][0]['content']['parts'][0]['text'] ?? '';
         $tokensUsed = ($data['usageMetadata']['promptTokenCount'] ?? 0)
-          + ($data['usageMetadata']['candidatesTokenCount'] ?? 0);
+            + ($data['usageMetadata']['candidatesTokenCount'] ?? 0);
 
         return ['content' => $content, 'tokens_used' => $tokensUsed];
     }
@@ -213,6 +214,41 @@ PROMPT;
         $tokensUsed = $data['usage']['total_tokens'] ?? 0;
 
         return ['content' => $content, 'tokens_used' => $tokensUsed];
+    }
+
+    // ------------------------------------------------------------------------
+    // LEAD EXTRACTION - Auto-detect dari pesan user
+    // ------------------------------------------------------------------------
+
+    private function tryExtractLead(ChatSession $session, string $text): void
+    {
+        $updated = [];
+
+        if (! $session->phone) {
+            $cleaned = preg_replace('/[\s\-]/', '', $text);
+            if (preg_match('/(?:\+62|62|0)8[1-9]\d{6,11}/', $cleaned, $m)) {
+                $updated['phone'] = $m[0];
+            }
+        }
+
+        if (! $session->email) {
+            if (preg_match('/[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/', $text, $m)) {
+                $updated['email'] = $m[0];
+            }
+        }
+
+        if (! $session->name) {
+            if (preg_match('/(?:nama saya|panggil saya|saya)\s+([A-Za-z]{2,}(?:\s+[A-Za-z]{2,}){0,3})/i', $text, $m)) {
+                $updated['name'] = trim($m[1]);
+            }
+        }
+
+        if (! empty($updated)) {
+            if (isset($updated['phone']) || isset($updated['email'])) {
+                $updated['status'] = 'converted';
+            }
+            $session->update($updated);
+        }
     }
 
     // ------------------------------------------------------------------------

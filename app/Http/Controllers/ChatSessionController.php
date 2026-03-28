@@ -18,12 +18,12 @@ class ChatSessionController extends Controller
 
         $sessions = ChatSession::query()
             ->withCount('messages')
-            ->when($search, fn ($query) => $query->where(function ($query) use ($search) {
+            ->when($search, fn($query) => $query->where(function ($query) use ($search) {
                 $query->where('name', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%")
                     ->orWhere('phone', 'like', "%{$search}%");
             }))
-            ->when($status, fn ($query) => $query->where('status', $status))
+            ->when($status, fn($query) => $query->where('status', $status))
             ->latest('last_message_at')
             ->paginate($perPage);
 
@@ -47,9 +47,9 @@ class ChatSessionController extends Controller
 
     public function show(ChatSession $chatSession)
     {
-        $chatSession->load(['messages' => fn ($query) => $query->orderBy('created_at')]);
+        $chatSession->load(['messages' => fn($query) => $query->orderBy('created_at')]);
 
-        return Inertia::render('ai/chat-sessions/show', [
+        return Inertia::render('ai/chat-sessions/detail/index', [
             'session' => $chatSession,
         ]);
     }
