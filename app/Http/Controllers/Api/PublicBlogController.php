@@ -6,17 +6,16 @@ use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Blog;
 use App\Models\SiteSetting;
+use App\Traits\BuildsSeoSchema;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PublicBlogController extends Controller
 {
+    use BuildsSeoSchema;
+
     // ========================================================================
     // GET /blogs
-    // List all blogs
-    // Query params:
-    //   ?category[]=slug1&category[]=slug2   → multi category
-    //   ?tag[]=slug1&tag[]=slug2             → multi tag
     // ========================================================================
 
     public function index(Request $request): JsonResponse
@@ -232,6 +231,7 @@ class PublicBlogController extends Controller
             'description' => $metaDescription,
             'inLanguage' => 'id-ID',
             'isPartOf' => ['@id' => $base . '#website'],
+            'about' => ['@id' => $base . '#organization'],
         ];
 
         return [
@@ -257,8 +257,10 @@ class PublicBlogController extends Controller
                 'twitter:image' => $ogImage,
             ]),
             'json_ld' => [
-                '@context' => 'https://schema.org',
-                '@graph' => [$breadcrumb, $webPage],
+                $this->buildOrganizationSchema($site, $r2Url, $base),
+                $this->buildWebSiteSchema($site, $base),
+                $webPage,
+                $breadcrumb,
             ],
         ];
     }

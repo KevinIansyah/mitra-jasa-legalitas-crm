@@ -9,11 +9,14 @@ use App\Models\Service;
 use App\Models\ServiceCityPage;
 use App\Models\ServicePackage;
 use App\Models\SiteSetting;
+use App\Traits\BuildsSeoSchema;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PublicServiceController extends Controller
 {
+    use BuildsSeoSchema;
+
     // ========================================================================
     // GET /services
     // ========================================================================
@@ -521,20 +524,20 @@ class PublicServiceController extends Controller
             : ($site->company_logo ? "{$r2Url}/{$site->company_logo}" : null);
 
         $itemList = [
-            '@type' => 'ItemList',
-            'name' => 'Daftar Layanan',
-            'url' => $pageUrl,
-            'numberOfItems' => count($services),
+            '@type'           => 'ItemList',
+            'name'            => 'Daftar Layanan',
+            'url'             => $pageUrl,
+            'numberOfItems'   => count($services),
             'itemListElement' => collect($services)->values()->map(fn($service, $i) => [
-                '@type' => 'ListItem',
+                '@type'    => 'ListItem',
                 'position' => $i + 1,
-                'name' => $service['name'],
-                'url' => $base . '/layanan/' . $service['slug'],
+                'name'     => $service['name'],
+                'url'      => $base . '/layanan/' . $service['slug'],
             ])->toArray(),
         ];
 
         $breadcrumb = [
-            '@type' => 'BreadcrumbList',
+            '@type'           => 'BreadcrumbList',
             'itemListElement' => [
                 ['@type' => 'ListItem', 'position' => 1, 'name' => 'Beranda', 'item' => $base],
                 ['@type' => 'ListItem', 'position' => 2, 'name' => 'Layanan', 'item' => $pageUrl],
@@ -542,39 +545,47 @@ class PublicServiceController extends Controller
         ];
 
         $webPage = [
-            '@type' => 'WebPage',
-            'url' => $pageUrl,
-            'name' => $metaTitle,
+            '@type'       => 'WebPage',
+            '@id'         => $pageUrl . '#webpage',
+            'url'         => $pageUrl,
+            'name'        => $metaTitle,
             'description' => $metaDescription,
-            'inLanguage' => 'id-ID',
-            'isPartOf' => ['@id' => $base . '#website'],
+            'inLanguage'  => 'id-ID',
+            'isPartOf'    => ['@id' => $base . '#website'],
+            'about'       => ['@id' => $base . '#organization'],
         ];
 
         return [
-            'meta_title' => $metaTitle,
+            'meta_title'       => $metaTitle,
             'meta_description' => $metaDescription,
-            'canonical_url' => $pageUrl,
-            'robots' => 'index, follow',
-            'in_sitemap' => true,
+            'canonical_url'    => $pageUrl,
+            'robots'           => 'index, follow',
+            'in_sitemap'       => true,
             'sitemap_priority' => '0.8',
-            'open_graph' => array_filter([
-                'og:type' => 'website',
-                'og:site_name' => $site->company_name,
-                'og:title' => $metaTitle,
+            'open_graph'       => array_filter([
+                'og:type'        => 'website',
+                'og:site_name'   => $site->company_name,
+                'og:title'       => $metaTitle,
                 'og:description' => $metaDescription,
-                'og:url' => $pageUrl,
-                'og:image' => $ogImage,
-                'og:locale' => 'id_ID',
+                'og:url'         => $pageUrl,
+                'og:image'       => $ogImage,
+                'og:locale'      => 'id_ID',
             ]),
-            'twitter' => array_filter([
-                'twitter:card' => 'summary_large_image',
-                'twitter:title' => $metaTitle,
+            'twitter'          => array_filter([
+                'twitter:card'        => 'summary_large_image',
+                'twitter:title'       => $metaTitle,
                 'twitter:description' => $metaDescription,
-                'twitter:image' => $ogImage,
+                'twitter:image'       => $ogImage,
             ]),
-            'json_ld' => [
+            'json_ld'          => [
                 '@context' => 'https://schema.org',
-                '@graph' => [$itemList, $breadcrumb, $webPage],
+                '@graph'   => [
+                    $this->buildOrganizationSchema($site, $r2Url, $base),
+                    $this->buildWebSiteSchema($site, $base),
+                    $itemList,
+                    $breadcrumb,
+                    $webPage,
+                ],
             ],
         ];
     }
@@ -594,20 +605,20 @@ class PublicServiceController extends Controller
             : ($site->company_logo ? "{$r2Url}/{$site->company_logo}" : null);
 
         $itemList = [
-            '@type' => 'ItemList',
-            'name' => 'Daftar Layanan di ' . $city->name,
-            'url' => $pageUrl,
-            'numberOfItems' => count($services),
+            '@type'           => 'ItemList',
+            'name'            => 'Daftar Layanan di ' . $city->name,
+            'url'             => $pageUrl,
+            'numberOfItems'   => count($services),
             'itemListElement' => collect($services)->values()->map(fn($service, $i) => [
-                '@type' => 'ListItem',
+                '@type'    => 'ListItem',
                 'position' => $i + 1,
-                'name' => $service['name'],
-                'url' => $base . '/layanan/' . $service['slug'] . '/' . $city->slug,
+                'name'     => $service['name'],
+                'url'      => $base . '/layanan/' . $service['slug'] . '/' . $city->slug,
             ])->toArray(),
         ];
 
         $breadcrumb = [
-            '@type' => 'BreadcrumbList',
+            '@type'           => 'BreadcrumbList',
             'itemListElement' => [
                 ['@type' => 'ListItem', 'position' => 1, 'name' => 'Beranda', 'item' => $base],
                 ['@type' => 'ListItem', 'position' => 2, 'name' => 'Layanan', 'item' => $listUrl],
@@ -616,39 +627,47 @@ class PublicServiceController extends Controller
         ];
 
         $webPage = [
-            '@type' => 'WebPage',
-            'url' => $pageUrl,
-            'name' => $metaTitle,
+            '@type'       => 'WebPage',
+            '@id'         => $pageUrl . '#webpage',
+            'url'         => $pageUrl,
+            'name'        => $metaTitle,
             'description' => $metaDescription,
-            'inLanguage' => 'id-ID',
-            'isPartOf' => ['@id' => $base . '#website'],
+            'inLanguage'  => 'id-ID',
+            'isPartOf'    => ['@id' => $base . '#website'],
+            'about'       => ['@id' => $base . '#organization'],
         ];
 
         return [
-            'meta_title' => $metaTitle,
+            'meta_title'       => $metaTitle,
             'meta_description' => $metaDescription,
-            'canonical_url' => $pageUrl,
-            'robots' => 'index, follow',
-            'in_sitemap' => true,
+            'canonical_url'    => $pageUrl,
+            'robots'           => 'index, follow',
+            'in_sitemap'       => true,
             'sitemap_priority' => '0.7',
-            'open_graph' => array_filter([
-                'og:type' => 'website',
-                'og:site_name' => $site->company_name,
-                'og:title' => $metaTitle,
+            'open_graph'       => array_filter([
+                'og:type'        => 'website',
+                'og:site_name'   => $site->company_name,
+                'og:title'       => $metaTitle,
                 'og:description' => $metaDescription,
-                'og:url' => $pageUrl,
-                'og:image' => $ogImage,
-                'og:locale' => 'id_ID',
+                'og:url'         => $pageUrl,
+                'og:image'       => $ogImage,
+                'og:locale'      => 'id_ID',
             ]),
-            'twitter' => array_filter([
-                'twitter:card' => 'summary_large_image',
-                'twitter:title' => $metaTitle,
+            'twitter'          => array_filter([
+                'twitter:card'        => 'summary_large_image',
+                'twitter:title'       => $metaTitle,
                 'twitter:description' => $metaDescription,
-                'twitter:image' => $ogImage,
+                'twitter:image'       => $ogImage,
             ]),
-            'json_ld' => [
+            'json_ld'          => [
                 '@context' => 'https://schema.org',
-                '@graph' => [$itemList, $breadcrumb, $webPage],
+                '@graph'   => [
+                    $this->buildOrganizationSchema($site, $r2Url, $base),
+                    $this->buildWebSiteSchema($site, $base),
+                    $itemList,
+                    $breadcrumb,
+                    $webPage,
+                ],
             ],
         ];
     }
