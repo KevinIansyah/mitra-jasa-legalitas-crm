@@ -6,13 +6,13 @@ use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Blog;
 use App\Models\SiteSetting;
-use App\Traits\BuildsSeoSchema;
+use App\Traits\BuildSeoSchema;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PublicBlogController extends Controller
 {
-    use BuildsSeoSchema;
+    use BuildSeoSchema;
 
     // ========================================================================
     // GET /blogs

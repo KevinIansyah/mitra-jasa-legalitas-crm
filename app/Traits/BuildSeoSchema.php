@@ -5,7 +5,7 @@ namespace App\Traits;
 use App\Models\City;
 use App\Models\SiteSetting;
 
-trait BuildsSeoSchema
+trait BuildSeoSchema
 {
   protected function buildOrganizationSchema(SiteSetting $site, string $r2Url, string $base): array
   {

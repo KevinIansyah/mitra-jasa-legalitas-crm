@@ -9,13 +9,13 @@ use App\Models\Service;
 use App\Models\ServiceCityPage;
 use App\Models\ServicePackage;
 use App\Models\SiteSetting;
-use App\Traits\BuildsSeoSchema;
+use App\Traits\BuildSeoSchema;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PublicServiceController extends Controller
 {
-    use BuildsSeoSchema;
+    use BuildSeoSchema;
 
     // ========================================================================
     // GET /services
