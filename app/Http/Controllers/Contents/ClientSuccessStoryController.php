@@ -31,7 +31,7 @@ class ClientSuccessStoryController extends Controller
             ->when($published === '1', fn ($q) => $q->where('is_published', true))
             ->when($published === '0', fn ($q) => $q->where('is_published', false))
             ->when($industry, fn ($q, $i) => $q->where('industry', $i))
-            ->ordered()
+            ->latest()
             ->paginate($perPage);
 
         $summaryRow = ClientSuccessStory::query()

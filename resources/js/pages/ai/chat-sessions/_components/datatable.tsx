@@ -5,18 +5,18 @@ import * as React from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
+import chatSessions from '@/routes/ai/chat-sessions';
 import type { ChatSession } from '../index';
 import getColumns from './columns';
-import chatSessions from '@/routes/ai/chat-sessions';
 
 interface DataTableProps {
     data: ChatSession[];
@@ -68,48 +68,46 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                             </InputGroupAddon>
                         </InputGroup>
 
-                        <Drawer direction="right" open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-                            <Button variant="secondary" className="relative gap-1.5 lg:w-30" onClick={() => setIsFilterOpen(true)}>
-                                <Filter className="size-3.75" />
-                                <span className="hidden lg:inline">Filter</span>
-                                {activeFiltersCount > 0 && (
-                                    <Badge className="ml-2 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-background">
-                                        {activeFiltersCount}
-                                    </Badge>
-                                )}
-                            </Button>
-                            <DrawerContent className="fixed right-0 bottom-0 mt-0 flex h-screen w-full flex-col rounded-none sm:max-w-sm">
-                                <div className="flex flex-1 flex-col overflow-hidden">
-                                    <DrawerHeader className="border-b">
-                                        <DrawerTitle>Filter Data</DrawerTitle>
-                                        <DrawerDescription>Saring riwayat sesi chat</DrawerDescription>
-                                    </DrawerHeader>
-                                    <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
-                                        <Field>
-                                            <FieldLabel>Status</FieldLabel>
-                                            <Select value={filters.status || ''} onValueChange={(value) => updateFilter('status', value || undefined)}>
-                                                <SelectTrigger className="w-full">
-                                                    <SelectValue placeholder="Pilih status..." />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectGroup>
-                                                        <SelectLabel>Status</SelectLabel>
-                                                        <SelectItem value="active">Aktif</SelectItem>
-                                                        <SelectItem value="converted">Converted</SelectItem>
-                                                        <SelectItem value="closed">Ditutup</SelectItem>
-                                                    </SelectGroup>
-                                                </SelectContent>
-                                            </Select>
-                                        </Field>
-                                        {activeFiltersCount > 0 && (
-                                            <Button className="w-full" onClick={resetFilters}>
-                                                Reset Filter
-                                            </Button>
-                                        )}
-                                    </div>
+                        <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+                            <SheetTrigger asChild>
+                                <Button variant="secondary" className="relative gap-1.5 lg:w-30">
+                                    <Filter className="size-3.75" />
+                                    <span className="hidden lg:inline">Filter</span>
+                                    {activeFiltersCount > 0 && (
+                                        <Badge className="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-background">{activeFiltersCount}</Badge>
+                                    )}
+                                </Button>
+                            </SheetTrigger>
+                            <SheetContent>
+                                <SheetHeader>
+                                    <SheetTitle>Filter Data</SheetTitle>
+                                    <SheetDescription>Atur filter untuk menyaring data perusahaan</SheetDescription>
+                                </SheetHeader>
+                                <div className="space-y-4 px-4">
+                                    <Field>
+                                        <FieldLabel>Status</FieldLabel>
+                                        <Select value={filters.status || ''} onValueChange={(value) => updateFilter('status', value || undefined)}>
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Pilih status..." />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    <SelectLabel>Status</SelectLabel>
+                                                    <SelectItem value="active">Aktif</SelectItem>
+                                                    <SelectItem value="converted">Converted</SelectItem>
+                                                    <SelectItem value="closed">Ditutup</SelectItem>
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    </Field>
+                                    {activeFiltersCount > 0 && (
+                                        <Button className="w-full" onClick={resetFilters}>
+                                            Reset Filter
+                                        </Button>
+                                    )}
                                 </div>
-                            </DrawerContent>
-                        </Drawer>
+                            </SheetContent>
+                        </Sheet>
                     </div>
 
                     <div className="flex w-full gap-2 md:w-auto">

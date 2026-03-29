@@ -33,7 +33,7 @@ class TestimonialController extends Controller
             ->when($published === '1', fn ($q) => $q->where('is_published', true))
             ->when($published === '0', fn ($q) => $q->where('is_published', false))
             ->when($serviceId, fn ($q, $id) => $q->where('service_id', $id))
-            ->ordered()
+            ->latest()
             ->paginate($perPage);
 
         $summaryRow = Testimonial::query()

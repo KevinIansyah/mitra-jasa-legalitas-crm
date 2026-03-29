@@ -16,24 +16,6 @@ class PublicServiceController extends Controller
 {
     // ========================================================================
     // GET /services
-    // List services
-    // Query params:
-    //   ?category[]=slug1&category[]=slug2   → multi category
-    //   ?price[]=1&price[]=3                 → multi price range
-    // 
-    //   price range:
-    //     1 = < 1.000.000
-    //     2 = 1.000.000 - 2.999.999
-    //     3 = 3.000.000 - 4.999.999
-    //     4 = 5.000.000 - 9.999.999
-    //     5 = >= 10.000.000
-    // 
-    // Sort:
-    //   popular → sort by is_popular
-    //   name_asc → sort by name ascending
-    //   price_asc → sort by price ascending (based on the cheapest package price)
-    //   price_desc → sort by price descending (based on the cheapest package price)
-    //   latest → sort by created_at descending
     // ========================================================================
 
     public function index(Request $request): JsonResponse
@@ -119,24 +101,6 @@ class PublicServiceController extends Controller
 
     // ========================================================================
     // GET /services/cities/{citySlug}
-    // List services by city page   
-    // Query params:
-    //   ?category[]=slug1&category[]=slug2   → multi category
-    //   ?price[]=1&price[]=3                 → multi price range
-    // 
-    //   price range:
-    //     1 = < 1.000.000
-    //     2 = 1.000.000 - 2.999.999
-    //     3 = 3.000.000 - 4.999.999
-    //     4 = 5.000.000 - 9.999.999
-    //     5 = >= 10.000.000
-    // 
-    // Sort:
-    //   popular → sort by is_popular
-    //   name_asc → sort by name ascending
-    //   price_asc → sort by price ascending (based on the cheapest package price)
-    //   price_desc → sort by price descending (based on the cheapest package price)
-    //   latest → sort by created_at descending
     // ========================================================================
 
     public function byCity(Request $request, string $citySlug): JsonResponse
@@ -286,7 +250,6 @@ class PublicServiceController extends Controller
 
     // ========================================================================
     // GET /services/{serviceSlug}
-    // Detail service
     // ========================================================================
 
     public function show(string $serviceSlug): JsonResponse
@@ -368,7 +331,6 @@ class PublicServiceController extends Controller
 
     // ========================================================================
     // GET /services/{serviceSlug}/{citySlug}
-    // Detail service by city
     // ========================================================================
 
     public function showCityPage(string $serviceSlug, string $citySlug): JsonResponse
@@ -552,7 +514,7 @@ class PublicServiceController extends Controller
         $base = rtrim((string) ($site->org_url ?? $site->company_website ?? config('app.url')), '/');
         $pageUrl = $base . '/layanan';
 
-        $metaTitle = 'Layanan - ' . ($site->company_name ?? '');
+        $metaTitle = $site->getPageTitle('Layanan');
         $metaDescription = 'Temukan berbagai layanan profesional yang kami tawarkan. Pilih sesuai kebutuhan bisnis Anda.';
         $ogImage = $site->default_og_image
             ? "{$r2Url}/{$site->default_og_image}"
@@ -625,7 +587,7 @@ class PublicServiceController extends Controller
         $pageUrl = $base . '/layanan/kota/' . $city->slug;
         $listUrl = $base . '/layanan';
 
-        $metaTitle = 'Layanan di ' . $city->name . ' - ' . ($site->company_name ?? '');
+        $metaTitle = $site->getPageTitle('Layanan di ' . $city->name);
         $metaDescription = 'Temukan layanan profesional di ' . $city->name . ', ' . ($city->province ?? '') . '. Kami siap membantu kebutuhan bisnis Anda.';
         $ogImage = $site->default_og_image
             ? "{$r2Url}/{$site->default_og_image}"

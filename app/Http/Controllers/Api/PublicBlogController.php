@@ -70,7 +70,6 @@ class PublicBlogController extends Controller
 
     // ========================================================================
     // GET /blogs/{slug}
-    // Detail blog + related blogs
     // ========================================================================
 
     public function show(string $slug): JsonResponse
@@ -212,7 +211,7 @@ class PublicBlogController extends Controller
         $base = rtrim((string) ($site->org_url ?? $site->company_website ?? config('app.url')), '/');
         $pageUrl = $base . '/blog';
 
-        $metaTitle = 'Blog - ' . ($site->company_name ?? '');
+        $metaTitle = $site->getPageTitle('Blog');
         $metaDescription = 'Baca artikel dan tips terbaru seputar legalitas bisnis, perizinan, dan layanan perusahaan.';
         $ogImage = $site->default_og_image
             ? "{$r2Url}/{$site->default_og_image}"

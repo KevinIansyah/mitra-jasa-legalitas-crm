@@ -55,7 +55,7 @@ class ChatbotService
 
         $recentMessages = $session->getRecentMessages(10);
 
-        $contents = $recentMessages->map(fn($message) => [
+        $contents = $recentMessages->map(fn ($message) => [
             'role' => $message->role === 'assistant' ? 'model' : 'user',
             'parts' => [['text' => $message->content]],
         ])->toArray();
@@ -95,8 +95,8 @@ class ChatbotService
             $website = $settings->company_website ?? '';
 
             $services = Service::with([
-                'packages' => fn($query) => $query->where('status', 'active')->orderBy('price')->limit(1),
-                'cityPages' => fn($query) => $query->where('is_published', true)->with('city:id,name'),
+                'packages' => fn ($query) => $query->where('status', 'active')->orderBy('price')->limit(1),
+                'cityPages' => fn ($query) => $query->where('is_published', true)->with('city:id,name'),
             ])
                 ->where('is_published', true)
                 ->where('status', 'active')
@@ -105,7 +105,7 @@ class ChatbotService
             $serviceList = $services->map(function ($service) use ($website) {
                 $minPrice = $service->packages->first()?->price;
                 $cities = $service->cityPages->pluck('city.name')->filter()->implode(', ');
-                $priceText = $minPrice ? 'mulai Rp ' . number_format($minPrice, 0, ',', '.') : 'hubungi kami';
+                $priceText = $minPrice ? 'mulai Rp '.number_format($minPrice, 0, ',', '.') : 'hubungi kami';
                 $cityText = $cities ? "Tersedia di: {$cities}" : '';
                 $link = "{$website}/layanan/{$service->slug}";
 
@@ -259,14 +259,18 @@ PROMPT;
     {
         $resetDate = $settings->ai_chatbot_reset_date;
 
-        if (! $resetDate || now()->startOfMonth()->gt($resetDate)) {
+        $needsReset = ! $resetDate
+            || now()->month !== \Carbon\Carbon::parse($resetDate)->month
+            || now()->year !== \Carbon\Carbon::parse($resetDate)->year;
+
+        if ($needsReset) {
             $settings->update([
                 'ai_chatbot_used_tokens' => 0,
                 'ai_chatbot_reset_date' => now()->startOfMonth(),
             ]);
         }
 
-        $used = $settings->ai_chatbot_used_tokens ?? 0;
+        $used = $settings->fresh()->ai_chatbot_used_tokens ?? 0;
         $limit = $settings->ai_chatbot_monthly_limit ?? 10000000;
 
         if ($used >= $limit) {

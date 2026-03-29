@@ -28,12 +28,6 @@ class PublicHomeController extends Controller
 
     private const LATEST_BLOGS_LIMIT = 4;
 
-    // ========================================================================
-    // GET /beranda
-    // Halaman beranda publik: statistik, layanan unggulan, kategori, testimoni,
-    // kisah sukses, blog terbaru, CTA WhatsApp, dan payload SEO.
-    // ========================================================================
-
     public function index(): JsonResponse
     {
         $site = SiteSetting::get();
@@ -339,12 +333,10 @@ class PublicHomeController extends Controller
         foreach ($dayMap as $key => $schemaDay) {
             $value = $hours[$key] ?? null;
 
-            // Skip jika tidak ada atau ditandai tutup
             if (empty($value) || $value === 'closed') {
                 continue;
             }
 
-            // Parse "08:00-17:00" → opens & closes
             $parts = explode('-', $value);
             if (count($parts) !== 2) {
                 continue;
