@@ -257,10 +257,13 @@ class PublicBlogController extends Controller
                 'twitter:image' => $ogImage,
             ]),
             'json_ld' => [
-                $this->buildOrganizationSchema($site, $r2Url, $base),
-                $this->buildWebSiteSchema($site, $base),
-                $webPage,
-                $breadcrumb,
+                '@context' => 'https://schema.org',
+                '@graph'   => [
+                    $this->buildOrganizationSchema($site, $r2Url, $base),
+                    $this->buildWebSiteSchema($site, $base),
+                    $webPage,
+                    $breadcrumb,
+                ],
             ],
         ];
     }

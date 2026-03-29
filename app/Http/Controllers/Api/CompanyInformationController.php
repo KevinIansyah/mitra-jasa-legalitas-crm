@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Models\City;
 use App\Models\Service;
 use App\Models\SiteSetting;
 use Illuminate\Http\JsonResponse;
@@ -125,6 +126,14 @@ class CompanyInformationController extends Controller
 
         if (! empty($organization['logo']) && ! str_starts_with((string) $organization['logo'], 'http')) {
             $organization['logo'] = $this->publicAssetUrl((string) $organization['logo'], $r2Url);
+        }
+
+        $activeCities = City::query()->active()->orderBy('name')->pluck('name')->toArray();
+        if (! empty($activeCities)) {
+            $organization['areaServed'] = array_map(
+                fn(string $city) => ['@type' => 'City', 'name' => $city],
+                $activeCities
+            );
         }
 
         if ($site->stat_rating && $site->stat_total_reviews) {
