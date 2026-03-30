@@ -19,7 +19,7 @@ export function DeliverableSection({ deliverables, summary, filters }: Deliverab
         {
             label: 'Total Hasil Akhir',
             value: summary.total,
-            badge: 'bg-slate-500 text-white',
+            badge: 'bg-secondary/50 text-white',
             icon: <File className="size-3.5" />,
             footer: (
                 <>
@@ -31,7 +31,7 @@ export function DeliverableSection({ deliverables, summary, filters }: Deliverab
         {
             label: 'Versi Final',
             value: summary.final,
-            badge: 'bg-emerald-500 text-white',
+            badge: 'bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500 px-2.5 py-1.5',
             icon: <FileCheck className="size-3.5" />,
             footer: (
                 <>
@@ -43,7 +43,7 @@ export function DeliverableSection({ deliverables, summary, filters }: Deliverab
         {
             label: 'Draft / Revisi',
             value: summary.draft,
-            badge: 'bg-yellow-500 text-white',
+            badge: 'bg-yellow-500 text-white dark:bg-yellow-500/15 dark:text-yellow-500 px-2.5 py-1.5',
             icon: <FileText className="size-3.5" />,
             footer: (
                 <>
@@ -55,7 +55,7 @@ export function DeliverableSection({ deliverables, summary, filters }: Deliverab
         {
             label: 'Terenkripsi',
             value: summary.encrypted,
-            badge: 'bg-blue-600 text-white',
+            badge: 'bg-secondary/50 text-white',
             icon: <FileLock className="size-3.5" />,
             footer: (
                 <>

@@ -1,4 +1,4 @@
-import { Building2, CheckCircle2, UserCheck, Users } from 'lucide-react';
+import { Building2, CheckCircle2, User, UserCheck } from 'lucide-react';
 import { useState } from 'react';
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Customer, CustomerSummary } from '@/types/contacts';
@@ -19,8 +19,8 @@ export function CustomerSection({ customers, summary, filters }: CustomerSection
         {
             label: 'Total Pelanggan',
             value: summary.total,
-            badge: 'bg-slate-500 text-white',
-            icon: <Users className="size-3.5" />,
+            badge: 'bg-secondary/50 text-white',
+            icon: <User className="size-3.5" />,
             footer: (
                 <>
                     <p className="font-medium">Semua pelanggan terdaftar</p>
@@ -31,7 +31,7 @@ export function CustomerSection({ customers, summary, filters }: CustomerSection
         {
             label: 'Aktif',
             value: summary.active,
-            badge: 'bg-emerald-500 text-white',
+            badge: 'bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500 px-2.5 py-1.5',
             icon: <CheckCircle2 className="size-3.5" />,
             footer: (
                 <>
@@ -43,7 +43,7 @@ export function CustomerSection({ customers, summary, filters }: CustomerSection
         {
             label: 'Memiliki Akun',
             value: summary.with_account,
-            badge: 'bg-blue-600 text-white',
+            badge: 'bg-blue-600 text-white dark:bg-blue-600/15 dark:text-blue-600 px-2.5 py-1.5',
             icon: <UserCheck className="size-3.5" />,
             footer: (
                 <>
@@ -55,11 +55,11 @@ export function CustomerSection({ customers, summary, filters }: CustomerSection
         {
             label: 'Terhubung Perusahaan',
             value: summary.with_company,
-            badge: 'bg-purple-500 text-white',
+            badge: 'bg-purple-500 text-white dark:bg-purple-500/15 dark:text-purple-500 px-2.5 py-1.5',
             icon: <Building2 className="size-3.5" />,
             footer: (
                 <>
-                    <p className="font-medium">Pelanggan dengan perusahaan (PIC)</p>
+                    <p className="font-medium">Pelanggan dengan perusahaan</p>
                     <p className="text-muted-foreground">{summary.total - summary.with_company} belum terhubung</p>
                 </>
             ),

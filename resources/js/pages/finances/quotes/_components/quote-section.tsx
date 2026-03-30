@@ -20,7 +20,7 @@ export function QuoteSection({ quotes, summary, filters }: QuoteSectionProps) {
         {
             label: 'Total Permintaan',
             value: summary.total,
-            badge: 'bg-slate-500 text-white',
+            badge: 'bg-secondary/50 text-white px-2.5 py-1.5',
             icon: <Files className="size-3.5" />,
             footer: (
                 <>
@@ -32,7 +32,7 @@ export function QuoteSection({ quotes, summary, filters }: QuoteSectionProps) {
         {
             label: 'Menunggu',
             value: summary.pending,
-            badge: 'bg-yellow-500 text-white',
+            badge: 'bg-yellow-500 text-white dark:bg-yellow-500/15 dark:text-yellow-500 px-2.5 py-1.5',
             icon: <FileClock className="size-3.5" />,
             footer: (
                 <>
@@ -44,7 +44,7 @@ export function QuoteSection({ quotes, summary, filters }: QuoteSectionProps) {
         {
             label: 'Diterima',
             value: summary.accepted,
-            badge: 'bg-emerald-500 text-white',
+            badge: 'bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500 px-2.5 py-1.5',
             icon: <FileCheck className="size-3.5" />,
             footer: (
                 <>
@@ -56,7 +56,7 @@ export function QuoteSection({ quotes, summary, filters }: QuoteSectionProps) {
         {
             label: 'Ditolak',
             value: summary.rejected,
-            badge: 'bg-red-500 text-white',
+            badge: 'bg-red-500 text-white dark:bg-red-500/15 dark:text-red-500 px-2.5 py-1.5',
             icon: <FileX className="size-3.5" />,
             footer: (
                 <>

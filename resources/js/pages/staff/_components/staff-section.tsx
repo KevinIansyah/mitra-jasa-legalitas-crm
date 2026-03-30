@@ -1,4 +1,4 @@
-import { CheckCircle2, Clock, Users, XCircle } from 'lucide-react';
+import { CheckCircle2, Clock, User, XCircle } from 'lucide-react';
 import { useState } from 'react';
 
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,8 +22,8 @@ export function StaffSection({ staffList, summary, filters, roles }: StaffSectio
         {
             label: 'Total Staff',
             value: summary.total,
-            badge: 'bg-slate-500 text-white',
-            icon: <Users className="size-3.5" />,
+            badge: 'bg-secondary/50 text-white',
+            icon: <User className="size-3.5" />,
             footer: (
                 <>
                     <p className="font-medium">Semua staff terdaftar</p>
@@ -34,7 +34,7 @@ export function StaffSection({ staffList, summary, filters, roles }: StaffSectio
         {
             label: 'Available',
             value: summary.available,
-            badge: 'bg-emerald-500 text-white',
+            badge: 'bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500 px-2.5 py-1.5',
             icon: <CheckCircle2 className="size-3.5" />,
             footer: (
                 <>
@@ -46,7 +46,7 @@ export function StaffSection({ staffList, summary, filters, roles }: StaffSectio
         {
             label: 'Busy',
             value: summary.busy,
-            badge: 'bg-yellow-500 text-white',
+            badge: 'bg-yellow-500 text-white dark:bg-yellow-500/15 dark:text-yellow-500 px-2.5 py-1.5',
             icon: <Clock className="size-3.5" />,
             footer: (
                 <>
@@ -58,7 +58,7 @@ export function StaffSection({ staffList, summary, filters, roles }: StaffSectio
         {
             label: 'On Leave',
             value: summary.on_leave,
-            badge: 'bg-red-500 text-white',
+            badge: 'bg-red-500 text-white dark:bg-red-500/15 dark:text-red-500 px-2.5 py-1.5',
             icon: <XCircle className="size-3.5" />,
             footer: (
                 <>

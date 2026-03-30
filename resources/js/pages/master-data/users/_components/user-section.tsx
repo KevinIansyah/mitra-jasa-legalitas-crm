@@ -1,4 +1,4 @@
-import { Users, UserCheck, UserX, UserMinus } from 'lucide-react';
+import { UserIcon, UserCheck, UserX, UserMinus } from 'lucide-react';
 import { useState } from 'react';
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import type { User, UserSummary } from '@/types/auth';
@@ -19,8 +19,8 @@ export function UserSection({ users, summary, filters }: UserSectionProps) {
         {
             label: 'Total User',
             value: summary.total,
-            badge: 'bg-slate-500 text-white',
-            icon: <Users className="size-3.5" />,
+            badge: 'bg-secondary/50 text-white px-2.5 py-1.5',
+            icon: <UserIcon className="size-3.5" />,
             footer: (
                 <>
                     <p className="font-medium">Semua user terdaftar</p>
@@ -31,7 +31,7 @@ export function UserSection({ users, summary, filters }: UserSectionProps) {
         {
             label: 'Aktif',
             value: summary.active,
-            badge: 'bg-emerald-500 text-white',
+            badge: 'bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500 px-2.5 py-1.5',
             icon: <UserCheck className="size-3.5" />,
             footer: (
                 <>
@@ -43,7 +43,7 @@ export function UserSection({ users, summary, filters }: UserSectionProps) {
         {
             label: 'Tidak Aktif',
             value: summary.inactive,
-            badge: 'bg-slate-400 text-white',
+            badge: 'bg-secondary/50 text-white dark:bg-secondary/50 dark:text-secondary-foreground px-2.5 py-1.5',
             icon: <UserX className="size-3.5" />,
             footer: (
                 <>
@@ -55,7 +55,7 @@ export function UserSection({ users, summary, filters }: UserSectionProps) {
         {
             label: 'Ditangguhkan',
             value: summary.suspended,
-            badge: 'bg-yellow-500 text-white',
+            badge: 'bg-yellow-500 text-white dark:bg-yellow-500/15 dark:text-yellow-500 px-2.5 py-1.5',
             icon: <UserMinus className="size-3.5" />,
             footer: (
                 <>

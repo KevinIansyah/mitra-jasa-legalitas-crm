@@ -21,7 +21,7 @@ export function JournalSection({ entries, accounts, summary, filters }: JournalS
         {
             label: 'Total Jurnal',
             value: summary.total,
-            badge: 'bg-slate-500 text-white',
+            badge: 'bg-secondary/50 text-white px-2.5 py-1.5',
             icon: <BookOpen className="size-3.5" />,
             footer: (
                 <>
@@ -33,7 +33,7 @@ export function JournalSection({ entries, accounts, summary, filters }: JournalS
         {
             label: 'Bulan Ini',
             value: summary.this_month,
-            badge: 'bg-blue-500 text-white',
+            badge: 'bg-blue-600 text-white dark:bg-blue-600/15 dark:text-blue-600 px-2.5 py-1.5',
             icon: <CalendarDays className="size-3.5" />,
             footer: (
                 <>
@@ -45,7 +45,7 @@ export function JournalSection({ entries, accounts, summary, filters }: JournalS
         {
             label: 'Jurnal Manual',
             value: summary.manual_count,
-            badge: 'bg-violet-500 text-white',
+            badge: 'bg-violet-500 text-white dark:bg-violet-500/15 dark:text-violet-500 px-2.5 py-1.5',
             icon: <PenLine className="size-3.5" />,
             footer: (
                 <>
@@ -57,7 +57,7 @@ export function JournalSection({ entries, accounts, summary, filters }: JournalS
         {
             label: 'Jurnal Otomatis',
             value: summary.auto_count,
-            badge: 'bg-emerald-500 text-white',
+            badge: 'bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500 px-2.5 py-1.5',
             icon: <Zap className="size-3.5" />,
             footer: (
                 <>

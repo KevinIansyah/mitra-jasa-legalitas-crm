@@ -21,7 +21,7 @@ export function TestimonialSection({ testimonials, services, summary, filters }:
         {
             label: 'Total Testimoni',
             value: summary.total,
-            badge: 'bg-slate-500 text-white',
+            badge: 'bg-secondary/50 text-white px-2.5 py-1.5',
             icon: <MessageSquareQuote className="size-3.5" />,
             footer: (
                 <>
@@ -33,7 +33,7 @@ export function TestimonialSection({ testimonials, services, summary, filters }:
         {
             label: 'Dipublikasikan',
             value: summary.published,
-            badge: 'bg-emerald-500 text-white',
+            badge: 'bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500 px-2.5 py-1.5',
             icon: <Star className="size-3.5" />,
             footer: (
                 <>
@@ -45,7 +45,7 @@ export function TestimonialSection({ testimonials, services, summary, filters }:
         {
             label: 'Draf',
             value: summary.draft,
-            badge: 'bg-amber-500 text-white',
+            badge: 'bg-amber-500 text-white dark:bg-amber-500/15 dark:text-amber-500 px-2.5 py-1.5',
             icon: <Star className="size-3.5" />,
             footer: (
                 <>

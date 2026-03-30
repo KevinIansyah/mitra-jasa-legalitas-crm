@@ -1,9 +1,9 @@
 import { BookOpen, CheckCircle, TrendingDown, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import type { Account, AccountSummary } from '@/types/accounts';
 import type { Paginator } from '@/types/paginator';
 import { DataTable } from './datatable';
-import type { Account, AccountSummary } from '@/types/accounts';
 
 interface AccountSectionProps {
     accounts: Paginator<Account>;
@@ -19,7 +19,7 @@ export function AccountSection({ accounts, summary, filters }: AccountSectionPro
         {
             label: 'Total Akun',
             value: summary.total,
-            badge: 'bg-slate-500 text-white',
+            badge: 'bg-secondary/50 text-white',
             icon: <BookOpen className="size-3.5" />,
             footer: (
                 <>
@@ -31,7 +31,7 @@ export function AccountSection({ accounts, summary, filters }: AccountSectionPro
         {
             label: 'Aktif',
             value: summary.active,
-            badge: 'bg-emerald-500 text-white',
+            badge: 'bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500 px-2.5 py-1.5',
             icon: <CheckCircle className="size-3.5" />,
             footer: (
                 <>
@@ -43,7 +43,7 @@ export function AccountSection({ accounts, summary, filters }: AccountSectionPro
         {
             label: 'Pendapatan',
             value: summary.revenue,
-            badge: 'bg-emerald-600 text-white',
+            badge: 'bg-emerald-600 text-white dark:bg-emerald-600/15 dark:text-emerald-600 px-2.5 py-1.5',
             icon: <TrendingUp className="size-3.5" />,
             footer: (
                 <>
@@ -57,7 +57,7 @@ export function AccountSection({ accounts, summary, filters }: AccountSectionPro
         {
             label: 'Beban',
             value: summary.expense,
-            badge: 'bg-orange-500 text-white',
+            badge: 'bg-orange-500 text-white dark:bg-orange-500/15 dark:text-orange-500 px-2.5 py-1.5',
             icon: <TrendingDown className="size-3.5" />,
             footer: (
                 <>

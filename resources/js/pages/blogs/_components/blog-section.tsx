@@ -20,7 +20,7 @@ export function BlogSection({ blogs, categories, summary, filters }: BlogSection
         {
             label: 'Total Blog',
             value: summary.total,
-            badge: 'bg-slate-500 text-white',
+            badge: 'bg-secondary/50 text-white px-2.5 py-1.5',
             icon: <LayoutTemplate className="size-3.5" />,
             footer: (
                 <>
@@ -32,7 +32,7 @@ export function BlogSection({ blogs, categories, summary, filters }: BlogSection
         {
             label: 'Dipublikasi',
             value: summary.published,
-            badge: 'bg-emerald-500 text-white',
+            badge: 'bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500 px-2.5 py-1.5',
             icon: <Globe className="size-3.5" />,
             footer: (
                 <>
@@ -44,7 +44,7 @@ export function BlogSection({ blogs, categories, summary, filters }: BlogSection
         {
             label: 'Unggulan (Featured)',
             value: summary.featured,
-            badge: 'bg-blue-600 text-white',
+            badge: 'bg-blue-600 text-white dark:bg-blue-600/15 dark:text-blue-600 px-2.5 py-1.5',
             icon: <Star className="size-3.5" />,
             footer: (
                 <>
@@ -56,7 +56,7 @@ export function BlogSection({ blogs, categories, summary, filters }: BlogSection
         {
             label: 'Draft',
             value: summary.draft,
-            badge: 'bg-amber-500 text-white',
+            badge: 'bg-amber-500 text-white dark:bg-amber-500/15 dark:text-amber-500 px-2.5 py-1.5',
             icon: <Notebook className="size-3.5" />,
             footer: (
                 <>

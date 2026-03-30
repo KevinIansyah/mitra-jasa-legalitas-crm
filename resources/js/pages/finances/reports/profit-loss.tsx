@@ -89,7 +89,7 @@ export default function Page() {
                     </Button>
                 </div>
 
-                {/* ───────────────── Summary cards Section ───────────────── */}   
+                {/* ───────────────── Summary cards Section ───────────────── */}
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     {summaryCards.map(({ label, value, description, trend }) => (
                         <Card key={label} className="border-none bg-sidebar shadow dark:shadow-none">
@@ -99,11 +99,11 @@ export default function Page() {
                                 {trend && (
                                     <CardAction>
                                         {trend === 'up' ? (
-                                            <Badge className="border-emerald-500 bg-emerald-500 px-2 py-1 text-white">
+                                            <Badge className="bg-emerald-500 px-2.5 py-1.5 text-white dark:bg-emerald-500/15 dark:text-emerald-500">
                                                 <TrendingUp />
                                             </Badge>
                                         ) : (
-                                            <Badge className="border-red-500 bg-red-500 px-2 py-1 text-white">
+                                            <Badge className="bg-red-500 px-2.5 py-1.5 text-white dark:bg-red-500/15 dark:text-red-500">
                                                 <TrendingDown />
                                             </Badge>
                                         )}
@@ -127,7 +127,7 @@ export default function Page() {
                                 <button
                                     key={key}
                                     data-active={activeChart === key}
-                                    className="relative z-30 flex w-45 flex-1 items-center justify-center gap-2 border px-6 py-3 whitespace-nowrap data-[active=true]:bg-muted/50 sm:px-8"
+                                    className="relative flex w-45 flex-1 items-center justify-center gap-2 border px-6 py-3 whitespace-nowrap data-[active=true]:bg-muted/50 sm:px-8"
                                     onClick={() => setActiveChart(key)}
                                 >
                                     <span className="size-2 rounded-[2px]" style={{ backgroundColor: chartConfig[key].color }} />

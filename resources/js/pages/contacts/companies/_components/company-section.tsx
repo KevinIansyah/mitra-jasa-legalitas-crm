@@ -1,4 +1,4 @@
-import { BadgeCheck, Building2, FileText, Users } from 'lucide-react';
+import { BadgeCheck, Building2, FileText, User } from 'lucide-react';
 import { useState } from 'react';
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import type { CompanySummary, CompanyWithCustomers } from '@/types/contacts';
@@ -19,7 +19,7 @@ export function CompanySection({ companies, summary, filters }: CompanySectionPr
         {
             label: 'Total Perusahaan',
             value: summary.total,
-            badge: 'bg-slate-500 text-white',
+            badge: 'bg-secondary/50 text-white',
             icon: <Building2 className="size-3.5" />,
             footer: (
                 <>
@@ -31,11 +31,11 @@ export function CompanySection({ companies, summary, filters }: CompanySectionPr
         {
             label: 'Memiliki PIC',
             value: summary.with_customers,
-            badge: 'bg-blue-600 text-white',
-            icon: <Users className="size-3.5" />,
+            badge: 'bg-blue-600 text-white dark:bg-blue-600/15 dark:text-blue-600 px-2.5 py-1.5',
+            icon: <User className="size-3.5" />,
             footer: (
                 <>
-                    <p className="font-medium">Perusahaan dengan pelanggan (PIC)</p>
+                    <p className="font-medium">Perusahaan dengan pelanggan</p>
                     <p className="text-muted-foreground">{summary.total - summary.with_customers} belum memiliki PIC</p>
                 </>
             ),
@@ -43,11 +43,11 @@ export function CompanySection({ companies, summary, filters }: CompanySectionPr
         {
             label: 'Memiliki NPWP',
             value: summary.with_npwp,
-            badge: 'bg-emerald-500 text-white',
+            badge: 'bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500 px-2.5 py-1.5',
             icon: <FileText className="size-3.5" />,
             footer: (
                 <>
-                    <p className="font-medium">Perusahaan dengan NPWP tercatat</p>
+                    <p className="font-medium">Perusahaan dengan NPWP</p>
                     <p className="text-muted-foreground">{summary.total - summary.with_npwp} belum tercatat</p>
                 </>
             ),
@@ -55,7 +55,7 @@ export function CompanySection({ companies, summary, filters }: CompanySectionPr
         {
             label: 'Berbadan Hukum',
             value: summary.with_legal_status,
-            badge: 'bg-purple-500 text-white',
+            badge: 'bg-purple-500 text-white dark:bg-purple-500/15 dark:text-purple-500 px-2.5 py-1.5',
             icon: <BadgeCheck className="size-3.5" />,
             footer: (
                 <>

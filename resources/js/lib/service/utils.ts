@@ -18,6 +18,30 @@ export const formatRupiahNoSymbol = (value: number) =>
         maximumFractionDigits: 0,
     }).format(value);
 
+/** Rupiah ringkas untuk dashboard: `Rp 22,5 jt`, `Rp 1 M`, `Rp 500 rb`. Di bawah 1 rb tetap format penuh. */
+export function formatRupiahCompact(value: number): string {
+    const abs = Math.abs(value);
+    const id = (n: number, maxFrac: number) =>
+        new Intl.NumberFormat('id-ID', { maximumFractionDigits: maxFrac, minimumFractionDigits: 0 }).format(n);
+
+    if (abs >= 1_000_000_000) {
+        const m = abs / 1_000_000_000;
+        const s = Math.abs(m - Math.round(m)) < 1e-6 ? id(Math.round(m), 0) : id(m, 1);
+        return `${value < 0 ? '-' : ''}Rp ${s} M`;
+    }
+    if (abs >= 1_000_000) {
+        const jt = abs / 1_000_000;
+        const s = Math.abs(jt - Math.round(jt)) < 1e-6 ? id(Math.round(jt), 0) : id(jt, 1);
+        return `${value < 0 ? '-' : ''}Rp ${s} jt`;
+    }
+    if (abs >= 1_000) {
+        const rb = abs / 1_000;
+        const s = Math.abs(rb - Math.round(rb)) < 1e-6 ? id(Math.round(rb), 0) : id(rb, 1);
+        return `${value < 0 ? '-' : ''}Rp ${s} rb`;
+    }
+    return formatRupiah(value);
+}
+
 // ============================================================
 // FILE UTILITIES
 // ============================================================

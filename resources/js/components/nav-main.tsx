@@ -36,7 +36,10 @@ export function NavMain({ section }: { section: NavSection }) {
         // =========================
 
         if (itemPath === '/services') {
-            return currentPath === '/services' || (currentPath.startsWith('/services/') && !currentPath.startsWith('/services/categories') && !currentPath.startsWith('/services/city-pages'));
+            return (
+                currentPath === '/services' ||
+                (currentPath.startsWith('/services/') && !currentPath.startsWith('/services/categories') && !currentPath.startsWith('/services/city-pages'))
+            );
         }
 
         if (itemPath === '/services/categories') {
@@ -52,7 +55,13 @@ export function NavMain({ section }: { section: NavSection }) {
         // =========================
 
         if (itemPath === '/blogs') {
-            return currentPath === '/blogs' || (currentPath.startsWith('/blogs/') && !currentPath.startsWith('/blogs/categories') && !currentPath.startsWith('/blogs/tags'));
+            return (
+                currentPath === '/blogs' ||
+                (currentPath.startsWith('/blogs/') &&
+                    !currentPath.startsWith('/blogs/categories') &&
+                    !currentPath.startsWith('/blogs/tags') &&
+                    !currentPath.startsWith('/blogs/subscribers'))
+            );
         }
 
         if (itemPath === '/blogs/categories') {
@@ -61,6 +70,10 @@ export function NavMain({ section }: { section: NavSection }) {
 
         if (itemPath === '/blogs/tags') {
             return currentPath.startsWith('/blogs/tags');
+        }
+
+        if (itemPath === '/blogs/subscribers') {
+            return currentPath.startsWith('/blogs/subscribers');
         }
 
         // =========================

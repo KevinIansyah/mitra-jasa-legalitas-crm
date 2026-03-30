@@ -19,7 +19,7 @@ export function DocumentSection({ documents, summary, filters }: DocumentSection
         {
             label: 'Total Dokumen',
             value: summary.total,
-            badge: 'bg-slate-500 text-white',
+            badge: 'bg-secondary/50 text-white',
             icon: <File className="size-3.5" />,
             footer: (
                 <>
@@ -31,7 +31,7 @@ export function DocumentSection({ documents, summary, filters }: DocumentSection
         {
             label: 'Terverifikasi',
             value: summary.verified,
-            badge: 'bg-emerald-500 text-white',
+            badge: 'bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500 px-2.5 py-1.5',
             icon: <FileCheck className="size-3.5" />,
             footer: (
                 <>
@@ -43,7 +43,7 @@ export function DocumentSection({ documents, summary, filters }: DocumentSection
         {
             label: 'Menunggu Review',
             value: summary.pending_review,
-            badge: 'bg-yellow-500 text-white',
+            badge: 'bg-yellow-500 text-white dark:bg-yellow-500/15 dark:text-yellow-500 px-2.5 py-1.5',
             icon: <FileClock className="size-3.5" />,
             footer: (
                 <>
@@ -55,7 +55,7 @@ export function DocumentSection({ documents, summary, filters }: DocumentSection
         {
             label: 'Ditolak / Belum Upload',
             value: Number(summary.rejected) + Number(summary.not_uploaded),
-            badge: 'bg-red-500 text-white',
+            badge: 'bg-red-500 text-white dark:bg-red-500/15 dark:text-red-500 px-2.5 py-1.5',
             icon: <FileX className="size-3.5" />,
             footer: (
                 <>

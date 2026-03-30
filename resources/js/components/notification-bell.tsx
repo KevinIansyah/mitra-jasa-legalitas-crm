@@ -87,10 +87,10 @@ export default function NotificationBell({ className }: Props) {
 
     return (
         <div ref={ref} className={cn('relative', className)}>
-            <Button size="icon" className="relative h-9 w-9 rounded-md" onClick={handleOpen}>
+            <Button variant="secondary" size="icon" className="relative h-9 w-9 rounded-md" onClick={handleOpen}>
                 <Bell className="size-4.5" />
                 {unreadCount > 0 && (
-                    <Badge className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-white text-[10px]">
+                    <Badge className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] text-white">
                         {unreadCount > 99 ? '99+' : unreadCount}
                     </Badge>
                 )}
@@ -98,7 +98,7 @@ export default function NotificationBell({ className }: Props) {
             </Button>
 
             {open && (
-                <div className="fixed top-16 right-4 left-4 z-50 rounded-xl border border-border bg-popover shadow-xl sm:absolute sm:top-11 sm:right-0 sm:left-auto sm:w-100">
+                <div className="fixed top-16 right-4 left-4 z-100 rounded-xl border border-border bg-popover text-popover-foreground shadow-2xl sm:absolute sm:top-11 sm:right-0 sm:left-auto sm:w-100">
                     <div className="flex items-center justify-between border-b border-border px-4 py-3">
                         <div className="flex items-center gap-2">
                             <span className="text-sm font-semibold text-foreground">Notifikasi</span>

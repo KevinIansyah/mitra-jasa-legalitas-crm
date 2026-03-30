@@ -21,7 +21,7 @@ export function PaymentSection({ payments, summary, filters }: PaymentSectionPro
         {
             label: 'Total Pembayaran',
             value: summary.total,
-            badge: 'bg-slate-500 text-white',
+            badge: 'bg-secondary/50 text-white px-2.5 py-1.5',
             icon: <Wallet className="size-3.5" />,
             footer: (
                 <>
@@ -33,7 +33,7 @@ export function PaymentSection({ payments, summary, filters }: PaymentSectionPro
         {
             label: 'Menunggu Verifikasi',
             value: summary.pending,
-            badge: 'bg-yellow-500 text-white',
+            badge: 'bg-yellow-500 text-white dark:bg-yellow-500/15 dark:text-yellow-500 px-2.5 py-1.5',
             icon: <CircleDot className="size-3.5" />,
             footer: (
                 <>
@@ -45,7 +45,7 @@ export function PaymentSection({ payments, summary, filters }: PaymentSectionPro
         {
             label: 'Terverifikasi',
             value: summary.verified,
-            badge: 'bg-emerald-500 text-white',
+            badge: 'bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500 px-2.5 py-1.5',
             icon: <CircleCheck className="size-3.5" />,
             footer: (
                 <>
@@ -57,7 +57,7 @@ export function PaymentSection({ payments, summary, filters }: PaymentSectionPro
         {
             label: 'Ditolak',
             value: summary.rejected,
-            badge: 'bg-red-500 text-white',
+            badge: 'bg-red-500 text-white dark:bg-red-500/15 dark:text-red-500 px-2.5 py-1.5',
             icon: <CircleX className="size-3.5" />,
             footer: (
                 <>

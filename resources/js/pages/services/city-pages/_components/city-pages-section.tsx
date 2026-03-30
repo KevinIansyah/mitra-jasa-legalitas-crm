@@ -22,7 +22,7 @@ export function CityPageSection({ cityPages, summary, services, cities, filters 
         {
             label: 'Total Halaman',
             value: summary.total,
-            badge: 'bg-slate-500 text-white',
+            badge: 'bg-secondary/50 text-white px-2.5 py-1.5',
             icon: <FileSearch className="size-3.5" />,
             footer: (
                 <>
@@ -34,7 +34,7 @@ export function CityPageSection({ cityPages, summary, services, cities, filters 
         {
             label: 'Dipublikasi',
             value: summary.published,
-            badge: 'bg-emerald-500 text-white',
+            badge: 'bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500 px-2.5 py-1.5',
             icon: <Globe className="size-3.5" />,
             footer: (
                 <>
@@ -46,7 +46,7 @@ export function CityPageSection({ cityPages, summary, services, cities, filters 
         {
             label: 'AI Generated',
             value: summary.ai_generated,
-            badge: 'bg-purple-500 text-white',
+            badge: 'bg-purple-500 text-white dark:bg-purple-500/15 dark:text-purple-500 px-2.5 py-1.5',
             icon: <Rocket className="size-3.5" />,
             footer: (
                 <>
@@ -58,7 +58,7 @@ export function CityPageSection({ cityPages, summary, services, cities, filters 
         {
             label: 'Draft',
             value: summary.draft,
-            badge: 'bg-amber-500 text-white',
+            badge: 'bg-amber-500 text-white dark:bg-amber-500/15 dark:text-amber-500 px-2.5 py-1.5',
             icon: <PenLine className="size-3.5" />,
             footer: (
                 <>

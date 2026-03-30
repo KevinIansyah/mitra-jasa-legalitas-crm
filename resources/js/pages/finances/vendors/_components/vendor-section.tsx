@@ -21,7 +21,7 @@ export function VendorSection({ vendors, summary, filters }: VendorSectionProps)
         {
             label: 'Total Vendor',
             value: summary.total,
-            badge: 'bg-slate-500 text-white',
+            badge: 'bg-secondary/50 text-white px-2.5 py-1.5',
             icon: <Building2 className="size-3.5" />,
             footer: (
                 <>
@@ -33,7 +33,7 @@ export function VendorSection({ vendors, summary, filters }: VendorSectionProps)
         {
             label: 'Aktif',
             value: summary.active,
-            badge: 'bg-emerald-500 text-white',
+            badge: 'bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500 px-2.5 py-1.5',
             icon: <CheckCircle className="size-3.5" />,
             footer: (
                 <>
@@ -45,7 +45,7 @@ export function VendorSection({ vendors, summary, filters }: VendorSectionProps)
         {
             label: 'Nonaktif',
             value: summary.inactive,
-            badge: 'bg-slate-400 text-white',
+            badge: 'bg-secondary/50 text-white dark:bg-secondary/50 dark:text-secondary-foreground px-2.5 py-1.5',
             icon: <XCircle className="size-3.5" />,
             footer: (
                 <>
@@ -57,7 +57,7 @@ export function VendorSection({ vendors, summary, filters }: VendorSectionProps)
         {
             label: 'Kategori',
             value: 9,
-            badge: 'bg-indigo-500 text-white',
+            badge: 'bg-indigo-500 text-white dark:bg-indigo-500/15 dark:text-indigo-500 px-2.5 py-1.5',
             icon: <Tags className="size-3.5" />,
             footer: (
                 <>

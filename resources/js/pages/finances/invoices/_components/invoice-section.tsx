@@ -21,7 +21,7 @@ export function InvoiceSection({ invoices, summary, filters }: InvoiceSectionPro
         {
             label: 'Total Invoice',
             value: summary.total,
-            badge: 'bg-slate-500 text-white',
+            badge: 'bg-secondary/50 text-white px-2.5 py-1.5',
             icon: <FileText className="size-3.5" />,
             footer: (
                 <>
@@ -33,7 +33,7 @@ export function InvoiceSection({ invoices, summary, filters }: InvoiceSectionPro
         {
             label: 'Dikirim',
             value: summary.sent,
-            badge: 'bg-blue-600 text-white',
+            badge: 'bg-blue-600 text-white dark:bg-blue-600/15 dark:text-blue-600 px-2.5 py-1.5',
             icon: <FileClock className="size-3.5" />,
             footer: (
                 <>
@@ -45,7 +45,7 @@ export function InvoiceSection({ invoices, summary, filters }: InvoiceSectionPro
         {
             label: 'Lunas',
             value: summary.paid,
-            badge: 'bg-emerald-500 text-white',
+            badge: 'bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500 px-2.5 py-1.5',
             icon: <FileCheck className="size-3.5" />,
             footer: (
                 <>
@@ -57,7 +57,7 @@ export function InvoiceSection({ invoices, summary, filters }: InvoiceSectionPro
         {
             label: 'Jatuh Tempo',
             value: summary.overdue,
-            badge: 'bg-red-500 text-white',
+            badge: 'bg-red-500 text-white dark:bg-red-500/15 dark:text-red-500 px-2.5 py-1.5',
             icon: <FileX className="size-3.5" />,
             footer: (
                 <>

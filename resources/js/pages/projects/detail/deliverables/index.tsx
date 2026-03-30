@@ -39,14 +39,14 @@ export default function Deliverables({ project }: DeliverablesProps) {
             label: 'Versi Final',
             value: summary.final,
             color: 'text-foreground',
-            badge: 'bg-emerald-500 text-white',
+            badge: 'bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500 px-2.5 py-1.5',
             icon: <FileCheck className="size-3.5" />,
         },
         {
             label: 'Draft / Revisi',
             value: summary.draft,
             color: 'text-foreground',
-            badge: 'bg-yellow-500 text-white',
+            badge: 'bg-yellow-500 text-white dark:bg-yellow-500/15 dark:text-yellow-500 px-2.5 py-1.5',
             icon: <FileText className="size-3.5" />,
         },
         {

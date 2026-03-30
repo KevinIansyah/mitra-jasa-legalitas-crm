@@ -21,7 +21,7 @@ export function ChatSessionSection({ sessions, summary, filters }: ChatSessionSe
         {
             label: 'Total Sesi',
             value: summary.total,
-            badge: 'bg-slate-500 text-white',
+            badge: 'bg-secondary/50 text-white px-2.5 py-1.5',
             icon: <MessageCircle className="size-3.5" />,
             footer: (
                 <>
@@ -33,7 +33,7 @@ export function ChatSessionSection({ sessions, summary, filters }: ChatSessionSe
         {
             label: 'Aktif',
             value: summary.active,
-            badge: 'bg-blue-500 text-white',
+            badge: 'bg-blue-500 text-white dark:bg-blue-500/15 dark:text-blue-500 px-2.5 py-1.5',
             icon: <MessageCircleCheck className="size-3.5" />,
             footer: (
                 <>
@@ -45,7 +45,7 @@ export function ChatSessionSection({ sessions, summary, filters }: ChatSessionSe
         {
             label: 'Converted',
             value: summary.converted,
-            badge: 'bg-emerald-500 text-white',
+            badge: 'bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500 px-2.5 py-1.5',
             icon: <Users className="size-3.5" />,
             footer: (
                 <>
@@ -57,7 +57,7 @@ export function ChatSessionSection({ sessions, summary, filters }: ChatSessionSe
         {
             label: 'Ditutup',
             value: summary.closed,
-            badge: 'bg-slate-400 text-white',
+            badge: 'bg-secondary/50 text-white px-2.5 py-1.5',
             icon: <MessageCircleOff className="size-3.5" />,
             footer: (
                 <>

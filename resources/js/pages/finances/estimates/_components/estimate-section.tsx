@@ -22,7 +22,7 @@ export function EstimateSection({ estimates, summary, filters }: EstimateSection
         {
             label: 'Total Estimate',
             value: summary.total,
-            badge: 'bg-slate-500 text-white',
+            badge: 'bg-secondary/50 text-white px-2.5 py-1.5',
             icon: <FileText className="size-3.5" />,
             footer: (
                 <>
@@ -34,7 +34,7 @@ export function EstimateSection({ estimates, summary, filters }: EstimateSection
         {
             label: 'Draft / Terkirim',
             value: Number(summary.draft) + Number(summary.sent),
-            badge: 'bg-yellow-500 text-white',
+            badge: 'bg-yellow-500 text-white dark:bg-yellow-500/15 dark:text-yellow-500 px-2.5 py-1.5',
             icon: <CircleDot className="size-3.5" />,
             footer: (
                 <>
@@ -48,7 +48,7 @@ export function EstimateSection({ estimates, summary, filters }: EstimateSection
         {
             label: 'Diterima',
             value: summary.accepted,
-            badge: 'bg-emerald-500 text-white',
+            badge: 'bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500 px-2.5 py-1.5',
             icon: <CircleCheck className="size-3.5" />,
             footer: (
                 <>
@@ -60,7 +60,7 @@ export function EstimateSection({ estimates, summary, filters }: EstimateSection
         {
             label: 'Ditolak',
             value: summary.rejected,
-            badge: 'bg-red-500 text-white',
+            badge: 'bg-red-500 text-white dark:bg-red-500/15 dark:text-red-500 px-2.5 py-1.5',
             icon: <CircleX className="size-3.5" />,
             footer: (
                 <>

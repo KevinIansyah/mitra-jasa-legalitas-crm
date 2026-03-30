@@ -1,4 +1,4 @@
-import { MailCheck, MailQuestion, Users } from 'lucide-react';
+import { MailCheck, MailQuestion, User } from 'lucide-react';
 import { useState } from 'react';
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import type { BlogSubscriber, BlogSubscriberSummary } from '@/types/blogs';
@@ -19,8 +19,8 @@ export function BlogSubscriberSection({ subscribers, summary, filters }: BlogSub
         {
             label: 'Total Subscriber',
             value: summary.total,
-            badge: 'bg-slate-500 text-white',
-            icon: <Users className="size-3.5" />,
+            badge: 'bg-secondary/50 text-white px-2.5 py-1.5',
+            icon: <User className="size-3.5" />,
             footer: (
                 <>
                     <p className="font-medium">Semua pendaftar</p>
@@ -31,7 +31,7 @@ export function BlogSubscriberSection({ subscribers, summary, filters }: BlogSub
         {
             label: 'Terverifikasi',
             value: summary.verified,
-            badge: 'bg-emerald-500 text-white',
+            badge: 'bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500 px-2.5 py-1.5',
             icon: <MailCheck className="size-3.5" />,
             footer: (
                 <>
@@ -43,7 +43,7 @@ export function BlogSubscriberSection({ subscribers, summary, filters }: BlogSub
         {
             label: 'Belum Verifikasi',
             value: summary.unverified,
-            badge: 'bg-slate-500 text-white',
+            badge: 'bg-secondary/50 text-white dark:bg-secondary/50 dark:text-secondary-foreground px-2.5 py-1.5',
             icon: <MailQuestion className="size-3.5" />,
             footer: (
                 <>

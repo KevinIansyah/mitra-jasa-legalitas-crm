@@ -7,8 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import accountsRoutes from '@/routes/finances/accounts';
-import { AccountEditDrawer } from './account-edit-drawer';
 import type { Account } from '@/types/accounts';
+import { AccountEditDrawer } from './account-edit-drawer';
 
 type ActionsProps = {
     account: Account;

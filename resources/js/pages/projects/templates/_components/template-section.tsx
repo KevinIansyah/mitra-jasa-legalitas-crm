@@ -21,7 +21,7 @@ export function TemplateSection({ templates, summary, services, filters }: Templ
         {
             label: 'Total Template',
             value: summary.total,
-            badge: 'bg-slate-500 text-white',
+            badge: 'bg-secondary/50 text-white',
             icon: <LayoutTemplate className="size-3.5" />,
             footer: (
                 <>
@@ -33,7 +33,7 @@ export function TemplateSection({ templates, summary, services, filters }: Templ
         {
             label: 'Aktif',
             value: summary.active,
-            badge: 'bg-emerald-500 text-white',
+            badge: 'bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500 px-2.5 py-1.5',
             icon: <CheckCircle2 className="size-3.5" />,
             footer: (
                 <>
@@ -45,7 +45,7 @@ export function TemplateSection({ templates, summary, services, filters }: Templ
         {
             label: 'Dengan Konten',
             value: summary.with_content,
-            badge: 'bg-blue-600 text-white',
+            badge: 'bg-blue-600 text-white dark:bg-blue-600/15 dark:text-blue-600 px-2.5 py-1.5',
             icon: <FileText className="size-3.5" />,
             footer: (
                 <>
@@ -57,7 +57,7 @@ export function TemplateSection({ templates, summary, services, filters }: Templ
         {
             label: 'Layanan / Custom',
             value: summary.service_based + summary.custom,
-            badge: 'bg-purple-500 text-white',
+            badge: 'bg-purple-500 text-white dark:bg-purple-500/15 dark:text-purple-500 px-2.5 py-1.5',
             icon: <Wrench className="size-3.5" />,
             footer: (
                 <>

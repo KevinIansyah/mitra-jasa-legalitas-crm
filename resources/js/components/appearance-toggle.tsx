@@ -81,7 +81,7 @@ export default function AppearanceToggle({ className = '', ...props }: HTMLAttri
 
     return (
         <div className={className} {...props}>
-            <Button size="icon" className="h-9 w-9 rounded-md" onClick={handleToggle}>
+            <Button variant="secondary" size="icon" className="h-9 w-9 rounded-md" onClick={handleToggle}>
                 {getCurrentIcon()}
                 <span className="sr-only">Toggle theme</span>
             </Button>

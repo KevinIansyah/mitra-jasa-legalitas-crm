@@ -19,7 +19,7 @@ export function FaqSection({ faqs, summary, filters }: FaqSectionProps) {
         {
             label: 'Total FAQ',
             value: summary.total,
-            badge: 'bg-slate-500 text-white',
+            badge: 'bg-secondary/50 text-white px-2.5 py-1.5',
             icon: <HelpCircle className="size-3.5" />,
             footer: (
                 <>
@@ -31,7 +31,7 @@ export function FaqSection({ faqs, summary, filters }: FaqSectionProps) {
         {
             label: 'Dipublikasikan',
             value: summary.published,
-            badge: 'bg-emerald-500 text-white',
+            badge: 'bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500 px-2.5 py-1.5',
             icon: <Eye className="size-3.5" />,
             footer: (
                 <>
@@ -43,7 +43,7 @@ export function FaqSection({ faqs, summary, filters }: FaqSectionProps) {
         {
             label: 'Disembunyikan',
             value: summary.draft,
-            badge: 'bg-amber-500 text-white',
+            badge: 'bg-amber-500 text-white dark:bg-amber-500/15 dark:text-amber-500 px-2.5 py-1.5',
             icon: <EyeOff className="size-3.5" />,
             footer: (
                 <>

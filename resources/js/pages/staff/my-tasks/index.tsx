@@ -45,25 +45,25 @@ export default function Page() {
         {
             label: 'Total',
             value: summary.total,
-            badge: 'bg-slate-500 text-white',
+            badge: 'bg-secondary/50 text-white',
             icon: <Circle className="size-3.5" />,
         },
         {
             label: 'Selesai',
             value: summary.completed,
-            badge: 'bg-emerald-500 text-white',
+            badge: 'bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500 px-2.5 py-1.5',
             icon: <CircleCheck className="size-3.5" />,
         },
         {
             label: 'Sedang Berjalan',
             value: summary.in_progress,
-            badge: 'bg-yellow-500 text-white',
+            badge: 'bg-yellow-500 text-white dark:bg-yellow-500/15 dark:text-yellow-500 px-2.5 py-1.5',
             icon: <Clock className="size-3.5" />,
         },
         {
             label: 'Terlambat',
             value: summary.overdue,
-            badge: 'bg-red-500 text-white',
+            badge: 'bg-red-500 text-white dark:bg-red-500/15 dark:text-red-500 px-2.5 py-1.5',
             icon: <Info className="size-3.5" />,
         },
     ];

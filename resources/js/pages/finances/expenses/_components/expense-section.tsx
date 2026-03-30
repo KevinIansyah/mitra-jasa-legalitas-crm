@@ -21,7 +21,7 @@ export function ExpenseSection({ expenses, summary, filters }: ExpenseSectionPro
         {
             label: 'Total Pengeluaran',
             value: summary.total,
-            badge: 'bg-slate-500 text-white',
+            badge: 'bg-secondary/50 text-white px-2.5 py-1.5',
             icon: <Receipt className="size-3.5" />,
             footer: (
                 <>
@@ -33,7 +33,7 @@ export function ExpenseSection({ expenses, summary, filters }: ExpenseSectionPro
         {
             label: 'Dapat Ditagihkan',
             value: formatRupiah(Number(summary.billable_amount)),
-            badge: 'bg-blue-600 text-white',
+            badge: 'bg-blue-600 text-white dark:bg-blue-600/15 dark:text-blue-600 px-2.5 py-1.5',
             icon: <ReceiptText className="size-3.5" />,
             footer: (
                 <>
@@ -45,7 +45,7 @@ export function ExpenseSection({ expenses, summary, filters }: ExpenseSectionPro
         {
             label: 'Sudah Ditagihkan',
             value: formatRupiah(Number(summary.billed_amount)),
-            badge: 'bg-emerald-500 text-white',
+            badge: 'bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500 px-2.5 py-1.5',
             icon: <CircleDollarSign className="size-3.5" />,
             footer: (
                 <>
@@ -57,7 +57,7 @@ export function ExpenseSection({ expenses, summary, filters }: ExpenseSectionPro
         {
             label: 'Belum Ditagihkan',
             value: summary.unbilled_count,
-            badge: 'bg-yellow-500 text-white',
+            badge: 'bg-yellow-500 text-white dark:bg-yellow-500/15 dark:text-yellow-500 px-2.5 py-1.5',
             icon: <Wallet className="size-3.5" />,
             footer: (
                 <>

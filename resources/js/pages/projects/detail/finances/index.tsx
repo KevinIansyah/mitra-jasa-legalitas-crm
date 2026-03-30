@@ -115,11 +115,11 @@ export default function Finances({ project }: FinancesProps) {
                             {trend && (
                                 <CardAction>
                                     {trend === 'up' ? (
-                                        <Badge className="border-emerald-500 bg-emerald-500 px-2 py-1 text-white">
+                                        <Badge className="px-2.5 py-1.5 bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500">
                                             <TrendingUp />
                                         </Badge>
                                     ) : (
-                                        <Badge className="border-red-500 bg-red-500 px-2 py-1 text-white">
+                                        <Badge className="px-2.5 py-1.5 bg-red-500 text-white dark:bg-red-500/15 dark:text-red-500">
                                             <TrendingDown />
                                         </Badge>
                                     )}

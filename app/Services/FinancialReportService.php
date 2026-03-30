@@ -10,6 +10,85 @@ use Illuminate\Support\Collection;
 class FinancialReportService
 {
     // ------------------------------------------------------------------------
+    // DASHBOARD (ringkas)
+    // ------------------------------------------------------------------------
+
+    /**
+     * Total pendapatan (akun tipe revenue) dari seluruh jurnal.
+     */
+    public static function totalRevenueLifetime(): float
+    {
+        $lines = JournalEntryLine::query()
+            ->with(['account', 'journalEntry'])
+            ->whereHas('account', fn ($q) => $q->where('type', 'revenue'))
+            ->get();
+
+        return (float) $lines->sum(fn ($l) => (float) $l->credit - (float) $l->debit);
+    }
+
+    /**
+     * Pendapatan dan pengeluaran (beban) per bulan untuk N bulan terakhir, dari jurnal.
+     *
+     * @return array<int, array{period: string, month_short: string, revenue: float, expense: float}>
+     */
+    public static function revenueExpenseByMonthLast(int $months = 12): array
+    {
+        $months = max(1, $months);
+        $to = Carbon::now()->endOfMonth();
+        $from = Carbon::now()->subMonths($months - 1)->startOfMonth()->startOfDay();
+
+        $lines = JournalEntryLine::query()
+            ->with(['account', 'journalEntry'])
+            ->whereHas('journalEntry', fn ($q) => $q->whereBetween('date', [$from, $to]))
+            ->whereHas('account', fn ($q) => $q->whereIn('type', ['revenue', 'expense']))
+            ->get();
+
+        $cursor = $from->copy()->startOfMonth();
+        $bucket = [];
+        while ($cursor->lte($to)) {
+            $key = $cursor->format('Y-m');
+            $bucket[$key] = [
+                'period' => $key,
+                'month_short' => $cursor->copy()->locale('id')->isoFormat('MMM YY'),
+                'revenue' => 0.0,
+                'expense' => 0.0,
+            ];
+            $cursor->addMonth();
+        }
+
+        foreach ($lines as $line) {
+            $period = Carbon::parse($line->journalEntry->date)->format('Y-m');
+            if (! isset($bucket[$period])) {
+                continue;
+            }
+            if ($line->account->type === 'revenue') {
+                $bucket[$period]['revenue'] += (float) $line->credit - (float) $line->debit;
+            } else {
+                $bucket[$period]['expense'] += (float) $line->debit - (float) $line->credit;
+            }
+        }
+
+        return array_values($bucket);
+    }
+
+    /**
+     * Pendapatan per bulan untuk N bulan terakhir (termasuk bulan ini), dari jurnal.
+     *
+     * @return array<int, array{period: string, month_short: string, amount: float}>
+     */
+    public static function revenueByMonthLast(int $months = 12): array
+    {
+        return array_map(
+            fn (array $row) => [
+                'period' => $row['period'],
+                'month_short' => $row['month_short'],
+                'amount' => $row['revenue'],
+            ],
+            self::revenueExpenseByMonthLast($months)
+        );
+    }
+
+    // ------------------------------------------------------------------------
     // LABA RUGI
     // ------------------------------------------------------------------------
 
@@ -23,38 +102,38 @@ class FinancialReportService
     public static function labaRugi(Carbon $from, Carbon $to): array
     {
         $lines = JournalEntryLine::with(['account', 'journalEntry'])
-            ->whereHas('journalEntry', fn($q) => $q->whereBetween('date', [$from, $to]))
-            ->whereHas('account', fn($q) => $q->whereIn('type', ['revenue', 'expense']))
+            ->whereHas('journalEntry', fn ($q) => $q->whereBetween('date', [$from, $to]))
+            ->whereHas('account', fn ($q) => $q->whereIn('type', ['revenue', 'expense']))
             ->get();
 
-        $revenueLines = $lines->filter(fn($l) => $l->account->type === 'revenue');
-        $expenseLines = $lines->filter(fn($l) => $l->account->type === 'expense');
+        $revenueLines = $lines->filter(fn ($l) => $l->account->type === 'revenue');
+        $expenseLines = $lines->filter(fn ($l) => $l->account->type === 'expense');
 
         $revenueDetail = self::groupByAccount($revenueLines, 'credit');
         $expenseDetail = self::groupByAccount($expenseLines, 'debit');
 
         $totalRevenue = $revenueDetail->sum('amount');
         $totalExpense = $expenseDetail->sum('amount');
-        $netProfit    = $totalRevenue - $totalExpense;
+        $netProfit = $totalRevenue - $totalExpense;
 
         $monthly = self::labaRugiMonthly($from, $to, $lines);
 
         return [
             'period' => [
                 'from' => $from->toDateString(),
-                'to'   => $to->toDateString(),
+                'to' => $to->toDateString(),
             ],
             'revenue' => [
-                'total'  => $totalRevenue,
+                'total' => $totalRevenue,
                 'detail' => $revenueDetail->values(),
             ],
             'expense' => [
-                'total'  => $totalExpense,
+                'total' => $totalExpense,
                 'detail' => $expenseDetail->values(),
             ],
-            'net_profit'    => $netProfit,
+            'net_profit' => $netProfit,
             'is_profitable' => $netProfit >= 0,
-            'monthly'       => $monthly,
+            'monthly' => $monthly,
         ];
     }
 
@@ -64,22 +143,24 @@ class FinancialReportService
     private static function labaRugiMonthly(Carbon $from, Carbon $to, Collection $lines): array
     {
         // Build all months in range as keys
-        $cursor  = $from->copy()->startOfMonth();
-        $months  = [];
+        $cursor = $from->copy()->startOfMonth();
+        $months = [];
         while ($cursor->lte($to)) {
             $months[$cursor->format('Y-m')] = [
-                'period'  => $cursor->format('Y-m'),
-                'label'   => $cursor->translatedFormat('F Y'),
+                'period' => $cursor->format('Y-m'),
+                'label' => $cursor->translatedFormat('F Y'),
                 'revenue' => 0.0,
                 'expense' => 0.0,
-                'net'     => 0.0,
+                'net' => 0.0,
             ];
             $cursor->addMonth();
         }
 
         foreach ($lines as $line) {
             $period = Carbon::parse($line->journalEntry->date)->format('Y-m');
-            if (! isset($months[$period])) continue;
+            if (! isset($months[$period])) {
+                continue;
+            }
 
             if ($line->account->type === 'revenue') {
                 $months[$period]['revenue'] += (float) $line->credit - (float) $line->debit;
@@ -112,48 +193,44 @@ class FinancialReportService
     public static function neraca(Carbon $asOf): array
     {
         $accounts = Account::with([
-            'journalLines' => fn($q) =>
-            $q->whereHas(
+            'journalLines' => fn ($q) => $q->whereHas(
                 'journalEntry',
-                fn($j) =>
-                $j->whereDate('date', '<=', $asOf)
-            )
+                fn ($j) => $j->whereDate('date', '<=', $asOf)
+            ),
         ])
             ->where('status', 'active')
             ->get();
 
-        $calcBalance = fn(Account $account): float =>
-        $account->normal_balance === 'debit'
+        $calcBalance = fn (Account $account): float => $account->normal_balance === 'debit'
             ? (float) $account->journalLines->sum('debit') - (float) $account->journalLines->sum('credit')
             : (float) $account->journalLines->sum('credit') - (float) $account->journalLines->sum('debit');
 
-        $groupAccounts = fn(string $type): Collection =>
-        $accounts->where('type', $type)
-            ->map(fn($a) => [
-                'code'    => $a->code,
-                'name'    => $a->name,
+        $groupAccounts = fn (string $type): Collection => $accounts->where('type', $type)
+            ->map(fn ($a) => [
+                'code' => $a->code,
+                'name' => $a->name,
                 'amount' => $calcBalance($a),
             ])
-            ->filter(fn($a) => $a['amount'] != 0)
+            ->filter(fn ($a) => $a['amount'] != 0)
             ->values();
 
-        $assets      = $groupAccounts('asset');
+        $assets = $groupAccounts('asset');
         $liabilities = $groupAccounts('liability');
-        $equity      = $groupAccounts('equity');
+        $equity = $groupAccounts('equity');
 
-        $totalAssets      = $assets->sum('amount');
+        $totalAssets = $assets->sum('amount');
         $totalLiabilities = $liabilities->sum('amount');
-        $totalEquity      = $equity->sum('amount');
+        $totalEquity = $equity->sum('amount');
 
-        $revenues         = $groupAccounts('revenue');
-        $expenses         = $groupAccounts('expense');
+        $revenues = $groupAccounts('revenue');
+        $expenses = $groupAccounts('expense');
         $currentNetIncome = $revenues->sum('amount') - $expenses->sum('amount');
 
         if (round($currentNetIncome, 2) !== 0.0) {
             $label = $currentNetIncome >= 0 ? 'Laba Berjalan' : 'Rugi Berjalan';
             $equity->push([
-                'code'    => '-',
-                'name'    => $label,
+                'code' => '-',
+                'name' => $label,
                 'amount' => $currentNetIncome,
             ]);
             $totalEquity += $currentNetIncome;
@@ -162,15 +239,15 @@ class FinancialReportService
         return [
             'as_of' => $asOf->toDateString(),
             'assets' => [
-                'total'  => $totalAssets,
+                'total' => $totalAssets,
                 'detail' => $assets,
             ],
             'liabilities' => [
-                'total'  => $totalLiabilities,
+                'total' => $totalLiabilities,
                 'detail' => $liabilities,
             ],
             'equity' => [
-                'total'  => $totalEquity,
+                'total' => $totalEquity,
                 'detail' => $equity,
             ],
             'total_liabilities_and_equity' => $totalLiabilities + $totalEquity,
@@ -193,30 +270,32 @@ class FinancialReportService
     public static function cashFlow(Carbon $from, Carbon $to): array
     {
         $lines = JournalEntryLine::with(['account', 'journalEntry'])
-            ->whereHas('journalEntry', fn($q) => $q->whereBetween('date', [$from, $to]))
-            ->whereHas('account', fn($q) => $q->whereIn('category', ['cash', 'bank']))
+            ->whereHas('journalEntry', fn ($q) => $q->whereBetween('date', [$from, $to]))
+            ->whereHas('account', fn ($q) => $q->whereIn('category', ['cash', 'bank']))
             ->get();
 
-        $cashIn  = (float) $lines->sum('debit');
+        $cashIn = (float) $lines->sum('debit');
         $cashOut = (float) $lines->sum('credit');
 
         $cursor = $from->copy()->startOfMonth();
         $months = [];
         while ($cursor->lte($to)) {
             $months[$cursor->format('Y-m')] = [
-                'period'   => $cursor->format('Y-m'),
-                'label'    => $cursor->translatedFormat('F Y'),
-                'cash_in'  => 0.0,
+                'period' => $cursor->format('Y-m'),
+                'label' => $cursor->translatedFormat('F Y'),
+                'cash_in' => 0.0,
                 'cash_out' => 0.0,
-                'net'      => 0.0,
+                'net' => 0.0,
             ];
             $cursor->addMonth();
         }
 
         foreach ($lines as $line) {
             $period = Carbon::parse($line->journalEntry->date)->format('Y-m');
-            if (! isset($months[$period])) continue;
-            $months[$period]['cash_in']  += (float) $line->debit;
+            if (! isset($months[$period])) {
+                continue;
+            }
+            $months[$period]['cash_in'] += (float) $line->debit;
             $months[$period]['cash_out'] += (float) $line->credit;
         }
 
@@ -225,26 +304,26 @@ class FinancialReportService
         }
 
         $activities = $lines
-            ->groupBy(fn($l) => $l->journalEntry->reference_type)
-            ->map(fn($group, $type) => [
-                'type'     => $type,
-                'label'    => self::referenceTypeLabel($type),
-                'cash_in'  => (float) $group->sum('debit'),
+            ->groupBy(fn ($l) => $l->journalEntry->reference_type)
+            ->map(fn ($group, $type) => [
+                'type' => $type,
+                'label' => self::referenceTypeLabel($type),
+                'cash_in' => (float) $group->sum('debit'),
                 'cash_out' => (float) $group->sum('credit'),
-                'net'      => (float) $group->sum('debit') - (float) $group->sum('credit'),
+                'net' => (float) $group->sum('debit') - (float) $group->sum('credit'),
             ])
             ->values();
 
         return [
             'period' => [
                 'from' => $from->toDateString(),
-                'to'   => $to->toDateString(),
+                'to' => $to->toDateString(),
             ],
-            'cash_in'      => $cashIn,
-            'cash_out'     => $cashOut,
+            'cash_in' => $cashIn,
+            'cash_out' => $cashOut,
             'net_cashflow' => $cashIn - $cashOut,
-            'monthly'      => array_values($months),
-            'activities'   => $activities,
+            'monthly' => array_values($months),
+            'activities' => $activities,
         ];
     }
 
@@ -259,12 +338,12 @@ class FinancialReportService
     {
         return $lines
             ->groupBy('account_id')
-            ->map(fn($group) => [
-                'code'   => $group->first()->account->code,
-                'name'   => $group->first()->account->name,
+            ->map(fn ($group) => [
+                'code' => $group->first()->account->code,
+                'name' => $group->first()->account->name,
                 'amount' => (float) $group->sum($column),
             ])
-            ->filter(fn($item) => $item['amount'] > 0)
+            ->filter(fn ($item) => $item['amount'] > 0)
             ->values();
     }
 
@@ -274,12 +353,12 @@ class FinancialReportService
     private static function referenceTypeLabel(string $type): string
     {
         return match ($type) {
-            'invoice'          => 'Penagihan Invoice',
-            'payment'          => 'Pembayaran dari Client',
-            'expense'          => 'Pengeluaran',
-            'opening_balance'  => 'Saldo Awal',
-            'manual'           => 'Jurnal Manual',
-            default            => ucfirst($type),
+            'invoice' => 'Penagihan Invoice',
+            'payment' => 'Pembayaran dari Client',
+            'expense' => 'Pengeluaran',
+            'opening_balance' => 'Saldo Awal',
+            'manual' => 'Jurnal Manual',
+            default => ucfirst($type),
         };
     }
 }

@@ -20,7 +20,7 @@ export function CitySection({ cities, provinces, summary, filters }: CitySection
         {
             label: 'Total Kota',
             value: summary.total,
-            badge: 'bg-slate-500 text-white',
+            badge: 'bg-secondary/50 text-white px-2.5 py-1.5',
             icon: <MapPin className="size-3.5" />,
             footer: (
                 <>
@@ -32,7 +32,7 @@ export function CitySection({ cities, provinces, summary, filters }: CitySection
         {
             label: 'Aktif',
             value: summary.active,
-            badge: 'bg-emerald-500 text-white',
+            badge: 'bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500 px-2.5 py-1.5',
             icon: <CheckCircle2 className="size-3.5" />,
             footer: (
                 <>
@@ -44,7 +44,7 @@ export function CitySection({ cities, provinces, summary, filters }: CitySection
         {
             label: 'Memiliki Layanan',
             value: summary.with_city_pages,
-            badge: 'bg-blue-600 text-white',
+            badge: 'bg-blue-600 text-white dark:bg-blue-600/15 dark:text-blue-600 px-2.5 py-1.5',
             icon: <Globe className="size-3.5" />,
             footer: (
                 <>
@@ -56,7 +56,7 @@ export function CitySection({ cities, provinces, summary, filters }: CitySection
         {
             label: 'Total Provinsi',
             value: summary.total_provinces,
-            badge: 'bg-purple-500 text-white',
+            badge: 'bg-purple-500 text-white dark:bg-purple-500/15 dark:text-purple-500 px-2.5 py-1.5',
             icon: <XCircle className="size-3.5" />,
             footer: (
                 <>

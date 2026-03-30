@@ -19,7 +19,7 @@ export function ContactMessageSection({ messages, summary, filters }: ContactMes
         {
             label: 'Total Pesan',
             value: summary.total,
-            badge: 'bg-slate-500 text-white',
+            badge: 'bg-secondary/50 text-white',
             icon: <Inbox className="size-3.5" />,
             footer: (
                 <>
@@ -31,7 +31,7 @@ export function ContactMessageSection({ messages, summary, filters }: ContactMes
         {
             label: 'Belum Dibaca',
             value: summary.unread,
-            badge: 'bg-slate-500 text-white',
+            badge: 'bg-secondary/50 text-white',
             icon: <Mail className="size-3.5" />,
             footer: (
                 <>
@@ -43,7 +43,7 @@ export function ContactMessageSection({ messages, summary, filters }: ContactMes
         {
             label: 'Sudah Dibaca',
             value: summary.read,
-            badge: 'bg-emerald-500 text-white',
+            badge: 'bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500 px-2.5 py-1.5',
             icon: <MailOpen className="size-3.5" />,
             footer: (
                 <>
@@ -55,7 +55,7 @@ export function ContactMessageSection({ messages, summary, filters }: ContactMes
         {
             label: 'Sudah Dihubungi',
             value: summary.contacted,
-            badge: 'bg-blue-600 text-white',
+            badge: 'bg-blue-600 text-white dark:bg-blue-600/15 dark:text-blue-600 px-2.5 py-1.5',
             icon: <MailCheck className="size-3.5" />,
             footer: (
                 <>
