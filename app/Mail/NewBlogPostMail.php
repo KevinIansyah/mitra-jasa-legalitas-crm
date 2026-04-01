@@ -39,7 +39,7 @@ class NewBlogPostMail extends Mailable implements ShouldQueue
                 'excerpt' => $this->blog->short_description,
                 'url' => url("/blog/{$this->blog->slug}"),
                 'featuredImage' => $this->blog->featured_image ? "{$r2Url}/{$this->blog->featured_image}" : null,
-                'unsubscribeUrl' => url("/blog/unsubscribe/{$this->subscriber->token}"),
+                'unsubscribeUrl' => url("/blogs/subscribers/unsubscribe/{$this->subscriber->token}"),
             ],
         );
     }

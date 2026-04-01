@@ -120,8 +120,7 @@ class BlogController extends Controller
                 );
                 $featuredImagePath = $fileData['path'];
             }
-
-            // $isPublished = $validated['is_published'] ?? false;
+            
             $isPublished = false;
 
             $blog = Blog::create([

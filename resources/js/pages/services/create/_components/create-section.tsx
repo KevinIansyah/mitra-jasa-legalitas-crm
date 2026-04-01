@@ -29,7 +29,6 @@ import {
     readImageAsDataURL,
     validateImageFile,
 } from '@/lib/service';
-import services from '@/routes/services';
 import type { ServiceCategory } from '@/types/services';
 
 import { FaqCard, type LocalFaq } from '../../_components/faq-card';
@@ -38,6 +37,7 @@ import { PackageCard, type LocalPackage } from '../../_components/package-card';
 import { ProcessStepCard, type LocalProcessStep } from '../../_components/process-step-card';
 import { RequirementCard, type LocalRequirementCategory } from '../../_components/requirement-card';
 import { SeoCard, defaultSeo, type LocalServiceSeo } from '../../_components/seo-card';
+import services from '@/routes/services';
 
 type FormData = {
     service_category_id: number | '';
@@ -351,20 +351,6 @@ export function CreateSection({ categories }: CreateSectionProps) {
                                     onChange={(e) => setData('short_description', e.target.value)}
                                 />
                                 {errors.short_description && <FieldError>{errors.short_description}</FieldError>}
-                            </Field>
-
-                            {/* Icon */}
-                            <Field>
-                                <FieldLabel htmlFor="icon">Icon</FieldLabel>
-                                <Input
-                                    id="icon"
-                                    type="text"
-                                    name="icon"
-                                    placeholder="Masukkan icon layanan (emoticon)"
-                                    value={data.icon}
-                                    onChange={(e) => setData('icon', e.target.value)}
-                                />
-                                {errors.icon && <FieldError>{errors.icon}</FieldError>}
                             </Field>
 
                             {/* Featured Image */}

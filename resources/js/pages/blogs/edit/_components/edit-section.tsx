@@ -22,7 +22,7 @@ import blogs from '@/routes/blogs';
 import type { Blog, BlogCategory, BlogTag } from '@/types/blogs';
 import type { Service } from '@/types/services';
 import { defaultSeo, SeoCard, type LocalBlogSeo } from '../../_components/seo-card';
-import { AiGenerateDrawer, type AiDrawerType } from './ai-generate-drawe';
+import { AiGenerateDrawer, type AiDrawerType } from './ai-generate-drawer';
 
 const R2_PUBLIC_URL = import.meta.env.VITE_CLOUDFLARE_R2_PUBLIC_URL;
 
@@ -268,23 +268,48 @@ export function EditSection({ blog, categories, tags, services }: EditSectionPro
     // AI APPLY HANDLER
     // ============================================================
 
-    const handleAiApply = (data: Record<string, unknown>) => {
+    const handleAiApply = async (data: Record<string, unknown>) => {
         if (data.short_description !== undefined) setBasicData('short_description', data.short_description as string);
         if (data.content !== undefined) contentForm.setData('content', data.content as string);
         if (data.reading_time !== undefined) setBasicData('reading_time', data.reading_time as number);
+
+        const imageKey = Object.keys(data).find((k) => k.startsWith('image_'));
+        if (imageKey && data[imageKey] instanceof File) {
+            const file = data[imageKey] as File;
+            try {
+                setBasicData('featured_image', file);
+                setBasicData('remove_image', false);
+                const preview = await readImageAsDataURL(file);
+                setImagePreview({ src: preview, name: file.name, size: file.size });
+                setActiveTab('basic-information');
+                toast.success('Gambar diterapkan', { description: 'Jangan lupa simpan perubahan.' });
+            } catch {
+                toast.error('Gagal menerapkan gambar');
+            }
+        }
+
+        const ogKey = Object.keys(data).find((k) => k.startsWith('og_image_'));
+        if (ogKey && data[ogKey] instanceof File) {
+            setSeoData('seo', { ...seoData.seo, og_image: data[ogKey] as File });
+            setActiveTab('seo');
+            toast.success('OG Image diterapkan', { description: 'Jangan lupa simpan SEO.' });
+        }
+
+        const twitterKey = Object.keys(data).find((k) => k.startsWith('twitter_image_'));
+        if (twitterKey && data[twitterKey] instanceof File) {
+            setSeoData('seo', { ...seoData.seo, twitter_image: data[twitterKey] as File });
+            setActiveTab('seo');
+            toast.success('Twitter Image diterapkan', { description: 'Jangan lupa simpan SEO.' });
+        }
 
         const seoUpdates: Partial<LocalBlogSeo> = {};
         if (data.meta_title !== undefined) seoUpdates.meta_title = data.meta_title as string;
         if (data.meta_description !== undefined) seoUpdates.meta_description = data.meta_description as string;
         if (data.focus_keyword !== undefined) seoUpdates.focus_keyword = data.focus_keyword as string;
-
         if (Object.keys(seoUpdates).length > 0) {
             setSeoData('seo', { ...seoData.seo, ...seoUpdates });
         }
     };
-    // ============================================================
-    // RENDER
-    // ============================================================
 
     return (
         <>
@@ -413,7 +438,14 @@ export function EditSection({ blog, categories, tags, services }: EditSectionPro
 
                                 {/* Featured Image */}
                                 <Field>
-                                    <FieldLabel>Gambar Utama</FieldLabel>
+                                    <div className="flex items-center justify-between">
+                                        <FieldLabel>Gambar Utama</FieldLabel>
+                                        <Button type="button" variant="secondary" size="sm" onClick={() => openAiDrawer('image')}>
+                                            <Sparkles className="size-3.5" />
+                                            Generate AI
+                                        </Button>
+                                    </div>
+
                                     <Alert className="border-primary bg-primary/20">
                                         <TableOfContents />
                                         <AlertTitle>Panduan Ukuran Gambar Ideal</AlertTitle>
@@ -633,13 +665,7 @@ export function EditSection({ blog, categories, tags, services }: EditSectionPro
                 </TabsContent>
             </Tabs>
 
-            <AiGenerateDrawer
-                open={aiDrawer.open}
-                onOpenChange={(open) => setAiDrawer((prev) => ({ ...prev, open }))}
-                type={aiDrawer.type}
-                blogId={blog.id}
-                onApply={handleAiApply}
-            />
+            <AiGenerateDrawer open={aiDrawer.open} onOpenChange={(open) => setAiDrawer((prev) => ({ ...prev, open }))} type={aiDrawer.type} blog={blog} onApply={handleAiApply} />
         </>
     );
 }

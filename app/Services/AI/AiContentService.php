@@ -5,11 +5,13 @@ namespace App\Services\AI;
 use App\Models\StaffProfile;
 use App\Models\User;
 use Exception;
+use Illuminate\Support\Facades\Log;
 
 class AiContentService
 {
   public function __construct(
     private readonly AiServiceInterface $ai,
+    private readonly AiImagenService $imagen,
   ) {}
 
   // ------------------------------------------------------------------------
@@ -290,6 +292,39 @@ class AiContentService
       'meta_description' => $parsed['meta_description'] ?? '',
       'focus_keyword'    => $parsed['focus_keyword'] ?? '',
       'tokens_used'      => $result['tokens_used'],
+    ];
+  }
+
+  /**
+   * Generate gambar untuk blog atau layanan.
+   * Quota dihitung flat 500 token per gambar.
+   *
+   * @return array{ images: array<string>, tokens_used: int }
+   */
+  public function generateImage(User $user, array $context, int $count = 1, string $type = 'blog'): array
+  {
+    $estimatedCost = 500 * $count;
+
+    $profile = $this->guardTokenQuota($user, $estimatedCost);
+
+    $promptFile = match ($type) {
+      'service' => __DIR__ . '/Prompts/ServiceImagePrompt.php',
+      'blog'    => __DIR__ . '/Prompts/BlogImagePrompt.php',
+      default   => __DIR__ . '/Prompts/BlogImagePrompt.php',
+    };
+
+    $prompt = require $promptFile;
+    $prompt = $prompt($context);
+
+    $result = $this->imagen->generate($prompt, $count);
+
+    $images = collect($result['images'])->filter()->values()->toArray();
+
+    $profile->consumeTokens($estimatedCost);
+
+    return [
+      'images'      => $images,
+      'tokens_used' => $estimatedCost,
     ];
   }
 

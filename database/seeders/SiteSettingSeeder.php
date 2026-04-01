@@ -38,9 +38,9 @@ class SiteSettingSeeder extends Seeder
                 'sat' => '08:00-14:00',
                 'sun' => null,
             ],
-            'maps_embed_url'   => null,
-            'maps_coordinates' => null,
-            'maps_place_id'    => null,
+            'maps_embed_url'   => 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d989.3018402663441!2d112.79932332843558!3d-7.330593069396911!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd7faa4be8a322b%3A0x5e64963e26bb977f!2sJl.%20Medokan%20Ayu%20Sel.%2021-19%2C%20Medokan%20Ayu%2C%20Kec.%20Rungkut%2C%20Surabaya%2C%20Jawa%20Timur%2060295%2C%20Indonesia!5e0!3m2!1sen!2sus!4v1774591674561!5m2!1sen!2sus',
+            'maps_coordinates' => '-7.330593069396911,112.79932332843558',
+            'maps_place_id'    => '!1s0x2dd7faa4be8a322b:0x5e64963e26bb977f',
 
             // Default Meta Tag
             'default_title_template'   => '{page_title} | CV. Mitra Jasa Legalitas',

@@ -23,6 +23,10 @@ class BlogSubscriber extends Model
         'token',
     ];
 
+    protected $attributes = [
+        'is_verified' => false,
+    ];
+
     protected static function boot(): void
     {
         parent::boot();
@@ -67,6 +71,6 @@ class BlogSubscriber extends Model
 
     public function isVerified(): bool
     {
-        return $this->is_verified;
+        return (bool) $this->is_verified;
     }
 }

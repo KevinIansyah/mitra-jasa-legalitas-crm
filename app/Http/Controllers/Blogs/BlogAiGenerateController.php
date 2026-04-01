@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Blog;
 use App\Models\SiteSetting;
 use App\Services\AI\AiContentService;
+use App\Services\AI\AiImagenService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -38,7 +39,6 @@ class BlogAiGenerateController extends Controller
         ];
     }
 
-    // ─── Endpoints ────────────────────────────────────────────────────────────
 
     public function content(Request $request, Blog $blog): JsonResponse
     {
@@ -55,6 +55,30 @@ class BlogAiGenerateController extends Controller
 
         return $this->run(
             fn() => $this->aiContentService->generateBlogSeo(Auth::user(), $this->buildContext($blog, $request))
+        );
+    }
+
+    public function image(Request $request, Blog $blog): JsonResponse
+    {
+        $request->validate([
+            'count' => 'nullable|integer|min:1|max:4',
+        ]);
+
+        $blog->load(['category', 'seo']);
+
+        $ctx = [
+            'title'    => $blog->title,
+            'keyword'  => $blog->seo?->focus_keyword ?? $blog->title,
+            'category' => $blog->category?->name ?? '',
+        ];
+
+        return $this->run(
+            fn() => $this->aiContentService->generateImage(
+                Auth::user(),
+                $ctx,
+                $request->integer('count', 1),
+                'blog',
+            )
         );
     }
 

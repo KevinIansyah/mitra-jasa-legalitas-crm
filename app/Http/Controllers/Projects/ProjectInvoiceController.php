@@ -308,8 +308,6 @@ class ProjectInvoiceController extends Controller
         return back()->with('success', 'Invoice berhasil dihapus.');
     }
 
-    // Tambahkan method ini di ProjectInvoiceController
-
     public function regeneratePdf(ProjectInvoice $invoice)
     {
         try {

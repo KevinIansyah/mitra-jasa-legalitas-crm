@@ -4,17 +4,24 @@ namespace App\Observers;
 
 use App\Models\Service;
 use App\Models\ServicePackage;
+use App\Services\ChatbotService;
 use App\Services\SchemaBuilderService;
 
 class ServicePackageObserver
 {
   public function saved(ServicePackage $package): void
   {
+    if ($package->wasChanged(['price', 'status'])) {
+      app(ChatbotService::class)->invalidateContextCache();
+    }
+
     $this->rebuildSchema($package->service_id);
   }
 
   public function deleted(ServicePackage $package): void
   {
+    app(ChatbotService::class)->invalidateContextCache();
+
     $this->rebuildSchema($package->service_id);
   }
 

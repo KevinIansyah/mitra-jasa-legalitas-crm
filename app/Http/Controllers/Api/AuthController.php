@@ -43,7 +43,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
-            'role' => 'visitor',
+            'role' => 'user',
         ]);
 
         $this->otpService->send($user, 'email_verification');

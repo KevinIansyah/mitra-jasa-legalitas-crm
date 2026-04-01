@@ -1,5 +1,5 @@
 import { ChevronDown, ChevronUp, Code, FilePlus, Globe, ImagePlus, Pencil, Search, Settings2, Share2, Trash, X } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -109,6 +109,7 @@ function ImageUploadSmall({
     label,
     hint,
     currentUrl,
+    externalFile,
     onChange,
     onRemove,
     errors,
@@ -116,6 +117,7 @@ function ImageUploadSmall({
     label: string;
     hint?: string;
     currentUrl?: string | null;
+    externalFile?: File | null;
     onChange: (file: File) => void;
     onRemove: () => void;
     errors?: string;
@@ -128,6 +130,13 @@ function ImageUploadSmall({
     const [isDragging, setIsDragging] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const ref = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (!externalFile) return;
+        readImageAsDataURL(externalFile).then((src) => {
+            setPreview({ src, name: externalFile.name, size: externalFile.size });
+        });
+    }, [externalFile]);
 
     const handleFile = async (file: File | undefined) => {
         if (!file) return;
@@ -420,6 +429,7 @@ export function SeoCard({ seo, onChange, errors = {}, schemaMarkup }: SeoCardPro
                     label="OG Image"
                     hint="Rekomendasi: 1200×630px — ditampilkan saat halaman dibagikan"
                     currentUrl={seo.og_image_url}
+                    externalFile={seo.og_image}
                     onChange={(file) => update({ og_image: file })}
                     onRemove={() => update({ remove_og_image: true, og_image: null, og_image_url: null })}
                     errors={errors['seo.og_image']}
@@ -477,6 +487,7 @@ export function SeoCard({ seo, onChange, errors = {}, schemaMarkup }: SeoCardPro
                     label="Twitter Image"
                     hint="Rekomendasi: 1200×628px untuk summary_large_image"
                     currentUrl={seo.twitter_image_url}
+                    externalFile={seo.twitter_image}
                     onChange={(file) => update({ twitter_image: file })}
                     onRemove={() => update({ remove_twitter_image: true, twitter_image: null, twitter_image_url: null })}
                     errors={errors['seo.twitter_image']}

@@ -1,36 +1,22 @@
 import axios from 'axios';
 import { AlertCircle, Check, CheckCheck } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Spinner } from '@/components/ui/spinner';
-import { uid } from '@/lib/service';
-import type { Service } from '@/types/services';
+import type { Blog } from '@/types/blogs';
 
-export type AiDrawerType = 'content' | 'faq' | 'packages' | 'seo' | 'process-steps' | 'requirements' | 'legal-bases' | 'image';
+export type AiDrawerType = 'content' | 'seo' | 'image';
 
 type AiGenerateDrawerProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     type: AiDrawerType;
-    service: Service;
+    blog: Blog;
     onApply: (data: Record<string, unknown>) => void;
 };
-
-const DRAWER_LABELS: Record<AiDrawerType, string> = {
-    content: 'Konten',
-    faq: 'FAQ',
-    packages: 'Paket Harga',
-    seo: 'SEO',
-    'process-steps': 'Tahapan Proses',
-    requirements: 'Persyaratan',
-    'legal-bases': 'Dasar Hukum',
-    image: 'Gambar Utama',
-};
-
-const BRAND_BLUE = { r: 30, g: 58, b: 138 };
-const BRAND_ORANGE = { r: 234, g: 138, b: 27 };
 
 type CompositedResult = {
     original: { preview: string; file: File };
@@ -38,9 +24,18 @@ type CompositedResult = {
     twitter: { preview: string; file: File };
 };
 
-// ============================================================
+const DRAWER_LABELS: Record<AiDrawerType, string> = {
+    content: 'Konten',
+    seo: 'SEO',
+    image: 'Gambar Utama',
+};
+
+const BRAND_BLUE = { r: 30, g: 58, b: 138 };
+const BRAND_ORANGE = { r: 234, g: 138, b: 27 };
+
+// =============================================================================
 // COMPOSITE IMAGE
-// ============================================================
+// =============================================================================
 
 async function compositeImage(base64: string, title: string, targetWidth: number, targetHeight: number): Promise<{ preview: string; file: File }> {
     const font = new FontFace('DMSans', 'url(/fonts/DMSans-VariableFont.ttf)', {
@@ -204,7 +199,7 @@ function stripHtml(html: string): string {
 // MAIN COMPONENT
 // ============================================================
 
-export function AiGenerateDrawer({ open, onOpenChange, type, service, onApply }: AiGenerateDrawerProps) {
+export function AiGenerateDrawer({ open, onOpenChange, type, blog, onApply }: AiGenerateDrawerProps) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [result, setResult] = useState<Record<string, unknown> | null>(null);
@@ -219,7 +214,6 @@ export function AiGenerateDrawer({ open, onOpenChange, type, service, onApply }:
             hasGenerated.current = true;
             generate();
         }
-
         if (!open) {
             hasGenerated.current = false;
             setResult(null);
@@ -240,9 +234,9 @@ export function AiGenerateDrawer({ open, onOpenChange, type, service, onApply }:
         images.forEach((item, index) => {
             setCompositing((prev) => ({ ...prev, [index]: true }));
             Promise.all([
-                compositeImage(item.original, service.name, 1920, 1080),
-                compositeImage(item.og, service.name, 1200, 630),
-                compositeImage(item.twitter, service.name, 1200, 628),
+                compositeImage(item.original, blog.title, 1920, 1080),
+                compositeImage(item.og, blog.title, 1200, 630),
+                compositeImage(item.twitter, blog.title, 1200, 628),
             ])
                 .then(([original, og, twitter]) => {
                     setComposited((prev) => ({ ...prev, [index]: { original, og, twitter } }));
@@ -258,15 +252,15 @@ export function AiGenerateDrawer({ open, onOpenChange, type, service, onApply }:
         setError(null);
         setResult(null);
         setApplied({});
+        setComposited({});
+        setCompositing({});
 
         try {
-            const { data } = await axios.post(`/services/${service.id}/ai/generate/${type}`, {}, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
-
+            const { data } = await axios.post(`/blogs/${blog.id}/ai/generate/${type}`, {}, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
             setResult(data.data);
             setTokensUsed(data.tokens_used ?? 0);
         } catch (err: unknown) {
             const message = axios.isAxiosError(err) ? (err.response?.data?.message ?? 'Terjadi kesalahan saat generate.') : 'Terjadi kesalahan saat generate.';
-
             setError(message);
         } finally {
             setLoading(false);
@@ -278,95 +272,17 @@ export function AiGenerateDrawer({ open, onOpenChange, type, service, onApply }:
         setApplied((prev) => ({ ...prev, [key]: true }));
     };
 
-    const getMappedResult = (): Record<string, unknown> => {
-        if (!result) return {};
-
-        switch (type) {
-            case 'faq': {
-                const faqs = result.faqs as { question: string; answer: string }[];
-                return {
-                    faqs: faqs.map((faq, index) => ({
-                        ...faq,
-                        _key: uid(),
-                        sort_order: index,
-                        status: 'active',
-                    })),
-                };
-            }
-            case 'packages': {
-                const packages = result.packages as { name: string; price: number; short_description: string; features: { feature_name: string; is_included: boolean }[] }[];
-                return {
-                    packages: packages.map((packageItem, packageIndex) => ({
-                        ...packageItem,
-                        _key: uid(),
-                        sort_order: packageIndex,
-                        status: 'active',
-                        features: packageItem.features.map((feature, featureIndex) => ({
-                            ...feature,
-                            _key: uid(),
-                            sort_order: featureIndex,
-                        })),
-                    })),
-                };
-            }
-            case 'process-steps': {
-                const steps = result.process_steps as { title: string; description: string }[];
-                return {
-                    process_steps: steps.map((step, index) => ({
-                        ...step,
-                        _key: uid(),
-                        sort_order: index,
-                        status: 'active',
-                    })),
-                };
-            }
-            case 'requirements': {
-                const categories = result.requirement_categories as { name: string; requirements: { name: string; is_required: boolean }[] }[];
-                return {
-                    requirement_categories: categories.map((category, categoryIndex) => ({
-                        ...category,
-                        _key: uid(),
-                        sort_order: categoryIndex,
-                        status: 'active',
-                        requirements: category.requirements.map((requirement, requirementIndex) => ({
-                            ...requirement,
-                            _key: uid(),
-                            sort_order: requirementIndex,
-                        })),
-                    })),
-                };
-            }
-            case 'legal-bases': {
-                const legalBases = result.legal_bases as { document_type: string; document_number: string; title: string }[];
-                return {
-                    legal_bases: legalBases.map((legalBasis, index) => ({
-                        ...legalBasis,
-                        _key: uid(),
-                        sort_order: index,
-                        status: 'active',
-                    })),
-                };
-            }
-            default:
-                return result;
-        }
-    };
-
     const applyAll = () => {
         if (!result) return;
-
-        const mapped = getMappedResult();
-        onApply(mapped);
-
-        const allKeys = Object.keys(mapped).reduce<Record<string, boolean>>((accumulator, key) => ({ ...accumulator, [key]: true }), {});
-
+        onApply(result);
+        const allKeys = Object.keys(result).reduce<Record<string, boolean>>((acc, key) => ({ ...acc, [key]: true }), {});
         setApplied(allKeys);
     };
 
     const allApplied = result
         ? Object.keys(result)
-              .filter((key) => key !== 'tokens_used')
-              .every((key) => applied[key])
+              .filter((k) => k !== 'tokens_used')
+              .every((k) => applied[k])
         : false;
 
     const handleOpenChange = (isOpen: boolean) => {
@@ -375,42 +291,42 @@ export function AiGenerateDrawer({ open, onOpenChange, type, service, onApply }:
     };
 
     // ============================================================
-    // RENDER RESULT PER TYPE
+    // RENDER RESULT
     // ============================================================
 
     const renderResult = () => {
         if (!result) return null;
 
         switch (type) {
-            // Content
             case 'content': {
-                const introduction = result.introduction as string;
+                const shortDescription = result.short_description as string;
                 const content = result.content as string;
+                const readingTime = result.reading_time as number;
 
                 return (
                     <div className="space-y-2">
-                        <PreviewCard label="Pengantar" applied={!!applied['introduction']} onApply={() => applyField('introduction', introduction)}>
-                            <p className="line-clamp-4">{stripHtml(introduction)}</p>
+                        <PreviewCard label="Deskripsi Singkat" applied={!!applied['short_description']} onApply={() => applyField('short_description', shortDescription)}>
+                            <p className="line-clamp-3">{shortDescription}</p>
                         </PreviewCard>
-
                         <PreviewCard label="Konten Utama" applied={!!applied['content']} onApply={() => applyField('content', content)}>
                             <p className="line-clamp-4">{stripHtml(content)}</p>
+                        </PreviewCard>
+                        <PreviewCard label="Waktu Baca" applied={!!applied['reading_time']} onApply={() => applyField('reading_time', readingTime)}>
+                            <p>{readingTime > 0 ? `${readingTime} menit` : 'Tidak diketahui'}</p>
                         </PreviewCard>
                     </div>
                 );
             }
 
-            // SEO
             case 'seo': {
-                const seoFields: { key: string; label: string }[] = [
+                const fields = [
                     { key: 'meta_title', label: 'Meta Title' },
                     { key: 'meta_description', label: 'Meta Description' },
                     { key: 'focus_keyword', label: 'Focus Keyword' },
                 ];
-
                 return (
                     <div className="space-y-2">
-                        {seoFields.map(({ key, label }) => (
+                        {fields.map(({ key, label }) => (
                             <PreviewCard key={key} label={label} applied={!!applied[key]} onApply={() => applyField(key, result[key])}>
                                 <p>{result[key] as string}</p>
                             </PreviewCard>
@@ -419,121 +335,9 @@ export function AiGenerateDrawer({ open, onOpenChange, type, service, onApply }:
                 );
             }
 
-            // FAQ
-            case 'faq': {
-                const faqs = result.faqs as { question: string; answer: string }[];
-
-                return (
-                    <div className="space-y-2">
-                        {faqs.map((faq, index) => (
-                            <div key={index} className="rounded-lg bg-primary/10 p-4 dark:bg-muted/40">
-                                <p className="text-sm font-medium text-foreground">FAQ #{index + 1}</p>
-                                <p className="mt-1 text-sm font-medium">{faq.question}</p>
-                                <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{faq.answer}</p>
-                            </div>
-                        ))}
-                    </div>
-                );
-            }
-
-            // Packages
-            case 'packages': {
-                type FeatureItem = { feature_name: string; is_included: boolean };
-                type PackageItem = { name: string; price: number; short_description: string; features: FeatureItem[] };
-                const packages = result.packages as PackageItem[];
-
-                return (
-                    <div className="space-y-2">
-                        {packages.map((packageItem, index) => (
-                            <div key={index} className="rounded-lg bg-primary/10 p-4 dark:bg-muted/40">
-                                <p className="text-sm font-medium text-foreground">{packageItem.name}</p>
-                                <p className="mt-1 text-sm font-medium text-foreground">Rp {packageItem.price.toLocaleString('id-ID')}</p>
-                                <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{packageItem.short_description}</p>
-                                <p className="mt-1 text-xs text-muted-foreground">
-                                    {packageItem.features.filter((feature) => feature.is_included).length}/{packageItem.features.length} fitur tersedia
-                                </p>
-                            </div>
-                        ))}
-                    </div>
-                );
-            }
-
-            // Process Steps
-            case 'process-steps': {
-                type ProcessStepItem = { title: string; description: string; duration?: string };
-                const steps = result.process_steps as ProcessStepItem[];
-
-                return (
-                    <div className="space-y-2">
-                        {steps.map((step, index) => (
-                            <div key={index} className="rounded-lg bg-primary/10 p-4 dark:bg-muted/40">
-                                <p className="text-sm font-medium text-foreground">
-                                    Tahap {index + 1} — {step.title}
-                                </p>
-                                <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{step.description}</p>
-                                {step.duration && <p className="mt-1 text-xs text-muted-foreground">Durasi: {step.duration}</p>}
-                            </div>
-                        ))}
-                    </div>
-                );
-            }
-
-            // Requirements
-            case 'requirements': {
-                type RequirementItem = { name: string; is_required: boolean };
-                type CategoryItem = { name: string; requirements: RequirementItem[] };
-                const categories = result.requirement_categories as CategoryItem[];
-
-                return (
-                    <div className="space-y-2">
-                        {categories.map((category, index) => (
-                            <div key={index} className="rounded-lg bg-primary/10 p-4 dark:bg-muted/40">
-                                <p className="text-sm font-medium text-foreground">{category.name}</p>
-                                <p className="mt-1 text-xs text-muted-foreground">{category.requirements.length} persyaratan</p>
-                                <ul className="mt-1 space-y-0.5">
-                                    {category.requirements.slice(0, 3).map((requirement, requirementIndex) => (
-                                        <li key={requirementIndex} className="text-xs text-muted-foreground">
-                                            {requirement.is_required ? '✓' : '○'} {requirement.name}
-                                        </li>
-                                    ))}
-                                    {category.requirements.length > 3 && <li className="text-xs text-muted-foreground">+{category.requirements.length - 3} lainnya</li>}
-                                </ul>
-                            </div>
-                        ))}
-                    </div>
-                );
-            }
-
-            // Legal Bases
-            case 'legal-bases': {
-                type LegalBasisItem = { document_type: string; document_number: string; title: string };
-                const legalBases = result.legal_bases as LegalBasisItem[];
-
-                return (
-                    <div className="space-y-2">
-                        {legalBases.map((legalBasis, index) => (
-                            <div key={index} className="rounded-lg bg-primary/10 p-4 dark:bg-muted/40">
-                                <p className="text-xs font-medium text-foreground">{legalBasis.document_type}</p>
-                                <p className="mt-0.5 text-xs font-medium text-muted-foreground">{legalBasis.document_number}</p>
-                                <p className="mt-0.5 line-clamp-2 text-sm text-muted-foreground">{legalBasis.title}</p>
-                            </div>
-                        ))}
-                    </div>
-                );
-            }
-
             case 'image': {
                 const images = result.images as Array<{ original: string; og: string; twitter: string }> | undefined;
-
-                if (!images?.length) {
-                    return (
-                        <Alert variant="destructive">
-                            <AlertCircle className="h-4 w-4" />
-                            <AlertTitle>Tidak ada gambar</AlertTitle>
-                            <AlertDescription>AI tidak menghasilkan gambar. Coba regenerate.</AlertDescription>
-                        </Alert>
-                    );
-                }
+                if (!images?.length) return <Alert variant="destructive">...</Alert>;
 
                 return (
                     <div className="space-y-4">
@@ -548,21 +352,21 @@ export function AiGenerateDrawer({ open, onOpenChange, type, service, onApply }:
                                 {composited[index] && (
                                     <>
                                         <PreviewCard
-                                            label={`Gambar ${index + 1} — Featured (1920×1080)`}
+                                            label={`Featured (1920×1080)`}
                                             applied={!!applied[`image_${index}`]}
                                             onApply={() => applyField(`image_${index}`, composited[index].original.file)}
                                         >
                                             <img src={composited[index].original.preview} className="w-full rounded-md object-cover" />
                                         </PreviewCard>
                                         <PreviewCard
-                                            label={`Gambar ${index + 1} — OG Image (1200×630)`}
+                                            label={`OG Image (1200×630)`}
                                             applied={!!applied[`og_image_${index}`]}
                                             onApply={() => applyField(`og_image_${index}`, composited[index].og.file)}
                                         >
                                             <img src={composited[index].og.preview} className="w-full rounded-md object-cover" />
                                         </PreviewCard>
                                         <PreviewCard
-                                            label={`Gambar ${index + 1} — Twitter Image (1200×628)`}
+                                            label={`Twitter Image (1200×628)`}
                                             applied={!!applied[`twitter_image_${index}`]}
                                             onApply={() => applyField(`twitter_image_${index}`, composited[index].twitter.file)}
                                         >
@@ -594,9 +398,7 @@ export function AiGenerateDrawer({ open, onOpenChange, type, service, onApply }:
                         <DrawerDescription>{DRAWER_LABELS[type]}</DrawerDescription>
                     </DrawerHeader>
 
-                    {/* ───────────────── Content Section ───────────────── */}
                     <div className="my-4 flex-1 overflow-y-auto px-4">
-                        {/* Loading */}
                         {loading && (
                             <div className="flex h-[calc(100%-4rem)] flex-col items-center justify-center gap-4">
                                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
@@ -609,7 +411,6 @@ export function AiGenerateDrawer({ open, onOpenChange, type, service, onApply }:
                             </div>
                         )}
 
-                        {/* Error */}
                         {!loading && error && (
                             <Alert variant="destructive" className="overflow-hidden">
                                 <AlertCircle className="h-4 w-4" />
@@ -618,7 +419,6 @@ export function AiGenerateDrawer({ open, onOpenChange, type, service, onApply }:
                             </Alert>
                         )}
 
-                        {/* Result */}
                         {!loading && result && (
                             <div className="space-y-2">
                                 {tokensUsed > 0 && (
@@ -639,12 +439,10 @@ export function AiGenerateDrawer({ open, onOpenChange, type, service, onApply }:
                                     Terapkan Semua
                                 </Button>
                             )}
-
                             <div className="flex flex-col gap-2 md:flex-row">
                                 <Button type="button" className="flex-1" disabled={loading} onClick={generate}>
                                     Regenerate
                                 </Button>
-
                                 <Button type="button" variant="secondary" className="flex-1" disabled={loading} onClick={() => onOpenChange(false)}>
                                     Selesai
                                 </Button>

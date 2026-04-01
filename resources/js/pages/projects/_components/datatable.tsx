@@ -265,7 +265,7 @@ export function DataTable({ data, customers, companies, services, pageIndex, set
             </div>
 
             {/* ───────────────── Table Section ───────────────── */}
-            <div className="overflow-hidden rounded-t-md">
+            <div className="overflow-hidden rounded-t-md border-b">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (

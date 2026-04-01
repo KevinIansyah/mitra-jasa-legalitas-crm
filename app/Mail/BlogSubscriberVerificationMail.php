@@ -30,7 +30,7 @@ class BlogSubscriberVerificationMail extends Mailable implements ShouldQueue
         return new Content(
             view: 'emails.client.subsciber-verification',
             with: [
-                'verifyUrl' => url("/blog/subscribe/verify/{$this->subscriber->token}"),
+                'verifyUrl' => url("/blogs/subscribers/verify/{$this->subscriber->token}"),
                 'name' => $this->subscriber->name,
             ],
         );

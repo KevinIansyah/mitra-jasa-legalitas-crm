@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\ServiceCityPage;
+use App\Services\ChatbotService;
 use App\Services\CityPageSchemaBuilderService;
 use App\Services\SchemaBuilderService;
 
@@ -36,17 +37,23 @@ class ServiceCityPageObserver
 
   public function created(ServiceCityPage $cityPage): void
   {
+    app(ChatbotService::class)->invalidateContextCache();
+
     $this->rebuildServiceSchema($cityPage);
   }
 
   public function deleted(ServiceCityPage $cityPage): void
   {
+    app(ChatbotService::class)->invalidateContextCache();
+
     $this->rebuildServiceSchema($cityPage);
   }
 
   public function updated(ServiceCityPage $cityPage): void
   {
     if (! $cityPage->wasChanged('is_published')) return;
+
+    app(ChatbotService::class)->invalidateContextCache();
 
     $this->rebuildServiceSchema($cityPage);
   }

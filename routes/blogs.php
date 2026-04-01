@@ -98,6 +98,7 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
             Route::prefix('ai/generate')->middleware('permission:create-ai-generate')->name('ai.generate.')->group(function () {
                 Route::post('/content', [BlogAiGenerateController::class, 'content'])->name('content');
                 Route::post('/seo', [BlogAiGenerateController::class, 'seo'])->name('seo');
+                Route::post('/image', [BlogAiGenerateController::class, 'image'])->name('image');
             });
         });
 

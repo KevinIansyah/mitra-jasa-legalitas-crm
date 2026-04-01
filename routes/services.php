@@ -108,6 +108,7 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
           Route::post('/process-steps', [ServiceAiGenerateController::class, 'processSteps'])->name('process-steps');
           Route::post('/requirements', [ServiceAiGenerateController::class, 'requirements'])->name('requirements');
           Route::post('/legal-bases', [ServiceAiGenerateController::class, 'legalBases'])->name('legal-bases');
+          Route::post('/image', [ServiceAiGenerateController::class, 'image'])->name('image');
         });
     });
 

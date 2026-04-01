@@ -14,10 +14,8 @@ use Throwable;
 class ServiceAiGenerateController extends Controller
 {
     public function __construct(
-        private readonly AiContentService $aiContent,
+        private readonly AiContentService $aiContentService,
     ) {}
-
-    // 
 
     private function buildContext(Service $service, Request $request): array
     {
@@ -36,14 +34,12 @@ class ServiceAiGenerateController extends Controller
         ];
     }
 
-    // ─── Endpoints ────────────────────────────────────────────────────────────
-
     public function content(Request $request, Service $service): JsonResponse
     {
         $service->load(['category', 'seo']);
 
         return $this->run(
-            fn() => $this->aiContent->generateServiceContent(Auth::user(), $this->buildContext($service, $request))
+            fn() => $this->aiContentService->generateServiceContent(Auth::user(), $this->buildContext($service, $request))
         );
     }
 
@@ -56,7 +52,7 @@ class ServiceAiGenerateController extends Controller
         $ctx['count'] = $request->integer('count', 5);
 
         return $this->run(
-            fn() => $this->aiContent->generateServiceFaq(Auth::user(), $ctx)
+            fn() => $this->aiContentService->generateServiceFaq(Auth::user(), $ctx)
         );
     }
 
@@ -65,7 +61,7 @@ class ServiceAiGenerateController extends Controller
         $service->load(['category', 'seo']);
 
         return $this->run(
-            fn() => $this->aiContent->generateServiceSeo(Auth::user(), $this->buildContext($service, $request))
+            fn() => $this->aiContentService->generateServiceSeo(Auth::user(), $this->buildContext($service, $request))
         );
     }
 
@@ -78,7 +74,7 @@ class ServiceAiGenerateController extends Controller
         $ctx['count'] = $request->integer('count', 3);
 
         return $this->run(
-            fn() => $this->aiContent->generateServicePackages(Auth::user(), $ctx)
+            fn() => $this->aiContentService->generateServicePackages(Auth::user(), $ctx)
         );
     }
 
@@ -91,7 +87,7 @@ class ServiceAiGenerateController extends Controller
         $ctx['count'] = $request->integer('count', 5);
 
         return $this->run(
-            fn() => $this->aiContent->generateServiceProcessSteps(Auth::user(), $ctx)
+            fn() => $this->aiContentService->generateServiceProcessSteps(Auth::user(), $ctx)
         );
     }
 
@@ -104,7 +100,7 @@ class ServiceAiGenerateController extends Controller
         $ctx['count'] = $request->integer('count', 2);
 
         return $this->run(
-            fn() => $this->aiContent->generateServiceRequirements(Auth::user(), $ctx)
+            fn() => $this->aiContentService->generateServiceRequirements(Auth::user(), $ctx)
         );
     }
 
@@ -117,7 +113,31 @@ class ServiceAiGenerateController extends Controller
         $ctx['count'] = $request->integer('count', 3);
 
         return $this->run(
-            fn() => $this->aiContent->generateServiceLegalBases(Auth::user(), $ctx)
+            fn() => $this->aiContentService->generateServiceLegalBases(Auth::user(), $ctx)
+        );
+    }
+
+    public function image(Request $request, Service $service): JsonResponse
+    {
+        $request->validate([
+            'count' => 'nullable|integer|min:1|max:4',
+        ]);
+
+        $service->load(['category', 'seo']);
+
+        $ctx = [
+            'title'    => $service->name,
+            'keyword'  => $service->seo?->focus_keyword ?? $service->name,
+            'category' => $service->category?->name ?? '',
+        ];
+
+        return $this->run(
+            fn() => $this->aiContentService->generateImage(
+                Auth::user(),
+                $ctx,
+                $request->integer('count', 1),
+                'service',
+            )
         );
     }
 

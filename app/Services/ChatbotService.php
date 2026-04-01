@@ -8,34 +8,37 @@ use App\Models\Service;
 use App\Models\SiteSetting;
 use Exception;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class ChatbotService
 {
     private string $apiKey;
-
     private string $model;
-
     private string $baseUrl;
+    private int $cacheTtl;
 
     public function __construct()
     {
         $provider = config('ai.provider', 'gemini');
 
         if ($provider === 'lovable') {
-            $this->apiKey = config('ai.lovable_api_key');
-            $this->model = config('ai.lovable_chatbot_model', 'google/gemini-2.5-flash-lite');
+            $this->apiKey  = config('ai.lovable_api_key');
+            $this->model   = config('ai.lovable_chatbot_model', 'google/gemini-2.5-flash-lite');
             $this->baseUrl = 'https://ai.gateway.lovable.dev/v1/chat/completions';
         } else {
-            $this->apiKey = config('ai.gemini_api_key');
-            $this->model = config('ai.gemini_chatbot_model', 'gemini-2.5-flash-lite');
-            $this->baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models';
+            $this->apiKey  = config('ai.gemini_api_key');
+            $this->model   = config('ai.gemini_chatbot_model', 'gemini-2.5-flash-lite');
+            $this->baseUrl = 'https://generativelanguage.googleapis.com/v1beta';
         }
+
+        // TTL context cache in Google. Min 3600 (1 hour), max 2592000 (30 days).
+        $this->cacheTtl = (int) config('ai.chatbot_cache_ttl', 86400);
     }
 
     // ------------------------------------------------------------------------
-    // MAIN - Send message and get response
+    // MAIN
     // ------------------------------------------------------------------------
 
     public function chat(ChatSession $session, string $userMessage): array
@@ -46,70 +49,73 @@ class ChatbotService
 
         ChatMessage::create([
             'chat_session_id' => $session->id,
-            'role' => 'user',
-            'content' => $userMessage,
-            'tokens_used' => 0,
+            'role'            => 'user',
+            'content'         => $userMessage,
+            'tokens_used'     => 0,
         ]);
 
         $this->tryExtractLead($session, $userMessage);
 
         $recentMessages = $session->getRecentMessages(10);
 
-        $contents = $recentMessages->map(fn ($message) => [
-            'role' => $message->role === 'assistant' ? 'model' : 'user',
+        $contents = $recentMessages->map(fn($message) => [
+            'role'  => $message->role === 'assistant' ? 'model' : 'user',
             'parts' => [['text' => $message->content]],
         ])->toArray();
 
-        $response = $this->callAi($contents, $this->buildSystemPrompt($settings));
-
-        $assistantMessage = $response['content'];
-        $tokensUsed = $response['tokens_used'];
+        $response = $this->callAi($contents, $settings);
 
         ChatMessage::create([
             'chat_session_id' => $session->id,
-            'role' => 'assistant',
-            'content' => $assistantMessage,
-            'tokens_used' => $tokensUsed,
+            'role'            => 'assistant',
+            'content'         => $response['content'],
+            'tokens_used'     => $response['tokens_used'],
         ]);
 
         $session->update(['last_message_at' => now()]);
-        $this->consumeMonthlyTokens($settings, $tokensUsed);
+        $this->consumeMonthlyTokens($settings, $response['tokens_used'], 'chat');
 
         return [
-            'message' => $assistantMessage,
-            'tokens_used' => $tokensUsed,
+            'message'     => $response['content'],
+            'tokens_used' => $response['tokens_used'],
         ];
     }
 
     // ------------------------------------------------------------------------
-    // SYSTEM PROMPT - Knowledge base from DB (cached for 1 hour)
+    // SYSTEM PROMPT
     // ------------------------------------------------------------------------
 
     private function buildSystemPrompt(SiteSetting $settings): string
     {
-        return Cache::remember('chatbot_system_prompt', 3600, function () use ($settings) {
-            $companyName = $settings->company_name ?? 'CV. Mitra Jasa Legalitas';
-            $address = $settings->company_address ?? '';
-            $phone = $settings->company_phone ?? '';
-            $whatsapp = $settings->ai_chatbot_whatsapp_number ?? $phone;
-            $website = $settings->company_website ?? '';
+        return Cache::remember('chatbot_system_prompt', $this->cacheTtl, function () use ($settings) {
+            $companyName = $settings->company_name    ?? 'CV. Mitra Jasa Legalitas';
+            $address     = $settings->company_address ?? '';
+            $phone       = $settings->company_phone   ?? '';
+            $whatsapp    = $settings->ai_chatbot_whatsapp_number ?? $phone;
+            $website     = $settings->company_website ?? '';
 
             $services = Service::with([
-                'packages' => fn ($query) => $query->where('status', 'active')->orderBy('price')->limit(1),
-                'cityPages' => fn ($query) => $query->where('is_published', true)->with('city:id,name'),
+                'cheapestPackage',
+                'cityPages' => fn($q) => $q->where('is_published', true)
+                    ->select('id', 'service_id', 'city_id')
+                    ->with('city:id,name'),
             ])
-                ->where('is_published', true)
-                ->where('status', 'active')
+                ->published()
                 ->get(['id', 'name', 'slug', 'short_description']);
 
             $serviceList = $services->map(function ($service) use ($website) {
-                $minPrice = $service->packages->first()?->price;
-                $cities = $service->cityPages->pluck('city.name')->filter()->implode(', ');
-                $priceText = $minPrice ? 'mulai Rp '.number_format($minPrice, 0, ',', '.') : 'hubungi kami';
-                $cityText = $cities ? "Tersedia di: {$cities}" : '';
-                $link = "{$website}/layanan/{$service->slug}";
+                $minPrice  = $service->cheapestPackage?->price;
+                $cities    = $service->cityPages->pluck('city.name')->filter()->implode(', ');
+                $priceText = $minPrice ? 'mulai Rp ' . number_format($minPrice, 0, ',', '.') : 'hubungi kami';
+                $cityText  = $cities ? "Tersedia di: {$cities}" : '';
+                $link      = "{$website}/layanan/{$service->slug}";
 
-                return "- {$service->name} ({$priceText})\n  {$service->short_description}\n  {$cityText}\n  Info lengkap: {$link}";
+                return implode("\n  ", array_filter([
+                    "- {$service->name} ({$priceText})",
+                    $service->short_description,
+                    $cityText,
+                    "Info lengkap: {$link}",
+                ]));
             })->implode("\n\n");
 
             return <<<PROMPT
@@ -138,47 +144,208 @@ PROMPT;
     }
 
     // ------------------------------------------------------------------------
-    // AI CALL - Route to the appropriate provider
+    // CONTEXT CACHE (Gemini only)
     // ------------------------------------------------------------------------
 
-    private function callAi(array $contents, string $systemPrompt): array
+    /**
+     * Get cache name that is still valid.
+     * Laravel Cache TTL = Google TTL reduced by 10 minutes (buffer so it doesn't expire too soon).
+     */
+    private function getOrCreateContextCache(SiteSetting $settings): ?string
+    {
+        $laravelTtl = max($this->cacheTtl - 600, 3000);
+
+        return Cache::remember('gemini_context_cache_name', $laravelTtl, function () use ($settings) {
+            return $this->createContextCache($settings);
+        });
+    }
+
+    private function createContextCache(SiteSetting $settings): ?string
+    {
+        $systemPrompt = $this->buildSystemPrompt($settings);
+
+        $tokenCount = $this->countTokens($systemPrompt);
+
+        if ($tokenCount === null) {
+            // Log::warning('Chatbot: gagal hitung token system prompt, skip context cache, fallback ke systemInstruction.');
+            return null;
+        }
+
+        // Log::info('Chatbot: system prompt token count', [
+        //     'token_count'      => $tokenCount,
+        //     'char_length'      => strlen($systemPrompt),
+        //     'minimum_required' => 1024,
+        //     'can_use_cache'    => $tokenCount >= 1024,
+        // ]);
+
+        if ($tokenCount < 1024) {
+            // Log::info("Chatbot: system prompt hanya {$tokenCount} token (minimum 1024), skip context cache, fallback ke systemInstruction.");
+            return null;
+        }
+
+        $url  = "{$this->baseUrl}/cachedContents?key={$this->apiKey}";
+        $body = [
+            'model'             => "models/{$this->model}",
+            'ttl'               => "{$this->cacheTtl}s",
+            'systemInstruction' => [
+                'parts' => [['text' => $systemPrompt]],
+            ],
+            'contents' => [
+                ['role' => 'user', 'parts' => [['text' => ' ']]],
+            ],
+        ];
+
+        try {
+            /** @var \Illuminate\Http\Client\Response $response */
+            $response = Http::timeout(15)->post($url, $body);
+
+            if (! $response->successful()) {
+                // Log::warning('Chatbot: gagal buat context cache', [
+                //     'status' => $response->status(),
+                //     'error'  => $response->json('error.message'),
+                // ]);
+                return null;
+            }
+
+            $cacheName = $response->json('name');
+
+            $this->consumeMonthlyTokens($settings, $tokenCount, 'context_cache_create');
+
+            // Log::info('Chatbot: context cache berhasil dibuat', [
+            //     'cache_name'  => $cacheName,
+            //     'token_count' => $tokenCount,
+            //     'ttl_jam'     => round($this->cacheTtl / 3600, 1),
+            //     'expire_at'   => now()->addSeconds($this->cacheTtl)->toDateTimeString(),
+            // ]);
+
+            return $cacheName;
+        } catch (Exception $e) {
+            Log::warning('Chatbot: exception saat buat context cache', [
+                'error' => $e->getMessage(),
+            ]);
+            return null;
+        }
+    }
+
+    private function countTokens(string $systemPrompt): ?int
+    {
+        $url  = "{$this->baseUrl}/models/{$this->model}:countTokens?key={$this->apiKey}";
+        $body = [
+            'contents' => [
+                [
+                    'role'  => 'user',
+                    'parts' => [['text' => $systemPrompt]],
+                ],
+            ],
+        ];
+
+        try {
+            /** @var \Illuminate\Http\Client\Response $response */
+            $response = Http::timeout(10)->post($url, $body);
+
+            if (! $response->successful()) {
+                // Log::warning('Chatbot: countTokens gagal', [
+                //     'status' => $response->status(),
+                //     'error'  => $response->json('error.message'),
+                // ]);
+                return null;
+            }
+
+            return $response->json('totalTokens');
+        } catch (Exception $e) {
+            // Log::warning('Chatbot: countTokens exception', ['error' => $e->getMessage()]);
+            return null;
+        }
+    }
+
+    public function invalidateContextCache(): void
+    {
+        Cache::forget('gemini_context_cache_name');
+        Cache::forget('chatbot_system_prompt');
+
+        // Log::info('Chatbot: context cache & system prompt di-invalidate, akan dibuat ulang saat chat berikutnya.');
+    }
+
+    // ------------------------------------------------------------------------
+    // AI CALL
+    // ------------------------------------------------------------------------
+
+    private function callAi(array $contents, SiteSetting $settings): array
     {
         $provider = config('ai.provider', 'gemini');
 
         if ($provider === 'lovable') {
-            return $this->callLovable($contents, $systemPrompt);
+            return $this->callLovable($contents, $this->buildSystemPrompt($settings));
         }
 
-        return $this->callGeminiNative($contents, $systemPrompt);
+        return $this->callGeminiWithCache($contents, $settings);
     }
 
-    private function callGeminiNative(array $contents, string $systemPrompt): array
+    private function callGeminiWithCache(array $contents, SiteSetting $settings): array
     {
-        $url = "{$this->baseUrl}/{$this->model}:generateContent?key={$this->apiKey}";
+        $cacheName = $this->getOrCreateContextCache($settings);
 
+        if ($cacheName) {
+            try {
+                return $this->callGeminiNative($contents, null, $cacheName);
+            } catch (Exception $e) {
+                // Log::warning('Chatbot: context cache gagal dipakai, invalidate dan fallback ke systemInstruction', [
+                //     'cache_name' => $cacheName,
+                //     'error'      => $e->getMessage(),
+                // ]);
+                $this->invalidateContextCache();
+            }
+        }
+
+        return $this->callGeminiNative($contents, $this->buildSystemPrompt($settings));
+    }
+
+    private function callGeminiNative(array $contents, ?string $systemPrompt, ?string $cacheName = null): array
+    {
+        $url  = "{$this->baseUrl}/models/{$this->model}:generateContent?key={$this->apiKey}";
         $body = [
-            'systemInstruction' => [
-                'parts' => [['text' => $systemPrompt]],
-            ],
-            'contents' => $contents,
+            'contents'         => $contents,
             'generationConfig' => [
                 'maxOutputTokens' => 500,
-                'temperature' => 0.7,
+                'temperature'     => 0.7,
             ],
         ];
+
+        if ($cacheName) {
+            $body['cachedContent'] = $cacheName;
+        } elseif ($systemPrompt) {
+            $body['systemInstruction'] = [
+                'parts' => [['text' => $systemPrompt]],
+            ];
+        }
 
         /** @var \Illuminate\Http\Client\Response $response */
         $response = Http::timeout(30)->post($url, $body);
 
         if (! $response->successful()) {
-            Log::error('Chatbot Gemini error', ['status' => $response->status(), 'body' => $response->body()]);
+            // Log::error('Chatbot Gemini error', [
+            //     'status'     => $response->status(),
+            //     'error'      => $response->json('error.message'),
+            //     'used_cache' => $cacheName !== null,
+            // ]);
             throw new Exception('Maaf, asisten sedang tidak tersedia. Silakan coba lagi.');
         }
 
-        $data = $response->json();
-        $content = $data['candidates'][0]['content']['parts'][0]['text'] ?? '';
-        $tokensUsed = ($data['usageMetadata']['promptTokenCount'] ?? 0)
-            + ($data['usageMetadata']['candidatesTokenCount'] ?? 0);
+        $data            = $response->json();
+        $content         = $data['candidates'][0]['content']['parts'][0]['text'] ?? '';
+        $promptTokens    = $data['usageMetadata']['promptTokenCount']          ?? 0;
+        $candidateTokens = $data['usageMetadata']['candidatesTokenCount']      ?? 0;
+        $cachedTokens    = $data['usageMetadata']['cachedContentTokenCount']   ?? 0;
+
+        $tokensUsed = $promptTokens + $candidateTokens;
+
+        // Log::info('Chatbot: token usage', [
+        //     'prompt_tokens'    => $promptTokens,
+        //     'candidate_tokens' => $candidateTokens,
+        //     'cached_tokens'    => $cachedTokens,
+        //     'total_tokens'     => $tokensUsed,
+        //     'used_cache'       => $cacheName !== null,
+        // ]);
 
         return ['content' => $content, 'tokens_used' => $tokensUsed];
     }
@@ -189,7 +356,7 @@ PROMPT;
 
         foreach ($contents as $message) {
             $messages[] = [
-                'role' => $message['role'] === 'model' ? 'assistant' : $message['role'],
+                'role'    => $message['role'] === 'model' ? 'assistant' : $message['role'],
                 'content' => $message['parts'][0]['text'] ?? '',
             ];
         }
@@ -198,26 +365,33 @@ PROMPT;
         $response = Http::timeout(30)
             ->withHeaders(['Authorization' => "Bearer {$this->apiKey}"])
             ->post($this->baseUrl, [
-                'model' => $this->model,
-                'messages' => $messages,
-                'max_tokens' => 500,
+                'model'       => $this->model,
+                'messages'    => $messages,
+                'max_tokens'  => 500,
                 'temperature' => 0.7,
             ]);
 
         if (! $response->successful()) {
-            Log::error('Chatbot Lovable error', ['status' => $response->status(), 'body' => $response->body()]);
+            // Log::error('Chatbot Lovable error', [
+            //     'status' => $response->status(),
+            //     'error'  => $response->json('error.message', $response->body()),
+            // ]);
             throw new Exception('Maaf, asisten sedang tidak tersedia. Silakan coba lagi.');
         }
 
-        $data = $response->json();
-        $content = $data['choices'][0]['message']['content'] ?? '';
+        $data       = $response->json();
+        $content    = $data['choices'][0]['message']['content'] ?? '';
         $tokensUsed = $data['usage']['total_tokens'] ?? 0;
+
+        // Log::info('Chatbot: token usage (Lovable)', [
+        //     'total_tokens' => $tokensUsed,
+        // ]);
 
         return ['content' => $content, 'tokens_used' => $tokensUsed];
     }
 
     // ------------------------------------------------------------------------
-    // LEAD EXTRACTION - Auto-detect dari pesan user
+    // LEAD EXTRACTION
     // ------------------------------------------------------------------------
 
     private function tryExtractLead(ChatSession $session, string $text): void
@@ -257,29 +431,47 @@ PROMPT;
 
     private function guardMonthlyLimit(SiteSetting $settings): void
     {
-        $resetDate = $settings->ai_chatbot_reset_date;
-
+        $resetDate  = $settings->ai_chatbot_reset_date;
         $needsReset = ! $resetDate
             || now()->month !== \Carbon\Carbon::parse($resetDate)->month
-            || now()->year !== \Carbon\Carbon::parse($resetDate)->year;
+            || now()->year  !== \Carbon\Carbon::parse($resetDate)->year;
 
         if ($needsReset) {
-            $settings->update([
+            DB::table('site_settings')->update([
                 'ai_chatbot_used_tokens' => 0,
-                'ai_chatbot_reset_date' => now()->startOfMonth(),
+                'ai_chatbot_reset_date'  => now()->startOfMonth(),
             ]);
         }
 
-        $used = $settings->fresh()->ai_chatbot_used_tokens ?? 0;
-        $limit = $settings->ai_chatbot_monthly_limit ?? 10000000;
+        $used  = DB::table('site_settings')->value('ai_chatbot_used_tokens') ?? 0;
+        $limit = $settings->ai_chatbot_monthly_limit ?? 10_000_000;
 
         if ($used >= $limit) {
             throw new Exception('TOKEN_LIMIT_EXCEEDED');
         }
     }
 
-    private function consumeMonthlyTokens(SiteSetting $settings, int $tokens): void
+    private function consumeMonthlyTokens(SiteSetting $settings, int $tokens, string $label = 'chat'): void
     {
-        $settings->increment('ai_chatbot_used_tokens', $tokens);
+        if ($tokens <= 0) {
+            return;
+        }
+
+        DB::table('site_settings')
+            ->update([
+                'ai_chatbot_used_tokens' => DB::raw("ai_chatbot_used_tokens + {$tokens}"),
+            ]);
+
+        $used  = DB::table('site_settings')->value('ai_chatbot_used_tokens') ?? 0;
+        $limit = $settings->ai_chatbot_monthly_limit ?? 10_000_000;
+
+        // Log::info('Chatbot: quota update', [
+        //     'label'      => $label,
+        //     'dikonsumsi' => $tokens,
+        //     'dipakai'    => $used,
+        //     'limit'      => $limit,
+        //     'sisa'       => $limit - $used,
+        //     'persen'     => round($used / $limit * 100, 2) . '%',
+        // ]);
     }
 }

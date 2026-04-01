@@ -28,7 +28,6 @@ import {
     readImageAsDataURL,
     validateImageFile,
 } from '@/lib/service';
-import services from '@/routes/services';
 import type { Service, ServiceCategory } from '@/types/services';
 
 import { FaqCard, type LocalFaq } from '../../_components/faq-card';
@@ -39,6 +38,7 @@ import { RequirementCard, type LocalRequirementCategory } from '../../_component
 import { SeoCard } from '../../_components/seo-card';
 import type { AiDrawerType } from './ai-generate-drawer';
 import { AiGenerateDrawer } from './ai-generate-drawer';
+import services from '@/routes/services';
 
 type BasicInfoFormData = {
     service_category_id: number;
@@ -630,7 +630,8 @@ export function EditSection({ service, categories }: EditSectionProps) {
                 });
                 seoForm.clearErrors();
             },
-            onError: () => {
+            onError: (errors) => {
+                console.log(errors);
                 toast.error('Gagal', {
                     description: 'SEO gagal diperbarui. Silakan periksa kembali data SEO yang diisi.',
                 });
@@ -642,7 +643,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
     // ============================================================
     // AI APPLY HANDLER
     // ============================================================
-    const handleAiApply = (data: Record<string, unknown>) => {
+    const handleAiApply = async (data: Record<string, unknown>) => {
         if (data.introduction !== undefined) contentForm.setData('introduction', data.introduction as string);
         if (data.content !== undefined) contentForm.setData('content', data.content as string);
         if (data.meta_title !== undefined) seoForm.setData('meta_title', data.meta_title as string);
@@ -653,6 +654,35 @@ export function EditSection({ service, categories }: EditSectionProps) {
         if (data.process_steps !== undefined) processStepsForm.setData('process_steps', data.process_steps as LocalProcessStep[]);
         if (data.requirement_categories !== undefined) requirementCategoriesForm.setData('requirement_categories', data.requirement_categories as LocalRequirementCategory[]);
         if (data.legal_bases !== undefined) legalBasisForm.setData('legal_bases', data.legal_bases as LocalLegalBasis[]);
+
+        const imageKey = Object.keys(data).find((k) => k.startsWith('image_'));
+        if (imageKey && data[imageKey] instanceof File) {
+            const file = data[imageKey] as File;
+            try {
+                basicInfoForm.setData('featured_image', file);
+                basicInfoForm.setData('remove_image', false);
+                const preview = await readImageAsDataURL(file);
+                setImagePreview({ src: preview, name: file.name, size: file.size });
+                setActiveTab('basic-information');
+                toast.success('Gambar diterapkan', { description: 'Jangan lupa simpan perubahan.' });
+            } catch {
+                toast.error('Gagal menerapkan gambar');
+            }
+        }
+
+        const ogKey = Object.keys(data).find((k) => k.startsWith('og_image_'));
+        if (ogKey && data[ogKey] instanceof File) {
+            seoForm.setData('og_image', data[ogKey] as File);
+            setActiveTab('seo');
+            toast.success('OG Image diterapkan', { description: 'Jangan lupa simpan SEO.' });
+        }
+
+        const twitterKey = Object.keys(data).find((k) => k.startsWith('twitter_image_'));
+        if (twitterKey && data[twitterKey] instanceof File) {
+            seoForm.setData('twitter_image', data[twitterKey] as File);
+            setActiveTab('seo');
+            toast.success('Twitter Image diterapkan', { description: 'Jangan lupa simpan SEO.' });
+        }
     };
 
     return (
@@ -759,23 +789,16 @@ export function EditSection({ service, categories }: EditSectionProps) {
                                     {basicInfoForm.errors.short_description && <FieldError>{basicInfoForm.errors.short_description}</FieldError>}
                                 </Field>
 
-                                {/* Icon */}
-                                <Field>
-                                    <FieldLabel htmlFor="icon">Icon</FieldLabel>
-                                    <Input
-                                        id="icon"
-                                        type="text"
-                                        name="icon"
-                                        placeholder="Masukkan icon layanan (emoticon)"
-                                        value={basicInfoForm.data.icon}
-                                        onChange={(e) => basicInfoForm.setData('icon', e.target.value)}
-                                    />
-                                    {basicInfoForm.errors.icon && <FieldError>{basicInfoForm.errors.icon}</FieldError>}
-                                </Field>
-
                                 {/* Featured Image */}
                                 <Field>
-                                    <FieldLabel htmlFor="featured_image">Gambar Utama</FieldLabel>
+                                    <div className="flex items-center justify-between">
+                                        <FieldLabel htmlFor="featured_image">Gambar Utama</FieldLabel>
+                                        <Button type="button" variant="secondary" size="sm" onClick={() => openAiDrawer('image')}>
+                                            <Sparkles className="size-3.5" />
+                                            Generate AI
+                                        </Button>
+                                    </div>
+
                                     <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFile(e.target.files?.[0])} />
 
                                     {!imagePreview ? (
@@ -1437,7 +1460,7 @@ export function EditSection({ service, categories }: EditSectionProps) {
                 open={aiDrawer.open}
                 onOpenChange={(open) => setAiDrawer((prev) => ({ ...prev, open }))}
                 type={aiDrawer.type}
-                serviceId={service.id}
+                service={service}
                 onApply={handleAiApply}
             />
         </>
