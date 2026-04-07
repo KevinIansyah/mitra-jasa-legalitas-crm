@@ -134,11 +134,15 @@ async function compositeImage(base64: string, title: string, targetWidth: number
                 ctx.globalAlpha = 1.0;
             }
 
-            canvas.toBlob((blob) => {
-                if (!blob) return reject(new Error('Canvas export gagal'));
-                const file = new File([blob], `ai-blog-${targetWidth}x${targetHeight}-${Date.now()}.png`, { type: 'image/png' });
-                resolve({ preview: canvas.toDataURL('image/png'), file });
-            }, 'image/png');
+            canvas.toBlob(
+                (blob) => {
+                    if (!blob) return reject(new Error('Canvas export gagal'));
+                    const file = new File([blob], `ai-blog-${targetWidth}x${targetHeight}-${Date.now()}.webp`, { type: 'image/webp' });
+                    resolve({ preview: canvas.toDataURL('image/webp'), file });
+                },
+                'image/webp',
+                0.85,
+            );
         };
 
         img.crossOrigin = 'anonymous';
@@ -147,7 +151,7 @@ async function compositeImage(base64: string, title: string, targetWidth: number
             tryDraw();
         };
         img.onerror = () => reject(new Error('Gagal load gambar'));
-        img.src = `data:image/png;base64,${base64}`;
+        img.src = `data:image/webp;base64,${base64}`;
 
         logo.crossOrigin = 'anonymous';
         logo.onload = () => {

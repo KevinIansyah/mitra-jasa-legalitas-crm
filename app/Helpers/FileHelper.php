@@ -5,7 +5,6 @@ namespace App\Helpers;
 use App\Models\Expense;
 use App\Models\ProjectDeliverable;
 use App\Models\ProjectDocument;
-use App\Models\ProjectExpense;
 use App\Models\ProjectPayment;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Crypt;
@@ -59,6 +58,28 @@ class FileHelper
       'size'          => $file->getSize(),
       'type'          => $file->getMimeType(),
       'original_name' => $file->getClientOriginalName(),
+    ];
+  }
+
+  /**
+   * Upload raw bytes to R2 public (untuk hasil konversi WebP, dll)
+   */
+  public static function uploadBytesToR2Public(
+    string $bytes,
+    string $directory,
+    string $filename,
+    string $mimeType = 'image/webp'
+  ): array {
+    $filePath = $directory . '/' . $filename;
+
+    Storage::disk('r2_public')->put($filePath, $bytes, [
+      'ContentType' => $mimeType,
+    ]);
+
+    return [
+      'path'     => $filePath,
+      'size'     => strlen($bytes),
+      'type'     => $mimeType,
     ];
   }
 

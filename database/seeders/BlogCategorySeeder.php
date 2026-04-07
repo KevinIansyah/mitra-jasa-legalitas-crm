@@ -26,7 +26,6 @@ class BlogCategorySeeder extends Seeder
 
         BlogCategory::create([
             'name' => 'Tips & Edukasi Bisnis',
-            'palette_color' => 'oklch(0.5 0.13 270)',
         ]);
 
         BlogCategory::create([

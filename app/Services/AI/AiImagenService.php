@@ -80,9 +80,9 @@ class AiImagenService
             $twitter = (clone $image)->cover(1200, 628);
 
             return [
-                'original' => base64_encode($original->toWebp(quality: 85)),
-                'og'       => base64_encode($og->toWebp(quality: 85)),
-                'twitter'  => base64_encode($twitter->toWebp(quality: 85)),
+                'original' => base64_encode($original->toWebp(quality: 80)),
+                'og' => base64_encode($og->toWebp(quality: 80)),
+                'twitter' => base64_encode($twitter->toWebp(quality: 80)),
             ];
         } finally {
             @unlink($tmpFile);

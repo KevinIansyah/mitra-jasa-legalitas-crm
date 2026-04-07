@@ -3,14 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\ServiceCategory;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class ServiceCategorySeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         ServiceCategory::create([
@@ -37,7 +33,6 @@ class ServiceCategorySeeder extends Seeder
             'name' => 'Perizinan Sektoral',
             'palette_color' => 'oklch(0.62 0.16 30)',
         ]);
-
 
         ServiceCategory::create([
             'name' => 'Lainnya',
