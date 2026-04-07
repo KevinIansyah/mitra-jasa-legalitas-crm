@@ -18,7 +18,7 @@ import { BLOG_SUBSCRIBER_VERIFIED_FILTER, type BlogSubscriber } from '@/types/bl
 import getColumns from './columns';
 import SubscriberDetail from './subscriber-detail';
 
-interface DataTableProps {
+type DataTableProps = {
     data: BlogSubscriber[];
     pageIndex: number;
     setPageIndex: React.Dispatch<React.SetStateAction<number>>;

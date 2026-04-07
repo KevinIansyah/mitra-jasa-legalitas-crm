@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Contents\ClientCompanyController;
 use App\Http\Controllers\Contents\ClientSuccessStoryController;
 use App\Http\Controllers\Contents\FaqController;
 use App\Http\Controllers\Contents\TestimonialController;
@@ -74,6 +75,36 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
 
         Route::delete('/{testimonial}', [TestimonialController::class, 'destroy'])
             ->middleware('permission:delete-content-testimonials')
+            ->name('destroy');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | CLIENT COMPANIES (logo klien)
+    |--------------------------------------------------------------------------
+    | GET    /contents/client-companies              -> List
+    | POST   /contents/client-companies              -> Store
+    | POST   /contents/client-companies/{client_company} -> Update
+    | DELETE /contents/client-companies/{client_company} -> Destroy
+    |--------------------------------------------------------------------------
+    */
+
+    Route::prefix('contents/client-companies')->name('contents.client-companies.')->group(function () {
+
+        Route::get('/', [ClientCompanyController::class, 'index'])
+            ->middleware('permission:view-content-client-companies')
+            ->name('index');
+
+        Route::post('/', [ClientCompanyController::class, 'store'])
+            ->middleware('permission:create-content-client-companies')
+            ->name('store');
+
+        Route::post('/{client_company}', [ClientCompanyController::class, 'update'])
+            ->middleware('permission:edit-content-client-companies')
+            ->name('update');
+
+        Route::delete('/{client_company}', [ClientCompanyController::class, 'destroy'])
+            ->middleware('permission:delete-content-client-companies')
             ->name('destroy');
     });
 

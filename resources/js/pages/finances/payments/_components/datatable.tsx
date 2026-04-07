@@ -14,14 +14,13 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
-
 import finances from '@/routes/finances';
 import type { ProjectPayment } from '@/types/projects';
 import { PAYMENT_METHODS, PAYMENT_STATUSES } from '@/types/projects';
 import getColumns from './columns';
 import PaymentDetail from './payment-detail';
 
-interface DataTableProps {
+type DataTableProps = {
     data: ProjectPayment[];
     pageIndex: number;
     setPageIndex: React.Dispatch<React.SetStateAction<number>>;

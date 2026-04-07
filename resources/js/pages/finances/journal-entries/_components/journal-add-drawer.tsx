@@ -20,20 +20,20 @@ import type { JournalLineFormData, ManualJournalFormData, ManualJournalFormError
 
 const EMPTY_LINE: JournalLineFormData = { account_id: '', debit: 0, credit: 0, notes: '' };
 
-interface Props {
+type JournalAddDrawerProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     accounts: Account[];
 }
 
-export function JournalAddDrawer({ open, onOpenChange, accounts }: Props) {
+export function JournalAddDrawer({ open, onOpenChange, accounts }: JournalAddDrawerProps) {
     const { data, setData, post, processing, errors, reset } = useForm<ManualJournalFormData>({
         date: '',
         description: '',
         lines: [{ ...EMPTY_LINE }, { ...EMPTY_LINE }],
     });
 
-    // nested dot-notation keys like "lines.0.account_id" — cast once here.
+    // nested dot-notation keys like "lines.0.account_id" - cast once here.
     const fieldErrors = errors as ManualJournalFormErrors;
 
     const addLine = () => setData('lines', [...data.lines, { ...EMPTY_LINE }]);

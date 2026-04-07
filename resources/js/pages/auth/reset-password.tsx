@@ -1,18 +1,20 @@
 import { Form, Head } from '@inertiajs/react';
+
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
+
 import AuthLayout from '@/layouts/auth-layout';
 import { update } from '@/routes/password';
 
-type Props = {
+type ResetPasswordProps = {
     token: string;
     email: string;
 };
 
-export default function ResetPassword({ token, email }: Props) {
+export default function ResetPassword({ token, email }: ResetPasswordProps) {
     return (
         <AuthLayout title="Reset Kata Sandi" description="Silakan masukkan kata sandi baru Anda">
             <Head title="Reset Kata Sandi" />
@@ -39,8 +41,14 @@ export default function ResetPassword({ token, email }: Props) {
                         </Field>
 
                         <Button type="submit" className="mt-4 w-full" disabled={processing} data-test="reset-password-button">
-                            {processing && <Spinner />}
-                            Reset Kata Sandi
+                            {processing ? (
+                                <>
+                                    <Spinner className="mr-2" />
+                                    Sedang Mereset...
+                                </>
+                            ) : (
+                                'Reset Kata Sandi'
+                            )}
                         </Button>
                     </div>
                 )}

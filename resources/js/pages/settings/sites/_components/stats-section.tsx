@@ -4,9 +4,9 @@ import { toast } from 'sonner';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 
-import siteSettings from '@/routes/site-settings';
 import type { SiteSetting } from '@/types/site-setting';
 import { SubmitButton } from '../../_components/shared';
+import siteSettings from '@/routes/site-settings';
 
 export function StatsSection({ settings }: { settings: SiteSetting }) {
     const { data, setData, patch, processing, errors } = useForm({
@@ -46,8 +46,8 @@ export function StatsSection({ settings }: { settings: SiteSetting }) {
         { key: 'stat_total_documents', label: 'Total Dokumen', placeholder: '3721', type: 'number' },
         { key: 'stat_total_reviews', label: 'Total Ulasan', placeholder: '232', type: 'number' },
         { key: 'stat_years_experience', label: 'Tahun Pengalaman', placeholder: '10', type: 'number' },
-        { key: 'stat_total_services', label: 'Total Layanan', placeholder: '25', type: 'number' },
-        { key: 'stat_rating', label: 'Rating (0–5)', placeholder: '4.5', type: 'number', step: '0.1', min: '0', max: '5' },
+        // { key: 'stat_total_services', label: 'Total Layanan', placeholder: '25', type: 'number' },
+        { key: 'stat_rating', label: 'Rating (0-5)', placeholder: '4.5', type: 'number', step: '0.1', min: '0', max: '5' },
     ] as const;
 
     return (

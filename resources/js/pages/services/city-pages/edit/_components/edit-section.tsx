@@ -15,6 +15,7 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
+
 import services from '@/routes/services';
 import { ROBOTS_OPTIONS, SCHEMA_LABELS, SITEMAP_PRIORITY_OPTIONS, type RobotsDirective, type SitemapPriority, type ServiceCityPage } from '@/types/services';
 import { FaqEditor } from '../../_components/faq-editor';
@@ -63,7 +64,7 @@ function CharCounter({ value, max, ideal }: { value: string; max: number; ideal:
 
     return (
         <p className={`text-xs ${color}`}>
-            {length}/{max} karakter — {hint}
+            {length}/{max} karakter - {hint}
         </p>
     );
 }
@@ -304,7 +305,7 @@ export function EditSection({ cityPage }: EditSectionProps) {
                                                 <Input
                                                     value={form.data.meta_title}
                                                     onChange={(event) => form.setData('meta_title', event.target.value)}
-                                                    placeholder={`${cityPage.service?.name} di ${cityPage.city?.name} — ${cityPage.service?.name}`}
+                                                    placeholder={`${cityPage.service?.name} di ${cityPage.city?.name} - ${cityPage.service?.name}`}
                                                     maxLength={80}
                                                 />
                                                 <CharCounter value={form.data.meta_title} max={70} ideal={55} />

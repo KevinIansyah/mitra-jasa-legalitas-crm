@@ -5,7 +5,7 @@ type TabItem = {
     label: string;
 };
 
-interface BlogTagProps {
+type BlogTagProps = {
     tabs: TabItem[];
 }
 

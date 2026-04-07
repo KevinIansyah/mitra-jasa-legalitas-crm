@@ -20,7 +20,7 @@ import services from '@/routes/services';
 import type { Service, ServiceCategory } from '@/types/services';
 import getColumns from './columns';
 
-interface DataTableProps {
+type DataTableProps = {
     data: Service[];
     categories: ServiceCategory[];
     pageIndex: number;

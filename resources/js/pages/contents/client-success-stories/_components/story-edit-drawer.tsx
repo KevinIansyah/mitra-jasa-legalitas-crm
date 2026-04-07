@@ -33,6 +33,7 @@ export function StoryEditDrawer({ story, open, onOpenChange }: StoryEditDrawerPr
     const [imageError, setImageError] = React.useState<string | null>(null);
     const [isDragging, setIsDragging] = React.useState(false);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
+    const loadingFocusRef = React.useRef<HTMLButtonElement>(null);
 
     const [filePreview, setFilePreview] = React.useState<{ src?: string; name: string; size: number; isImage: boolean } | null>(
         story.client_logo
@@ -132,7 +133,13 @@ export function StoryEditDrawer({ story, open, onOpenChange }: StoryEditDrawerPr
 
     return (
         <Drawer direction="bottom" open={open} onOpenChange={onOpenChange}>
-            <DrawerContent className="flex max-h-[95vh] flex-col">
+            <DrawerContent
+                className="flex max-h-[95vh] flex-col"
+                onOpenAutoFocus={(e) => {
+                    e.preventDefault();
+                    loadingFocusRef.current?.focus();
+                }}
+            >
                 <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 overflow-y-auto">
                     <DrawerHeader className="px-4">
                         <DrawerTitle>Edit Kisah Sukses</DrawerTitle>
@@ -306,29 +313,29 @@ export function StoryEditDrawer({ story, open, onOpenChange }: StoryEditDrawerPr
                             </Field>
 
                             <Field className="col-span-2 md:col-span-1">
-                                <FieldLabel>Stat 1 — nilai</FieldLabel>
+                                <FieldLabel>Stat 1 - nilai</FieldLabel>
                                 <Input value={data.stat_1_value ?? ''} onChange={(e) => setData('stat_1_value', e.target.value || null)} placeholder="Contoh: 14 hari" />
                             </Field>
                             <Field className="col-span-2 md:col-span-1">
-                                <FieldLabel>Stat 1 — label</FieldLabel>
+                                <FieldLabel>Stat 1 - label</FieldLabel>
                                 <Input value={data.stat_1_label ?? ''} onChange={(e) => setData('stat_1_label', e.target.value || null)} placeholder="Contoh: Waktu pengurusan" />
                             </Field>
 
                             <Field className="col-span-2 md:col-span-1">
-                                <FieldLabel>Stat 2 — nilai</FieldLabel>
+                                <FieldLabel>Stat 2 - nilai</FieldLabel>
                                 <Input value={data.stat_2_value ?? ''} onChange={(e) => setData('stat_2_value', e.target.value || null)} placeholder="Contoh: 100%" />
                             </Field>
                             <Field className="col-span-2 md:col-span-1">
-                                <FieldLabel>Stat 2 — label</FieldLabel>
+                                <FieldLabel>Stat 2 - label</FieldLabel>
                                 <Input value={data.stat_2_label ?? ''} onChange={(e) => setData('stat_2_label', e.target.value || null)} placeholder="Contoh: Izin lengkap" />
                             </Field>
 
                             <Field className="col-span-2 md:col-span-1">
-                                <FieldLabel>Stat 3 — nilai</FieldLabel>
+                                <FieldLabel>Stat 3 - nilai</FieldLabel>
                                 <Input value={data.stat_3_value ?? ''} onChange={(e) => setData('stat_3_value', e.target.value || null)} placeholder="Contoh: Rp 85jt" />
                             </Field>
                             <Field className="col-span-2 md:col-span-1">
-                                <FieldLabel>Stat 3 — label</FieldLabel>
+                                <FieldLabel>Stat 3 - label</FieldLabel>
                                 <Input value={data.stat_3_label ?? ''} onChange={(e) => setData('stat_3_label', e.target.value || null)} placeholder="Contoh: Omset bulan 1" />
                             </Field>
 
@@ -342,7 +349,7 @@ export function StoryEditDrawer({ story, open, onOpenChange }: StoryEditDrawerPr
                         </div>
 
                         <DrawerFooter className="mt-auto px-0">
-                            <Button type="submit" disabled={processing}>
+                            <Button ref={loadingFocusRef} type="submit" disabled={processing}>
                                 {processing ? (
                                     <>
                                         <Spinner className="mr-2" />

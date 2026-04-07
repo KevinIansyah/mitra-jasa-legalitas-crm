@@ -20,7 +20,7 @@ import { ProposalItemsEditor } from './proposal-item-editor';
 
 export type ProposalFormErrors = Partial<Record<string, string>>;
 
-type Props = {
+type ProposalFormProps = {
     data: ProposalFormData;
     errors: ProposalFormErrors;
     initialCustomer?: Customer | null;
@@ -28,7 +28,7 @@ type Props = {
     onChange: (val: Partial<ProposalFormData>) => void;
 };
 
-export function ProposalForm({ data, errors, initialCustomer, isEdit, onChange }: Props) {
+export function ProposalForm({ data, errors, initialCustomer, isEdit, onChange }: ProposalFormProps) {
     const R2_PUBLIC_URL = import.meta.env.VITE_CLOUDFLARE_R2_PUBLIC_URL;
     const [customerSearchQuery, setCustomerSearchQuery] = React.useState('');
     const [customerSearchResults, setCustomerSearchResults] = React.useState<Customer[]>([]);

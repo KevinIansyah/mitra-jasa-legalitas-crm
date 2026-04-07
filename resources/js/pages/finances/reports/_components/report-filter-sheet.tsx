@@ -9,7 +9,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 
 
 {/* ───────────────── Search & Filter Sheet (Period) ───────────────── */}
-interface PeriodFilterSheetProps {
+type PeriodFilterSheetProps = {
     from: string;
     to: string;
     routeUrl: string;
@@ -65,7 +65,7 @@ export function PeriodFilterSheet({ from, to, routeUrl }: PeriodFilterSheetProps
 }
 
 {/* ───────────────── Search & Filter Sheet (As Of) ───────────────── */}
-interface AsOfFilterSheetProps {
+type AsOfFilterSheetProps = {
     asOf: string;
     routeUrl: string;
 }

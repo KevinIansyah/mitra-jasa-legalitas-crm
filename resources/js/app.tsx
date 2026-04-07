@@ -4,8 +4,12 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../css/app.css';
 import { initializeTheme } from './hooks/use-appearance';
+import { initializeThemeSettings } from './hooks/use-theme-settings';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+
+initializeTheme();
+initializeThemeSettings();
 
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
@@ -27,6 +31,3 @@ createInertiaApp({
         color: '#4B5563',
     },
 });
-
-// This will set light / dark mode on load...
-initializeTheme();

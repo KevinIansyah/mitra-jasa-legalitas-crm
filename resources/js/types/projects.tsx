@@ -172,7 +172,9 @@ export interface ProjectMember {
 export type ProjectInvoiceItem = {
     id?: number;
     invoice_id?: number;
+    expense_id?: number | null;
     description: string;
+    item_details?: string[] | null;
     quantity: number;
     unit_price: number;
     tax_percent: number;
@@ -423,12 +425,16 @@ export interface ProjectInvoiceFormData {
     due_date: string;
     notes?: string | null;
     payment_instructions?: string | null;
+    /** DP / Progress / Final: satu baris tampilan (tersimpan sebagai satu project_invoice_item) */
+    contract_item_description?: string;
+    contract_item_details?: string[];
     items?: ProjectInvoiceItemFormData[];
 }
 
 export interface ProjectInvoiceItemFormData {
     expense_id?: number | null;
     description: string;
+    item_details?: string[];
     quantity: number;
     unit_price: number;
     tax_percent?: number;

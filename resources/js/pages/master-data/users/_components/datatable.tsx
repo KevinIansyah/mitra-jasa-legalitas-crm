@@ -18,7 +18,7 @@ import type { User } from '@/types/auth';
 import { USER_STATUS } from '@/types/auth';
 import getColumns from './columns';
 
-interface DataTableProps {
+type DataTableProps = {
     data: User[];
     pageIndex: number;
     setPageIndex: React.Dispatch<React.SetStateAction<number>>;

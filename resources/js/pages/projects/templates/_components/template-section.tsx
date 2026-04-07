@@ -1,12 +1,14 @@
 import { CheckCircle2, FileText, LayoutTemplate, Wrench } from 'lucide-react';
 import { useState } from 'react';
+
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+
 import type { Paginator } from '@/types/paginator';
 import type { ProjectTemplate, ProjectTemplateSummary } from '@/types/project-templates';
 import type { Service } from '@/types/services';
 import { DataTable } from './datatable';
 
-interface TemplateSectionProps {
+type TemplateSectionProps = {
     templates: Paginator<ProjectTemplate>;
     summary: ProjectTemplateSummary;
     services: Service[];

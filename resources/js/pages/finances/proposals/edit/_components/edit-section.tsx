@@ -1,6 +1,7 @@
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+
 import finances from '@/routes/finances';
 import type { Customer } from '@/types/contacts';
 import type { Proposal, ProposalFormData } from '@/types/proposals';

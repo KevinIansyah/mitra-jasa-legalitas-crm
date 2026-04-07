@@ -75,7 +75,7 @@ class QuoteController extends Controller
         }
 
         if (!in_array($quote->status, ['pending', 'rejected'])) {
-            return ApiResponse::error('Quote yang sedang diproses tidak dapat dihapus.', 422);
+            return ApiResponse::conflict('Quote yang sedang diproses tidak dapat dihapus.');
         }
 
         $quote->delete();

@@ -102,6 +102,31 @@ export interface CompanySummary {
     with_legal_status: number;
 }
 
+/** Agregasi keuangan semua project per perusahaan (selaras dengan ringkasan finance per project). */
+export interface CompanyFinanceSummary {
+    projects_count: number;
+    total_budget: number;
+    total_contract_invoiced: number;
+    total_contract_invoiced_with_tax: number;
+    total_contract_paid: number;
+    total_contract_paid_with_tax: number;
+    total_additional_invoiced: number;
+    total_additional_invoiced_with_tax: number;
+    total_additional_paid: number;
+    total_additional_paid_with_tax: number;
+    total_invoiced: number;
+    total_invoiced_with_tax: number;
+    total_paid: number;
+    total_paid_with_tax: number;
+    outstanding_amount: number;
+    remaining_bill: number;
+    total_expenses: number;
+    total_billable_expenses: number;
+    non_billable_expenses: number;
+    contract_profit: number;
+    actual_profit: number;
+}
+
 export interface CustomerSummary {
     total: number;
     with_account: number;

@@ -34,7 +34,7 @@ export default function getColumns(services: Service[]): ColumnDef<Testimonial>[
         {
             accessorKey: 'service',
             header: 'Layanan',
-            cell: ({ row }) => <span className="text-sm">{row.original.service?.name ?? '—'}</span>,
+            cell: ({ row }) => <span className="text-sm">{row.original.service?.name ?? '-'}</span>,
         },
         {
             accessorKey: 'rating',

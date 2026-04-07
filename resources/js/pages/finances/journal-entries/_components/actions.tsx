@@ -11,7 +11,7 @@ import type { Account } from '@/types/accounts';
 import type { JournalEntry } from '@/types/journal-entries';
 import { JournalEditDrawer } from './journal-edit-drawer';
 
-interface ActionsProps {
+type ActionsProps = {
     entry: JournalEntry;
     accounts?: Account[];
     isExpanded?: boolean;

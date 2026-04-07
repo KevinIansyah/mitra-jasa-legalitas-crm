@@ -93,7 +93,7 @@ export function VendorForm({ data, errors, onChange, isEdit }: VendorFormProps) 
                                 value={data.name}
                                 onChange={(e) => onChange({ name: e.target.value })}
                                 placeholder="Contoh: PT Mitra Solusi"
-                                className={errors.name ? 'border-destructive' : ''}
+                             
                             />
                             {errors.name && <FieldError>{errors.name}</FieldError>}
                         </Field>
@@ -136,7 +136,7 @@ export function VendorForm({ data, errors, onChange, isEdit }: VendorFormProps) 
                                 value={data.email}
                                 onChange={(e) => onChange({ email: e.target.value })}
                                 placeholder="vendor@email.com"
-                                className={errors.email ? 'border-destructive' : ''}
+                          
                             />
                             {errors.email && <FieldError>{errors.email}</FieldError>}
                         </Field>

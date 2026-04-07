@@ -20,7 +20,7 @@ import type { Customer } from '@/types/contacts';
 import getColumns from './columns';
 import { DrawerAdd } from './drawer-add';
 
-interface DataTableProps {
+type DataTableProps = {
     data: Customer[];
     pageIndex: number;
     setPageIndex: React.Dispatch<React.SetStateAction<number>>;

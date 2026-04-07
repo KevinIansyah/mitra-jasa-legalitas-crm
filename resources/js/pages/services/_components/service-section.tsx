@@ -1,11 +1,13 @@
 import { Globe, LayoutTemplate, Star, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
+
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+
 import type { Paginator } from '@/types/paginator';
 import type { Service, ServiceCategory, ServiceSummary } from '@/types/services';
 import { DataTable } from './datatable';
 
-interface ServiceSectionProps {
+type ServiceSectionProps = {
     services: Paginator<Service>;
     categories: ServiceCategory[];
     summary: ServiceSummary;

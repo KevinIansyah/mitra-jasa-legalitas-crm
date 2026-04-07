@@ -18,11 +18,9 @@ export const formatRupiahNoSymbol = (value: number) =>
         maximumFractionDigits: 0,
     }).format(value);
 
-/** Rupiah ringkas untuk dashboard: `Rp 22,5 jt`, `Rp 1 M`, `Rp 500 rb`. Di bawah 1 rb tetap format penuh. */
 export function formatRupiahCompact(value: number): string {
     const abs = Math.abs(value);
-    const id = (n: number, maxFrac: number) =>
-        new Intl.NumberFormat('id-ID', { maximumFractionDigits: maxFrac, minimumFractionDigits: 0 }).format(n);
+    const id = (n: number, maxFrac: number) => new Intl.NumberFormat('id-ID', { maximumFractionDigits: maxFrac, minimumFractionDigits: 0 }).format(n);
 
     if (abs >= 1_000_000_000) {
         const m = abs / 1_000_000_000;
@@ -53,7 +51,7 @@ export const formatSize = (bytes: number) => {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
 
-const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'image/x-icon', 'image/vnd.microsoft.icon'];
 const ALLOWED_FILE_TYPES = [
     ...ALLOWED_IMAGE_TYPES,
     'application/pdf',
@@ -65,7 +63,7 @@ const ALLOWED_FILE_TYPES = [
 
 export const validateImageFile = (file: File | undefined, maxFileSize: number = MAX_FILE_SIZE): string | null => {
     if (!file) return 'File tidak boleh kosong';
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) return 'File harus berupa gambar (JPG, PNG, WEBP, GIF)';
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) return 'File harus berupa gambar (JPG, PNG, WEBP, GIF, SVG)';
     if (file.size > maxFileSize) return `Ukuran file terlalu besar (${formatSize(file.size)}). Maksimal ${formatSize(maxFileSize)}.`;
     return null;
 };

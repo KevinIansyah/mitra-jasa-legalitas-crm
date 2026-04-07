@@ -1,5 +1,6 @@
 import { Building2, CheckCircle, Tags, XCircle } from 'lucide-react';
 import { useState } from 'react';
+
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Paginator } from '@/types/paginator';
 
@@ -7,7 +8,7 @@ import type { Vendor } from '@/types/vendors';
 import type { VendorSummary } from '../index';
 import { DataTable } from './datatable';
 
-interface VendorSectionProps {
+type VendorSectionProps = {
     vendors: Paginator<Vendor>;
     summary: VendorSummary;
     filters: { search?: string; category?: string; status?: string };

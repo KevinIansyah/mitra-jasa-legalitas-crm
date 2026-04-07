@@ -46,6 +46,8 @@ class AuthController extends Controller
             'role' => 'user',
         ]);
 
+        $user->assignRole('user');
+
         $this->otpService->send($user, 'email_verification');
 
         return ApiResponse::success(

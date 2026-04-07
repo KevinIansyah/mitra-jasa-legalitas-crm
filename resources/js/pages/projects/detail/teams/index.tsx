@@ -3,6 +3,7 @@ import { useState } from 'react';
 
 import { HasPermission } from '@/components/has-permission';
 import { Button } from '@/components/ui/button';
+
 import type { Project } from '@/types/projects';
 import { TeamAddDrawer } from './_components/team-add-drawer';
 import { TeamCard } from './_components/team-card';
@@ -31,7 +32,7 @@ export default function Teams({ project }: TeamsProps) {
                                         e.currentTarget.blur();
                                         setAddingTeam(true);
                                     }}
-                                    className="w-30 flex-1 gap-1.5 md:flex-none"
+                                    className="w-full flex-1 gap-1.5 md:w-30 md:flex-none"
                                 >
                                     <Plus className="size-4" />
                                     Tambah

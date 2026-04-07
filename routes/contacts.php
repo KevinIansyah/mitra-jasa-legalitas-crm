@@ -28,6 +28,7 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
             | GET    /contacts/customers                  -> List customers
             | GET    /contacts/customers/create           -> Show create form
             | POST   /contacts/customers                  -> Store customer
+            | GET    /contacts/customers/{customer}      -> Customer detail
             | GET    /contacts/customers/{customer}/edit  -> Show edit form
             | PUT    /contacts/customers/{customer}       -> Update customer
             | DELETE /contacts/customers/{customer}       -> Delete customer
@@ -53,6 +54,10 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
             Route::post('/', [CustomerController::class, 'store'])
                 ->middleware('permission:create-contact-customers')
                 ->name('store');
+
+            Route::get('/{customer}', [CustomerController::class, 'show'])
+                ->middleware('permission:view-contact-customers')
+                ->name('show');
 
             Route::get('/{customer}/edit', [CustomerController::class, 'edit'])
                 ->middleware('permission:edit-contact-customers')
@@ -89,6 +94,7 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
             | GET    /contacts/companies                 -> List companies
             | GET    /contacts/companies/create          -> Show create form
             | POST   /contacts/companies                 -> Store company
+            | GET    /contacts/companies/{company}        -> Company detail
             | GET    /contacts/companies/{company}/edit  -> Show edit form
             | PUT    /contacts/companies/{company}       -> Update company
             | DELETE /contacts/companies/{company}       -> Delete company
@@ -113,6 +119,10 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
             Route::post('/', [CompanyController::class, 'store'])
                 ->middleware('permission:create-contact-companies')
                 ->name('store');
+
+            Route::get('/{company}', [CompanyController::class, 'show'])
+                ->middleware('permission:view-contact-companies')
+                ->name('show');
 
             Route::get('/{company}/edit', [CompanyController::class, 'edit'])
                 ->middleware('permission:edit-contact-companies')

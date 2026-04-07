@@ -2,11 +2,12 @@ import { FileCheck, FileClock, FileX, Files } from 'lucide-react';
 import { useState } from 'react';
 
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+
 import type { Paginator } from '@/types/paginator';
 import type { Quote, QuoteSummary } from '@/types/quotes';
 import { DataTable } from './datatable';
 
-interface QuoteSectionProps {
+type QuoteSectionProps = {
     quotes: Paginator<Quote>;
     summary: QuoteSummary;
     filters: { search?: string; status?: string; timeline?: string; source?: string };

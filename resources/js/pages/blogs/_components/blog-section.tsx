@@ -1,11 +1,13 @@
 import { Globe, LayoutTemplate, Notebook, Star } from 'lucide-react';
 import { useState } from 'react';
+
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+
 import type { Blog, BlogCategory, BlogSummary } from '@/types/blogs';
 import type { Paginator } from '@/types/paginator';
 import { DataTable } from './datatable';
 
-interface BlogSectionProps {
+type BlogSectionProps = {
     blogs: Paginator<Blog>;
     categories: BlogCategory[];
     summary: BlogSummary;

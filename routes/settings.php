@@ -69,7 +69,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('throttle:6,1')
         ->name('user-password.update');
 
-    Route::get('settings/appearance', fn () => Inertia::render('settings/appearance'))
+    Route::get('settings/appearance', fn() => Inertia::render('settings/appearance'))
         ->name('appearance.edit');
 
     Route::get('settings/two-factor', [TwoFactorAuthenticationController::class, 'show'])
@@ -93,7 +93,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 | GET    /settings/site/document          -> Halaman kustomisasi dokumen
 | GET    /settings/site/analytics         -> Halaman analytics & tracking
 | GET    /settings/site/social            -> Halaman social media
-| GET    /settings/site/maintenance       -> Halaman maintenance
+| GET    /settings/site/maintenance       -> (dinonaktifkan sementara)
 | GET    /settings/site/chatbot           -> Halaman AI Chatbot
 |
 | PATCH  /settings/site/company           -> Update company identity
@@ -107,7 +107,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 | PATCH  /settings/site/document          -> Update document settings
 | PATCH  /settings/site/analytics         -> Update analytics & tracking
 | PATCH  /settings/site/social            -> Update social media
-| PATCH  /settings/site/maintenance       -> Update maintenance mode
+| PATCH  /settings/site/maintenance       -> (dinonaktifkan sementara)
 | PATCH  /settings/site/chatbot           -> Update AI Chatbot
 |--------------------------------------------------------------------------
 */
@@ -150,8 +150,8 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
             Route::get('/social', [SiteController::class, 'social'])
                 ->name('social');
 
-            Route::get('/maintenance', [SiteController::class, 'maintenance'])
-                ->name('maintenance');
+            // Route::get('/maintenance', [SiteController::class, 'maintenance'])
+            //     ->name('maintenance');
 
             Route::get('/chatbot', [SiteController::class, 'chatbot'])
                 ->name('chatbot');
@@ -191,8 +191,8 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
             Route::patch('/social', [SiteController::class, 'updateSocial'])
                 ->name('update.social');
 
-            Route::patch('/maintenance', [SiteController::class, 'updateMaintenance'])
-                ->name('update.maintenance');
+            // Route::patch('/maintenance', [SiteController::class, 'updateMaintenance'])
+            //     ->name('update.maintenance');
 
             Route::patch('/chatbot', [SiteController::class, 'updateChatbot'])
                 ->name('update.chatbot');

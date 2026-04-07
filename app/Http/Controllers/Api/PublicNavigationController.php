@@ -15,8 +15,6 @@ class PublicNavigationController extends Controller
 
     // ========================================================================
     // GET /navigation
-    // Data navigasi global: kategori layanan + layanan per kategori,
-    // layanan unggulan, WhatsApp CTA, dan social media.
     // ========================================================================
 
     public function index(): JsonResponse

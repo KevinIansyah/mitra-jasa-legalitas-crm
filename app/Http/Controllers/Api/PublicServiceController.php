@@ -113,7 +113,7 @@ class PublicServiceController extends Controller
             ->first();
 
         if (!$city) {
-            return ApiResponse::error('Kota tidak ditemukan', 404);
+            return ApiResponse::notFound('Kota tidak ditemukan.');
         }
 
         $categorySlugs = $request->input('category', []);
@@ -279,7 +279,7 @@ class PublicServiceController extends Controller
             ->first();
 
         if (!$service) {
-            return ApiResponse::error('Layanan tidak ditemukan', 404);
+            return ApiResponse::notFound('Layanan tidak ditemukan.');
         }
 
         $r2Url = rtrim(config('filesystems.disks.r2_public.url', ''), '/');

@@ -32,7 +32,7 @@ export function JournalEntryDetail({ entry }: { entry: JournalEntry }) {
 
                     <div className="text-blue-600 tabular-nums">{Number(line.debit) > 0 ? formatRupiah(Number(line.debit)) : <span>-</span>}</div>
                     <div className="text-emerald-500 tabular-nums">{Number(line.credit) > 0 ? formatRupiah(Number(line.credit)) : <span>-</span>}</div>
-                    <div>{line.notes || '—'}</div>
+                    <div>{line.notes || '-'}</div>
                 </div>
             ))}
 

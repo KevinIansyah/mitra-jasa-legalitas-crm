@@ -85,7 +85,7 @@ class PublicBlogController extends Controller
             ->first();
 
         if (!$blog) {
-            return ApiResponse::error('Artikel tidak ditemukan', 404);
+            return ApiResponse::notFound('Artikel tidak ditemukan.');
         }
 
         $blog->increment('views');

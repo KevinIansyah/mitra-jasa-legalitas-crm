@@ -1,12 +1,14 @@
 import { CircleCheck, CircleDot, CircleX, FileText } from 'lucide-react';
 import { useState } from 'react';
+
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+
 import { formatRupiah } from '@/lib/service';
 import type { Paginator } from '@/types/paginator';
 import type { Proposal, ProposalSummaryData } from '@/types/proposals';
 import { DataTable } from './datatable';
 
-interface ProposalSectionProps {
+type ProposalSectionProps = {
     proposals: Paginator<Proposal>;
     summary: ProposalSummaryData;
     filters: { search?: string; status?: string };

@@ -16,8 +16,8 @@ class UpdateCompanyRequest extends FormRequest
         return [
             'company_name'          => 'nullable|string|max:255',
             'company_tagline'       => 'nullable|string|max:255',
-            'company_logo'          => 'nullable|image|mimes:jpg,jpeg,png,webp,svg|max:2048',
-            'company_favicon'       => 'nullable|image|mimes:jpg,jpeg,png,webp,ico|max:512',
+            'company_logo'          => 'nullable|file|mimes:jpg,jpeg,png,webp,svg+xml|max:2048',
+            'company_favicon'       => 'nullable|file|mimes:jpg,jpeg,png,webp,ico,svg+xml,vnd.microsoft.icon|max:512',
             'remove_logo'           => 'boolean',
             'remove_favicon'        => 'boolean',
             'company_address'       => 'nullable|string',
@@ -40,8 +40,9 @@ class UpdateCompanyRequest extends FormRequest
             'company_email.email'         => 'Format email tidak valid.',
             'company_email_support.email' => 'Format email support tidak valid.',
             'company_website.url'         => 'Format website tidak valid.',
-            'company_logo.image'          => 'File logo harus berupa gambar.',
+            'company_logo.image'          => 'File logo harus berupa gambar (JPG, PNG, WEBP, SVG).',
             'company_logo.max'            => 'Ukuran logo maksimal 2MB.',
+            'company_favicon.image'       => 'File favicon harus berupa gambar (JPG, PNG, WEBP, ICO).',
             'company_favicon.max'         => 'Ukuran favicon maksimal 512KB.',
         ];
     }

@@ -874,7 +874,7 @@ export function CreateSection({ services, quote }: CreateSectionProps) {
                                                 ) : (
                                                     packages.map((pkg) => (
                                                         <SelectItem key={pkg.id} value={String(pkg.id)}>
-                                                            {pkg.name} — {formatRupiah(Number(pkg.price))}
+                                                            {pkg.name} - {formatRupiah(Number(pkg.price))}
                                                         </SelectItem>
                                                     ))
                                                 )}

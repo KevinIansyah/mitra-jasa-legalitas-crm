@@ -3,7 +3,7 @@ import type { AppNotification } from '@/types/notification';
 import type { Paginator } from '@/types/paginator';
 import { DataTable } from './datatable';
 
-interface NotificationSectionProps {
+type NotificationSectionProps = {
     notifications: Paginator<AppNotification>;
 }
 

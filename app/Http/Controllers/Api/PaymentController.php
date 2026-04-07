@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\ApiResponse;
 use App\Helpers\FileHelper;
 use App\Http\Controllers\Controller;
 use App\Models\ProjectInvoice;
@@ -22,12 +23,25 @@ class PaymentController extends Controller
             'payment_method'   => 'required|string',
             'reference_number' => 'nullable|string|max:255',
             'notes'            => 'nullable|string|max:1000',
-            'proof_file'       => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'proof_file'       => 'nullable|file|mimes:jpg,jpeg,png,webp,svg+xml,pdf|max:5120',
+        ],[
+            'amount.required' => 'Jumlah pembayaran wajib diisi.',
+            'amount.numeric' => 'Jumlah pembayaran harus berupa angka.',
+            'amount.min' => 'Jumlah pembayaran tidak boleh kurang dari 1.',
+            'payment_date.required' => 'Tanggal pembayaran wajib diisi.',
+            'payment_date.date' => 'Tanggal pembayaran tidak valid.',
+            'payment_method.required' => 'Metode pembayaran wajib diisi.',
+            'payment_method.string' => 'Metode pembayaran harus berupa teks.',
+            'reference_number.max' => 'Nomor referensi maksimal 255 karakter.',
+            'notes.max' => 'Catatan maksimal 1000 karakter.',
+            'proof_file.file' => 'Bukti pembayaran harus berupa file.',
+            'proof_file.mimes' => 'Bukti pembayaran harus berupa gambar (JPG, PNG, WEBP, SVG) atau berkas (PDF).',
+            'proof_file.max' => 'Ukuran file maksimal 5MB.',
         ]);
 
         $customer = $invoice->customer ?? $invoice->project?->customer;
         if ($customer?->user_id !== Auth::id()) {
-            return response()->json(['message' => 'Unauthorized.'], 403);
+            return ApiResponse::forbidden();
         }
 
         if ($request->hasFile('proof_file')) {
@@ -43,39 +57,36 @@ class PaymentController extends Controller
 
         $this->notifyStaff($payment);
 
-        return response()->json([
-            'message' => 'Pembayaran berhasil ditambahkan, menunggu verifikasi.',
-            'data'    => $payment,
-        ], 201);
+        return ApiResponse::success($payment, 'Pembayaran berhasil ditambahkan, menunggu verifikasi.', 201);
     }
 
     public function index(Request $request, ProjectInvoice $invoice)
     {
         $customer = $invoice->customer ?? $invoice->project?->customer;
         if ($customer?->user_id !== Auth::id()) {
-            return response()->json(['message' => 'Unauthorized.'], 403);
+            return ApiResponse::forbidden();
         }
 
         $payments = $invoice->payments()
             ->latest()
             ->get();
 
-        return response()->json(['data' => $payments]);
+        return ApiResponse::success($payments);
     }
 
     public function destroy(ProjectInvoice $invoice, ProjectPayment $payment)
     {
         $customer = $invoice->customer ?? $invoice->project?->customer;
         if ($customer?->user_id !== Auth::id()) {
-            return response()->json(['message' => 'Unauthorized.'], 403);
+            return ApiResponse::forbidden();
         }
 
         if ($payment->invoice_id !== $invoice->id) {
-            return response()->json(['message' => 'Pembayaran tidak ditemukan.'], 404);
+            return ApiResponse::notFound('Pembayaran tidak ditemukan.');
         }
 
         if ($payment->isVerified()) {
-            return response()->json(['message' => 'Pembayaran yang sudah diverifikasi tidak dapat dihapus.'], 422);
+                return ApiResponse::conflict('Pembayaran yang sudah diverifikasi tidak dapat dihapus.');
         }
 
         if ($payment->proof_file) {
@@ -84,7 +95,7 @@ class PaymentController extends Controller
 
         $payment->delete();
 
-        return response()->json(['message' => 'Pembayaran berhasil dihapus.']);
+        return ApiResponse::success(null, 'Pembayaran berhasil dihapus.');
     }
 
     private function notifyStaff(ProjectPayment $payment): void

@@ -1,5 +1,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
+
 import { Badge } from '@/components/ui/badge';
+
 import { formatRupiahNoSymbol } from '@/lib/service';
 import type { Blog } from '@/types/blogs';
 import Actions from './actions';

@@ -1,13 +1,11 @@
 import { useForm } from '@inertiajs/react';
 import { toast } from 'sonner';
-
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-
-import siteSettings from '@/routes/site-settings';
 import type { SiteSetting } from '@/types/site-setting';
 import { ImageUpload, SubmitButton } from '../../_components/shared';
+import siteSettings from '@/routes/site-settings';
 
 export function MetaSection({ settings }: { settings: SiteSetting }) {
     const { data, setData, post, processing, errors } = useForm({
@@ -75,7 +73,7 @@ export function MetaSection({ settings }: { settings: SiteSetting }) {
                     maxLength={170}
                 />
                 <p className={`text-xs ${descColor}`}>
-                    {descLength}/160 karakter — {descHint}
+                    {descLength}/160 karakter - {descHint}
                 </p>
                 {errors.default_meta_description && <FieldError>{errors.default_meta_description}</FieldError>}
             </Field>
@@ -94,7 +92,7 @@ export function MetaSection({ settings }: { settings: SiteSetting }) {
                 label="Default OG Image"
                 name="default_og_image"
                 currentUrl={settings.default_og_image}
-                hint="Rekomendasi: 1200×630px — ditampilkan saat halaman dibagikan di media sosial"
+                hint="Rekomendasi: 1200×630px - ditampilkan saat halaman dibagikan di media sosial"
                 onChange={(file) => setData('default_og_image', file)}
                 onRemove={() => setData('remove_og_image', true)}
             />

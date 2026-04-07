@@ -48,6 +48,41 @@
       page-break-inside: avoid;
       break-inside: avoid;
     }
+
+    :root {
+      --invoice-line-strong: #18181b;
+      --invoice-line-muted: #d4d4d8;
+    }
+
+    .invoice-line-b-header {
+      border-bottom: 1px solid rgba(24, 24, 27, 0.3);
+    }
+
+    .invoice-line-t-strong {
+      border-top: 1px solid var(--invoice-line-strong);
+    }
+
+    .invoice-line-t-muted {
+      border-top: 1px solid var(--invoice-line-muted);
+    }
+
+    table.invoice-items {
+      width: 100%;
+      border-collapse: collapse;
+      border-spacing: 0;
+    }
+
+    table.invoice-items thead th {
+      border-bottom: 1px solid var(--invoice-line-strong);
+    }
+
+    table.invoice-items tbody td {
+      border-bottom: 1px solid var(--invoice-line-muted);
+    }
+
+    table.invoice-items tfoot td {
+      border-top: 1px solid var(--invoice-line-strong);
+    }
   </style>
 </head>
 
@@ -61,17 +96,17 @@
     <div>
 
       {{-- Header --}}
-      <div class="flex items-start justify-between border-b border-zinc-900/30 pb-10">
+      <div class="invoice-line-b-header flex items-start justify-between pb-10">
         <div class="flex items-start gap-4">
           @if ($settings->company_logo)
             <img src="{{ \App\Helpers\FileHelper::getR2Url($settings->company_logo) }}"
               alt="{{ $settings->company_name }}" class="h-16 w-auto object-contain">
           @endif
           <div>
-            <h2 class="text-xl font-semibold text-zinc-900">{{ $settings->company_name ?? '-' }}</h2>
-            @if ($settings->company_tagline)
+            <h2 class="text-xl font-semibold text-zinc-900">{{ $settings->company_name ?? 'CV. Mitra Jasa Legalitas' }}</h2>
+            {{-- @if ($settings->company_tagline)
               <p class="mt-1 text-sm text-zinc-600">{{ $settings->company_tagline }}</p>
-            @endif
+            @endif --}}
             <div class="mt-1 space-y-0.5 text-xs text-zinc-600">
               @if ($settings->company_address)
                 <p>{{ $settings->company_address }}</p>
@@ -92,7 +127,7 @@
         </div>
         <div class="text-right">
           <h2 class="text-2xl font-semibold tracking-tight text-zinc-900">KWITANSI</h2>
-          <p class="text-lg font-semibold text-zinc-600">{{ $payment->receipt_number }}</p>
+          <p class="text-lg font-semibold text-zinc-600 whitespace-nowrap">{{ $payment->receipt_number }}</p>
         </div>
       </div>
 
@@ -176,7 +211,7 @@
             $totalPaid = $allVerified->sum('amount');
           @endphp
           @if ($allVerified->count() > 1)
-            <div class="mt-4 border-t border-zinc-100 pt-4 space-y-1 text-sm">
+            <div class="invoice-line-t-muted mt-4 space-y-1 pt-4 text-sm">
               <div class="flex justify-between">
                 <span class="text-zinc-600">Total Invoice</span>
                 <span class="text-zinc-900">Rp {{ number_format($invoice->total_amount, 0, ',', '.') }}</span>
@@ -240,7 +275,7 @@
                 class="mx-auto h-16 w-32 object-contain">
             @endif
           </div>
-          <div class="mt-2 border-t border-zinc-500 pt-1 text-xs">
+          <div class="invoice-line-t-strong mt-2 pt-1 text-xs">
             <p class="font-semibold text-zinc-900">{{ $settings->signer_name ?? $settings->company_name }}</p>
             @if ($settings->signer_position)
               <p class="text-zinc-600">{{ $settings->signer_position }}</p>

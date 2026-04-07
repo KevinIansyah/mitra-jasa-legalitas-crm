@@ -1,3 +1,4 @@
+import { Link } from '@inertiajs/react';
 import { Eye, Pencil, UserRoundCheck, UserRoundMinus } from 'lucide-react';
 import { useState } from 'react';
 
@@ -37,8 +38,10 @@ export default function Actions({ customer }: ActionsProps) {
                 <HasPermission permission="view-contact-customers">
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="secondary" size="sm" className="h-8 w-8">
-                                <Eye className="size-4" />
+                            <Button variant="secondary" size="sm" className="h-8 w-8" asChild>
+                                <Link href={customers.show(customer.id).url}>
+                                    <Eye className="size-4" />
+                                </Link>
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>Lihat Detail Pelanggan</TooltipContent>

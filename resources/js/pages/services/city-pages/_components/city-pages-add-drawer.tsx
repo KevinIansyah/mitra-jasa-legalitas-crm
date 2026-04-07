@@ -37,6 +37,7 @@ export function CityPageAddDrawer({ cities }: CityPageAddDrawerProps) {
     // ============================================================
     // FETCH SERVICES
     // ============================================================
+    
     const handleCityChange = async (cityId: string) => {
         setData('city_id', Number(cityId));
         setData('service_id', null);
@@ -80,23 +81,23 @@ export function CityPageAddDrawer({ cities }: CityPageAddDrawerProps) {
     };
 
     return (
-        <Drawer direction="right">
+        <Drawer direction="bottom">
             <DrawerTrigger asChild>
                 <Button className="flex-1 gap-1.5 md:w-30">
                     <Plus />
                     Tambah
                 </Button>
             </DrawerTrigger>
-            <DrawerContent className="fixed right-0 bottom-0 mt-0 flex h-screen w-full flex-col rounded-none sm:max-w-md">
-                <div className="flex flex-1 flex-col overflow-hidden">
-                    <DrawerHeader>
+            <DrawerContent className="flex h-screen flex-col">
+                <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 overflow-y-auto">
+                    <DrawerHeader className="px-4">
                         <DrawerTitle>Tambah Halaman Kota</DrawerTitle>
                         <DrawerDescription>Pilih kota terlebih dahulu, lalu pilih layanan yang tersedia.</DrawerDescription>
                     </DrawerHeader>
 
-                    <form onSubmit={handleSubmit} className="flex flex-1 flex-col overflow-hidden">
-                        <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
-                            {/* City — pilih duluan */}
+                    <form onSubmit={handleSubmit} className="flex flex-1 flex-col px-4">
+                        <div className="flex-1 space-y-4">
+                            {/* City */}
                             <Field>
                                 <FieldLabel>
                                     Kota <span className="text-destructive">*</span>
@@ -111,7 +112,7 @@ export function CityPageAddDrawer({ cities }: CityPageAddDrawerProps) {
                                             {cities.map((city) => (
                                                 <SelectItem key={city.id} value={String(city.id)}>
                                                     {city.name}
-                                                    {city.province && <span className="ml-1 text-muted-foreground">— {city.province}</span>}
+                                                    {city.province && <span className="ml-1 text-muted-foreground">- {city.province}</span>}
                                                 </SelectItem>
                                             ))}
                                         </SelectGroup>
@@ -120,7 +121,7 @@ export function CityPageAddDrawer({ cities }: CityPageAddDrawerProps) {
                                 {errors.city_id && <FieldError>{errors.city_id}</FieldError>}
                             </Field>
 
-                            {/* Service — muncul setelah city dipilih */}
+                            {/* Service */}
                             <Field>
                                 <FieldLabel>
                                     Layanan <span className="text-destructive">*</span>
@@ -166,7 +167,7 @@ export function CityPageAddDrawer({ cities }: CityPageAddDrawerProps) {
                             </Alert>
                         </div>
 
-                        <DrawerFooter>
+                        <DrawerFooter className="mt-auto px-0">
                             <Button type="submit" disabled={processing || !data.service_id || !data.city_id || availableServices.length === 0}>
                                 {processing ? (
                                     <>

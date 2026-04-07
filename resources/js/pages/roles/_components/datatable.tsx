@@ -2,6 +2,7 @@ import type { VisibilityState } from '@tanstack/react-table';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { ChevronDown, ChevronLeftIcon, ChevronRightIcon, ChevronsLeftIcon, ChevronsRightIcon, Search } from 'lucide-react';
 import * as React from 'react';
+
 import { HasPermission } from '@/components/has-permission';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -9,13 +10,14 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/in
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
 import roles from '@/routes/roles';
 import type { Role } from '@/types/roles';
 import getColumns from './columns';
 import { DrawerAdd } from './drawer-add';
 
-interface DataTableProps {
+type DataTableProps = {
     data: Role[];
     pageIndex: number;
     setPageIndex: React.Dispatch<React.SetStateAction<number>>;

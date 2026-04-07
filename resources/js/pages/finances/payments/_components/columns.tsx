@@ -1,5 +1,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
+
 import { Badge } from '@/components/ui/badge';
+
 import { formatRupiah } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
 import { INVOICE_TYPES_MAP, type ProjectPayment } from '@/types/projects';

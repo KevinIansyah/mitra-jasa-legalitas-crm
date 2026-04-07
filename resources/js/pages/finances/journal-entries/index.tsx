@@ -1,6 +1,8 @@
 import { Head, usePage } from '@inertiajs/react';
+
 import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
+
 import type { BreadcrumbItem } from '@/types';
 import type { Account } from '@/types/accounts';
 import type { JournalEntry, JournalSummary } from '@/types/journal-entries';

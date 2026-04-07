@@ -16,7 +16,6 @@ use App\Services\Pdf\InvoicePdfService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class ProjectInvoiceController extends Controller
@@ -26,10 +25,10 @@ class ProjectInvoiceController extends Controller
         $perPage = $request->get('per_page', 20);
         $perPage = in_array($perPage, [20, 30, 40, 50]) ? $perPage : 20;
 
-        $search  = $request->get('search');
-        $status  = $request->get('status');
-        $type    = $request->get('type');
-        $source  = $request->get('source');
+        $search = $request->get('search');
+        $status = $request->get('status');
+        $type = $request->get('type');
+        $source = $request->get('source');
 
         $invoices = ProjectInvoice::with([
             'project:id,name,status,customer_id',
@@ -46,8 +45,8 @@ class ProjectInvoiceController extends Controller
                 });
             })
             ->when($status, fn($q, $status) => $q->where('status', $status))
-            ->when($type,   fn($q, $type)   => $q->where('type', $type))
-            ->when($source === 'project',  fn($q) => $q->whereNotNull('project_id'))
+            ->when($type, fn($q, $type) => $q->where('type', $type))
+            ->when($source === 'project', fn($q) => $q->whereNotNull('project_id'))
             ->when($source === 'customer', fn($q) => $q->whereNull('project_id')->whereNotNull('customer_id'))
             ->latest()
             ->paginate($perPage);
@@ -67,13 +66,13 @@ class ProjectInvoiceController extends Controller
 
         return Inertia::render('finances/invoices/index', [
             'invoices' => $invoices,
-            'summary'  => $summary,
-            'filters'  => [
-                'search'   => $search,
+            'summary' => $summary,
+            'filters' => [
+                'search' => $search,
                 'per_page' => $perPage,
-                'status'   => $status,
-                'type'     => $type,
-                'source'   => $source,
+                'status' => $status,
+                'type' => $type,
+                'source' => $source,
             ],
         ]);
     }
@@ -100,50 +99,50 @@ class ProjectInvoiceController extends Controller
 
         return Inertia::render('finances/invoices/create/index', [
             'selectedProject' => $selectedProject,
-            'fromProject'     => $fromProject,
+            'fromProject' => $fromProject,
         ]);
     }
 
     public function store(StoreRequest $request)
     {
-        $validated    = $request->validated();
-        $fromProject  = $request->boolean('from_project');
+        $validated = $request->validated();
+        $fromProject = $request->boolean('from_project');
 
         if ($fromProject) {
             $project = Project::find($validated['project_id']);
-            if (!$project) {
+            if (! $project) {
                 return back()->withErrors(['error' => 'Project tidak ditemukan.']);
             }
         }
 
         $invoice = DB::transaction(function () use ($validated, $fromProject) {
             $invoice = ProjectInvoice::create([
-                'invoice_number'       => ProjectInvoice::generateInvoiceNumber(),
-                'project_id'           => $validated['project_id'] ?? null,
-                'customer_id'          => $fromProject ? null : ($validated['customer_id'] ?? null),
-                'type'                 => $validated['type'],
-                'invoice_date'         => $validated['invoice_date'],
-                'due_date'             => $validated['due_date'],
-                'notes'                => $validated['notes'] ?? null,
+                'invoice_number' => ProjectInvoice::generateInvoiceNumber(),
+                'project_id' => $validated['project_id'] ?? null,
+                'customer_id' => $fromProject ? null : ($validated['customer_id'] ?? null),
+                'type' => $validated['type'],
+                'invoice_date' => $validated['invoice_date'],
+                'due_date' => $validated['due_date'],
+                'notes' => $validated['notes'] ?? null,
                 'payment_instructions' => $validated['payment_instructions'] ?? null,
-                'percentage'           => $validated['percentage'] ?? null,
-                'subtotal'             => $validated['type'] !== 'additional' ? $validated['subtotal'] : 0,
-                'tax_percent'          => $validated['tax_percent'] ?? 0,
-                'discount_percent'     => $validated['discount_percent'] ?? 0,
-                'tax_amount'           => 0,
-                'discount_amount'      => 0,
-                'total_amount'         => 0,
-                'status'               => 'draft',
+                'percentage' => $validated['percentage'] ?? null,
+                'subtotal' => $validated['type'] !== 'additional' ? $validated['subtotal'] : 0,
+                'tax_percent' => $validated['tax_percent'] ?? 0,
+                'discount_percent' => $validated['discount_percent'] ?? 0,
+                'tax_amount' => 0,
+                'discount_amount' => 0,
+                'total_amount' => 0,
+                'status' => 'draft',
             ]);
 
             $this->syncItems($invoice, $validated);
             $invoice->calculateTotals();
 
-            if ($invoice->type === 'additional' && !empty($validated['items'])) {
+            if ($invoice->type === 'additional' && ! empty($validated['items'])) {
                 $expenseIds = collect($validated['items'])
                     ->pluck('expense_id')->filter()->values()->toArray();
 
-                if (!empty($expenseIds)) {
+                if (! empty($expenseIds)) {
                     Expense::where('project_id', $invoice->project_id)
                         ->where('is_billable', true)
                         ->whereNull('invoice_id')
@@ -161,7 +160,7 @@ class ProjectInvoiceController extends Controller
         } catch (\Exception $e) {
             Log::error('Invoice PDF generation failed', [
                 'invoice_id' => $invoice->id,
-                'error'      => $e->getMessage(),
+                'error' => $e->getMessage(),
             ]);
 
             return back()->withErrors(['error' => 'Gagal membuat invoice.']);
@@ -187,36 +186,38 @@ class ProjectInvoiceController extends Controller
     {
         $invoice->load(['project.customer', 'customer', 'items']);
 
-        $fromProject = $request->filled('project_id');
+        $fromProject = $request->filled('project_id') || $invoice->project_id !== null;
 
         return Inertia::render('finances/invoices/edit/index', [
-            'invoice'         => $invoice,
+            'invoice' => $invoice,
             'selectedProject' => $invoice->project,
             'selectedCustomer' => $invoice->customer,
-            'fromProject'     => $fromProject,
-            'isEdit'          => true,
+            'fromProject' => $fromProject,
+            'isEdit' => true,
         ]);
     }
 
     public function update(UpdateRequest $request, ProjectInvoice $invoice)
     {
-        if ($error = $this->validateNotPaid($invoice)) return $error;
+        if ($error = $this->validateNotPaid($invoice)) {
+            return $error;
+        }
 
         $validated = $request->validated();
 
         DB::transaction(function () use ($invoice, $validated) {
             $invoice->update([
-                'invoice_number'       => $validated['invoice_number'] ?? $invoice->invoice_number,
-                'type'                 => $validated['type'],
-                'invoice_date'         => $validated['invoice_date'],
-                'due_date'             => $validated['due_date'],
-                'notes'                => $validated['notes'] ?? null,
+                'invoice_number' => $validated['invoice_number'] ?? $invoice->invoice_number,
+                'type' => $validated['type'],
+                'invoice_date' => $validated['invoice_date'],
+                'due_date' => $validated['due_date'],
+                'notes' => $validated['notes'] ?? null,
                 'payment_instructions' => $validated['payment_instructions'] ?? null,
-                'percentage'           => $validated['percentage'] ?? null,
-                'subtotal'             => $validated['type'] !== 'additional' ? $validated['subtotal'] : 0,
-                'tax_percent'          => $validated['tax_percent'] ?? 0,
-                'discount_percent'     => $validated['discount_percent'] ?? 0,
-                'status'               => $validated['status'] ?? $invoice->status,
+                'percentage' => $validated['percentage'] ?? null,
+                'subtotal' => $validated['type'] !== 'additional' ? $validated['subtotal'] : 0,
+                'tax_percent' => $validated['tax_percent'] ?? 0,
+                'discount_percent' => $validated['discount_percent'] ?? 0,
+                'status' => $validated['status'] ?? $invoice->status,
             ]);
 
             $this->syncItems($invoice, $validated);
@@ -228,7 +229,7 @@ class ProjectInvoiceController extends Controller
                 $expenseIds = collect($validated['items'] ?? [])
                     ->pluck('expense_id')->filter()->values()->toArray();
 
-                if (!empty($expenseIds)) {
+                if (! empty($expenseIds)) {
                     Expense::where('project_id', $invoice->project_id)
                         ->where('is_billable', true)
                         ->whereNull('invoice_id')
@@ -246,7 +247,7 @@ class ProjectInvoiceController extends Controller
         } catch (\Exception $e) {
             Log::error('Invoice PDF regeneration failed', [
                 'invoice_id' => $invoice->id,
-                'error'      => $e->getMessage(),
+                'error' => $e->getMessage(),
             ]);
 
             return back()->withErrors(['error' => 'Gagal memperbarui invoice.']);
@@ -279,13 +280,13 @@ class ProjectInvoiceController extends Controller
         $data = [
             'status' => $status,
             'paid_at' => match ($status) {
-                'paid'  => now()->toDateString(),
+                'paid' => now()->toDateString(),
                 'overdue' => null,
                 'cancelled' => null,
                 'draft' => null,
                 'sent' => null,
                 default => $invoice->paid_at,
-            }
+            },
         ];
 
         $invoice->update($data);
@@ -295,11 +296,13 @@ class ProjectInvoiceController extends Controller
 
     public function destroy(ProjectInvoice $invoice)
     {
-        if ($error = $this->validateNotPaid($invoice)) return $error;
+        if ($error = $this->validateNotPaid($invoice)) {
+            return $error;
+        }
 
         if ($invoice->payments()->exists()) {
             return back()->withErrors([
-                'error' => 'Invoice tidak dapat dihapus karena sudah memiliki pembayaran.'
+                'error' => 'Invoice tidak dapat dihapus karena sudah memiliki pembayaran.',
             ]);
         }
 
@@ -322,7 +325,7 @@ class ProjectInvoiceController extends Controller
         } catch (\Exception $e) {
             Log::error('Invoice PDF manual regeneration failed', [
                 'invoice_id' => $invoice->id,
-                'error'      => $e->getMessage(),
+                'error' => $e->getMessage(),
             ]);
 
             return back()->withErrors(['error' => 'Gagal generate PDF: ' . $e->getMessage()]);
@@ -341,37 +344,82 @@ class ProjectInvoiceController extends Controller
 
     private function syncItems(ProjectInvoice $invoice, array $validated): void
     {
-        if ($invoice->type !== 'additional') {
-            $invoice->items()->delete();
+        $invoice->items()->delete();
+
+        if ($invoice->type === 'additional') {
+            foreach ($validated['items'] ?? [] as $i => $itemData) {
+                $item = new ProjectInvoiceItem([
+                    'invoice_id' => $invoice->id,
+                    'expense_id' => $itemData['expense_id'] ?? null,
+                    'description' => $itemData['description'],
+                    'item_details' => $this->normalizeItemDetails($itemData['item_details'] ?? null),
+                    'quantity' => $itemData['quantity'],
+                    'unit_price' => $itemData['unit_price'],
+                    'tax_percent' => $itemData['tax_percent'] ?? 0,
+                    'discount_percent' => $itemData['discount_percent'] ?? 0,
+                    'sort_order' => $i,
+                ]);
+                $item->calculateTotals();
+                $item->save();
+            }
+
             return;
         }
 
-        $invoice->items()->delete();
-
-        foreach ($validated['items'] ?? [] as $i => $itemData) {
-            $item = new ProjectInvoiceItem([
-                'invoice_id'       => $invoice->id,
-                'expense_id'       => $itemData['expense_id'] ?? null,
-                'description'      => $itemData['description'],
-                'quantity'         => $itemData['quantity'],
-                'unit_price'       => $itemData['unit_price'],
-                'tax_percent'      => $itemData['tax_percent'] ?? 0,
-                'discount_percent' => $itemData['discount_percent'] ?? 0,
-                'sort_order'       => $i,
-            ]);
-            $item->calculateTotals();
-            $item->save();
+        if (! in_array($invoice->type, ['dp', 'progress', 'final'], true)) {
+            return;
         }
+
+        $desc = isset($validated['contract_item_description']) ? trim((string) $validated['contract_item_description']) : '';
+        $details = $this->normalizeItemDetails($validated['contract_item_details'] ?? null);
+
+        if ($desc === '' && $details === null) {
+            return;
+        }
+
+        $subtotal = (float) ($validated['subtotal'] ?? 0);
+
+        $item = new ProjectInvoiceItem([
+            'invoice_id' => $invoice->id,
+            'expense_id' => null,
+            'description' => $desc !== '' ? $desc : '—',
+            'item_details' => $details,
+            'quantity' => 1,
+            'unit_price' => $subtotal,
+            'tax_percent' => 0,
+            'discount_percent' => 0,
+            'sort_order' => 0,
+        ]);
+        $item->calculateTotals();
+        $item->save();
     }
 
     private function validateNotPaid(ProjectInvoice $invoice)
     {
         if ($invoice->isPaid()) {
             return back()->withErrors([
-                'error' => 'Invoice yang sudah dibayar tidak dapat diubah.'
+                'error' => 'Invoice yang sudah dibayar tidak dapat diubah.',
             ]);
         }
 
         return null;
+    }
+
+    private function normalizeItemDetails($raw): ?array
+    {
+        if ($raw === null || $raw === []) {
+            return null;
+        }
+
+        if (! is_array($raw)) {
+            return null;
+        }
+
+        $clean = array_values(array_filter(array_map(
+            fn($line) => is_string($line) ? trim($line) : '',
+            $raw
+        )));
+
+        return $clean === [] ? null : $clean;
     }
 }

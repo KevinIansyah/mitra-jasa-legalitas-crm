@@ -1,12 +1,12 @@
 <?php
 
 return function (array $ctx): string {
-  $name        = $ctx['name'];
-  $category    = $ctx['category'] ?? '';
-  $description = $ctx['short_description'] ?? '';
-  $company     = $ctx['company_name'] ?? 'CV. Mitra Jasa Legalitas';
+    $name = $ctx['name'];
+    $category = $ctx['category'] ?? '';
+    $description = $ctx['short_description'] ?? '';
+    $company = $ctx['company_name'] ?? 'CV. Mitra Jasa Legalitas';
 
-  return <<<PROMPT
+    return <<<PROMPT
 Buat meta SEO untuk halaman layanan "{$name}" (bersifat umum, TANPA menyebut kota).
 
 **Informasi Layanan:**
@@ -37,7 +37,7 @@ Buat meta SEO untuk halaman layanan "{$name}" (bersifat umum, TANPA menyebut kot
    - DILARANG menggunakan ":"
 
 3. meta_description  
-   - 140–155 karakter
+   - 140-155 karakter
    - Mengandung focus_keyword secara natural
    - Fokus pada manfaat layanan secara umum (tanpa lokasi)
    - Mengandung CTA (hubungi, konsultasi, dll)

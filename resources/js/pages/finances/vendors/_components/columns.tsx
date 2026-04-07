@@ -1,5 +1,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
+
 import { Badge } from '@/components/ui/badge';
+
 import { VENDOR_CATEGORIES_MAP, type Vendor } from '@/types/vendors';
 import Actions from './actions';
 

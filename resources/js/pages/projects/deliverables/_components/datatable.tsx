@@ -17,7 +17,7 @@ import type { ProjectDeliverable } from '@/types/projects';
 import getColumns from './columns';
 import DeliverableDetail from './deliverable-detail';
 
-interface DataTableProps {
+type DataTableProps = {
     data: ProjectDeliverable[];
     pageIndex: number;
     setPageIndex: React.Dispatch<React.SetStateAction<number>>;

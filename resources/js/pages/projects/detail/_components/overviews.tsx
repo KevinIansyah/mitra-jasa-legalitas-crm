@@ -305,7 +305,7 @@ export default function Overviews({ project, services }: OverviewsProps) {
                 {/* ───────────────── Customer & Company Section ───────────────── */}
                 <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-2">
                     <div className="w-full space-y-3 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                        <Avatar className="h-12 w-12 rounded-xl">
+                        <Avatar className="mb-6 h-12 w-12 rounded-xl">
                             <AvatarImage src={`${R2_PUBLIC_URL}/${project.customer?.user?.avatar}`} alt={project.customer?.name} />
                             <AvatarFallback className="rounded-xl bg-primary/10 text-lg text-primary">{getInitials(project.customer?.name)}</AvatarFallback>
                         </Avatar>
@@ -314,7 +314,11 @@ export default function Overviews({ project, services }: OverviewsProps) {
                         <InfoRow label="Email" value={project.customer?.email} />
                         <InfoRow label="Nomor Telepon" value={project.customer?.phone} />
                         <InfoRow label="Kepemilikan Akun">
-                            {project.customer?.user_id ? <Badge className="bg-emerald-500 text-white">Terdaftar</Badge> : <Badge className="bg-slate-500 text-white">Belum Terdaftar</Badge>}
+                            {project.customer?.user_id ? (
+                                <Badge className="bg-emerald-500 text-white">Terdaftar</Badge>
+                            ) : (
+                                <Badge className="bg-slate-500 text-white">Belum Terdaftar</Badge>
+                            )}
                         </InfoRow>
                         <InfoRow label="Tier">
                             <Badge className={tier ? (TIER_MAP[tier]?.classes ?? 'bg-muted text-muted-foreground') : 'bg-muted text-muted-foreground'}>
@@ -569,7 +573,7 @@ export default function Overviews({ project, services }: OverviewsProps) {
                                     <SelectItem value="_none">Tidak ada</SelectItem>
                                     {packages.map((item) => (
                                         <SelectItem key={item.id} value={String(item.id)}>
-                                            {item.name} — Rp {Number(item.price).toLocaleString('id-ID')}
+                                            {item.name} - Rp {Number(item.price).toLocaleString('id-ID')}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -592,12 +596,7 @@ export default function Overviews({ project, services }: OverviewsProps) {
                         <FieldLabel>
                             Nama Project <span className="text-destructive">*</span>
                         </FieldLabel>
-                        <Input
-                            value={data.name}
-                            onChange={(e) => setData('name', e.target.value)}
-                            placeholder="Masukkan nama project"
-                            className={errors.name ? 'border-destructive' : ''}
-                        />
+                        <Input value={data.name} onChange={(e) => setData('name', e.target.value)} placeholder="Masukkan nama project" />
                         {errors.name && <FieldError>{errors.name}</FieldError>}
                     </Field>
 
@@ -616,14 +615,7 @@ export default function Overviews({ project, services }: OverviewsProps) {
                         <FieldLabel>
                             Budget <span className="text-destructive">*</span>
                         </FieldLabel>
-                        <Input
-                            type="number"
-                            min={0}
-                            placeholder="Masukkan budget project"
-                            value={data.budget}
-                            onChange={(e) => setData('budget', Number(e.target.value))}
-                            className={errors.budget ? 'border-destructive' : ''}
-                        />
+                        <Input type="number" min={0} placeholder="Masukkan budget project" value={data.budget} onChange={(e) => setData('budget', Number(e.target.value))} />
                         <p className="text-xs text-muted-foreground">{formatRupiah(data.budget)}</p>
                         {errors.budget && <FieldError>{errors.budget}</FieldError>}
                     </Field>

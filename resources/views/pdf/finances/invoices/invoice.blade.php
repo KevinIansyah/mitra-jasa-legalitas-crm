@@ -47,6 +47,42 @@
       page-break-inside: avoid;
       break-inside: avoid;
     }
+
+    :root {
+      --invoice-line-strong: #18181b;
+      --invoice-line-muted: #d4d4d8;
+    }
+
+    .invoice-line-b-header {
+      border-bottom: 1px solid rgba(24, 24, 27, 0.3);
+    }
+
+    .invoice-line-t-strong {
+      border-top: 1px solid var(--invoice-line-strong);
+    }
+
+    .invoice-line-t-muted {
+      border-top: 1px solid var(--invoice-line-muted);
+    }
+
+    table.invoice-items {
+      width: 100%;
+      border-collapse: collapse;
+      border-spacing: 0;
+    }
+
+    table.invoice-items thead th {
+      border-bottom: 1px solid var(--invoice-line-strong);
+    }
+
+    table.invoice-items tbody td {
+      border-bottom: 1px solid var(--invoice-line-muted);
+      vertical-align: top;
+    }
+
+    table.invoice-items tfoot td {
+      border-top: 1px solid var(--invoice-line-strong);
+    }
   </style>
 </head>
 
@@ -58,15 +94,9 @@
   @endphp
 
   <div class="mx-auto w-full max-w-[794px]">
-
-    {{-- @if ($settings->company_logo)
-      <img src="{{ \App\Helpers\FileHelper::getR2Url($settings->company_logo) }}" alt="Watermark"
-        class="pointer-events-none absolute left-1/2 top-1/2 w-[520px] -translate-x-1/2 -translate-y-1/2 opacity-15">
-    @endif --}}
-
     <div>
       {{-- Header --}}
-      <div class="flex items-start justify-between border-b border-zinc-900/30 pb-10">
+      <div class="invoice-line-b-header flex items-start justify-between pb-10">
         <div class="flex items-start gap-4">
           @if ($settings->company_logo)
             <img src="{{ \App\Helpers\FileHelper::getR2Url($settings->company_logo) }}"
@@ -75,9 +105,9 @@
           <div>
             <h2 class="text-xl font-semibold text-zinc-900">{{ $settings->company_name ?? 'CV. Mitra Jasa Legalitas' }}
             </h2>
-            @if ($settings->company_tagline)
+            {{-- @if ($settings->company_tagline)
               <p class="mt-1 text-sm text-zinc-600">{{ $settings->company_tagline }}</p>
-            @endif
+            @endif --}}
             <div class="mt-1 space-y-0.5 text-xs text-zinc-600">
               @if ($settings->company_address)
                 <p>{{ $settings->company_address }}</p>
@@ -98,7 +128,7 @@
         </div>
         <div class="text-right">
           <h2 class="text-2xl font-semibold tracking-tight text-zinc-900">FAKTUR</h2>
-          <p class="text-lg font-semibold text-zinc-600">{{ $invoice->invoice_number }}</p>
+          <p class="text-lg font-semibold text-zinc-600 whitespace-nowrap">{{ $invoice->invoice_number }}</p>
         </div>
       </div>
 
@@ -133,11 +163,11 @@
             </div>
             <div class="flex justify-between gap-4">
               <span class="text-zinc-600">Tanggal Invoice</span>
-              <span class="font-medium text-zinc-900">{{ $invoice->invoice_date->format('d M Y') }}</span>
+              <span class="font-medium text-zinc-900">{{ $invoice->invoice_date->format('d F Y') }}</span>
             </div>
             <div class="flex justify-between gap-4">
               <span class="text-zinc-600">Jatuh Tempo</span>
-              <span class="font-medium text-zinc-900">{{ $invoice->due_date->format('d M Y') }}</span>
+              <span class="font-medium text-zinc-900">{{ $invoice->due_date->format('d F Y') }}</span>
             </div>
             @if ($invoice->percentage && $invoice->percentage > 0)
               <div class="flex justify-between gap-4">
@@ -151,9 +181,9 @@
 
       {{-- Items --}}
       <div class="mt-10">
-        <table class="w-full text-sm">
+        <table class="invoice-items w-full text-sm">
           <thead>
-            <tr class="border-b border-zinc-900">
+            <tr>
               <th class="pb-3 text-left font-semibold text-zinc-900">Deskripsi</th>
               <th class="pb-3 text-right font-semibold text-zinc-900">Qty</th>
               <th class="pb-3 text-right font-semibold text-zinc-900">Harga Satuan</th>
@@ -162,11 +192,20 @@
               <th class="pb-3 text-right font-semibold text-zinc-900">Total</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-zinc-100">
+          <tbody>
             @if ($invoice->items && $invoice->items->count() > 0)
               @foreach ($invoice->items as $item)
                 <tr>
-                  <td class="py-3 text-zinc-900">{{ $item->description }}</td>
+                  <td class="py-3 text-zinc-900">
+                    <div>{{ $item->description }}</div>
+                    @if (!empty($item->item_details) && is_array($item->item_details))
+                      <ul class="mt-1 list-disc pl-4 text-xs text-zinc-600">
+                        @foreach ($item->item_details as $line)
+                          <li>{{ $line }}</li>
+                        @endforeach
+                      </ul>
+                    @endif
+                  </td>
                   <td class="py-3 text-right text-zinc-600">{{ $item->quantity }}</td>
                   <td class="py-3 text-right text-zinc-600">Rp {{ number_format($item->unit_price, 0, ',', '.') }}</td>
                   <td class="py-3 text-right text-zinc-600">
@@ -214,7 +253,7 @@
               <span class="text-zinc-900">Rp {{ number_format($invoice->tax_amount, 0, ',', '.') }}</span>
             </div>
           @endif
-          <div class="flex justify-between border-t border-zinc-900 pt-2 font-semibold text-zinc-900">
+          <div class="invoice-line-t-strong flex justify-between pt-2 font-semibold text-zinc-900">
             <span>Total</span>
             <span>Rp {{ number_format($invoice->total_amount, 0, ',', '.') }}</span>
           </div>
@@ -299,7 +338,7 @@
                 class="mx-auto h-16 w-32 object-contain">
             @endif
           </div>
-          <div class="mt-2 border-t border-zinc-500 pt-1 text-xs">
+          <div class="invoice-line-t-strong mt-2 pt-1 text-xs">
             <p class="font-semibold text-zinc-900">{{ $settings->signer_name ?? $settings->company_name }}</p>
             @if ($settings->signer_position)
               <p class="text-zinc-600">{{ $settings->signer_position }}</p>

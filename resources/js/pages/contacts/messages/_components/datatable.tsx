@@ -18,7 +18,7 @@ import { CONTACT_MESSAGE_STATUS, type ContactMessage } from '@/types/contacts';
 import getColumns from './columns';
 import MessageDetail from './message-detail';
 
-interface DataTableProps {
+type DataTableProps = {
     data: ContactMessage[];
     pageIndex: number;
     setPageIndex: React.Dispatch<React.SetStateAction<number>>;

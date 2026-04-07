@@ -52,6 +52,7 @@ export function BillableExpensePicker({ projectId, currentItems, onImport }: Bil
         const newItems: ProjectInvoiceItemFormData[] = toImport.map((expense) => ({
             expense_id: expense.id,
             description: expense.description,
+            item_details: [],
             quantity: 1,
             unit_price: Number(expense.amount),
             tax_percent: 0,

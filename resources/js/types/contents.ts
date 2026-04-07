@@ -1,5 +1,5 @@
 /**
- * Konten situs — TypeScript definitions
+ * Konten situs - TypeScript definitions
  */
 
 // ============================================================
@@ -82,6 +82,37 @@ export const TESTIMONIAL_PUBLISHED_FILTERS = [
 ] as const;
 
 export const TESTIMONIAL_RATING_OPTIONS = [5, 4, 3, 2, 1] as const;
+
+// ============================================================
+// CLIENT COMPANIES (pernah jadi klien — nama + logo)
+// ============================================================
+
+export interface ClientCompany {
+    id: number;
+    name: string;
+    logo: string | null;
+    is_published: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
+export type ClientCompanyFormData = {
+    name: string;
+    logo: File | null;
+    is_published: 0 | 1;
+    remove_logo?: boolean;
+};
+
+export interface ClientCompanySummary {
+    total: number;
+    published: number;
+    draft: number;
+}
+
+export const CLIENT_COMPANY_PUBLISHED_FILTERS = [
+    { value: '1', label: 'Dipublikasikan', classes: 'bg-emerald-500 text-white' },
+    { value: '0', label: 'Disembunyikan', classes: 'bg-slate-500 text-white' },
+] as const;
 
 // ============================================================
 // CLIENT SUCCESS STORIES

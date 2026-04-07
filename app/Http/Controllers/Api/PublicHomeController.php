@@ -6,6 +6,7 @@ use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Blog;
 use App\Models\City;
+use App\Models\ClientCompany;
 use App\Models\ClientSuccessStory;
 use App\Models\Faq;
 use App\Models\Service;
@@ -23,6 +24,8 @@ class PublicHomeController extends Controller
     private const TESTIMONIALS_LIMIT = 5;
 
     private const SUCCESS_STORIES_LIMIT = 5;
+
+    private const CLIENT_COMPANIES_LIMIT = 48;
 
     private const FAQ_LIMIT = 10;
 
@@ -45,15 +48,15 @@ class PublicHomeController extends Controller
             ->limit(self::FEATURED_SERVICES_LIMIT)
             ->latest()
             ->get(['id', 'service_category_id', 'name', 'slug', 'short_description', 'featured_image', 'is_featured', 'is_popular'])
-            ->map(fn(Service $service) => $this->formatServiceCard($service, $r2Url));
+            ->map(fn (Service $service) => $this->formatServiceCard($service, $r2Url));
 
         $serviceCategories = ServiceCategory::query()
             ->active()
-            ->withCount(['services' => fn($q) => $q->published()])
+            ->withCount(['services' => fn ($q) => $q->published()])
             ->limit(self::SERVICE_CATEGORIES_LIMIT)
             ->latest()
             ->get(['id', 'name', 'slug', 'palette_color'])
-            ->map(fn(ServiceCategory $cat) => [
+            ->map(fn (ServiceCategory $cat) => [
                 'id' => $cat->id,
                 'name' => $cat->name,
                 'slug' => $cat->slug,
@@ -64,7 +67,7 @@ class PublicHomeController extends Controller
         $allServices = Service::query()
             ->published()
             ->get(['id', 'name', 'slug', 'icon'])
-            ->map(fn(Service $s) => [
+            ->map(fn (Service $s) => [
                 'id' => $s->id,
                 'name' => $s->name,
                 'slug' => $s->slug,
@@ -81,7 +84,7 @@ class PublicHomeController extends Controller
             ->limit(self::TESTIMONIALS_LIMIT)
             ->latest()
             ->get()
-            ->map(fn(Testimonial $t) => [
+            ->map(fn (Testimonial $t) => [
                 'id' => $t->id,
                 'client_name' => $t->client_name,
                 'client_position' => $t->client_position,
@@ -101,10 +104,21 @@ class PublicHomeController extends Controller
             ->limit(self::FAQ_LIMIT)
             ->latest()
             ->get()
-            ->map(fn(Faq $f) => [
+            ->map(fn (Faq $f) => [
                 'id' => $f->id,
                 'question' => $f->question,
                 'answer' => $f->answer,
+            ]);
+
+        $clientCompanies = ClientCompany::query()
+            ->published()
+            ->orderBy('name')
+            ->limit(self::CLIENT_COMPANIES_LIMIT)
+            ->get()
+            ->map(fn (ClientCompany $c) => [
+                'id' => $c->id,
+                'name' => $c->name,
+                'logo' => $this->publicAssetUrl($c->logo, $r2Url),
             ]);
 
         $successStories = ClientSuccessStory::query()
@@ -112,7 +126,7 @@ class PublicHomeController extends Controller
             ->limit(self::SUCCESS_STORIES_LIMIT)
             ->latest()
             ->get()
-            ->map(fn(ClientSuccessStory $s) => [
+            ->map(fn (ClientSuccessStory $s) => [
                 'id' => $s->id,
                 'client_name' => $s->client_name,
                 'industry' => $s->industry,
@@ -137,7 +151,7 @@ class PublicHomeController extends Controller
             ->latest('published_at')
             ->limit(self::LATEST_BLOGS_LIMIT)
             ->get()
-            ->map(fn(Blog $blog) => $this->formatBlogCard($blog, $r2Url));
+            ->map(fn (Blog $blog) => $this->formatBlogCard($blog, $r2Url));
 
         $activeCities = City::query()
             ->active()
@@ -152,6 +166,7 @@ class PublicHomeController extends Controller
             'service_categories' => $serviceCategories,
             'testimonials' => $testimonials,
             'faqs' => $faqs,
+            'client_companies' => $clientCompanies,
             'client_success_stories' => $successStories,
             'latest_blogs' => $latestBlogs,
             'whatsapp_cta' => $this->buildWhatsappCta($site),
@@ -180,8 +195,8 @@ class PublicHomeController extends Controller
         $raw = $site->company_whatsapp ?: $site->social_whatsapp ?: '';
         $digits = preg_replace('/\D/', '', (string) $raw);
         $defaultMessage = 'Halo, saya ingin mendapatkan informasi tentang layanan Anda.';
-        $waMe = $digits !== '' ? 'https://wa.me/' . $digits : null;
-        $waMeWithMessage = $waMe ? $waMe . '?text=' . rawurlencode($defaultMessage) : null;
+        $waMe = $digits !== '' ? 'https://wa.me/'.$digits : null;
+        $waMeWithMessage = $waMe ? $waMe.'?text='.rawurlencode($defaultMessage) : null;
 
         return [
             'label' => 'Chat WhatsApp',
@@ -205,7 +220,7 @@ class PublicHomeController extends Controller
         // ----------------------------------------------------------------
         // Organization schema - tanpa @context karena masuk ke @graph
         // ----------------------------------------------------------------
-        $orgId = $base . '#organization';
+        $orgId = $base.'#organization';
         $organization = $site->toOrganizationSchema();
         unset($organization['@context']);
         $organization['@id'] = $orgId;
@@ -216,7 +231,7 @@ class PublicHomeController extends Controller
 
         if (! empty($activeCities)) {
             $organization['areaServed'] = array_map(
-                fn(string $city) => [
+                fn (string $city) => [
                     '@type' => 'City',
                     'name' => $city,
                 ],
@@ -242,7 +257,7 @@ class PublicHomeController extends Controller
         // ----------------------------------------------------------------
         // WebSite schema - tanpa @context
         // ----------------------------------------------------------------
-        $websiteId = $base . '#website';
+        $websiteId = $base.'#website';
         $websiteSchema = array_filter([
             '@type' => 'WebSite',
             '@id' => $websiteId,
@@ -256,7 +271,7 @@ class PublicHomeController extends Controller
         // ----------------------------------------------------------------
         // WebPage schema - tanpa @context
         // ----------------------------------------------------------------
-        $webPageId = $base . '#webpage';
+        $webPageId = $base.'#webpage';
         $webPageSchema = array_filter([
             '@type' => 'WebPage',
             '@id' => $webPageId,
@@ -344,7 +359,7 @@ class PublicHomeController extends Controller
 
             $specs[] = [
                 '@type' => 'OpeningHoursSpecification',
-                'dayOfWeek' => 'https://schema.org/' . $schemaDay,
+                'dayOfWeek' => 'https://schema.org/'.$schemaDay,
                 'opens' => trim($parts[0]),
                 'closes' => trim($parts[1]),
             ];
@@ -417,7 +432,7 @@ class PublicHomeController extends Controller
                 'duration' => $service->cheapestPackage->duration,
                 'duration_days' => $service->cheapestPackage->duration_days,
             ] : null,
-            'included_features' => $service->cheapestPackage?->includedFeatures->map(fn($feature) => [
+            'included_features' => $service->cheapestPackage?->includedFeatures->map(fn ($feature) => [
                 'id' => $feature->id,
                 'feature_name' => $feature->feature_name,
                 'is_included' => $feature->is_included,
@@ -450,7 +465,7 @@ class PublicHomeController extends Controller
                 'position' => $blog->author->staffProfile?->position,
                 'bio' => $blog->author->staffProfile?->bio,
             ] : null,
-            'tags' => $blog->tags->map(fn($tag) => [
+            'tags' => $blog->tags->map(fn ($tag) => [
                 'id' => $tag->id,
                 'name' => $tag->name,
                 'slug' => $tag->slug,

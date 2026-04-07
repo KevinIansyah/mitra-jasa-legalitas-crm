@@ -2,10 +2,10 @@ import { Head, usePage } from '@inertiajs/react';
 
 import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
+
 import type { BreadcrumbItem } from '@/types';
 import type { Paginator } from '@/types/paginator';
 import type { Quote, QuoteSummary } from '@/types/quotes';
-
 import { QuoteSection } from './_components/quote-section';
 
 const breadcrumbs: BreadcrumbItem[] = [

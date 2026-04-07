@@ -47,6 +47,41 @@
       page-break-inside: avoid;
       break-inside: avoid;
     }
+
+    :root {
+      --invoice-line-strong: #18181b;
+      --invoice-line-muted: #d4d4d8;
+    }
+
+    .invoice-line-b-header {
+      border-bottom: 1px solid rgba(24, 24, 27, 0.3);
+    }
+
+    .invoice-line-t-strong {
+      border-top: 1px solid var(--invoice-line-strong);
+    }
+
+    .invoice-line-t-muted {
+      border-top: 1px solid var(--invoice-line-muted);
+    }
+
+    table.invoice-items {
+      width: 100%;
+      border-collapse: collapse;
+      border-spacing: 0;
+    }
+
+    table.invoice-items thead th {
+      border-bottom: 1px solid var(--invoice-line-strong);
+    }
+
+    table.invoice-items tbody td {
+      border-bottom: 1px solid var(--invoice-line-muted);
+    }
+
+    table.invoice-items tfoot td {
+      border-top: 1px solid var(--invoice-line-strong);
+    }
   </style>
 </head>
 
@@ -61,10 +96,10 @@
             class="h-14 w-auto object-contain">
         @endif
         <div>
-          <h2 class="text-base font-semibold text-zinc-900">{{ $settings->company_name }}</h2>
-          @if ($settings->company_tagline)
+          <h2 class="text-base font-semibold text-zinc-900">{{ $settings->company_name ?? 'CV. Mitra Jasa Legalitas' }}</h2>
+          {{-- @if ($settings->company_tagline)
             <p class="text-xs text-zinc-500">{{ $settings->company_tagline }}</p>
-          @endif
+          @endif --}}
           <div class="mt-1 space-y-0.5 text-xs text-zinc-500">
             @if ($settings->company_address)
               <p>{{ $settings->company_address }}</p>
@@ -92,8 +127,8 @@
     {{-- Aset --}}
     <div class="mt-10 no-break">
       <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-zinc-600">Aset</p>
-      <table class="w-full text-sm">
-        <tbody class="divide-y divide-zinc-100">
+      <table class="invoice-items w-full text-sm">
+        <tbody>
           @foreach ($report['assets']['detail'] as $item)
             <tr>
               <td class="py-2 text-xs text-zinc-400 w-20">{{ $item['code'] }}</td>
@@ -103,7 +138,7 @@
           @endforeach
         </tbody>
         <tfoot>
-          <tr class="border-t border-zinc-900">
+          <tr>
             <td class="pt-2 w-20"></td>
             <td class="pt-2 font-semibold text-zinc-900">Total Aset</td>
             <td class="pt-2 text-right font-semibold text-zinc-900">Rp
@@ -127,7 +162,7 @@
           @endforeach
         </tbody>
         <tfoot>
-          <tr class="border-t border-zinc-900">
+          <tr>
             <td class="pt-2 w-20"></td>
             <td class="pt-2 font-semibold text-zinc-900">Total Kewajiban</td>
             <td class="pt-2 text-right font-semibold text-zinc-900">Rp
@@ -140,8 +175,8 @@
     {{-- Ekuitas --}}
     <div class="mt-10 no-break">
       <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-zinc-600">Ekuitas</p>
-      <table class="w-full text-sm">
-        <tbody class="divide-y divide-zinc-100">
+      <table class="invoice-items w-full text-sm">
+        <tbody>
           @foreach ($report['equity']['detail'] as $item)
             <tr>
               <td class="py-2 text-xs text-zinc-400 w-20">{{ $item['code'] }}</td>
@@ -151,7 +186,7 @@
           @endforeach
         </tbody>
         <tfoot>
-          <tr class="border-t border-zinc-900">
+          <tr>
             <td class="pt-2 w-20"></td>
             <td class="pt-2 font-semibold text-zinc-900">Total Ekuitas</td>
             <td class="pt-2 text-right font-semibold text-zinc-900">Rp

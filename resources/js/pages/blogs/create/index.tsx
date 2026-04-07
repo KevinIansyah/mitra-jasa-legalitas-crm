@@ -1,6 +1,8 @@
 import { Head, usePage } from '@inertiajs/react';
+
 import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
+
 import blogs from '@/routes/blogs';
 import type { BreadcrumbItem } from '@/types';
 import type { BlogCategory, BlogRelatedService, BlogTag } from '@/types/blogs';

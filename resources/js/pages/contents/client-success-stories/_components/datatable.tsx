@@ -19,7 +19,6 @@ import contents from '@/routes/contents';
 import { CATEGORY_BUSINESS } from '@/types/contacts';
 import type { ClientSuccessStory } from '@/types/contents';
 import { CLIENT_SUCCESS_PUBLISHED_FILTERS } from '@/types/contents';
-
 import getColumns from './columns';
 import { StoryAddDrawer } from './story-add-drawer';
 
@@ -29,7 +28,7 @@ type StoryFilters = {
     industry?: string;
 };
 
-interface DataTableProps {
+type DataTableProps = {
     data: ClientSuccessStory[];
     pageIndex: number;
     setPageIndex: React.Dispatch<React.SetStateAction<number>>;

@@ -34,6 +34,7 @@ export function PaymentEditDrawer({ invoice, payment, open, onOpenChange }: Paym
     const [isDragging, setIsDragging] = React.useState(false);
     const [resubmit, setResubmit] = React.useState(false);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
+    const loadingFocusRef = React.useRef<HTMLButtonElement>(null);
     const isRejected = payment.status === 'rejected';
 
     const [filePreview, setFilePreview] = React.useState<{ src?: string; name: string; size: number; isImage: boolean } | null>(
@@ -141,7 +142,13 @@ export function PaymentEditDrawer({ invoice, payment, open, onOpenChange }: Paym
 
     return (
         <Drawer direction="bottom" open={open} onOpenChange={onOpenChange}>
-            <DrawerContent className="flex h-screen flex-col">
+            <DrawerContent
+                className="flex h-screen flex-col"
+                onOpenAutoFocus={(e) => {
+                    e.preventDefault();
+                    loadingFocusRef.current?.focus();
+                }}
+            >
                 <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 overflow-y-auto">
                     <DrawerHeader className="px-4">
                         <DrawerTitle>Edit Pembayaran</DrawerTitle>
@@ -179,7 +186,7 @@ export function PaymentEditDrawer({ invoice, payment, open, onOpenChange }: Paym
                                 </div>
                             </Field>
 
-                            {/* Resubmit Switch — Only visible if rejected */}
+                            {/* Resubmit Switch - Only visible if rejected */}
                             {isRejected && (
                                 <div className="col-span-2 flex items-center gap-4 rounded-lg border border-destructive/40 bg-destructive/5 p-4">
                                     <Switch id="resubmit" checked={resubmit} onCheckedChange={handleResubmitToggle} />
@@ -354,7 +361,7 @@ export function PaymentEditDrawer({ invoice, payment, open, onOpenChange }: Paym
                         </div>
 
                         <DrawerFooter className="mt-auto px-0">
-                            <Button type="submit" disabled={processing}>
+                            <Button ref={loadingFocusRef} type="submit" disabled={processing}>
                                 {processing ? (
                                     <>
                                         <Spinner className="mr-2" />

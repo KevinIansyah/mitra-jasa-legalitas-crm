@@ -2,6 +2,7 @@ import { Head, usePage } from '@inertiajs/react';
 
 import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
+
 import type { BreadcrumbItem } from '@/types';
 import type { Paginator } from '@/types/paginator';
 import { ChatSessionSection } from './_components/chat-session-section';

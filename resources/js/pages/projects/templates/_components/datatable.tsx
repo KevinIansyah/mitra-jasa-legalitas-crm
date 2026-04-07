@@ -22,7 +22,7 @@ import type { Service } from '@/types/services';
 import getColumns from './columns';
 import TemplateDetail from './template-detail';
 
-interface DataTableProps {
+type DataTableProps = {
     data: ProjectTemplate[];
     services: Service[];
     pageIndex: number;

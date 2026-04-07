@@ -1,11 +1,13 @@
 import { BadgeCheck, Building2, FileText, User } from 'lucide-react';
 import { useState } from 'react';
+
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+
 import type { CompanySummary, CompanyWithCustomers } from '@/types/contacts';
 import type { Paginator } from '@/types/paginator';
 import { DataTable } from './datatable';
 
-interface CompanySectionProps {
+type CompanySectionProps = {
     companies: Paginator<CompanyWithCustomers>;
     summary: CompanySummary;
     filters: { search?: string };

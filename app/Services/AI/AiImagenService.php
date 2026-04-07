@@ -10,13 +10,15 @@ use Intervention\Image\ImageManager;
 class AiImagenService
 {
     private string $apiKey;
+
     private string $model;
+
     private string $baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models';
 
     public function __construct()
     {
         $this->apiKey = config('ai.gemini_api_key');
-        $this->model  = config('ai.imagen_model', 'imagen-4.0-generate-001');
+        $this->model = config('ai.imagen_model', 'imagen-4.0-generate-001');
     }
 
     /**
@@ -30,7 +32,7 @@ class AiImagenService
 
         /** @var \Illuminate\Http\Client\Response */
         $response = Http::timeout(60)->post($url, [
-            'instances'  => [['prompt' => $prompt]],
+            'instances' => [['prompt' => $prompt]],
             'parameters' => [
                 'sampleCount' => min($count, 4),
                 'aspectRatio' => '16:9',
@@ -38,7 +40,7 @@ class AiImagenService
         ]);
 
         if ($response->failed()) {
-            throw new Exception('Gagal generate gambar: ' . $response->body());
+            throw new Exception('Gagal generate gambar: '.$response->body());
         }
 
         $predictions = $response->json('predictions') ?? [];
@@ -47,12 +49,12 @@ class AiImagenService
             throw new Exception('AI tidak mengembalikan gambar. Coba prompt yang berbeda.');
         }
 
-        $manager = new ImageManager(new Driver());
+        $manager = new ImageManager(new Driver);
 
         $images = collect($predictions)
             ->pluck('bytesBase64Encoded')
             ->filter()
-            ->map(fn(string $base64) => $this->processImage($manager, $base64))
+            ->map(fn (string $base64) => $this->processImage($manager, $base64))
             ->values()
             ->toArray();
 
@@ -64,10 +66,10 @@ class AiImagenService
         $decoded = base64_decode($base64, strict: true);
 
         if ($decoded === false) {
-            throw new Exception('Base64 decode gagal — data dari Imagen tidak valid.');
+            throw new Exception('Base64 decode gagal - data dari Imagen tidak valid.');
         }
 
-        $tmpFile = tempnam(sys_get_temp_dir(), 'imagen_') . '.png';
+        $tmpFile = tempnam(sys_get_temp_dir(), 'imagen_').'.png';
         file_put_contents($tmpFile, $decoded);
 
         try {
@@ -79,8 +81,8 @@ class AiImagenService
 
             return [
                 'original' => base64_encode($original->toPng()),
-                'og'       => base64_encode($og->toPng()),
-                'twitter'  => base64_encode($twitter->toPng()),
+                'og' => base64_encode($og->toPng()),
+                'twitter' => base64_encode($twitter->toPng()),
             ];
         } finally {
             @unlink($tmpFile);

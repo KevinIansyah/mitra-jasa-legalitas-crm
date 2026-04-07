@@ -1,12 +1,14 @@
 import { BookOpen, CalendarDays, PenLine, Zap } from 'lucide-react';
 import { useState } from 'react';
+
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+
 import type { Account } from '@/types/accounts';
 import type { JournalEntry, JournalSummary } from '@/types/journal-entries';
 import type { Paginator } from '@/types/paginator';
 import { DataTable } from './datatable';
 
-interface JournalSectionProps {
+type JournalSectionProps = {
     entries: Paginator<JournalEntry>;
     accounts: Account[];
     summary: JournalSummary;

@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
+
 import { formatRupiah } from '@/lib/service';
 import type { ProjectInvoiceItemFormData } from '@/types/projects';
 
@@ -8,7 +9,7 @@ type InvoiceSummaryProps = {
     taxPercent?: number;
     discountPercent?: number;
     items?: ProjectInvoiceItemFormData[];
-    isAdditional: boolean;
+    useLineItemTotals: boolean;
     processing: boolean;
     onSubmit: () => void;
 };
@@ -42,8 +43,8 @@ function calcItems(items: ProjectInvoiceItemFormData[]) {
     return { subtotal, discountAmount, taxAmount, total };
 }
 
-export function InvoiceSummary({ subtotal = 0, taxPercent = 0, discountPercent = 0, items = [], isAdditional, processing, onSubmit }: InvoiceSummaryProps) {
-    const calc = isAdditional ? calcItems(items) : calcSimple(subtotal, taxPercent, discountPercent);
+export function InvoiceSummary({ subtotal = 0, taxPercent = 0, discountPercent = 0, items = [], useLineItemTotals, processing, onSubmit }: InvoiceSummaryProps) {
+    const calc = useLineItemTotals ? calcItems(items) : calcSimple(subtotal, taxPercent, discountPercent);
 
     return (
         <div className="space-y-4">
@@ -59,7 +60,7 @@ export function InvoiceSummary({ subtotal = 0, taxPercent = 0, discountPercent =
                         <div className="flex items-center justify-between">
                             <span className="text-muted-foreground">
                                 Diskon
-                                {!isAdditional && discountPercent > 0 && <span className="ml-1 text-xs">({discountPercent}%)</span>}
+                                {!useLineItemTotals && discountPercent > 0 && <span className="ml-1 text-xs">({discountPercent}%)</span>}
                             </span>
                             <span className="font-medium text-destructive">-{formatRupiah(calc.discountAmount)}</span>
                         </div>
@@ -69,7 +70,7 @@ export function InvoiceSummary({ subtotal = 0, taxPercent = 0, discountPercent =
                         <div className="flex items-center justify-between">
                             <span className="text-muted-foreground">
                                 Pajak
-                                {!isAdditional && taxPercent > 0 && <span className="ml-1 text-xs">({taxPercent}%)</span>}
+                                {!useLineItemTotals && taxPercent > 0 && <span className="ml-1 text-xs">({taxPercent}%)</span>}
                             </span>
                             <span className="font-medium">{formatRupiah(calc.taxAmount)}</span>
                         </div>

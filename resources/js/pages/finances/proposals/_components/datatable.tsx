@@ -22,7 +22,7 @@ import { PROPOSAL_STATUSES } from '@/types/proposals';
 import getColumns from './columns';
 import ProposalDetail from './proposal-detail';
 
-interface DataTableProps {
+type DataTableProps = {
     data: Proposal[];
     pageIndex: number;
     setPageIndex: React.Dispatch<React.SetStateAction<number>>;

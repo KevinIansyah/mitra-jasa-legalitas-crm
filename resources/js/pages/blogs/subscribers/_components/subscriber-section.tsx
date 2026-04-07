@@ -1,11 +1,13 @@
 import { MailCheck, MailQuestion, User } from 'lucide-react';
 import { useState } from 'react';
+
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+
 import type { BlogSubscriber, BlogSubscriberSummary } from '@/types/blogs';
 import type { Paginator } from '@/types/paginator';
 import { DataTable } from './datatable';
 
-interface BlogSubscriberSectionProps {
+type BlogSubscriberSectionProps = {
     subscribers: Paginator<BlogSubscriber>;
     summary: BlogSubscriberSummary;
     filters: { search?: string; verified?: string };

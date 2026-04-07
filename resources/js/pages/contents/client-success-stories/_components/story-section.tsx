@@ -5,7 +5,7 @@ import type { ClientSuccessStory, ClientSuccessStorySummary } from '@/types/cont
 import type { Paginator } from '@/types/paginator';
 import { DataTable } from './datatable';
 
-interface StorySectionProps {
+type StorySectionProps = {
     stories: Paginator<ClientSuccessStory>;
     summary: ClientSuccessStorySummary;
     filters: { search?: string; per_page?: number; published?: string; industry?: string };

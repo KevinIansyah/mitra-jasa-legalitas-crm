@@ -26,7 +26,7 @@ type FaqFilters = {
     published?: string;
 };
 
-interface DataTableProps {
+type DataTableProps = {
     data: Faq[];
     pageIndex: number;
     setPageIndex: React.Dispatch<React.SetStateAction<number>>;

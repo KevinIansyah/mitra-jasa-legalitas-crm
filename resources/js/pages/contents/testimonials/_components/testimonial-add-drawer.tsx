@@ -115,7 +115,7 @@ export function TestimonialAddDrawer({ services }: { services: Service[] }) {
                 </Button>
             </DrawerTrigger>
 
-            <DrawerContent className="flex max-h-[95vh] flex-col">
+            <DrawerContent className="flex h-screen flex-col">
                 <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 overflow-y-auto">
                     <DrawerHeader className="px-4">
                         <DrawerTitle>Tambah Testimoni</DrawerTitle>

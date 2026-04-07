@@ -18,7 +18,7 @@ class UpdateRequest extends FormRequest
             'payment_date'      => 'required|date',
             'payment_method'    => 'nullable|string',
             'reference_number'  => 'nullable|string|max:255',
-            'proof_file'        => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf|max:5120',
+            'proof_file'        => 'nullable|file|mimes:jpg,jpeg,png,webp,svg+xml,pdf|max:5120',
             'remove_proof_file' => 'nullable|boolean',
             'notes'             => 'nullable|string',
             'resubmit'          => 'nullable|boolean',
@@ -38,7 +38,7 @@ class UpdateRequest extends FormRequest
             'reference_number.max' => 'Nomor referensi maksimal :max karakter.',
 
             'proof_file.file'  => 'Bukti pembayaran harus berupa file.',
-            'proof_file.mimes' => 'Bukti pembayaran harus berupa JPG, PNG, WEBP, atau PDF.',
+            'proof_file.mimes' => 'Bukti pembayaran harus berupa gambar (JPG, PNG, WEBP, SVG) atau berkas (PDF).',
             'proof_file.max'   => 'Ukuran file maksimal 5MB.',
         ];
     }

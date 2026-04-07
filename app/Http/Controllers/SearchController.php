@@ -36,7 +36,7 @@ class SearchController extends Controller
             });
         }
 
-        $customers = $query->select('id', 'name', 'email', 'phone', 'tier')
+        $customers = $query->select('id', 'name', 'email', 'phone', 'tier', 'avatar')
             ->limit(10)
             ->get();
 
@@ -130,7 +130,7 @@ class SearchController extends Controller
             $q->where('project_id', $projectId);
         });
 
-        $users = $query->select('id', 'name', 'email', 'role')
+        $users = $query->select('id', 'name', 'email', 'role', 'avatar')
             ->limit(10)
             ->get()
             ->filter(function ($user) {
@@ -146,6 +146,7 @@ class SearchController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'avatar' => $user->avatar,
                 'role' => $user->role,
                 'active_project_count' => $user->active_projects_count,
                 'max_concurrent_project_count' => $user->staffProfile?->max_concurrent_projects,

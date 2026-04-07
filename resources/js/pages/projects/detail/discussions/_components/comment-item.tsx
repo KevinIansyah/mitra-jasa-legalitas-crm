@@ -175,7 +175,7 @@ export function CommentItem({ comment, projectId, currentUserId, mentionUsers, d
                         {/* Body */}
                         <CommentBody text={comment.comment} />
 
-                        {/* Reply button — only on top-level */}
+                        {/* Reply button - only on top-level */}
                         {depth === 0 && (
                             <HasPermission permission="create-project-discussions">
                                 <button

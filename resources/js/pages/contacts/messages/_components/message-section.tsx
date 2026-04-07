@@ -1,11 +1,13 @@
 import { Inbox, Mail, MailCheck, MailOpen } from 'lucide-react';
 import { useState } from 'react';
+
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+
 import type { ContactMessage, ContactMessageSummary } from '@/types/contacts';
 import type { Paginator } from '@/types/paginator';
 import { DataTable } from './datatable';
 
-interface ContactMessageSectionProps {
+type ContactMessageSectionProps = {
     messages: Paginator<ContactMessage>;
     summary: ContactMessageSummary;
     filters: { search?: string; status?: string };

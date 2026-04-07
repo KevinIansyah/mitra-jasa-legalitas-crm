@@ -1,12 +1,13 @@
-// Components
 import { Form, Head } from '@inertiajs/react';
-import { LoaderCircle } from 'lucide-react';
+
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
+
 import { login } from '@/routes';
 import { email } from '@/routes/password';
 
@@ -30,8 +31,14 @@ export default function ForgotPassword({ status }: { status?: string }) {
 
                             <div className="my-6 flex items-center justify-start">
                                 <Button className="w-full" disabled={processing} data-test="email-password-reset-link-button">
-                                    {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                                    Kirim Tautan Reset Kata Sandi
+                                    {processing ? (
+                                        <>
+                                            <Spinner className="mr-2" />
+                                            Sedang Mengirim...
+                                        </>
+                                    ) : (
+                                        'Kirim Tautan Reset Kata Sandi'
+                                    )}
                                 </Button>
                             </div>
                         </>

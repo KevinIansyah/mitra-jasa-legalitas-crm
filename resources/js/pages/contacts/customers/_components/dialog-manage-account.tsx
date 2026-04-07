@@ -12,7 +12,7 @@ import { Spinner } from '@/components/ui/spinner';
 import contacts from '@/routes/contacts';
 import type { Customer } from '@/types/contacts';
 
-type Props = {
+type DialogManageAccountProps = {
     customer: Customer;
     open: boolean;
     onOpenChange: (open: boolean) => void;
@@ -22,7 +22,7 @@ type Step = 'check' | 'confirm_link' | 'create' | 'credentials' | 'revoke';
 type ExistingUser = { id: number; name: string; email: string };
 type Credentials = { email: string; password: string };
 
-export function DialogManageAccount({ customer, open, onOpenChange }: Props) {
+export function DialogManageAccount({ customer, open, onOpenChange }: DialogManageAccountProps) {
     const hasAccount = !!customer.user_id;
     const [step, setStep] = useState<Step>(hasAccount ? 'revoke' : 'check');
     const [existingUser, setExistingUser] = useState<ExistingUser | null>(null);

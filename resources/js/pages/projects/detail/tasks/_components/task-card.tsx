@@ -13,10 +13,10 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 import { getInitials } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
-import projects from '@/routes/projects';
 import type { TaskPriority } from '@/types/projects';
 import { TASK_PRIORITIES, TASK_PRIORITIES_MAP, TASK_STATUSES, TASK_STATUSES_MAP, type ProjectTask, type TaskStatus } from '@/types/projects';
 import { TaskForm, type TaskFormData } from './task-form';
+import projects from '@/routes/projects';
 
 type MemberOption = { id: number; name: string };
 type MilestoneOption = { id: number; title: string };
@@ -148,7 +148,7 @@ export function TaskCard({ task, projectId, members, milestones }: TaskCardProps
                 ) : (
                     <div className="space-y-4 p-4 md:p-6">
                         <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-start">
-                            {/* Left — title + meta */}
+                            {/* Left - title + meta */}
                             <div className="flex-1 space-y-2">
                                 <p className={`leading-snug font-semibold ${isDone ? 'text-muted-foreground line-through' : ''}`}>{task.title}</p>
 
@@ -220,7 +220,7 @@ export function TaskCard({ task, projectId, members, milestones }: TaskCardProps
                                 </div>
                             </div>
 
-                            {/* Right — status + actions */}
+                            {/* Right - status + actions */}
                             <div className="flex shrink-0 items-center gap-1">
                                 <HasPermission permission="edit-project-tasks">
                                     <Tooltip>

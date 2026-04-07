@@ -21,7 +21,7 @@ import getColumns from './columns';
 import CompanyDetail from './company-detail';
 import { DrawerAdd } from './drawer-add';
 
-interface DataTableProps {
+type DataTableProps = {
     data: CompanyWithCustomers[];
     pageIndex: number;
     setPageIndex: React.Dispatch<React.SetStateAction<number>>;
@@ -33,7 +33,7 @@ interface DataTableProps {
         status_legal?: string;
         category_business?: string;
     };
-}
+};
 
 export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItems, perPage, initialFilters = {} }: DataTableProps) {
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});

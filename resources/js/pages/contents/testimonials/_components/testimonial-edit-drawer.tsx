@@ -35,6 +35,7 @@ export function TestimonialEditDrawer({ testimonial, services, open, onOpenChang
     const [imageError, setImageError] = React.useState<string | null>(null);
     const [isDragging, setIsDragging] = React.useState(false);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
+    const loadingFocusRef = React.useRef<HTMLButtonElement>(null);
 
     const [filePreview, setFilePreview] = React.useState<{ src?: string; name: string; size: number; isImage: boolean } | null>(
         testimonial.client_avatar
@@ -130,7 +131,13 @@ export function TestimonialEditDrawer({ testimonial, services, open, onOpenChang
 
     return (
         <Drawer direction="bottom" open={open} onOpenChange={onOpenChange}>
-            <DrawerContent className="flex max-h-[95vh] flex-col">
+            <DrawerContent
+                className="flex h-screen flex-col"
+                onOpenAutoFocus={(e) => {
+                    e.preventDefault();
+                    loadingFocusRef.current?.focus();
+                }}
+            >
                 <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 overflow-y-auto">
                     <DrawerHeader className="px-4">
                         <DrawerTitle>Edit Testimoni</DrawerTitle>
@@ -320,7 +327,7 @@ export function TestimonialEditDrawer({ testimonial, services, open, onOpenChang
                         </div>
 
                         <DrawerFooter className="mt-auto px-0">
-                            <Button type="submit" disabled={processing}>
+                            <Button ref={loadingFocusRef} type="submit" disabled={processing}>
                                 {processing ? (
                                     <>
                                         <Spinner className="mr-2" />

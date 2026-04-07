@@ -4,10 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+
 import { formatRupiah } from '@/lib/service';
 import type { ProposalItemFormData } from '@/types/proposals';
 
-type Props = {
+type ProposalItemsEditorProps = {
     items: ProposalItemFormData[];
     onChange: (items: ProposalItemFormData[]) => void;
 };
@@ -20,7 +21,7 @@ function calcItemTotal(item: ProposalItemFormData) {
     return afterDiscount + taxAmount;
 }
 
-export function ProposalItemsEditor({ items, onChange }: Props) {
+export function ProposalItemsEditor({ items, onChange }: ProposalItemsEditorProps) {
     function removeItem(index: number) {
         onChange(items.filter((_, i) => i !== index));
     }

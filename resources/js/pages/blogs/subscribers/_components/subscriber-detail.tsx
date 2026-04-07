@@ -1,5 +1,5 @@
-import { BLOG_SUBSCRIBER_VERIFIED_FILTER_MAP, type BlogSubscriber } from '@/types/blogs';
 import { Badge } from '@/components/ui/badge';
+import { BLOG_SUBSCRIBER_VERIFIED_FILTER_MAP, type BlogSubscriber } from '@/types/blogs';
 
 export default function SubscriberDetail({ subscriber }: { subscriber: BlogSubscriber }) {
     const verifiedKey = subscriber.is_verified ? '1' : '0';
@@ -14,7 +14,7 @@ export default function SubscriberDetail({ subscriber }: { subscriber: BlogSubsc
                 </div>
                 <div className="space-y-1">
                     <p className="text-xs text-muted-foreground">Nama</p>
-                    <p>{subscriber.name ?? '—'}</p>
+                    <p>{subscriber.name ?? '-'}</p>
                 </div>
                 <div className="space-y-1">
                     <p className="text-xs text-muted-foreground">Status verifikasi</p>
@@ -31,7 +31,7 @@ export default function SubscriberDetail({ subscriber }: { subscriber: BlogSubsc
                                   hour: '2-digit',
                                   minute: '2-digit',
                               })
-                            : '—'}
+                            : '-'}
                     </p>
                 </div>
             </div>

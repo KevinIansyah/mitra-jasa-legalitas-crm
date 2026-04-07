@@ -15,7 +15,7 @@ import type { ServiceCategory } from '@/types/services';
 import getColumns from './columns';
 import { DrawerAdd } from './drawer-add';
 
-interface DataTableProps {
+type DataTableProps = {
     data: ServiceCategory[];
     pageIndex: number;
     setPageIndex: React.Dispatch<React.SetStateAction<number>>;

@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 
-import siteSettings from '@/routes/site-settings';
 import type { SiteSetting } from '@/types/site-setting';
 import { SubmitButton } from '../../_components/shared';
 
@@ -24,7 +23,8 @@ export function MaintenanceSection({ settings }: { settings: SiteSetting }) {
             description: 'Mode maintenance sedang diperbarui.',
         });
 
-        patch(siteSettings.update.maintenance().url, {
+        /** Samakan dengan route PATCH `site-settings.update.maintenance` saat diaktifkan kembali */
+        patch('/settings/site/maintenance', {
             preserveScroll: true,
             onSuccess: () =>
                 toast.success('Berhasil', {

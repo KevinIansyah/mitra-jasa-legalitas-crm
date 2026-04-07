@@ -21,7 +21,7 @@ class StoreRequest extends FormRequest
             'description'  => 'required|string',
             'amount'       => 'required|numeric|min:0',
             'expense_date' => 'required|date',
-            'receipt_file' => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf|max:5120',
+            'receipt_file' => 'nullable|file|mimes:jpg,jpeg,png,webp,svg+xml,pdf|max:5120',
             'is_billable'  => 'nullable|boolean',
         ];
     }
@@ -43,7 +43,7 @@ class StoreRequest extends FormRequest
             'expense_date.required' => 'Tanggal pengeluaran wajib diisi.',
             'expense_date.date'    => 'Tanggal pengeluaran tidak valid.',
             'receipt_file.file'    => 'File struk harus berupa file yang valid.',
-            'receipt_file.mimes'   => 'File struk harus berformat JPG, PNG, WEBP, atau PDF.',
+            'receipt_file.mimes'   => 'File struk harus berupa gambar (JPG, PNG, WEBP, SVG) atau berkas (PDF).',
             'receipt_file.max'     => 'Ukuran file struk maksimal 5MB.',
         ];
     }

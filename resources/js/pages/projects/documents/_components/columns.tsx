@@ -1,5 +1,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
+
 import { Badge } from '@/components/ui/badge';
+
 import { type ProjectDocument } from '@/types/projects';
 import Actions from './actions';
 

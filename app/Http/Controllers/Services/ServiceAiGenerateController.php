@@ -22,15 +22,15 @@ class ServiceAiGenerateController extends Controller
         $settings = SiteSetting::get();
 
         return [
-            'name'              => $service->name,
-            'category'          => $service->relationLoaded('category')
+            'name' => $service->name,
+            'category' => $service->relationLoaded('category')
                 ? $service->category?->name
                 : $service->category?->name,
             'short_description' => $service->short_description ?? '',
-            'focus_keyword'     => $service->seo?->focus_keyword ?? '',
-            'company_name'      => $settings->company_name ?? 'CV. Mitra Jasa Legalitas',
-            'city'              => $settings->company_city ?? 'Surabaya',
-            'count'             => $request->integer('count', 0) ?: null,
+            'focus_keyword' => $service->seo?->focus_keyword ?? '',
+            'company_name' => $settings->company_name ?? 'CV. Mitra Jasa Legalitas',
+            'city' => $settings->company_city ?? 'Surabaya',
+            'count' => $request->integer('count', 0) ?: null,
         ];
     }
 
@@ -39,7 +39,7 @@ class ServiceAiGenerateController extends Controller
         $service->load(['category', 'seo']);
 
         return $this->run(
-            fn() => $this->aiContentService->generateServiceContent(Auth::user(), $this->buildContext($service, $request))
+            fn () => $this->aiContentService->generateServiceContent(Auth::user(), $this->buildContext($service, $request))
         );
     }
 
@@ -48,11 +48,11 @@ class ServiceAiGenerateController extends Controller
         $request->validate(['count' => 'nullable|integer|min:3|max:15']);
         $service->load(['category', 'seo']);
 
-        $ctx          = $this->buildContext($service, $request);
+        $ctx = $this->buildContext($service, $request);
         $ctx['count'] = $request->integer('count', 5);
 
         return $this->run(
-            fn() => $this->aiContentService->generateServiceFaq(Auth::user(), $ctx)
+            fn () => $this->aiContentService->generateServiceFaq(Auth::user(), $ctx)
         );
     }
 
@@ -61,7 +61,7 @@ class ServiceAiGenerateController extends Controller
         $service->load(['category', 'seo']);
 
         return $this->run(
-            fn() => $this->aiContentService->generateServiceSeo(Auth::user(), $this->buildContext($service, $request))
+            fn () => $this->aiContentService->generateServiceSeo(Auth::user(), $this->buildContext($service, $request))
         );
     }
 
@@ -70,11 +70,11 @@ class ServiceAiGenerateController extends Controller
         $request->validate(['count' => 'nullable|integer|min:2|max:5']);
         $service->load(['category', 'seo']);
 
-        $ctx          = $this->buildContext($service, $request);
+        $ctx = $this->buildContext($service, $request);
         $ctx['count'] = $request->integer('count', 3);
 
         return $this->run(
-            fn() => $this->aiContentService->generateServicePackages(Auth::user(), $ctx)
+            fn () => $this->aiContentService->generateServicePackages(Auth::user(), $ctx)
         );
     }
 
@@ -83,11 +83,11 @@ class ServiceAiGenerateController extends Controller
         $request->validate(['count' => 'nullable|integer|min:3|max:10']);
         $service->load(['category', 'seo']);
 
-        $ctx          = $this->buildContext($service, $request);
+        $ctx = $this->buildContext($service, $request);
         $ctx['count'] = $request->integer('count', 5);
 
         return $this->run(
-            fn() => $this->aiContentService->generateServiceProcessSteps(Auth::user(), $ctx)
+            fn () => $this->aiContentService->generateServiceProcessSteps(Auth::user(), $ctx)
         );
     }
 
@@ -96,11 +96,11 @@ class ServiceAiGenerateController extends Controller
         $request->validate(['count' => 'nullable|integer|min:1|max:5']);
         $service->load(['category', 'seo']);
 
-        $ctx          = $this->buildContext($service, $request);
+        $ctx = $this->buildContext($service, $request);
         $ctx['count'] = $request->integer('count', 2);
 
         return $this->run(
-            fn() => $this->aiContentService->generateServiceRequirements(Auth::user(), $ctx)
+            fn () => $this->aiContentService->generateServiceRequirements(Auth::user(), $ctx)
         );
     }
 
@@ -109,11 +109,11 @@ class ServiceAiGenerateController extends Controller
         $request->validate(['count' => 'nullable|integer|min:1|max:7']);
         $service->load(['category', 'seo']);
 
-        $ctx          = $this->buildContext($service, $request);
+        $ctx = $this->buildContext($service, $request);
         $ctx['count'] = $request->integer('count', 3);
 
         return $this->run(
-            fn() => $this->aiContentService->generateServiceLegalBases(Auth::user(), $ctx)
+            fn () => $this->aiContentService->generateServiceLegalBases(Auth::user(), $ctx)
         );
     }
 
@@ -126,13 +126,13 @@ class ServiceAiGenerateController extends Controller
         $service->load(['category', 'seo']);
 
         $ctx = [
-            'title'    => $service->name,
-            'keyword'  => $service->seo?->focus_keyword ?? $service->name,
-            'category' => $service->category?->name ?? '',
+            'title' => $service->name,
+            'keyword' => $service->seo?->focus_keyword ?? $service->name,
+            'category' => $service->category?->slug ?? '',
         ];
 
         return $this->run(
-            fn() => $this->aiContentService->generateImage(
+            fn () => $this->aiContentService->generateImage(
                 Auth::user(),
                 $ctx,
                 $request->integer('count', 1),
@@ -147,8 +147,8 @@ class ServiceAiGenerateController extends Controller
             $result = $fn();
 
             return response()->json([
-                'success'     => true,
-                'data'        => $result,
+                'success' => true,
+                'data' => $result,
                 'tokens_used' => $result['tokens_used'] ?? 0,
             ]);
         } catch (Throwable $e) {

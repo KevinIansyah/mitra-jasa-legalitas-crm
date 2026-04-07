@@ -14,10 +14,12 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+
 import { cn } from '@/lib/utils';
 import type { AppNotification } from '@/types/notification';
 
@@ -36,7 +38,7 @@ function timeAgo(dateStr: string): string {
     return `${Math.floor(diff / 86400)} hari lalu`;
 }
 
-interface DataTableProps {
+type DataTableProps = {
     data: AppNotification[];
     pageIndex: number;
     setPageIndex: React.Dispatch<React.SetStateAction<number>>;

@@ -36,16 +36,16 @@ class ProjectInvoice extends Model
     ];
 
     protected $casts = [
-        'percentage'       => 'decimal:2',
-        'subtotal'         => 'decimal:2',
-        'tax_percent'      => 'decimal:2',
-        'tax_amount'       => 'decimal:2',
+        'percentage' => 'decimal:2',
+        'subtotal' => 'decimal:2',
+        'tax_percent' => 'decimal:2',
+        'tax_amount' => 'decimal:2',
         'discount_percent' => 'decimal:2',
-        'discount_amount'  => 'decimal:2',
-        'total_amount'     => 'decimal:2',
-        'invoice_date'     => 'date',
-        'due_date'         => 'date',
-        'paid_at'          => 'datetime',
+        'discount_amount' => 'decimal:2',
+        'total_amount' => 'decimal:2',
+        'invoice_date' => 'date',
+        'due_date' => 'date',
+        'paid_at' => 'datetime',
     ];
 
     public function getActivitylogOptions(): LogOptions
@@ -162,30 +162,30 @@ class ProjectInvoice extends Model
     public function getFormattedTypeAttribute(): string
     {
         return match ($this->type) {
-            'dp'         => 'Down Payment',
-            'progress'   => 'Progress Payment',
-            'final'      => 'Final Payment',
+            'dp' => 'Down Payment',
+            'progress' => 'Progress Payment',
+            'final' => 'Final Payment',
             'additional' => 'Additional Payment',
-            default      => ucfirst($this->type),
+            default => ucfirst($this->type),
         };
     }
 
     public function calculateTotals(): void
     {
         if ($this->isAdditional()) {
-            $this->subtotal        = $this->items()->sum('subtotal');
+            $this->subtotal = $this->items()->sum('subtotal');
             $this->discount_amount = $this->items()->sum('discount_amount');
-            $this->tax_amount      = $this->items()->sum('tax_amount');
-            $this->total_amount    = $this->items()->sum('total_amount');
+            $this->tax_amount = $this->items()->sum('tax_amount');
+            $this->total_amount = $this->items()->sum('total_amount');
         } else {
-            $subtotal       = (float) $this->subtotal;
+            $subtotal = (float) $this->subtotal;
             $discountAmount = $subtotal * ($this->discount_percent / 100);
-            $afterDiscount  = $subtotal - $discountAmount;
-            $taxAmount      = $afterDiscount * ($this->tax_percent / 100);
+            $afterDiscount = $subtotal - $discountAmount;
+            $taxAmount = $afterDiscount * ($this->tax_percent / 100);
 
             $this->discount_amount = $discountAmount;
-            $this->tax_amount      = $taxAmount;
-            $this->total_amount    = $afterDiscount + $taxAmount;
+            $this->tax_amount = $taxAmount;
+            $this->total_amount = $afterDiscount + $taxAmount;
         }
 
         $this->save();
@@ -194,27 +194,27 @@ class ProjectInvoice extends Model
     public function markAsPaid(): void
     {
         $this->update([
-            'status'  => 'paid',
+            'status' => 'paid',
             'paid_at' => now(),
         ]);
     }
 
     public static function generateInvoiceNumber(): string
     {
-        $prefix = 'INV-' . now()->format('Ym') . '-';
+        $prefix = 'INV-'.now()->format('Ym').'-';
 
         $lastInvoice = static::withTrashed()
-            ->where('invoice_number', 'like', $prefix . '%')
+            ->where('invoice_number', 'like', $prefix.'%')
             ->orderBy('invoice_number', 'desc')
             ->first();
 
-        if (!$lastInvoice) {
-            return $prefix . '0001';
+        if (! $lastInvoice) {
+            return $prefix.'0001';
         }
 
         $lastNumber = (int) substr($lastInvoice->invoice_number, -4);
-        $newNumber  = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+        $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
 
-        return $prefix . $newNumber;
+        return $prefix.$newNumber;
     }
 }

@@ -16,7 +16,7 @@ class StoreRequest extends FormRequest
         return [
             'client_name' => 'required|string|max:255',
             'industry' => 'required|string|max:255',
-            'client_logo' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:2048',
+            'client_logo' => 'nullable|file|mimes:jpg,jpeg,png,webp,svg+xml|max:2048',
             'metric_value' => 'required|string|max:100',
             'metric_label' => 'required|string|max:255',
             'challenge' => 'required|string',
@@ -41,7 +41,7 @@ class StoreRequest extends FormRequest
             'industry.required' => 'Industri wajib dipilih.',
 
             'client_logo.file' => 'Logo klien harus berupa file.',
-            'client_logo.mimes' => 'Logo klien harus berupa file jpg, jpeg, png, webp.',
+            'client_logo.mimes' => 'Logo klien harus berupa file gambar (JPG, PNG, WEBP, SVG).',
             'client_logo.max' => 'Logo klien maksimal 2MB.',
 
             'metric_value.required' => 'Nilai metrik wajib diisi.',

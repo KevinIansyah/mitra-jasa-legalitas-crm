@@ -2,11 +2,13 @@ import { useForm } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import * as React from 'react';
 import { toast } from 'sonner';
+
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
+
 import categories from '@/routes/blogs/categories';
 import type { BlogCategoryFormData } from '@/types/blogs';
 
@@ -55,7 +57,7 @@ export function DrawerAdd() {
             </DrawerTrigger>
 
             <DrawerContent className="flex h-screen flex-col">
-                <div className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-4 overflow-y-auto px-4">
+                <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 overflow-y-auto px-4">
                     <DrawerHeader className="px-4">
                         <DrawerTitle>Tambah Kategori Blog Baru</DrawerTitle>
                         <DrawerDescription>Isi formulir di bawah untuk menambahkan kategori blog baru ke sistem</DrawerDescription>

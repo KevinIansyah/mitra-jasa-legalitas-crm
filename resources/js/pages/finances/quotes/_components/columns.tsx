@@ -1,5 +1,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
+
 import { Badge } from '@/components/ui/badge';
+
 import type { Quote } from '@/types/quotes';
 import { QUOTE_TIMELINES_MAP, QUOTE_SOURCES_MAP } from '@/types/quotes';
 import Actions from './actions';

@@ -1,9 +1,12 @@
+import { Link } from '@inertiajs/react';
 import { ChevronDown, ChevronUp, Eye, Pencil, UserRoundCog } from 'lucide-react';
 import { useState } from 'react';
+
 import { DialogDelete } from '@/components/dialog-delete';
 import { HasPermission } from '@/components/has-permission';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+
 import companies from '@/routes/contacts/companies';
 import type { Company, CompanyWithCustomers } from '@/types/contacts';
 import { DrawerEdit } from './drawer-edit';
@@ -47,8 +50,10 @@ export default function Actions({ company, isExpanded, onToggleExpand }: Actions
                 <HasPermission permission="view-contact-companies">
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="secondary" size="sm" className="h-8 w-8">
-                                <Eye className="size-4" />
+                            <Button variant="secondary" size="sm" className="h-8 w-8" asChild>
+                                <Link href={companies.show(company.id).url}>
+                                    <Eye className="size-4" />
+                                </Link>
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>

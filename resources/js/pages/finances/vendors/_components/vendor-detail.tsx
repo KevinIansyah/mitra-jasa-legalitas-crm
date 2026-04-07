@@ -1,8 +1,10 @@
 import { ClipboardCopy, Landmark } from 'lucide-react';
 import { toast } from 'sonner';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+
 import type { Vendor, VendorBankAccount } from '@/types/vendors';
 
 export default function VendorDetail({ vendor }: { vendor: Vendor }) {

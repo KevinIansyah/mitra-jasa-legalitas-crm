@@ -21,7 +21,7 @@ import type { Service, ServiceCityPage } from '@/types/services';
 import { CityPageAddDrawer } from './city-pages-add-drawer';
 import getColumns from './columns';
 
-interface DataTableProps {
+type DataTableProps = {
     data: ServiceCityPage[];
     services: Pick<Service, 'id' | 'name'>[];
     cities: Pick<City, 'id' | 'name' | 'province'>[];
@@ -204,7 +204,7 @@ export function DataTable({ data, services: serviceList, cities, pageIndex, setP
 
                         {/* Add City Page */}
                         <HasPermission permission="create-service-city-pages">
-                            <CityPageAddDrawer services={serviceList} cities={cities} />
+                            <CityPageAddDrawer cities={cities} />
                         </HasPermission>
                     </div>
                 </div>

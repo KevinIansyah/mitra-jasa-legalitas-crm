@@ -1,4 +1,5 @@
 import { Form, Head } from '@inertiajs/react';
+
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
@@ -8,16 +9,17 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
+
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
 
-type Props = {
+type LoginProps = {
     status?: string;
     canResetPassword: boolean;
     canRegister: boolean;
 };
 
-export default function Login({ status, canResetPassword }: Props) {
+export default function Login({ status, canResetPassword }: LoginProps) {
     return (
         <AuthLayout title="Masuk ke akun Anda" description="Masukkan email dan kata sandi Anda untuk melanjutkan">
             <Head title="Masuk" />
@@ -51,8 +53,14 @@ export default function Login({ status, canResetPassword }: Props) {
                             </div>
 
                             <Button type="submit" className="w-full" tabIndex={4} disabled={processing} data-test="login-button">
-                                {processing && <Spinner className="mr-2" />}
-                                {processing ? 'Sedang masuk...' : 'Masuk'}
+                                {processing ? (
+                                    <>
+                                        <Spinner className="mr-2" />
+                                        Sedang Masuk...
+                                    </>
+                                ) : (
+                                    'Masuk'
+                                )}
                             </Button>
                         </div>
                     </>

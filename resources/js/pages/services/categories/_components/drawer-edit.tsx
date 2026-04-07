@@ -65,7 +65,7 @@ export function DrawerEdit({ category, open, onOpenChange }: DrawerEditProps) {
                     loadingFocusRef.current?.focus();
                 }}
             >
-                <div className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-4 overflow-y-auto">
+                <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 overflow-y-auto">
                     <DrawerHeader className="px-4">
                         <DrawerTitle>Edit Kategori Layanan</DrawerTitle>
                         <DrawerDescription>Perbarui data kategori layanan yang sudah ada melalui formulir di bawah ini.</DrawerDescription>
@@ -111,11 +111,11 @@ export function DrawerEdit({ category, open, onOpenChange }: DrawerEditProps) {
                                 <FieldLabel htmlFor="palette_color">Palette Color</FieldLabel>
                                 <Alert className="border-primary bg-primary/20">
                                     <Info />
-                                    <AlertTitle>Panduan Warna Kategori (palette_color)</AlertTitle>
+                                    <AlertTitle>Panduan Warna Kategori (Palette Color)</AlertTitle>
                                     <AlertDescription>
                                         <ul className="mt-2 list-inside list-disc space-y-1.5 text-sm text-foreground/70">
                                             <li>
-                                                <strong>Pilihan Warna:</strong> Gunakan nilai <code>Oklch</code> untuk palette_color.
+                                                <strong>Pilihan Warna:</strong> Gunakan nilai <code>Oklch</code> untuk palette color.
                                             </li>
                                             <li>
                                                 <strong>Referensi:</strong> Bisa dilihat di{' '}
@@ -144,7 +144,7 @@ export function DrawerEdit({ category, open, onOpenChange }: DrawerEditProps) {
                         </div>
 
                         <DrawerFooter className="mt-auto px-0">
-                            <Button type="submit" disabled={processing}>
+                            <Button ref={loadingFocusRef} type="submit" disabled={processing}>
                                 {processing ? (
                                     <>
                                         <Spinner className="mr-2" />

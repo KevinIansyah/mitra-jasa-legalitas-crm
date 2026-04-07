@@ -1,5 +1,5 @@
 import { router } from '@inertiajs/react';
-import { ChevronDown, ChevronUp, Pencil, Wallet } from 'lucide-react';
+import { ChevronDown, ChevronUp, Eye, Pencil, Wallet } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -45,6 +45,12 @@ export function InvoiceCard({ project }: InvoiceCardProps) {
                     [key]: !current[key],
                 },
             };
+        });
+    }
+
+    function goToDetailInvoice(invoiceId: number) {
+        router.visit(finances.invoices.show(invoiceId).url, {
+            data: { project_id: project.id, from_project: true },
         });
     }
 
@@ -113,6 +119,16 @@ export function InvoiceCard({ project }: InvoiceCardProps) {
                                     </div>
 
                                     <div className="order-1 flex shrink-0 flex-wrap items-center gap-1 lg:order-2">
+                                        <HasPermission permission="view-finance-invoices">
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <Button variant="secondary" size="sm" className="h-8 w-8" disabled={loading} onClick={() => goToDetailInvoice(invoice.id)}>
+                                                        <Eye className="size-3.5" />
+                                                    </Button>
+                                                </TooltipTrigger>
+                                                <TooltipContent>Detail Invoice</TooltipContent>
+                                            </Tooltip>
+                                        </HasPermission>
                                         <HasPermission permission="edit-finance-invoices">
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
@@ -257,7 +273,7 @@ export function InvoiceCard({ project }: InvoiceCardProps) {
                                                         {Number(item.tax_percent) > 0 && <span className="ml-2">pajak {item.tax_percent}%</span>}
                                                     </p>
                                                 </div>
-                                                <p className="shrink-0 font-semibold tabular-nums">{formatRupiah(Number(item.total))}</p>
+                                                <p className="shrink-0 font-semibold tabular-nums">{formatRupiah(Number(item.total_amount))}</p>
                                             </div>
                                         ))}
                                     </div>

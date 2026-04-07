@@ -38,11 +38,11 @@ type EstimateFormProps = {
 export function EstimateForm({ data, errors, initialQuote, initialProposal, initialCustomer, fromQuote, fromProposal, isEdit, onChange }: EstimateFormProps) {
     const R2_PUBLIC_URL = import.meta.env.VITE_CLOUDFLARE_R2_PUBLIC_URL;
 
-    // Quote & Proposal selalu dari prop — readonly
+    // Quote & Proposal selalu dari prop - readonly
     const selectedQuote = initialQuote ?? null;
     const selectedProposal = initialProposal ?? null;
 
-    // Customer search — hanya saat !fromQuote && !fromProposal
+    // Customer search - hanya saat !fromQuote && !fromProposal
     const [customerSearchQuery, setCustomerSearchQuery] = React.useState('');
     const [customerSearchResults, setCustomerSearchResults] = React.useState<Customer[]>([]);
     const [isCustomerSearching, setIsCustomerSearching] = React.useState(false);

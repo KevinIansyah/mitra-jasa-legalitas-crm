@@ -1,4 +1,5 @@
 <?php
+
 // database/seeders/SiteSettingSeeder.php
 
 namespace Database\Seeders;
@@ -11,22 +12,22 @@ class SiteSettingSeeder extends Seeder
     public function run(): void
     {
         SiteSetting::firstOrCreate([], [
-            // Company Identity 
-            'company_name'          => 'CV. Mitra Jasa Legalitas',
-            'company_tagline'       => 'Layanan Legalitas Usaha Anda',
-            'company_logo'          => null,
-            'company_favicon'       => null,
-            'company_address'       => 'Jl. Contoh No. 1',
-            'company_city'          => 'Surabaya',
-            'company_province'      => 'Jawa Timur',
-            'company_postal_code'   => '60111',
-            'company_country'       => 'ID',
-            'company_phone'         => '0821-4352-5559',
-            'company_phone_alt'     => null,
-            'company_whatsapp'      => '6282143525559',
-            'company_email'         => 'mitrajasalegalitas@gmail.com',
+            // Company Identity
+            'company_name' => 'CV. Mitra Jasa Legalitas',
+            'company_tagline' => 'Solusi legalitas bisnis terpercaya di Indonesia. Kami mendampingi ribuan pengusaha dari pendirian badan usaha hingga perlindungan kekayaan intelektual.',
+            'company_logo' => null,
+            'company_favicon' => null,
+            'company_address' => 'JL. Medayu Selatan XVIII No.11',
+            'company_city' => 'Surabaya',
+            'company_province' => 'Jawa Timur',
+            'company_postal_code' => '60111',
+            'company_country' => 'ID',
+            'company_phone' => '0821-4352-5559',
+            'company_phone_alt' => null,
+            'company_whatsapp' => '6282143525559',
+            'company_email' => 'mitrajasalegalitas@gmail.com',
             'company_email_support' => null,
-            'company_website'       => 'https://mitrajasalegalitas.co.id',
+            'company_website' => 'https://mitrajasalegalitas.co.id',
 
             // Operasional
             'business_hours' => [
@@ -38,87 +39,87 @@ class SiteSettingSeeder extends Seeder
                 'sat' => '08:00-14:00',
                 'sun' => null,
             ],
-            'maps_embed_url'   => 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d989.3018402663441!2d112.79932332843558!3d-7.330593069396911!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd7faa4be8a322b%3A0x5e64963e26bb977f!2sJl.%20Medokan%20Ayu%20Sel.%2021-19%2C%20Medokan%20Ayu%2C%20Kec.%20Rungkut%2C%20Surabaya%2C%20Jawa%20Timur%2060295%2C%20Indonesia!5e0!3m2!1sen!2sus!4v1774591674561!5m2!1sen!2sus',
+            'maps_embed_url' => 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d989.3018402663441!2d112.79932332843558!3d-7.330593069396911!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd7faa4be8a322b%3A0x5e64963e26bb977f!2sJl.%20Medokan%20Ayu%20Sel.%2021-19%2C%20Medokan%20Ayu%2C%20Kec.%20Rungkut%2C%20Surabaya%2C%20Jawa%20Timur%2060295%2C%20Indonesia!5e0!3m2!1sen!2sus!4v1774591674561!5m2!1sen!2sus',
             'maps_coordinates' => '-7.330593069396911,112.79932332843558',
-            'maps_place_id'    => '!1s0x2dd7faa4be8a322b:0x5e64963e26bb977f',
+            'maps_place_id' => '!1s0x2dd7faa4be8a322b:0x5e64963e26bb977f',
 
             // Default Meta Tag
-            'default_title_template'   => '{page_title} | CV. Mitra Jasa Legalitas',
+            'default_title_template' => '{page_title} | CV. Mitra Jasa Legalitas',
             'default_meta_description' => 'Konsultan Legalitas Terpercaya Surabaya - Layanan Perizinan Usaha Profesional',
-            'default_keywords'         => 'legalitas usaha, perizinan, konsultan hukum, surabaya',
-            'default_og_image'         => null,
+            'default_keywords' => 'legalitas usaha, perizinan, konsultan hukum, surabaya',
+            'default_og_image' => null,
 
             // Schema.org
-            'org_name'          => 'CV. Mitra Jasa Legalitas',
-            'org_type'          => 'ProfessionalService',
-            'org_description'   => 'Layanan konsultasi dan pengurusan legalitas usaha profesional',
-            'org_url'           => 'https://mitrajasalegalitas.co.id',
-            'org_logo_url'      => null,
+            'org_name' => 'CV. Mitra Jasa Legalitas',
+            'org_type' => 'ProfessionalService',
+            'org_description' => 'Layanan konsultasi dan pengurusan legalitas usaha profesional',
+            'org_url' => 'https://mitrajasalegalitas.co.id',
+            'org_logo_url' => null,
             'org_founding_year' => null,
-            'org_area_served'   => 'Surabaya, Jawa Timur, Indonesia',
+            'org_area_served' => 'Surabaya, Jawa Timur, Indonesia',
             'org_service_types' => 'Pendirian PT, Pendirian CV, Perizinan Usaha, SIUP, Konsultasi Legalitas',
 
             // Statisti
-            'stat_total_clients'    => 780,
-            'stat_total_documents'  => 3721,
-            'stat_rating'           => 4.5,
-            'stat_total_reviews'    => 232,
+            'stat_total_clients' => 780,
+            'stat_total_documents' => 3721,
+            'stat_rating' => 4.5,
+            'stat_total_reviews' => 232,
             'stat_years_experience' => 0,
-            'stat_total_services'   => 0,
+            'stat_total_services' => 0,
 
             // Legal
-            'legal_entity_type'         => 'CV',
-            'legal_npwp'                => '42.843.664.6-606.000',
+            'legal_entity_type' => 'CV',
+            'legal_npwp' => '42.843.664.6-606.000',
             'legal_registration_number' => '1287000721661',
-            'legal_nib'                 => null,
-            'legal_siup'                => null,
+            'legal_nib' => null,
+            'legal_siup' => null,
 
             // Ban
-            'bank_name'               => 'Bank Mandiri',
-            'bank_branch'             => null,
-            'bank_account_number'     => '14200-1816-8848',
-            'bank_account_holder'     => 'Moch Zainul Arifin S.Sos',
-            'bank_name_alt'           => null,
-            'bank_branch_alt'         => null,
+            'bank_name' => 'Bank Mandiri',
+            'bank_branch' => null,
+            'bank_account_number' => '14200-1816-8848',
+            'bank_account_holder' => 'Moch Zainul Arifin S.Sos',
+            'bank_name_alt' => null,
+            'bank_branch_alt' => null,
             'bank_account_number_alt' => null,
             'bank_account_holder_alt' => null,
 
             // Signer
             'signature_image' => null,
-            'stamp_image'     => null,
-            'signer_name'     => 'Moch Zainul Arifin S.Sos',
+            'stamp_image' => null,
+            'signer_name' => 'Moch Zainul Arifin S.Sos',
             'signer_position' => 'Direktur',
-            'signer_phone'    => '0821-4352-5559',
-            'signer_email'    => null,
+            'signer_phone' => '0821-4352-5559',
+            'signer_email' => null,
 
             // Dokume
-            'document_footer_text'          => 'Terima kasih atas kepercayaan Anda kepada CV. Mitra Jasa Legalitas.',
+            'document_footer_text' => 'Terima kasih atas kepercayaan Anda kepada CV. Mitra Jasa Legalitas.',
             'document_terms_and_conditions' => null,
-            'document_privacy_policy_url'   => null,
-            'document_letterhead'           => null,
+            'document_privacy_policy_url' => null,
+            'document_letterhead' => null,
 
             // Analytic
-            'google_analytics_id'      => null,
-            'google_tag_manager_id'    => null,
+            'google_analytics_id' => null,
+            'google_tag_manager_id' => null,
             'google_site_verification' => null,
-            'meta_pixel_id'            => null,
-            'tiktok_pixel_id'          => null,
-            'custom_head_scripts'      => null,
-            'custom_body_scripts'      => null,
+            'meta_pixel_id' => null,
+            'tiktok_pixel_id' => null,
+            'custom_head_scripts' => null,
+            'custom_body_scripts' => null,
 
             // Social Media
-            'social_facebook'  => null,
+            'social_facebook' => null,
             'social_instagram' => null,
-            'social_whatsapp'  => 'https://wa.me/6282143525559',
-            'social_linkedin'  => null,
-            'social_tiktok'    => null,
-            'social_youtube'   => null,
-            'social_twitter'   => null,
-            'social_threads'   => null,
+            'social_whatsapp' => 'https://wa.me/6282143525559',
+            'social_linkedin' => null,
+            'social_tiktok' => null,
+            'social_youtube' => null,
+            'social_twitter' => null,
+            'social_threads' => null,
 
             // Maintenance
-            'maintenance_mode'        => false,
-            'maintenance_message'     => null,
+            'maintenance_mode' => false,
+            'maintenance_message' => null,
             'maintenance_allowed_ips' => null,
         ]);
     }

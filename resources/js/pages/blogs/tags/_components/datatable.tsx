@@ -2,6 +2,7 @@ import type { VisibilityState } from '@tanstack/react-table';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { ChevronDown, ChevronLeftIcon, ChevronRightIcon, ChevronsLeftIcon, ChevronsRightIcon, Search } from 'lucide-react';
 import * as React from 'react';
+
 import { HasPermission } from '@/components/has-permission';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -9,13 +10,14 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/in
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+
 import { useDataTableWithFilters } from '@/hooks/use-datatable-with-filters';
 import tags from '@/routes/blogs/tags';
 import type { BlogTag } from '@/types/blogs';
 import getColumns from './columns';
 import { DrawerAdd } from './drawer-add';
 
-interface DataTableProps {
+type DataTableProps = {
     data: BlogTag[];
     pageIndex: number;
     setPageIndex: React.Dispatch<React.SetStateAction<number>>;
@@ -25,7 +27,7 @@ interface DataTableProps {
     initialFilters?: {
         search?: string;
     };
-}
+};
 
 export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItems, perPage, initialFilters = {} }: DataTableProps) {
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -97,9 +99,7 @@ export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItem
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id} className="border-none">
                                 {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id}>
-                                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                                    </TableHead>
+                                    <TableHead key={header.id}>{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}</TableHead>
                                 ))}
                             </TableRow>
                         ))}

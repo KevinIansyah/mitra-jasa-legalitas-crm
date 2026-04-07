@@ -1,12 +1,15 @@
 import { useForm } from '@inertiajs/react';
-import { Plus } from 'lucide-react';
+import { Info, Plus } from 'lucide-react';
 import * as React from 'react';
 import { toast } from 'sonner';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
+
 import categories from '@/routes/services/categories';
 import type { ServiceCategoryFormData } from '@/types/services';
 
@@ -56,7 +59,7 @@ export function DrawerAdd() {
             </DrawerTrigger>
 
             <DrawerContent className="flex h-screen flex-col">
-                <div className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-4 overflow-y-auto px-4">
+                <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 overflow-y-auto px-4">
                     <DrawerHeader className="px-4">
                         <DrawerTitle>Tambah Kategori Layanan Baru</DrawerTitle>
                         <DrawerDescription>Isi formulir di bawah untuk menambahkan kategori layanan baru ke sistem</DrawerDescription>
@@ -85,6 +88,28 @@ export function DrawerAdd() {
 
                             <Field>
                                 <FieldLabel htmlFor="palette_color">Palette Color</FieldLabel>
+                                <Alert className="border-primary bg-primary/20">
+                                    <Info />
+                                    <AlertTitle>Panduan Warna Kategori (Palette Color)</AlertTitle>
+                                    <AlertDescription>
+                                        <ul className="mt-2 list-inside list-disc space-y-1.5 text-sm text-foreground/70">
+                                            <li>
+                                                <strong>Pilihan Warna:</strong> Gunakan nilai <code>Oklch</code> untuk palette color.
+                                            </li>
+                                            <li>
+                                                <strong>Referensi:</strong> Bisa dilihat di{' '}
+                                                <a href="https://tailwindcss.com/docs/colors" target="_blank" className="text-primary underline">
+                                                    Tailwind CSS Colors
+                                                </a>{' '}
+                                                untuk contoh nilai Oklch.
+                                            </li>
+                                            <li>
+                                                <strong>Tips:</strong> Pilih warna yang harmonis antar kategori untuk konsistensi UI.
+                                            </li>
+                                        </ul>
+                                    </AlertDescription>
+                                </Alert>
+
                                 <Input
                                     id="palette_color"
                                     type="text"

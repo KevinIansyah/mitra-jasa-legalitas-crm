@@ -84,6 +84,11 @@ class RolePermissionSeeder extends Seeder
             'edit-content-testimonials',
             'delete-content-testimonials',
 
+            'view-content-client-companies',
+            'create-content-client-companies',
+            'edit-content-client-companies',
+            'delete-content-client-companies',
+
             'view-projects',
             'create-projects',
             'edit-projects',

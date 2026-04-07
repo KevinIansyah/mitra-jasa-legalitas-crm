@@ -99,7 +99,7 @@ function CharCounter({ value, max, ideal }: { value: string; max: number; ideal:
     const hint = len > max ? 'Terlalu panjang' : len >= ideal ? 'Ideal' : 'Terlalu pendek';
     return (
         <p className={`text-xs ${color}`}>
-            {len}/{max} karakter — {hint}
+            {len}/{max} karakter - {hint}
         </p>
     );
 }
@@ -432,7 +432,7 @@ export function SeoCard({ seo, onChange, errors = {}, schemaMarkup }: SeoCardPro
 
                 <ImageUploadSmall
                     label="OG Image"
-                    hint="Rekomendasi: 1200×630px — ditampilkan saat halaman dibagikan"
+                    hint="Rekomendasi: 1200×630px - ditampilkan saat halaman dibagikan"
                     currentUrl={seo.og_image_url}
                     externalFile={seo.og_image}
                     onChange={(file) => update({ og_image: file })}

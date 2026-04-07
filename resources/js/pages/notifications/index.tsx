@@ -1,6 +1,8 @@
 import { Head, usePage } from '@inertiajs/react';
+
 import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
+
 import type { BreadcrumbItem } from '@/types';
 import type { AppNotification } from '@/types/notification';
 import type { Paginator } from '@/types/paginator';
@@ -18,6 +20,7 @@ export default function Page() {
             <Head title="Notifikasi" />
             <div className="p-4 md:p-6">
                 <Heading title="Notifikasi" description="Kelola semua notifikasi kamu" />
+                
                 <NotificationSection notifications={notifications} />
             </div>
         </AppLayout>

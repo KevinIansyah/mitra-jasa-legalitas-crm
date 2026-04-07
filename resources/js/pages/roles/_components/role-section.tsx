@@ -1,9 +1,10 @@
 import { useState } from 'react';
+
 import type { Paginator } from '@/types/paginator';
 import type { Role } from '@/types/roles';
 import { DataTable } from './datatable';
 
-interface RoleSectionProps {
+type RoleSectionProps = {
     roles: Paginator<Role>;
     filters: { search?: string };
 }

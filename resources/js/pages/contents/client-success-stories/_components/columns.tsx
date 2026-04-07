@@ -1,5 +1,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
+
 import { Badge } from '@/components/ui/badge';
+
 import { CATEGORY_BUSINESS_MAP } from '@/types/contacts';
 import type { ClientSuccessStory } from '@/types/contents';
 import Actions from './actions';

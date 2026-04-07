@@ -1,6 +1,8 @@
 import { Head, usePage } from '@inertiajs/react';
+
 import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
+
 import type { BreadcrumbItem } from '@/types';
 import type { Paginator } from '@/types/paginator';
 import type { ProjectInvoice, ProjectInvoiceSummary } from '@/types/projects';

@@ -20,6 +20,7 @@ import type { Project, ProjectInvoiceFormData } from '@/types/projects';
 import { INVOICE_TYPES, PROJECT_STATUSES_MAP, type InvoiceType } from '@/types/projects';
 import type { InvoiceFormErrors } from '../create/_components/create-section';
 import { BillableExpensePicker } from './billable-expense-picker';
+import { ContractInvoiceLineFields } from './contract-invoice-line-fields';
 import { InvoiceItemsEditor } from './invoice-item-editor';
 
 type InvoiceFormProps = {
@@ -43,6 +44,7 @@ export function InvoiceForm({ data, errors, initialProject, initialCustomer, fro
     const [showBillablePicker, setShowBillablePicker] = React.useState(false);
 
     const isAdditional = data.type === 'additional';
+    const isContractInvoice = data.type === 'dp' || data.type === 'progress' || data.type === 'final';
     const customerSearchTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
     React.useEffect(() => {
@@ -95,10 +97,34 @@ export function InvoiceForm({ data, errors, initialProject, initialCustomer, fro
     //============================================================
 
     function handleTypeChange(type: string) {
-        onChange({
-            type: type as InvoiceType,
-            items: type !== 'additional' ? [] : data.items,
-        });
+        const t = type as InvoiceType;
+        const isNowContract = t === 'dp' || t === 'progress' || t === 'final';
+
+        if (t === 'additional') {
+            let nextItems = data.items ?? [];
+            if (nextItems.length === 0) {
+                nextItems = [{ description: '', item_details: [], quantity: 1, unit_price: 0, tax_percent: 11, discount_percent: 0 }];
+            }
+            onChange({
+                type: t,
+                items: nextItems,
+                contract_item_description: '',
+                contract_item_details: [],
+            });
+            return;
+        }
+
+        if (isNowContract) {
+            onChange({
+                type: t,
+                items: [],
+                contract_item_description: data.contract_item_description ?? '',
+                contract_item_details: data.contract_item_details ?? [],
+            });
+            return;
+        }
+
+        onChange({ type: t, items: [], contract_item_description: '', contract_item_details: [] });
     }
 
     function handlePercentageChange(raw: string) {
@@ -221,7 +247,7 @@ export function InvoiceForm({ data, errors, initialProject, initialCustomer, fro
                                 Tipe Invoice <span className="text-destructive">*</span>
                             </FieldLabel>
                             <Select value={data.type} onValueChange={handleTypeChange}>
-                                <SelectTrigger className={errors.type ? 'border-destructive' : ''}>
+                                <SelectTrigger>
                                     <SelectValue placeholder="Pilih tipe..." />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -273,7 +299,7 @@ export function InvoiceForm({ data, errors, initialProject, initialCustomer, fro
                         </div>
 
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                            {/* Percentage — hanya tampil kalau fromProject dan ada budget */}
+                            {/* Percentage - hanya tampil kalau fromProject dan ada budget */}
                             {fromProject && selectedProject && (
                                 <Field>
                                     <FieldLabel>Persentase dari Budget (%)</FieldLabel>
@@ -301,7 +327,7 @@ export function InvoiceForm({ data, errors, initialProject, initialCustomer, fro
                                     value={data.subtotal || ''}
                                     onChange={(e) => onChange({ subtotal: parseFloat(e.target.value) || 0, percentage: 0 })}
                                     placeholder="0"
-                                    className={errors.subtotal ? 'border-destructive' : ''}
+                                  
                                 />
                                 {data.subtotal > 0 && <p className="text-xs text-muted-foreground">{formatRupiah(data.subtotal)}</p>}
                                 {errors.subtotal && <FieldError>{errors.subtotal}</FieldError>}
@@ -335,11 +361,19 @@ export function InvoiceForm({ data, errors, initialProject, initialCustomer, fro
                                 />
                             </Field>
                         </div>
+
+                        {isContractInvoice && (
+                            <ContractInvoiceLineFields
+                                description={data.contract_item_description ?? ''}
+                                itemDetails={data.contract_item_details ?? []}
+                                onChange={(patch) => onChange(patch)}
+                            />
+                        )}
                     </div>
                 </div>
             )}
 
-            {/* ───────────────── Items Section ───────────────── */}
+            {/* ───────────────── Items Section (hanya invoice tambahan) ───────────────── */}
             {isAdditional && (
                 <div className="rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                     <div className="space-y-4">
@@ -350,8 +384,8 @@ export function InvoiceForm({ data, errors, initialProject, initialCustomer, fro
                             </div>
 
                             <div className="flex w-full items-center gap-2 md:w-auto">
-                                {/* Import billable hanya tersedia kalau ada project */}
-                                {fromProject && data.project_id && (
+                                {/* Import billable hanya untuk invoice tambahan + ada project */}
+                                {isAdditional && fromProject && data.project_id && (
                                     <>
                                         {showBillablePicker ? (
                                             <Button type="button" variant="secondary" className="flex-1 lg:w-40 lg:flex-none" onClick={() => setShowBillablePicker((v) => !v)}>
@@ -372,7 +406,17 @@ export function InvoiceForm({ data, errors, initialProject, initialCustomer, fro
                                     className="flex-1 lg:w-30 lg:flex-none"
                                     onClick={() =>
                                         onChange({
-                                            items: [...(data.items ?? []), { description: '', quantity: 1, unit_price: 0, tax_percent: 11, discount_percent: 0 }],
+                                            items: [
+                                                ...(data.items ?? []),
+                                                {
+                                                    description: '',
+                                                    item_details: [],
+                                                    quantity: 1,
+                                                    unit_price: 0,
+                                                    tax_percent: 11,
+                                                    discount_percent: 0,
+                                                },
+                                            ],
                                         })
                                     }
                                 >
@@ -396,15 +440,7 @@ export function InvoiceForm({ data, errors, initialProject, initialCustomer, fro
                             </div>
                         )}
 
-                        <InvoiceItemsEditor
-                            items={data.items ?? []}
-                            onChange={(items) => onChange({ items })}
-                            onAdd={() =>
-                                onChange({
-                                    items: [...(data.items ?? []), { description: '', quantity: 1, unit_price: 0, tax_percent: 11, discount_percent: 0 }],
-                                })
-                            }
-                        />
+                        <InvoiceItemsEditor items={data.items ?? []} onChange={(items) => onChange({ items })} />
                         {errors.items && <FieldError>{errors.items}</FieldError>}
                     </div>
                 </div>

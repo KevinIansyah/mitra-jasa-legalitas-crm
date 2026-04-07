@@ -163,21 +163,7 @@ function Sidebar({
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
 
-  if (collapsible === "none") {
-    return (
-      <div
-        data-slot="sidebar"
-        className={cn(
-          "bg-sidebar text-sidebar-foreground flex h-full w-(--sidebar-width) flex-col",
-          className
-        )}
-        {...props}
-      >
-        {children}
-      </div>
-    )
-  }
-
+  /* Mobile first: semua mode (termasuk collapsible "none") pakai Sheet agar tidak ikut scroll dokumen */
   if (isMobile) {
     return (
       <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
@@ -185,7 +171,11 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
+          data-variant={variant}
+          className={cn(
+            "bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden",
+            variant === "floating" || variant === "inset" ? "p-2" : ""
+          )}
           style={
             {
               "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
@@ -197,9 +187,60 @@ function Sidebar({
             <SheetTitle>Sidebar</SheetTitle>
             <SheetDescription>Displays the mobile sidebar.</SheetDescription>
           </SheetHeader>
-          <div className="flex h-full w-full flex-col">{children}</div>
+          <div
+            className={cn(
+              "flex h-full w-full flex-col",
+              variant === "floating" &&
+                "border-sidebar-border rounded-lg border shadow-sm"
+            )}
+          >
+            {children}
+          </div>
         </SheetContent>
       </Sheet>
+    )
+  }
+
+  /* Desktop + sidebar selalu lebar penuh: spacer + panel fixed (sama seperti mode icon/offcanvas) */
+  if (collapsible === "none") {
+    return (
+      <div
+        className="group peer text-sidebar-foreground hidden md:block"
+        data-state="expanded"
+        data-collapsible=""
+        data-variant={variant}
+        data-side={side}
+        data-slot="sidebar"
+      >
+        <div
+          data-slot="sidebar-gap"
+          className="relative w-(--sidebar-width) shrink-0 bg-transparent"
+        />
+        <div
+          data-slot="sidebar-container"
+          className={cn(
+            "fixed inset-y-0 z-10 flex h-svh w-(--sidebar-width) flex-col",
+            side === "left" ? "left-0" : "right-0",
+            variant === "floating" || variant === "inset"
+              ? "p-2"
+              : "border-sidebar-border group-data-[side=left]:border-r group-data-[side=right]:border-l",
+            className
+          )}
+          {...props}
+        >
+          <div
+            data-sidebar="sidebar"
+            data-slot="sidebar-inner"
+            className={cn(
+              "bg-sidebar flex h-full min-h-0 w-full flex-col overflow-hidden",
+              variant === "floating" &&
+                "border-sidebar-border rounded-lg border shadow-sm"
+            )}
+          >
+            {children}
+          </div>
+        </div>
+      </div>
     )
   }
 

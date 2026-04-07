@@ -1,5 +1,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
 import { getInitials } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
 import type { User } from '@/types/auth';

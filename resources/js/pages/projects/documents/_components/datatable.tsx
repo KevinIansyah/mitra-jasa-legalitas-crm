@@ -20,7 +20,7 @@ import { DOCUMENT_STATUSES } from '@/types/projects';
 import getColumns from './columns';
 import DocumentDetail from './document-detail';
 
-interface DataTableProps {
+type DataTableProps = {
     data: ProjectDocument[];
     pageIndex: number;
     setPageIndex: React.Dispatch<React.SetStateAction<number>>;

@@ -22,7 +22,7 @@ import type { Vendor } from '@/types/vendors';
 import getColumns from './columns';
 import VendorDetail from './vendor-detail';
 
-interface DataTableProps {
+type DataTableProps = {
     data: Vendor[];
     pageIndex: number;
     setPageIndex: React.Dispatch<React.SetStateAction<number>>;

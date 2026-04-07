@@ -1,17 +1,85 @@
-import { GripVertical, Trash2 } from 'lucide-react';
+import { CircleCheck, GripVertical, Plus, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import { formatRupiah } from '@/lib/service';
 import type { ProjectInvoiceItemFormData } from '@/types/projects';
 
-type Props = {
+function InvoiceLineItemDetails({ lines, onChangeLines, itemKey }: { lines: string[]; onChangeLines: (next: string[]) => void; itemKey: number }) {
+    const [lineInput, setLineInput] = useState('');
+
+    function addLine() {
+        const trimmed = lineInput.trim();
+        if (!trimmed) return;
+        onChangeLines([...lines, trimmed]);
+        setLineInput('');
+    }
+
+    function deleteLine(lineIndex: number) {
+        onChangeLines(lines.filter((_, i) => i !== lineIndex));
+    }
+
+    return (
+        <Field>
+            <FieldLabel>Rincian item</FieldLabel>
+            {lines.length > 0 && (
+                <div className="mb-2 space-y-2">
+                    {lines.map((line, lineIndex) => (
+                        <div key={`${itemKey}-${lineIndex}`} className="flex items-center justify-between gap-4 rounded-lg bg-primary/10 p-3 dark:bg-muted/40">
+                            <div className="flex items-center gap-3">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10">
+                                    <CircleCheck className="size-4 text-primary" />
+                                </div>
+                                <div>
+                                    <span className="flex-1 text-sm">{line}</span>
+                                </div>
+                            </div>
+
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button type="button" variant="destructive" className="h-8 w-8" onClick={() => deleteLine(lineIndex)}>
+                                        <Trash2 className="size-3.5" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent side="top">
+                                    <p>Hapus baris</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </div>
+                    ))}
+                </div>
+            )}
+            <div className="flex gap-2">
+                <Input
+                    value={lineInput}
+                    onChange={(e) => setLineInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addLine())}
+                    placeholder="Contoh: Termin 50% - jatuh tempo 14 hari"
+                    className="flex-1"
+                />
+
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button type="button" size="icon" onClick={addLine}>
+                            <Plus className="size-4" />
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top">
+                        <p>Tambah baris rincian</p>
+                    </TooltipContent>
+                </Tooltip>
+            </div>
+        </Field>
+    );
+}
+
+type InvoiceItemsEditorProps = {
     items: ProjectInvoiceItemFormData[];
     onChange: (items: ProjectInvoiceItemFormData[]) => void;
-    onAdd: () => void;
 };
 
 function calcItemTotal(item: ProjectInvoiceItemFormData) {
@@ -22,7 +90,7 @@ function calcItemTotal(item: ProjectInvoiceItemFormData) {
     return afterDiscount + taxAmount;
 }
 
-export function InvoiceItemsEditor({ items, onChange }: Props) {
+export function InvoiceItemsEditor({ items, onChange }: InvoiceItemsEditorProps) {
     function removeItem(index: number) {
         onChange(items.filter((_, i) => i !== index));
     }
@@ -34,6 +102,10 @@ export function InvoiceItemsEditor({ items, onChange }: Props) {
     function updateNumber(index: number, field: 'quantity' | 'unit_price' | 'tax_percent' | 'discount_percent', raw: string) {
         const value = parseFloat(raw) || 0;
         onChange(items.map((item, i) => (i === index ? { ...item, [field]: value } : item)));
+    }
+
+    function updateItemDetails(index: number, details: string[]) {
+        onChange(items.map((item, i) => (i === index ? { ...item, item_details: details } : item)));
     }
 
     return (
@@ -57,14 +129,17 @@ export function InvoiceItemsEditor({ items, onChange }: Props) {
                         <FieldLabel>
                             Deskripsi <span className="text-destructive">*</span>
                         </FieldLabel>
-                        <Textarea
+                        {/* <Textarea
                             value={item.description}
                             onChange={(e) => updateDescription(index, e.target.value)}
                             placeholder="Contoh: Jasa Pendirian PT, Biaya PNBP..."
                             className="min-h-24 resize-none text-sm"
                             rows={2}
-                        />
+                        /> */}
+                        <Input value={item.description} onChange={(e) => updateDescription(index, e.target.value)} placeholder="Contoh: Jasa Pendirian PT, Biaya PNBP..." />
                     </Field>
+
+                    <InvoiceLineItemDetails itemKey={index} lines={item.item_details ?? []} onChangeLines={(details) => updateItemDetails(index, details)} />
 
                     <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                         {/* Quantity */}

@@ -1,13 +1,15 @@
 import { CircleCheck, CircleDot, CircleX, Wallet } from 'lucide-react';
 import { useState } from 'react';
+
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+
 import { formatRupiah } from '@/lib/service';
 import type { Paginator } from '@/types/paginator';
 import type { ProjectPayment } from '@/types/projects';
 import type { PaymentSummary } from '../index';
 import { DataTable } from './datatable';
 
-interface PaymentSectionProps {
+type PaymentSectionProps = {
     payments: Paginator<ProjectPayment>;
     summary: PaymentSummary;
     filters: { search?: string; status?: string; payment_method?: string };

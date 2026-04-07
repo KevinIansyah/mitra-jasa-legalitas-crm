@@ -1,5 +1,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
+
 import { Badge } from '@/components/ui/badge';
+
 import { BLOG_SUBSCRIBER_VERIFIED_FILTER_MAP, type BlogSubscriber } from '@/types/blogs';
 import Actions from './actions';
 
@@ -41,7 +43,7 @@ export default function getColumns(expandedRow: string | null, setExpandedRow: (
                               hour: '2-digit',
                               minute: '2-digit',
                           })
-                        : '—'}
+                        : '-'}
                 </span>
             ),
         },

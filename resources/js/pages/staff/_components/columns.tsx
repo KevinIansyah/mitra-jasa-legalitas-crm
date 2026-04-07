@@ -11,9 +11,9 @@ import type { AvailabilityStatus, Staff } from '@/types/staff';
 import { AVAILABILITY_STATUSES_MAP } from '@/types/staff';
 import Actions from './actions';
 
-export default function getColumns(roles: Role[]): ColumnDef<Staff>[] {
-    const R2_PUBLIC_URL = import.meta.env.VITE_CLOUDFLARE_R2_PUBLIC_URL;
+const R2_PUBLIC_URL = import.meta.env.VITE_CLOUDFLARE_R2_PUBLIC_URL;
 
+export default function getColumns(roles: Role[]): ColumnDef<Staff>[] {
     return [
         {
             accessorKey: 'name',

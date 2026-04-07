@@ -1,6 +1,7 @@
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+
 import finances from '@/routes/finances';
 import type { Customer } from '@/types/contacts';
 import type { Project, ProjectInvoice, ProjectInvoiceFormData } from '@/types/projects';
@@ -17,6 +18,9 @@ type EditSectionProps = {
 };
 
 function invoiceToFormData(invoice: ProjectInvoice): ProjectInvoiceFormData {
+    const isContract = invoice.type === 'dp' || invoice.type === 'progress' || invoice.type === 'final';
+    const first = invoice.items?.[0];
+
     return {
         project_id: invoice.project_id ?? null,
         customer_id: invoice.customer_id ?? null,
@@ -29,14 +33,20 @@ function invoiceToFormData(invoice: ProjectInvoice): ProjectInvoiceFormData {
         discount_percent: Number(invoice.discount_percent),
         notes: invoice.notes ?? '',
         payment_instructions: invoice.payment_instructions ?? '',
+        contract_item_description: isContract && first ? (first.description === '—' ? '' : first.description) : '',
+        contract_item_details: isContract && first && Array.isArray(first.item_details) ? [...first.item_details] : [],
         items:
-            invoice.items?.map((item) => ({
-                description: item.description,
-                quantity: Number(item.quantity),
-                unit_price: Number(item.unit_price),
-                tax_percent: Number(item.tax_percent),
-                discount_percent: Number(item.discount_percent),
-            })) ?? [],
+            invoice.type === 'additional'
+                ? (invoice.items?.map((item) => ({
+                      expense_id: item.expense_id ?? undefined,
+                      description: item.description,
+                      item_details: Array.isArray(item.item_details) ? [...item.item_details] : [],
+                      quantity: Number(item.quantity),
+                      unit_price: Number(item.unit_price),
+                      tax_percent: Number(item.tax_percent),
+                      discount_percent: Number(item.discount_percent),
+                  })) ?? [])
+                : [],
     };
 }
 
@@ -82,7 +92,7 @@ export default function EditSection({ invoice, selectedProject, fromProject, sel
                     taxPercent={data.tax_percent ?? 0}
                     discountPercent={data.discount_percent ?? 0}
                     items={data.items ?? []}
-                    isAdditional={isAdditional}
+                    useLineItemTotals={isAdditional}
                     processing={processing}
                     onSubmit={() => handleSubmit()}
                 />

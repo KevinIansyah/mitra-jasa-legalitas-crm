@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Search, User, X } from 'lucide-react';
 import * as React from 'react';
 import { toast } from 'sonner';
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -14,13 +15,14 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
 import { getInitials } from '@/lib/service';
 import companies from '@/routes/contacts/companies';
 import search from '@/routes/search';
 import { TIER_MAP, type AttachCustomerToCompanyFormData, type CompanyWithCustomers, type Customer } from '@/types/contacts';
 import { CustomerItem } from './customer-item';
 
-interface DrawerManageCustomersProps {
+type DrawerManageCustomersProps = {
     company: CompanyWithCustomers;
     open: boolean;
     onOpenChange: (open: boolean) => void;

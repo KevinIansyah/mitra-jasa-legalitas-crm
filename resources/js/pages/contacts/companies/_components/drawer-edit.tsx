@@ -269,7 +269,7 @@ export function DrawerEdit({ company, open, onOpenChange }: DrawerEditProps) {
                         </div>
 
                         <DrawerFooter className="mt-auto px-0">
-                            <Button type="submit" disabled={processing}>
+                            <Button ref={loadingFocusRef} type="submit" disabled={processing}>
                                 {processing ? (
                                     <>
                                         <Spinner className="mr-2" />

@@ -1,12 +1,14 @@
 import { MessageSquareQuote, Star } from 'lucide-react';
 import { useState } from 'react';
+
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+
 import type { Testimonial, TestimonialSummary } from '@/types/contents';
 import type { Paginator } from '@/types/paginator';
 import type { Service } from '@/types/services';
 import { DataTable } from './datatable';
 
-interface TestimonialSectionProps {
+type TestimonialSectionProps = {
     testimonials: Paginator<Testimonial>;
     services: Service[];
     summary: TestimonialSummary;

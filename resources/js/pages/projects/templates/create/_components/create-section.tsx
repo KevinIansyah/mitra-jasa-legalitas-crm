@@ -17,7 +17,6 @@ import { deleteItemAndReindex, moveItemDown, moveItemUp } from '@/lib/service';
 import templates from '@/routes/projects/templates';
 import type { ProjectTemplateStatus, ProjectTemplateWithService } from '@/types/project-templates';
 import type { Service } from '@/types/services';
-
 import type { LocalDocument } from '../../_components/document-card';
 import { DocumentCard } from '../../_components/document-card';
 import type { LocalMilestone } from '../../_components/milestone-card';

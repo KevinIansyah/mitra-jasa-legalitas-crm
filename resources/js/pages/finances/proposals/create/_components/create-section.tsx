@@ -1,6 +1,7 @@
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+
 import finances from '@/routes/finances';
 import type { ProposalFormData } from '@/types/proposals';
 import { ProposalForm } from '../../_components/proposal-form';
@@ -15,6 +16,7 @@ const EMPTY_FORM: ProposalFormData = {
     discount_percent: 0,
     notes: '',
     items: [{ description: '', quantity: 1, unit_price: 0, tax_percent: 11, discount_percent: 0 }],
+    project_name: ''
 };
 
 export default function CreateSection() {

@@ -28,8 +28,8 @@ import {
     readImageAsDataURL,
     validateImageFile,
 } from '@/lib/service';
+import services from '@/routes/services';
 import type { Service, ServiceCategory } from '@/types/services';
-
 import { FaqCard, type LocalFaq } from '../../_components/faq-card';
 import { LegalBasisCard, type LocalLegalBasis } from '../../_components/legal-basis-card';
 import { PackageCard, type LocalPackage } from '../../_components/package-card';
@@ -38,7 +38,6 @@ import { RequirementCard, type LocalRequirementCategory } from '../../_component
 import { SeoCard } from '../../_components/seo-card';
 import type { AiDrawerType } from './ai-generate-drawer';
 import { AiGenerateDrawer } from './ai-generate-drawer';
-import services from '@/routes/services';
 
 type BasicInfoFormData = {
     service_category_id: number;

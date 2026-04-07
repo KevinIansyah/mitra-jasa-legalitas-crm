@@ -20,7 +20,7 @@ import { ACCOUNT_TYPES, type Account } from '@/types/accounts';
 import { AccountAddDrawer } from './account-add-drawer';
 import getColumns from './columns';
 
-interface DataTableProps {
+type DataTableProps = {
     data: Account[];
     pageIndex: number;
     setPageIndex: React.Dispatch<React.SetStateAction<number>>;

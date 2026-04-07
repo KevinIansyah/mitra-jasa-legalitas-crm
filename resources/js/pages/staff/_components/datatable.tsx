@@ -23,7 +23,7 @@ import { AVAILABILITY_STATUSES } from '@/types/staff';
 import getColumns from './columns';
 import { DrawerAdd } from './drawer-add';
 
-interface DataTableProps {
+type DataTableProps = {
     data: Staff[];
     roles: Role[];
     pageIndex: number;

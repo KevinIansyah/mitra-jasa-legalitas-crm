@@ -1,9 +1,10 @@
 import { useState } from 'react';
+
 import type { BlogCategory } from '@/types/blogs';
 import type { Paginator } from '@/types/paginator';
 import { DataTable } from './datatable';
 
-interface CategorySectionProps {
+type CategorySectionProps = {
     categories: Paginator<BlogCategory>;
     filters: { search?: string };
 }

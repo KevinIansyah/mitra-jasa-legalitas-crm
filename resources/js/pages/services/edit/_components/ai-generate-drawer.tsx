@@ -1,10 +1,12 @@
 import axios from 'axios';
 import { AlertCircle, Check, CheckCheck } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Spinner } from '@/components/ui/spinner';
+
 import { uid } from '@/lib/service';
 import type { Service } from '@/types/services';
 
@@ -468,7 +470,7 @@ export function AiGenerateDrawer({ open, onOpenChange, type, service, onApply }:
                         {steps.map((step, index) => (
                             <div key={index} className="rounded-lg bg-primary/10 p-4 dark:bg-muted/40">
                                 <p className="text-sm font-medium text-foreground">
-                                    Tahap {index + 1} — {step.title}
+                                    Tahap {index + 1} - {step.title}
                                 </p>
                                 <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{step.description}</p>
                                 {step.duration && <p className="mt-1 text-xs text-muted-foreground">Durasi: {step.duration}</p>}
@@ -548,21 +550,21 @@ export function AiGenerateDrawer({ open, onOpenChange, type, service, onApply }:
                                 {composited[index] && (
                                     <>
                                         <PreviewCard
-                                            label={`Gambar ${index + 1} — Featured (1920×1080)`}
+                                            label={`Gambar ${index + 1} - Featured (1920×1080)`}
                                             applied={!!applied[`image_${index}`]}
                                             onApply={() => applyField(`image_${index}`, composited[index].original.file)}
                                         >
                                             <img src={composited[index].original.preview} className="w-full rounded-md object-cover" />
                                         </PreviewCard>
                                         <PreviewCard
-                                            label={`Gambar ${index + 1} — OG Image (1200×630)`}
+                                            label={`Gambar ${index + 1} - OG Image (1200×630)`}
                                             applied={!!applied[`og_image_${index}`]}
                                             onApply={() => applyField(`og_image_${index}`, composited[index].og.file)}
                                         >
                                             <img src={composited[index].og.preview} className="w-full rounded-md object-cover" />
                                         </PreviewCard>
                                         <PreviewCard
-                                            label={`Gambar ${index + 1} — Twitter Image (1200×628)`}
+                                            label={`Gambar ${index + 1} - Twitter Image (1200×628)`}
                                             applied={!!applied[`twitter_image_${index}`]}
                                             onApply={() => applyField(`twitter_image_${index}`, composited[index].twitter.file)}
                                         >

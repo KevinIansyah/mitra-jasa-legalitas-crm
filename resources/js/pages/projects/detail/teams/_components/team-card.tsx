@@ -12,9 +12,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 import { getInitials } from '@/lib/service';
-import projects from '@/routes/projects';
 import type { MemberRole, ProjectMember } from '@/types/projects';
 import { MEMBER_ROLES, MEMBER_ROLES_MAP, type Project } from '@/types/projects';
+import projects from '@/routes/projects';
 
 type TeamCardProps = {
     project: Project;

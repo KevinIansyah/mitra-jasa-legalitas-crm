@@ -2,8 +2,10 @@ import { router } from '@inertiajs/react';
 import { ArchiveRestore, ArrowDownToLine, Printer, RefreshCcw } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+
 import { formatRupiah } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
 import finances from '@/routes/finances';
@@ -126,14 +128,14 @@ export function DetailSection({ estimate, settings }: DetailSectionProps) {
             {/* ───────────────── Estimate Paper ───────────────── */}
             <div className="mx-auto w-full max-w-[794px] rounded-xl bg-white p-14 shadow-lg dark:bg-sidebar print:max-w-full print:rounded-none print:p-0 print:shadow-none">
                 {/* Header */}
-                <div className="flex items-start justify-between border-b border-border pb-10">
+                <div className="flex items-start justify-between gap-8 border-b border-border pb-10">
                     <div className="flex items-start gap-4">
                         {settings.company_logo && (
                             <img src={`${R2_PUBLIC_URL}/${settings.company_logo}`} alt={settings.company_name ?? ''} className="h-16 w-auto object-contain" />
                         )}
                         <div>
                             <h2 className="text-xl font-semibold text-foreground">{settings.company_name ?? '-'}</h2>
-                            {settings.company_tagline && <p className="mt-1 text-sm text-muted-foreground">{settings.company_tagline}</p>}
+                            {/* {settings.company_tagline && <p className="mt-1 text-sm text-muted-foreground">{settings.company_tagline}</p>} */}
                             <div className="mt-1 space-y-0.5 text-xs text-muted-foreground">
                                 {settings.company_address && <p>{settings.company_address}</p>}
                                 {(settings.company_city || settings.company_province) && (
@@ -146,7 +148,7 @@ export function DetailSection({ estimate, settings }: DetailSectionProps) {
                     </div>
                     <div className="text-right">
                         <h2 className="text-2xl font-semibold tracking-tight text-foreground">ESTIMASI</h2>
-                        <p className="text-lg font-semibold text-muted-foreground">{estimate.estimate_number}</p>
+                        <p className="text-lg font-semibold whitespace-nowrap text-muted-foreground">{estimate.estimate_number}</p>
                     </div>
                 </div>
 
@@ -166,7 +168,9 @@ export function DetailSection({ estimate, settings }: DetailSectionProps) {
                                 <p className="mt-2 text-xs text-muted-foreground">
                                     Proposal: <span className="font-medium text-foreground">{estimate.proposal.proposal_number}</span>
                                 </p>
-                                <p className="text-xs text-muted-foreground">Judul Proposal: <span className="font-medium text-foreground">{estimate.proposal.project_name}</span></p>
+                                <p className="text-xs text-muted-foreground">
+                                    Judul Proposal: <span className="font-medium text-foreground">{estimate.proposal.project_name}</span>
+                                </p>
                             </>
                         )}
                         {estimate.quote && (
@@ -174,7 +178,9 @@ export function DetailSection({ estimate, settings }: DetailSectionProps) {
                                 <p className="mt-2 text-xs text-muted-foreground">
                                     Quote: <span className="font-medium text-foreground">{estimate.quote.reference_number}</span>
                                 </p>
-                                <p className="text-xs text-muted-foreground">Nama Proyek: <span className="font-medium text-foreground">{estimate.quote.project_name}</span></p>
+                                <p className="text-xs text-muted-foreground">
+                                    Nama Proyek: <span className="font-medium text-foreground">{estimate.quote.project_name}</span>
+                                </p>
                             </>
                         )}
                     </div>
@@ -214,9 +220,9 @@ export function DetailSection({ estimate, settings }: DetailSectionProps) {
                                 <th className="pb-3 text-right font-semibold text-foreground">Total</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
+                        <tbody>
                             {estimate.items?.map((item, i) => (
-                                <tr key={i}>
+                                <tr key={i} className="border-b border-border">
                                     <td className="py-3 whitespace-normal text-foreground">{item.description}</td>
                                     <td className="py-3 text-right text-muted-foreground">{item.quantity}</td>
                                     <td className="py-3 text-right text-muted-foreground">{formatRupiah(Number(item.unit_price))}</td>
@@ -287,7 +293,7 @@ export function DetailSection({ estimate, settings }: DetailSectionProps) {
                                 <img src={`${R2_PUBLIC_URL}/${settings.signature_image}`} alt="Tanda Tangan" className="mx-auto h-16 w-32 object-contain" />
                             )}
                         </div>
-                        <div className="mt-2 border-t border-zinc-500 pt-1 text-xs">
+                        <div className="mt-2 border-t border-zinc-900 pt-1 text-xs dark:border-zinc-100">
                             <p className="font-semibold text-foreground">{settings.signer_name ?? settings.company_name}</p>
                             {settings.signer_position && <p className="text-muted-foreground">{settings.signer_position}</p>}
                         </div>

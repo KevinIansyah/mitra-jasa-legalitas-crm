@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 
 import { HasPermission } from '@/components/has-permission';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
 import { getInitials } from '@/lib/service';
 import projects from '@/routes/projects';
 import type { SharedData } from '@/types';

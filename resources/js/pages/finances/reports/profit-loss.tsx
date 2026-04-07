@@ -54,13 +54,13 @@ export default function Page() {
         {
             label: 'Total Pendapatan',
             value: formatRupiah(report.revenue.total),
-            description: filters.from && filters.to ? `${formatDate(filters.from)} s/d ${formatDate(filters.to)}` : '—',
+            description: filters.from && filters.to ? `${formatDate(filters.from)} s/d ${formatDate(filters.to)}` : '-',
             trend: report.revenue.total > 0 ? ('up' as const) : null,
         },
         {
             label: 'Total Beban',
             value: formatRupiah(report.expense.total),
-            description: filters.from && filters.to ? `${formatDate(filters.from)} s/d ${formatDate(filters.to)}` : '—',
+            description: filters.from && filters.to ? `${formatDate(filters.from)} s/d ${formatDate(filters.to)}` : '-',
             trend: report.expense.total > 0 ? ('down' as const) : null,
         },
         {

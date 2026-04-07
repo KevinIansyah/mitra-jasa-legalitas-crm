@@ -1,11 +1,13 @@
 import { Building2, CheckCircle2, User, UserCheck } from 'lucide-react';
 import { useState } from 'react';
+
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+
 import type { Customer, CustomerSummary } from '@/types/contacts';
 import type { Paginator } from '@/types/paginator';
 import { DataTable } from './datatable';
 
-interface CustomerSectionProps {
+type CustomerSectionProps = {
     customers: Paginator<Customer>;
     summary: CustomerSummary;
     filters: { search?: string };

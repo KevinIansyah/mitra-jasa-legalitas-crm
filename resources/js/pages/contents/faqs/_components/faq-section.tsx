@@ -1,11 +1,13 @@
 import { Eye, EyeOff, HelpCircle } from 'lucide-react';
 import { useState } from 'react';
+
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+
 import type { Faq, FaqSummary } from '@/types/contents';
 import type { Paginator } from '@/types/paginator';
 import { DataTable } from './datatable';
 
-interface FaqSectionProps {
+type FaqSectionProps = {
     faqs: Paginator<Faq>;
     summary: FaqSummary;
     filters: { search?: string; per_page?: number; published?: string };

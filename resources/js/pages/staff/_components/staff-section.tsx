@@ -2,12 +2,13 @@ import { CheckCircle2, Clock, User, XCircle } from 'lucide-react';
 import { useState } from 'react';
 
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+
 import type { Paginator } from '@/types/paginator';
 import type { Role } from '@/types/roles';
 import type { Staff, StaffSummary } from '@/types/staff';
 import { DataTable } from './datatable';
 
-interface StaffSectionProps {
+type StaffSectionProps = {
     staffList: Paginator<Staff>;
     summary: StaffSummary;
     roles: Role[];

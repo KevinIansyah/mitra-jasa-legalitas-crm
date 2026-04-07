@@ -1,6 +1,7 @@
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+
 import finances from '@/routes/finances';
 import type { Project, ProjectInvoiceFormData } from '@/types/projects';
 import { InvoiceForm } from '../../_components/invoice-form';
@@ -25,7 +26,9 @@ const EMPTY_FORM: ProjectInvoiceFormData = {
     discount_percent: 0,
     notes: '',
     payment_instructions: '',
-    items: [{ description: '', quantity: 1, unit_price: 0, tax_percent: 11, discount_percent: 0 }],
+    contract_item_description: '',
+    contract_item_details: [],
+    items: [],
 };
 
 export default function CreateSection({ selectedProject, fromProject }: CreateSectionProps) {
@@ -73,7 +76,7 @@ export default function CreateSection({ selectedProject, fromProject }: CreateSe
                     taxPercent={data.tax_percent ?? 0}
                     discountPercent={data.discount_percent ?? 0}
                     items={data.items ?? []}
-                    isAdditional={isAdditional}
+                    useLineItemTotals={isAdditional}
                     processing={processing}
                     onSubmit={() => handleSubmit()}
                 />

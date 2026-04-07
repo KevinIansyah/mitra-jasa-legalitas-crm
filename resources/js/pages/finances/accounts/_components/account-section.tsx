@@ -5,7 +5,7 @@ import type { Account, AccountSummary } from '@/types/accounts';
 import type { Paginator } from '@/types/paginator';
 import { DataTable } from './datatable';
 
-interface AccountSectionProps {
+type AccountSectionProps = {
     accounts: Paginator<Account>;
     summary: AccountSummary;
     filters: { search?: string; type?: string; status?: string };

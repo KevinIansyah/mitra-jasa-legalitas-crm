@@ -40,7 +40,7 @@ class ProposalController extends Controller
         }
 
         if ($proposal->status === 'accepted') {
-            return ApiResponse::error('Proposal yang sudah diterima tidak dapat diubah.', 422);
+            return ApiResponse::conflict('Proposal yang sudah diterima tidak dapat diubah.');
         }
 
         $request->validate([

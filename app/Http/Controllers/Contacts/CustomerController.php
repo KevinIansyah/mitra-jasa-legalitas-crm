@@ -7,7 +7,9 @@ use App\Http\Requests\Contacts\Customers\AttachCompanyRequest;
 use App\Http\Requests\Contacts\Customers\StoreRequest;
 use App\Http\Requests\Contacts\Customers\UpdateRequest;
 use App\Models\Customer;
+use App\Models\Project;
 use App\Models\User;
+use App\Services\ProjectFinanceAggregator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -66,14 +68,53 @@ class CustomerController extends Controller
         return back()->with('success', 'Customer berhasil ditambahkan.');
     }
 
-    public function show(Customer $customer)
+    public function show(Request $request, Customer $customer)
     {
-        $customer->load(['companies' => function ($query) {
-            $query->withPivot('is_primary', 'position_at_company');
-        }, 'user']);
+        $perPage = $request->get('per_page', 12);
+        $perPage = in_array((int) $perPage, [12, 20, 30], true) ? (int) $perPage : 12;
 
-        return Inertia::render('contacts/customers/show', [
+        $customer->load([
+            'companies' => function ($query) {
+                $query
+                    ->withPivot('is_primary', 'position_at_company')
+                    ->orderByDesc('company_customer.is_primary');
+            },
+            'user:id,avatar',
+        ]);
+
+        $projects = Project::query()
+            ->where('customer_id', $customer->id)
+            ->with([
+                'company:id,name',
+                'service:id,name',
+                'servicePackage:id,name',
+                'projectLeaders:id,name',
+            ])
+            ->latest()
+            ->paginate($perPage)
+            ->through(fn ($project) => $project->append([
+                'progress_percentage',
+                'project_leader',
+            ]));
+
+        $financeSummary = null;
+        $user = $request->user();
+        if ($user && $user->hasAllPermissions([
+            'view-finance-invoices',
+            'view-finance-expenses',
+            'view-finance-payments',
+        ])) {
+            $projectIds = Project::query()
+                ->where('customer_id', $customer->id)
+                ->pluck('id')
+                ->all();
+            $financeSummary = app(ProjectFinanceAggregator::class)->summarizeForProjectIds($projectIds);
+        }
+
+        return Inertia::render('contacts/customers/detail/index', [
             'customer' => $customer,
+            'projects' => $projects,
+            'finance_summary' => $financeSummary,
         ]);
     }
 

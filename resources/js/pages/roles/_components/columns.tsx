@@ -1,4 +1,5 @@
 import type { ColumnDef } from '@tanstack/react-table';
+
 import type { Role } from '@/types/roles';
 import Actions from './actions';
 

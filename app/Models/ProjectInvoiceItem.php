@@ -11,6 +11,7 @@ class ProjectInvoiceItem extends Model
         'invoice_id',
         'expense_id',
         'description',
+        'item_details',
         'quantity',
         'unit_price',
         'tax_percent',
@@ -23,14 +24,15 @@ class ProjectInvoiceItem extends Model
     ];
 
     protected $casts = [
-        'quantity'         => 'decimal:2',
-        'unit_price'       => 'decimal:2',
-        'tax_percent'      => 'decimal:2',
+        'item_details' => 'array',
+        'quantity' => 'decimal:2',
+        'unit_price' => 'decimal:2',
+        'tax_percent' => 'decimal:2',
         'discount_percent' => 'decimal:2',
-        'subtotal'         => 'decimal:2',
-        'discount_amount'  => 'decimal:2',
-        'tax_amount'       => 'decimal:2',
-        'total_amount'     => 'decimal:2',
+        'subtotal' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
+        'tax_amount' => 'decimal:2',
+        'total_amount' => 'decimal:2',
     ];
 
     /*
@@ -57,15 +59,15 @@ class ProjectInvoiceItem extends Model
 
     public function calculateTotals(): static
     {
-        $subtotal       = (float) $this->quantity * (float) $this->unit_price;
+        $subtotal = (float) $this->quantity * (float) $this->unit_price;
         $discountAmount = $subtotal * ((float) $this->discount_percent / 100);
-        $afterDiscount  = $subtotal - $discountAmount;
-        $taxAmount      = $afterDiscount * ((float) $this->tax_percent / 100);
+        $afterDiscount = $subtotal - $discountAmount;
+        $taxAmount = $afterDiscount * ((float) $this->tax_percent / 100);
 
-        $this->subtotal        = $subtotal;
+        $this->subtotal = $subtotal;
         $this->discount_amount = $discountAmount;
-        $this->tax_amount      = $taxAmount;
-        $this->total_amount    = $afterDiscount + $taxAmount;
+        $this->tax_amount = $taxAmount;
+        $this->total_amount = $afterDiscount + $taxAmount;
 
         return $this;
     }

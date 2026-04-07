@@ -21,6 +21,8 @@ type FaqEditDrawerProps = {
 };
 
 export function FaqEditDrawer({ faq, open, onOpenChange }: FaqEditDrawerProps) {
+    const loadingFocusRef = React.useRef<HTMLButtonElement>(null);
+
     const { data, setData, patch, processing, errors, clearErrors } = useForm<FaqFormData>({
         question: faq.question,
         answer: faq.answer,
@@ -56,7 +58,13 @@ export function FaqEditDrawer({ faq, open, onOpenChange }: FaqEditDrawerProps) {
 
     return (
         <Drawer direction="bottom" open={open} onOpenChange={onOpenChange}>
-            <DrawerContent className="flex h-screen flex-col">
+            <DrawerContent
+                className="flex h-screen flex-col"
+                onOpenAutoFocus={(e) => {
+                    e.preventDefault();
+                    loadingFocusRef.current?.focus();
+                }}
+            >
                 <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 overflow-y-auto">
                     <DrawerHeader className="px-4">
                         <DrawerTitle>Edit FAQ</DrawerTitle>
@@ -93,7 +101,7 @@ export function FaqEditDrawer({ faq, open, onOpenChange }: FaqEditDrawerProps) {
                         </div>
 
                         <DrawerFooter className="mt-auto px-0">
-                            <Button type="submit" disabled={processing}>
+                            <Button ref={loadingFocusRef} type="submit" disabled={processing}>
                                 {processing ? (
                                     <>
                                         <Spinner className="mr-2" />

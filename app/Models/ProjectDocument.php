@@ -23,6 +23,7 @@ class ProjectDocument extends Model
         'notes',
         'file_path',
         'file_size',
+        'file_type',
         'is_encrypted',
         'status',
         'uploaded_by',
@@ -56,7 +57,6 @@ class ProjectDocument extends Model
     | RELATIONS
     |--------------------------------------------------------------------------
     */
-
 
     public function project(): BelongsTo
     {
@@ -103,7 +103,7 @@ class ProjectDocument extends Model
 
     public function getFileUrlAttribute(): ?string
     {
-        if (!$this->file_path) {
+        if (! $this->file_path) {
             return null;
         }
 
@@ -115,7 +115,7 @@ class ProjectDocument extends Model
 
     public function getFormattedFileSizeAttribute(): ?string
     {
-        if (!$this->file_size) {
+        if (! $this->file_size) {
             return null;
         }
 
@@ -128,6 +128,6 @@ class ProjectDocument extends Model
             $unit++;
         }
 
-        return round($size, 2) . ' ' . $units[$unit];
+        return round($size, 2).' '.$units[$unit];
     }
 }

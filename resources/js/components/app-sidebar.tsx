@@ -1,6 +1,7 @@
 import { usePage } from '@inertiajs/react';
 import {
     Briefcase,
+    Building2,
     ChartBar,
     CircleHelp,
     Clock,
@@ -22,14 +23,28 @@ import * as React from 'react';
 
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarRail } from '@/components/ui/sidebar';
+import {
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarHeader,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+    SidebarRail,
+    useSidebar,
+} from '@/components/ui/sidebar';
 
 import { usePermission } from '@/hooks/use-permission';
-import blogs from '@/routes/blogs';
+import { useThemeSettings } from '@/hooks/use-theme-settings';
+import ai from '@/routes/ai';
 import contacts from '@/routes/contacts';
 import contents from '@/routes/contents';
-import dashboard from '@/routes/dashboard';
 import finances from '@/routes/finances';
+import type { NavItem, NavSection } from '@/types';
+import type { SharedData } from '@/types';
+import blogs from '@/routes/blogs';
+import dashboard from '@/routes/dashboard';
 import masterData from '@/routes/master-data';
 import projects from '@/routes/projects';
 import { index as deliverablesIndex } from '@/routes/projects/deliverables';
@@ -38,9 +53,6 @@ import roles from '@/routes/roles';
 import services from '@/routes/services';
 import siteSettings from '@/routes/site-settings';
 import staffRoutes from '@/routes/staff';
-import type { NavItem, NavSection } from '@/types';
-import type { SharedData } from '@/types';
-import ai from '@/routes/ai';
 
 function buildNavData(userId: number): {
     navMain: NavSection;
@@ -300,21 +312,17 @@ function buildNavData(userId: number): {
                     permission: 'view-content-testimonials',
                 },
                 {
+                    title: 'Logo Klien',
+                    url: contents.clientCompanies.index().url,
+                    icon: Building2,
+                    permission: 'view-content-client-companies',
+                },
+                {
                     title: 'Kisah Sukses',
                     url: contents.clientSuccessStories.index().url,
                     icon: Trophy,
                     permission: 'view-content-client-success-stories',
                 },
-                // {
-                //     title: 'SEO',
-                //     url: '#',
-                //     icon: Search,
-                //     items: [
-                //         { title: 'AI SEO Dashboard', url: '#' },
-                //         { title: 'Schema Management', url: '#' },
-                //         { title: 'Media & Image Optimizer', url: '#' },
-                //     ],
-                // },
             ],
         },
 
@@ -361,10 +369,7 @@ function buildNavData(userId: number): {
                     title: 'Pengaturan',
                     url: '#',
                     icon: Settings,
-                    items: [
-                        { title: 'Pengaturan Website', url: siteSettings.company().url },
-                        { title: 'Integrasi (Google, WhatsApp)', url: '#' },
-                    ],
+                    items: [{ title: 'Pengaturan Website', url: siteSettings.company().url }],
                 },
             ],
         },
@@ -372,6 +377,21 @@ function buildNavData(userId: number): {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+    const { sidebarVariant, sidebarCollapsible } = useThemeSettings();
+    const { setOpen } = useSidebar();
+    const prevCollapsibleRef = React.useRef(sidebarCollapsible);
+
+    React.useEffect(() => {
+        if (prevCollapsibleRef.current === sidebarCollapsible) {
+            return;
+        }
+        if (sidebarCollapsible === 'icon' || sidebarCollapsible === 'offcanvas') {
+            setOpen(false);
+        }
+        prevCollapsibleRef.current = sidebarCollapsible;
+    }, [sidebarCollapsible, setOpen]);
+
+    const side = 'left';
     const { hasPermission } = usePermission();
     const { auth } = usePage<SharedData>().props;
     const allNavData = buildNavData(auth.user.id);
@@ -416,7 +436,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     };
 
     return (
-        <Sidebar collapsible="icon" variant="inset" {...props}>
+        <Sidebar side={side} collapsible={sidebarCollapsible} variant={sidebarVariant} {...props}>
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
@@ -445,7 +465,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarFooter>
                 <NavUser />
             </SidebarFooter>
-            <SidebarRail />
+            {sidebarCollapsible !== 'none' ? <SidebarRail /> : null}
         </Sidebar>
     );
 }

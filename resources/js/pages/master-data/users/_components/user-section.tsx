@@ -1,11 +1,13 @@
 import { UserIcon, UserCheck, UserX, UserMinus } from 'lucide-react';
 import { useState } from 'react';
+
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+
 import type { User, UserSummary } from '@/types/auth';
 import type { Paginator } from '@/types/paginator';
 import { DataTable } from './datatable';
 
-interface UserSectionProps {
+type UserSectionProps = {
     users: Paginator<User>;
     summary: UserSummary;
     filters: { search?: string; status?: string };

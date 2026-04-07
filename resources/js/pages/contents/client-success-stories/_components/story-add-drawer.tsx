@@ -290,29 +290,29 @@ export function StoryAddDrawer() {
                             </Field>
 
                             <Field className="col-span-2 md:col-span-1">
-                                <FieldLabel>Stat 1 — nilai</FieldLabel>
+                                <FieldLabel>Stat 1 - nilai</FieldLabel>
                                 <Input value={data.stat_1_value ?? ''} onChange={(e) => setData('stat_1_value', e.target.value || null)} placeholder="Contoh: 14 hari" />
                             </Field>
                             <Field className="col-span-2 md:col-span-1">
-                                <FieldLabel>Stat 1 — label</FieldLabel>
+                                <FieldLabel>Stat 1 - label</FieldLabel>
                                 <Input value={data.stat_1_label ?? ''} onChange={(e) => setData('stat_1_label', e.target.value || null)} placeholder="Contoh: Waktu pengurusan" />
                             </Field>
 
                             <Field className="col-span-2 md:col-span-1">
-                                <FieldLabel>Stat 2 — nilai</FieldLabel>
+                                <FieldLabel>Stat 2 - nilai</FieldLabel>
                                 <Input value={data.stat_2_value ?? ''} onChange={(e) => setData('stat_2_value', e.target.value || null)} placeholder="Contoh: 100%" />
                             </Field>
                             <Field className="col-span-2 md:col-span-1">
-                                <FieldLabel>Stat 2 — label</FieldLabel>
+                                <FieldLabel>Stat 2 - label</FieldLabel>
                                 <Input value={data.stat_2_label ?? ''} onChange={(e) => setData('stat_2_label', e.target.value || null)} placeholder="Contoh: Izin lengkap" />
                             </Field>
 
                             <Field className="col-span-2 md:col-span-1">
-                                <FieldLabel>Stat 3 — nilai</FieldLabel>
+                                <FieldLabel>Stat 3 - nilai</FieldLabel>
                                 <Input value={data.stat_3_value ?? ''} onChange={(e) => setData('stat_3_value', e.target.value || null)} placeholder="Contoh: Rp 85jt" />
                             </Field>
                             <Field className="col-span-2 md:col-span-1">
-                                <FieldLabel>Stat 3 — label</FieldLabel>
+                                <FieldLabel>Stat 3 - label</FieldLabel>
                                 <Input value={data.stat_3_label ?? ''} onChange={(e) => setData('stat_3_label', e.target.value || null)} placeholder="Contoh: Omset bulan 1" />
                             </Field>
 

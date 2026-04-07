@@ -1,11 +1,13 @@
 import { Link } from '@inertiajs/react';
 import { Eye } from 'lucide-react';
+
 import { DialogDelete } from '@/components/dialog-delete';
 import { HasPermission } from '@/components/has-permission';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import type { ChatSession } from '../index';
+
 import chatSessions from '@/routes/ai/chat-sessions';
+import type { ChatSession } from '../index';
 
 export function Actions({ session }: { session: ChatSession }) {
     return (

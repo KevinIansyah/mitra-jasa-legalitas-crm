@@ -1,11 +1,13 @@
 import { File, FileCheck, FileLock, FileText } from 'lucide-react';
 import { useState } from 'react';
+
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+
 import type { Paginator } from '@/types/paginator';
 import type { ProjectDeliverable, ProjectDeliverableSummary } from '@/types/projects';
 import { DataTable } from './datatable';
 
-interface DeliverableSectionProps {
+type DeliverableSectionProps = {
     deliverables: Paginator<ProjectDeliverable>;
     summary: ProjectDeliverableSummary;
     filters: { search?: string };

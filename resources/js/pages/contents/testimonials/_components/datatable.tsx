@@ -28,7 +28,7 @@ type TestimonialFilters = {
     service_id?: string;
 };
 
-interface DataTableProps {
+type DataTableProps = {
     data: Testimonial[];
     services: Service[];
     pageIndex: number;

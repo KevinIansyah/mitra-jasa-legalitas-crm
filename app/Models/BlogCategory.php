@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class BlogCategory extends Model
 {
@@ -12,6 +13,15 @@ class BlogCategory extends Model
         'slug',
         'status',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (BlogCategory $category) {
+            if (empty($category->slug)) {
+                $category->slug = Str::slug($category->name);
+            }
+        });
+    }
 
     /*
     |--------------------------------------------------------------------------

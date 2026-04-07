@@ -7,6 +7,8 @@ use App\Http\Requests\Contacts\Companies\StoreRequest;
 use App\Http\Requests\Contacts\Companies\UpdateRequest;
 use App\Http\Requests\Contacts\Customers\AttachCompanyRequest;
 use App\Models\Company;
+use App\Models\Project;
+use App\Services\CompanyFinanceAggregator;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -63,14 +65,47 @@ class CompanyController extends Controller
         return back()->with('success', 'Perusahaan berhasil ditambahkan.');
     }
 
-    public function show(Company $company)
+    public function show(Request $request, Company $company)
     {
+        $perPage = $request->get('per_page', 12);
+        $perPage = in_array((int) $perPage, [12, 20, 30], true) ? (int) $perPage : 12;
+
         $company->load(['customers' => function ($query) {
-            $query->withPivot('is_primary', 'position_at_company');
+            $query
+                ->with(['user:id,avatar'])
+                ->withPivot('is_primary', 'position_at_company')
+                ->orderByDesc('company_customer.is_primary');
         }]);
 
-        return Inertia::render('contacts/companies/show', [
+        $projects = Project::query()
+            ->where('company_id', $company->id)
+            ->with([
+                'customer:id,name',
+                'service:id,name',
+                'servicePackage:id,name',
+                'projectLeaders:id,name',
+            ])
+            ->latest()
+            ->paginate($perPage)
+            ->through(fn ($project) => $project->append([
+                'progress_percentage',
+                'project_leader',
+            ]));
+
+        $financeSummary = null;
+        $user = $request->user();
+        if ($user && $user->hasAllPermissions([
+            'view-finance-invoices',
+            'view-finance-expenses',
+            'view-finance-payments',
+        ])) {
+            $financeSummary = app(CompanyFinanceAggregator::class)->summarize($company->id);
+        }
+
+        return Inertia::render('contacts/companies/detail/index', [
             'company' => $company,
+            'projects' => $projects,
+            'finance_summary' => $financeSummary,
         ]);
     }
 

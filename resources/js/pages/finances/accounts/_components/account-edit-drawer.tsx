@@ -77,7 +77,7 @@ export function AccountEditDrawer({ account, open, onOpenChange }: AccountEditDr
                 <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 overflow-y-auto">
                     <DrawerHeader className="px-4">
                         <DrawerTitle>Edit Akun</DrawerTitle>
-                        <DrawerDescription>{isSystem ? 'Akun sistem — hanya nama yang dapat diubah.' : 'Perbarui data akun yang sudah ada.'}</DrawerDescription>
+                        <DrawerDescription>{isSystem ? 'Akun sistem - hanya nama yang dapat diubah.' : 'Perbarui data akun yang sudah ada.'}</DrawerDescription>
                     </DrawerHeader>
 
                     <form onSubmit={handleSubmit} className="flex flex-1 flex-col px-4">

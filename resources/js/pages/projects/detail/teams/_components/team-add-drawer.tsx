@@ -20,7 +20,7 @@ import type { User } from '@/types';
 import type { MemberRole, ProjectMemberFormData } from '@/types/projects';
 import { MEMBER_ROLES } from '@/types/projects';
 
-const R2_PUBLIC_URL = import.meta.env.VITE_R2_PUBLIC_URL;
+const R2_PUBLIC_URL = import.meta.env.VITE_CLOUDFLARE_R2_PUBLIC_URL;
 
 type TeamAddDrawerProps = {
     projectId: number;
@@ -68,6 +68,8 @@ export function TeamAddDrawer({ projectId, open, onOpenChange }: TeamAddDrawerPr
                         project_id: projectId,
                     },
                 });
+
+                console.log(response.data);
 
                 setSearchResults(response.data.users || []);
             } catch (errors) {

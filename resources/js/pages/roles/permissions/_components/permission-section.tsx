@@ -1,10 +1,12 @@
 import { useForm } from '@inertiajs/react';
 import * as React from 'react';
 import { toast } from 'sonner';
+
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+
 import roles from '@/routes/roles';
 import type { Permission, Role } from '@/types/roles';
 
@@ -256,6 +258,10 @@ export default function PermissionSection({ role, allPermissions }: PermissionSe
 
                     if (resource === 'content-testimonials') {
                         itemName = 'Testimoni';
+                    }
+
+                    if (resource === 'content-client-companies') {
+                        itemName = 'Logo Klien';
                     }
 
                     break;

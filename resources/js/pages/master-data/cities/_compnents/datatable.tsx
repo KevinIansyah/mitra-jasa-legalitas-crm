@@ -20,7 +20,7 @@ import type { City } from '@/types/cities';
 import getColumns from './columns';
 import { DrawerAdd } from './drawer-add';
 
-interface DataTableProps {
+type DataTableProps = {
     data: City[];
     pageIndex: number;
     setPageIndex: React.Dispatch<React.SetStateAction<number>>;
@@ -32,9 +32,8 @@ interface DataTableProps {
         search?: string;
         status?: string;
         province?: string;
-        per_page?: number;
     };
-}
+};
 
 export function DataTable({ data, pageIndex, setPageIndex, totalPages, totalItems, perPage, provinces, initialFilters = {} }: DataTableProps) {
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});

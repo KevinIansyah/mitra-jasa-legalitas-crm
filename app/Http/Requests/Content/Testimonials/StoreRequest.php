@@ -18,7 +18,7 @@ class StoreRequest extends FormRequest
             'client_name' => 'required|string|max:255',
             'client_position' => 'nullable|string|max:255',
             'client_company' => 'nullable|string|max:255',
-            'client_avatar' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:2048',
+            'client_avatar' => 'nullable|file|mimes:jpg,jpeg,png,webp,svg+xml|max:2048',
             'rating' => 'required|integer|min:1|max:5',
             'content' => 'required|string',
             'is_published' => 'nullable|boolean',
@@ -37,7 +37,7 @@ class StoreRequest extends FormRequest
             'client_company.string' => 'Perusahaan klien harus berupa teks.',
             'client_company.max' => 'Perusahaan klien maksimal 255 karakter.',
             'client_avatar.file' => 'Avatar klien harus berupa file.',
-            'client_avatar.mimes' => 'Avatar klien harus berupa file jpg, jpeg, png, webp.',
+            'client_avatar.mimes' => 'Avatar klien harus berupa file gambar (JPG, PNG, WEBP, SVG).',
             'client_avatar.max' => 'Avatar klien maksimal 2MB.',
 
             'rating.required' => 'Rating wajib diisi.',

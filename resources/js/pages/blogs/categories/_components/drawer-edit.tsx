@@ -62,7 +62,7 @@ export function DrawerEdit({ category, open, onOpenChange }: DrawerEditProps) {
                     loadingFocusRef.current?.focus();
                 }}
             >
-                <div className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-4 overflow-y-auto">
+                <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 overflow-y-auto">
                     <DrawerHeader className="px-4">
                         <DrawerTitle>Edit Kategori Blog</DrawerTitle>
                         <DrawerDescription>Perbarui data kategori blog yang sudah ada melalui formulir di bawah ini.</DrawerDescription>
@@ -105,7 +105,7 @@ export function DrawerEdit({ category, open, onOpenChange }: DrawerEditProps) {
                         </div>
 
                         <DrawerFooter className="mt-auto px-0">
-                            <Button type="submit" disabled={processing}>
+                            <Button ref={loadingFocusRef} type="submit" disabled={processing}>
                                 {processing ? (
                                     <>
                                         <Spinner className="mr-2" />

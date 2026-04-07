@@ -1,13 +1,15 @@
 import { FileCheck, FileClock, FileText, FileX } from 'lucide-react';
 import { useState } from 'react';
+
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+
 import { formatRupiah } from '@/lib/service';
 import type { Paginator } from '@/types/paginator';
 import type { ProjectInvoice, ProjectInvoiceSummary } from '@/types/projects';
 
 import { DataTable } from './datatable';
 
-interface InvoiceSectionProps {
+type InvoiceSectionProps = {
     invoices: Paginator<ProjectInvoice>;
     summary: ProjectInvoiceSummary;
     filters: { search?: string; status?: string; type?: string };

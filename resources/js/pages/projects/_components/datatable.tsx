@@ -24,7 +24,7 @@ import type { Service } from '@/types/services';
 import getColumns from './columns';
 import ProjectDetail from './project-detail';
 
-interface DataTableProps {
+type DataTableProps = {
     data: Project[];
     customers: Customer[];
     companies: Company[];

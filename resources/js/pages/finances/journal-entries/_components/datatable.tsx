@@ -23,7 +23,7 @@ import getColumns from './columns';
 import { JournalAddDrawer } from './journal-add-drawer';
 import { JournalEntryDetail } from './journal-entry-detail';
 
-interface DataTableProps {
+type DataTableProps = {
     data: JournalEntry[];
     accounts: Account[];
     pageIndex: number;

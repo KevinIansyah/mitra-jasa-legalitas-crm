@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Mail\BlogSubscriberVerificationMail;
 use App\Models\BlogSubscriber;
@@ -9,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class BlogSubscriberController extends Controller
 {
@@ -28,14 +30,12 @@ class BlogSubscriberController extends Controller
         );
 
         if ($subscriber->isVerified()) {
-            return response()->json([
-                'message' => 'Email ini sudah terdaftar dan terverifikasi.',
-            ], 409);
+            return ApiResponse::conflict('Email ini sudah terdaftar dan terverifikasi.');
         }
 
         if (! $subscriber->wasRecentlyCreated) {
             $subscriber->update([
-                'token' => \Illuminate\Support\Str::random(64),
+                'token' => Str::random(64),
                 'name' => $request->name ?? $subscriber->name,
             ]);
         }
@@ -44,9 +44,7 @@ class BlogSubscriberController extends Controller
             new BlogSubscriberVerificationMail($subscriber->fresh())
         );
 
-        return response()->json([
-            'message' => 'Terima kasih! Silakan cek email Anda untuk konfirmasi langganan.',
-        ]);
+        return ApiResponse::success(null, 'Terima kasih! Silakan cek email Anda untuk konfirmasi langganan.');
     }
 
     public function verify(string $token): RedirectResponse

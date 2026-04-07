@@ -119,6 +119,8 @@ class SiteController extends Controller
         $settings = SiteSetting::get();
         $validated = $request->validated();
 
+        unset($validated['company_logo'], $validated['company_favicon']);
+
         if ($request->boolean('remove_logo') && $settings->company_logo) {
             FileHelper::deleteFromR2($settings->company_logo, isPublic: true);
             $validated['company_logo'] = null;

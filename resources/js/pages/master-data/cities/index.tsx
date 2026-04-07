@@ -1,4 +1,5 @@
 import { Head, usePage } from '@inertiajs/react';
+
 import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
 
@@ -32,6 +33,7 @@ export default function Page() {
             <Head title="Kota" />
             <div className="p-4 md:p-6">
                 <Heading title="Manajemen Kota" description="Kelola data kota untuk halaman layanan secara terpusat" />
+                
                 <CitySection cities={cities} provinces={provinces} summary={summary} filters={filters} />
             </div>
         </AppLayout>

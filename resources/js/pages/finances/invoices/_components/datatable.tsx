@@ -27,7 +27,7 @@ const SOURCE_OPTIONS = [
     { value: 'customer', label: 'Dari Customer' },
 ];
 
-interface DataTableProps {
+type DataTableProps = {
     data: ProjectInvoice[];
     pageIndex: number;
     setPageIndex: React.Dispatch<React.SetStateAction<number>>;

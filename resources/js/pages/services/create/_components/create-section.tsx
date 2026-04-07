@@ -29,15 +29,14 @@ import {
     readImageAsDataURL,
     validateImageFile,
 } from '@/lib/service';
+import services from '@/routes/services';
 import type { ServiceCategory } from '@/types/services';
-
 import { FaqCard, type LocalFaq } from '../../_components/faq-card';
 import { LegalBasisCard, type LocalLegalBasis } from '../../_components/legal-basis-card';
 import { PackageCard, type LocalPackage } from '../../_components/package-card';
 import { ProcessStepCard, type LocalProcessStep } from '../../_components/process-step-card';
 import { RequirementCard, type LocalRequirementCategory } from '../../_components/requirement-card';
 import { SeoCard, defaultSeo, type LocalServiceSeo } from '../../_components/seo-card';
-import services from '@/routes/services';
 
 type FormData = {
     service_category_id: number | '';

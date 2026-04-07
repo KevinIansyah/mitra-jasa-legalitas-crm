@@ -1,12 +1,14 @@
 import { Head, usePage } from '@inertiajs/react';
 import { Bot, User } from 'lucide-react';
+
 import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import AppLayout from '@/layouts/app-layout';
+
 import { formatDate } from '@/lib/utils';
+import chatSessions from '@/routes/ai/chat-sessions';
 import type { BreadcrumbItem } from '@/types';
 import { InfoRow } from './_components/info-row';
-import chatSessions from '@/routes/ai/chat-sessions';
 
 type ChatMessage = {
     id: number;
@@ -49,7 +51,7 @@ export default function Page() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Chat — ${session.name ?? 'Anonim'}`} />
+            <Head title={`Chat - ${session.name ?? 'Anonim'}`} />
             <div className="p-4 md:p-6">
                 <Heading title="Detail Percakapan" description="Riwayat lengkap percakapan pengunjung dengan asisten AI" />
 

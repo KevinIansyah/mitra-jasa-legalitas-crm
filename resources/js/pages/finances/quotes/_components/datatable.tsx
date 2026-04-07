@@ -21,7 +21,7 @@ import { QUOTE_STATUSES, QUOTE_TIMELINES, QUOTE_SOURCES } from '@/types/quotes';
 import getColumns from './columns';
 import QuoteDetail from './quote-detail';
 
-interface DataTableProps {
+type DataTableProps = {
     data: Quote[];
     pageIndex: number;
     setPageIndex: React.Dispatch<React.SetStateAction<number>>;

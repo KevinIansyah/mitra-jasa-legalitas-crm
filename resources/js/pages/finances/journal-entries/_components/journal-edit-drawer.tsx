@@ -21,14 +21,14 @@ import type { JournalEntry, JournalLineFormData, ManualJournalFormData, ManualJo
 
 const EMPTY_LINE: JournalLineFormData = { account_id: '', debit: 0, credit: 0, notes: '' };
 
-interface Props {
+interface JournalEditDrawerProps {
     entry: JournalEntry;
     open: boolean;
     onOpenChange: (open: boolean) => void;
     accounts: Account[];
-}
+};
 
-export function JournalEditDrawer({ entry, open, onOpenChange, accounts }: Props) {
+export function JournalEditDrawer({ entry, open, onOpenChange, accounts }: JournalEditDrawerProps) {
     const loadingFocusRef = React.useRef<HTMLButtonElement>(null);
 
     const { data, setData, put, processing, errors } = useForm<ManualJournalFormData>({

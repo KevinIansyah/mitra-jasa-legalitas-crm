@@ -1,12 +1,14 @@
 import { useForm } from '@inertiajs/react';
 import * as React from 'react';
 import { toast } from 'sonner';
+
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
+
 import tags from '@/routes/blogs/tags';
 import type { BlogTag, BlogTagFormData } from '@/types/blogs';
 
@@ -60,7 +62,7 @@ export function DrawerEdit({ tag, open, onOpenChange }: DrawerEditProps) {
                     loadingFocusRef.current?.focus();
                 }}
             >
-                <div className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-4 overflow-y-auto">
+                <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 overflow-y-auto">
                     <DrawerHeader className="px-4">
                         <DrawerTitle>Edit Tag Blog</DrawerTitle>
                         <DrawerDescription>Perbarui data tag blog yang sudah ada melalui formulir di bawah ini.</DrawerDescription>
@@ -102,7 +104,7 @@ export function DrawerEdit({ tag, open, onOpenChange }: DrawerEditProps) {
                         </div>
 
                         <DrawerFooter className="mt-auto px-0">
-                            <Button type="submit" disabled={processing}>
+                            <Button ref={loadingFocusRef} type="submit" disabled={processing}>
                                 {processing ? (
                                     <>
                                         <Spinner className="mr-2" />

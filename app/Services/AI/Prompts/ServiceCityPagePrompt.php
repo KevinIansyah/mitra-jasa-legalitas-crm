@@ -1,15 +1,15 @@
 <?php
 
 return function (array $ctx): string {
-  $serviceName      = $ctx['service_name'];
-  $serviceCategory  = $ctx['service_category'] ?? '';
-  $serviceDesc      = $ctx['service_description'] ?? '';
-  $cityName         = $ctx['city_name'];
-  $provinceName     = $ctx['province_name'] ?? '';
-  $companyName      = $ctx['company_name'] ?? 'CV. Mitra Jasa Legalitas';
-  $faqCount         = $ctx['faq_count'] ?? 5;
+    $serviceName = $ctx['service_name'];
+    $serviceCategory = $ctx['service_category'] ?? '';
+    $serviceDesc = $ctx['service_description'] ?? '';
+    $cityName = $ctx['city_name'];
+    $provinceName = $ctx['province_name'] ?? '';
+    $companyName = $ctx['company_name'] ?? 'CV. Mitra Jasa Legalitas';
+    $faqCount = $ctx['faq_count'] ?? 5;
 
-  return <<<PROMPT
+    return <<<PROMPT
 Tulis konten landing page SEO untuk layanan "{$serviceName}" di {$cityName}, {$provinceName}.
 
 **Informasi Layanan:**
@@ -27,12 +27,12 @@ Tulis konten landing page SEO untuk layanan "{$serviceName}" di {$cityName}, {$p
    - H1 HARUS menggunakan format: "{$serviceName} {$cityName}"
 
 2. introduction  
-   - 2 paragraf (100–150 kata)
+   - 2 paragraf (100-150 kata)
    - Sebut "{$cityName}" secara natural
    - Fokus masalah & kebutuhan bisnis lokal
 
 3. content  
-   - 300–400 kata
+   - 300-400 kata
    - Bahas kebutuhan usaha di {$cityName}
    - Sertakan keunggulan layanan
    - Tambahkan variasi lokal (misal: area, jenis usaha umum di kota tersebut)
@@ -68,7 +68,7 @@ Tulis konten landing page SEO untuk layanan "{$serviceName}" di {$cityName}, {$p
    - DILARANG menambahkan nama perusahaan
 
 7. meta_description  
-   - 140–155 karakter
+   - 140-155 karakter
    - Mengandung {$cityName}
    - Ada CTA (contoh: hubungi, konsultasi, dll)
    - Jangan pakai simbol ":", boleh pakai "|"
@@ -77,7 +77,7 @@ Tulis konten landing page SEO untuk layanan "{$serviceName}" di {$cityName}, {$p
 
 **ATURAN PENTING:**
 
-- Sebut "{$cityName}" minimal 3–5 kali (natural, jangan spam)
+- Sebut "{$cityName}" minimal 3-5 kali (natural, jangan spam)
 - Gunakan variasi kalimat agar unik dari kota lain
 - Jangan copy dari deskripsi layanan utama
 - Tone: profesional, lokal, terpercaya

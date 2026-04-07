@@ -20,7 +20,9 @@ const sidebarNavItems: NavItem[] = [
     { title: 'Kustomisasi Dokumen', url: siteSettings.document().url },
     { title: 'Analytics & Tracking', url: siteSettings.analytics().url },
     { title: 'Social Media', url: siteSettings.social().url },
+    /*
     { title: 'Maintenance', url: siteSettings.maintenance().url },
+    */
     { title: 'Chatbot AI', url: siteSettings.chatbot().url },
 ];
 

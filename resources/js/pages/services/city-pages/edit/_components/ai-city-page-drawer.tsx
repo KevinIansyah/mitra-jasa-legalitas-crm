@@ -1,10 +1,12 @@
 import axios from 'axios';
 import { AlertCircle, Check, CheckCheck } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Spinner } from '@/components/ui/spinner';
+
 import services from '@/routes/services';
 
 type AiCityPageDrawerProps = {
@@ -73,6 +75,7 @@ export function AiCityPageDrawer({ open, onOpenChange, cityPageId, onApply }: Ai
             setApplied({});
             setTokensUsed(0);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open]);
 
     const generate = async () => {

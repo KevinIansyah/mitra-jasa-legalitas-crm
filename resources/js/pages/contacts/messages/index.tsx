@@ -1,6 +1,8 @@
 import { Head, usePage } from '@inertiajs/react';
+
 import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
+
 import contacts from '@/routes/contacts';
 import type { BreadcrumbItem } from '@/types';
 import type { ContactMessage, ContactMessageSummary } from '@/types/contacts';

@@ -21,7 +21,7 @@ import { EXPENSE_CATEGORIES } from '@/types/expenses';
 import getColumns from './columns';
 import { ExpenseAddDrawer } from './expense-add-drawer';
 
-interface DataTableProps {
+type DataTableProps = {
     data: Expense[];
     pageIndex: number;
     setPageIndex: React.Dispatch<React.SetStateAction<number>>;

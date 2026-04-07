@@ -1,13 +1,15 @@
 import { CircleDollarSign, Receipt, ReceiptText, Wallet } from 'lucide-react';
 import { useState } from 'react';
+
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+
 import { formatRupiah } from '@/lib/service';
 import type { Expense } from '@/types/expenses';
 import type { Paginator } from '@/types/paginator';
 import type { ExpenseSummary } from '../index';
 import { DataTable } from './datatable';
 
-interface ExpenseSectionProps {
+type ExpenseSectionProps = {
     expenses: Paginator<Expense>;
     summary: ExpenseSummary;
     filters: { search?: string; category?: string; is_billable?: string; is_billed?: string };

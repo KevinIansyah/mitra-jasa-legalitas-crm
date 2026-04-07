@@ -1,7 +1,7 @@
 import { Head, usePage } from '@inertiajs/react';
 import { format, parseISO } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
-import { ArrowDownRight, ArrowUpRight, Minus, TrendingDown, TrendingUp } from 'lucide-react';
+import { Minus, TrendingDown, TrendingUp } from 'lucide-react';
 import * as React from 'react';
 import { Area, AreaChart, CartesianGrid, Label, Pie, PieChart, XAxis, YAxis } from 'recharts';
 
@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
 import AppLayout from '@/layouts/app-layout';
+
 import { formatRupiah, formatRupiahCompact } from '@/lib/service';
 import { cn } from '@/lib/utils';
 import dashboard from '@/routes/dashboard';
@@ -148,7 +149,7 @@ function KpiStatCard({
                             'inline-flex shrink-0 items-center gap-0.5 rounded-full px-2 py-1 text-xs font-medium tabular-nums',
                             up && 'bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500',
                             down && 'bg-red-500 text-white dark:bg-red-500/15 dark:text-red-500',
-                            flat && 'bg-muted text-muted-foreground',
+                            flat && 'bg-secondary/50 text-muted-foreground',
                         )}
                     >
                         {up ? <TrendingUp className="size-3.5" /> : down ? <TrendingDown className="size-3.5" /> : <Minus className="size-3.5" />}
@@ -156,7 +157,9 @@ function KpiStatCard({
                         {deltaPercent}%
                     </Badge>
                 ) : (
-                    <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">—</span>
+                    <span className="shrink-0 rounded-full bg-secondary/50 px-3 py-[7px] text-xs text-muted-foreground">
+                        <Minus className="size-3.5" />
+                    </span>
                 )}
             </CardHeader>
             <CardContent className="flex flex-1 flex-col justify-between gap-4 px-6 pt-0 pb-6">
@@ -165,7 +168,7 @@ function KpiStatCard({
                         {fmt === 'rupiah' ? formatRupiahCompact(value) : value.toLocaleString('id-ID')}
                     </p>
                     <p className="flex items-center gap-2 text-sm text-foreground">
-                        {deltaPercent !== null && deltaPercent !== 0 ? (
+                        {/* {deltaPercent !== null && deltaPercent !== 0 ? (
                             up ? (
                                 <ArrowUpRight className="size-4 h-4 min-w-4 text-emerald-500" />
                             ) : (
@@ -173,7 +176,7 @@ function KpiStatCard({
                             )
                         ) : (
                             <Minus className="size-3.5 h-3.5 min-w-3.5 text-muted-foreground" />
-                        )}
+                        )} */}
                         {trendSentence(trendKey, deltaPercent)}
                     </p>
                 </div>

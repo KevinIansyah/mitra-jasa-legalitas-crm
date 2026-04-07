@@ -8,9 +8,9 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 
-import siteSettings from '@/routes/site-settings';
 import { TOKEN_LIMIT_OPTIONS, type SiteSetting } from '@/types/site-setting';
 import { SubmitButton } from '../../_components/shared';
+import siteSettings from '@/routes/site-settings';
 
 export function ChatbotSection({ settings }: { settings: SiteSetting }) {
     const { data, setData, patch, processing, errors } = useForm({
@@ -73,7 +73,7 @@ export function ChatbotSection({ settings }: { settings: SiteSetting }) {
                         style={{ width: `${usedPercentage}%` }}
                     />
                 </div>
-                <p className="text-xs text-muted-foreground">{usedPercentage}% terpakai — Reset otomatis setiap awal bulan</p>
+                <p className="text-xs text-muted-foreground">{usedPercentage}% terpakai - Reset otomatis setiap awal bulan</p>
             </div>
 
             {/* Monthly Limit */}

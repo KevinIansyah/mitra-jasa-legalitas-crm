@@ -2,13 +2,13 @@ import { CircleCheck, CircleDot, CircleX, FileText } from 'lucide-react';
 import { useState } from 'react';
 
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+
 import { formatRupiah } from '@/lib/service';
 import type { Estimate, EstimateSummaryData } from '@/types/estimates';
 import type { Paginator } from '@/types/paginator';
-
 import { DataTable } from './datatable';
 
-interface EstimateSectionProps {
+type EstimateSectionProps = {
     estimates: Paginator<Estimate>;
     summary: EstimateSummaryData;
     filters: { search?: string; status?: string };
