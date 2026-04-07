@@ -15,16 +15,12 @@ export default function getColumns(): ColumnDef<ClientCompany>[] {
             cell: ({ row }) => {
                 const path = row.original.logo;
                 if (!path) {
-                    return <span className="text-sm text-muted-foreground">—</span>;
+                    return <span>{'-'}</span>;
                 }
+
                 return (
                     <div className="flex h-12 w-28 items-center justify-center">
-                        <img
-                            src={`${R2_PUBLIC_URL}/${path}`}
-                            alt={row.original.name}
-                            className="max-h-10 max-w-full object-contain"
-                            loading="lazy"
-                        />
+                        <img src={`${R2_PUBLIC_URL}/${path}`} alt={row.original.name} className="max-h-10 max-w-full object-contain" loading="lazy" />
                     </div>
                 );
             },
@@ -36,9 +32,11 @@ export default function getColumns(): ColumnDef<ClientCompany>[] {
         },
         {
             accessorKey: 'is_published',
-            header: 'Status',
-            cell: ({ row }) =>
-                row.original.is_published ? <Badge className="bg-emerald-500 text-white">Dipublikasikan</Badge> : <Badge className="bg-slate-500 text-white">Draf</Badge>,
+            header: 'Publikasi',
+            cell: ({ row }) => {
+                const isPublished = row.getValue<boolean>('is_published');
+                return isPublished ? <Badge className="bg-emerald-500 text-white">Published</Badge> : <Badge className="bg-slate-500 text-white">Draft</Badge>;
+            },
         },
         {
             id: 'actions',

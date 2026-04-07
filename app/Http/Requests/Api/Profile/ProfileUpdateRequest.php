@@ -11,7 +11,10 @@ class ProfileUpdateRequest extends FormRequest
 
     public function rules(): array
     {
-        return $this->profileRules($this->user()->id);
+        return [
+            'name' => 'required|string|max:255',
+            'avatar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+        ];
     }
 
     public function messages(): array

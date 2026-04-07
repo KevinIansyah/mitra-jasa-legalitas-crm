@@ -20,7 +20,7 @@ export function CompaniesSection({ customer }: CompaniesSectionProps) {
 
     return (
         <section>
-            <div className="w-full rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
+            <div className="w-full flex-1 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
                 <div className="space-y-6">
                     <div>
                         <h2 className="text-xl font-semibold">Perusahaan terhubung</h2>

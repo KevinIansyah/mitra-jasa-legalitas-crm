@@ -51,7 +51,6 @@ export default function getColumns(): ColumnDef<Blog>[] {
                 return isFeatured ? <Badge className="bg-blue-600 text-white">Unggulan</Badge> : <span className="text-sm text-muted-foreground">-</span>;
             },
         },
-
         {
             accessorKey: 'is_published',
             header: 'Publikasi',
