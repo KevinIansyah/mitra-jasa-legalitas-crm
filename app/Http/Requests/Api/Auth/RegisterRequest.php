@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Api\Auth;
 
+use App\Helpers\PhoneHelper;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 class RegisterRequest extends FormRequest
@@ -12,12 +14,21 @@ class RegisterRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('phone')) {
+            $this->merge([
+                'phone' => PhoneHelper::format($this->input('phone')),
+            ]);
+        }
+    }
+
     public function rules(): array
     {
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email'],
-            'phone' => ['required', 'string', 'max:255'],
+            'phone' => ['required', 'string', 'max:255', Rule::unique('users', 'phone')],
             'password' => ['required', 'confirmed', Password::min(8)],
         ];
     }
@@ -31,6 +42,7 @@ class RegisterRequest extends FormRequest
             'phone.required' => 'Nomor telepon wajib diisi.',
             'phone.string' => 'Nomor telepon harus berupa string.',
             'phone.max' => 'Nomor telepon maksimal 255 karakter.',
+            'phone.unique' => 'Nomor telepon sudah terdaftar.',
             'password.required' => 'Password wajib diisi.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
             'password.min' => 'Password minimal 8 karakter.',

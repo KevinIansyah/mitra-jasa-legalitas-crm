@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Contacts;
 
+use App\Helpers\PhoneHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Contacts\Customers\AttachCompanyRequest;
 use App\Http\Requests\Contacts\Customers\StoreRequest;
@@ -62,6 +63,7 @@ class CustomerController extends Controller
     public function store(StoreRequest $request)
     {
         $validated = $request->validated();
+        $validated['phone'] = PhoneHelper::format($validated['phone']);
 
         Customer::create($validated);
 
@@ -128,6 +130,9 @@ class CustomerController extends Controller
     public function update(UpdateRequest $request, Customer $customer)
     {
         $validated = $request->validated();
+        if (array_key_exists('phone', $validated)) {
+            $validated['phone'] = PhoneHelper::format($validated['phone']);
+        }
 
         $customer->update($validated);
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Helpers\ApiResponse;
+use App\Helpers\PhoneHelper;
 use App\Http\Controllers\Controller;
 use App\Models\ChatSession;
 use App\Models\SiteSetting;
@@ -71,7 +72,7 @@ class ChatbotController extends Controller
 
         $session = ChatSession::where('session_token', $sessionToken)->first();
 
-        if (!$session) {
+        if (! $session) {
             return ApiResponse::error('Sesi tidak ditemukan', 404);
         }
 
@@ -107,14 +108,14 @@ class ChatbotController extends Controller
 
         $session = ChatSession::where('session_token', $sessionToken)->first();
 
-        if (!$session) {
+        if (! $session) {
             return ApiResponse::error('Sesi tidak ditemukan', 404);
         }
 
         $session->update(array_filter([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
-            'phone' => $request->input('phone'),
+            'phone' => PhoneHelper::format($request->input('phone')),
             'status' => 'converted',
         ]));
 

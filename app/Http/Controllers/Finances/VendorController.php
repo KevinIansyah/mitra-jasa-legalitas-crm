@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Finances;
 
+use App\Helpers\PhoneHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Finances\Vendors\StoreRequest;
 use App\Http\Requests\Finances\Vendors\UpdateRequest;
@@ -14,19 +15,19 @@ class VendorController extends Controller
 {
     public function index(Request $request)
     {
-        $perPage  = $request->get('per_page', 20);
-        $perPage  = in_array($perPage, [20, 30, 40, 50]) ? $perPage : 20;
+        $perPage = $request->get('per_page', 20);
+        $perPage = in_array($perPage, [20, 30, 40, 50]) ? $perPage : 20;
 
-        $search   = $request->get('search');
+        $search = $request->get('search');
         $category = $request->get('category');
-        $status   = $request->get('status');
+        $status = $request->get('status');
 
         $vendors = Vendor::query()
             ->withCount('expenses')
             ->with('primaryBankAccount', 'bankAccounts')
-            ->when($search, fn($q) => $q->search($search))
-            ->when($category, fn($q) => $q->byCategory($category))
-            ->when($status, fn($q) => $q->where('status', $status))
+            ->when($search, fn ($q) => $q->search($search))
+            ->when($category, fn ($q) => $q->byCategory($category))
+            ->when($status, fn ($q) => $q->where('status', $status))
             ->latest()
             ->paginate($perPage);
 
@@ -42,10 +43,10 @@ class VendorController extends Controller
             'vendors' => $vendors,
             'summary' => $summary,
             'filters' => [
-                'search'   => $search,
+                'search' => $search,
                 'per_page' => $perPage,
                 'category' => $category,
-                'status'   => $status,
+                'status' => $status,
             ],
         ]);
     }
@@ -58,17 +59,20 @@ class VendorController extends Controller
     public function store(StoreRequest $request)
     {
         $validated = $request->validated();
+        if (array_key_exists('phone', $validated)) {
+            $validated['phone'] = PhoneHelper::format($validated['phone']);
+        }
 
         DB::transaction(function () use ($validated) {
             $vendor = Vendor::create([
-                'name'      => $validated['name'],
-                'category'  => $validated['category'] ?? null,
-                'phone'     => $validated['phone'] ?? null,
-                'email'     => $validated['email'] ?? null,
-                'address'   => $validated['address'] ?? null,
-                'npwp'      => $validated['npwp'] ?? null,
-                'notes'     => $validated['notes'] ?? null,
-                'status'    => $validated['status'] ?? 'active',
+                'name' => $validated['name'],
+                'category' => $validated['category'] ?? null,
+                'phone' => $validated['phone'] ?? null,
+                'email' => $validated['email'] ?? null,
+                'address' => $validated['address'] ?? null,
+                'npwp' => $validated['npwp'] ?? null,
+                'notes' => $validated['notes'] ?? null,
+                'status' => $validated['status'] ?? 'active',
             ]);
 
             $this->syncBankAccounts($vendor, $validated['bank_accounts'] ?? []);
@@ -91,17 +95,20 @@ class VendorController extends Controller
     public function update(UpdateRequest $request, Vendor $vendor)
     {
         $validated = $request->validated();
+        if (array_key_exists('phone', $validated)) {
+            $validated['phone'] = PhoneHelper::format($validated['phone']);
+        }
 
         DB::transaction(function () use ($vendor, $validated) {
             $vendor->update([
-                'name'      => $validated['name'],
-                'category'  => $validated['category'] ?? null,
-                'phone'     => $validated['phone'] ?? null,
-                'email'     => $validated['email'] ?? null,
-                'address'   => $validated['address'] ?? null,
-                'npwp'      => $validated['npwp'] ?? null,
-                'notes'     => $validated['notes'] ?? null,
-                'status'    => $validated['status'] ?? 'active',
+                'name' => $validated['name'],
+                'category' => $validated['category'] ?? null,
+                'phone' => $validated['phone'] ?? null,
+                'email' => $validated['email'] ?? null,
+                'address' => $validated['address'] ?? null,
+                'npwp' => $validated['npwp'] ?? null,
+                'notes' => $validated['notes'] ?? null,
+                'status' => $validated['status'] ?? 'active',
             ]);
 
             $this->syncBankAccounts($vendor, $validated['bank_accounts'] ?? []);
@@ -114,6 +121,7 @@ class VendorController extends Controller
     public function destroy(Vendor $vendor)
     {
         $vendor->delete();
+
         return back()->with('success', 'Vendor berhasil dihapus.');
     }
 
@@ -125,10 +133,10 @@ class VendorController extends Controller
 
         foreach ($accounts as $i => $account) {
             $vendor->bankAccounts()->create([
-                'bank_name'      => $account['bank_name'],
+                'bank_name' => $account['bank_name'],
                 'account_number' => $account['account_number'],
                 'account_holder' => $account['account_holder'],
-                'is_primary'     => $hasPrimary ? ($account['is_primary'] ?? false) : ($i === 0),
+                'is_primary' => $hasPrimary ? ($account['is_primary'] ?? false) : ($i === 0),
             ]);
         }
     }

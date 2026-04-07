@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\PhoneHelper;
 use App\Http\Requests\Staff\StoreRequest;
 use App\Http\Requests\Staff\UpdateRequest;
 use App\Models\Project;
@@ -84,7 +85,7 @@ class StaffController extends Controller
             $user = User::create([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
-                'phone' => $validated['phone'],
+                'phone' => PhoneHelper::format($validated['phone']),
                 'role' => $validated['role'],
                 'password' => Hash::make($validated['password']),
             ]);
@@ -126,7 +127,7 @@ class StaffController extends Controller
             $userUpdate = [
                 'name' => $validated['name'],
                 'email' => $validated['email'],
-                'phone' => $validated['phone'],
+                'phone' => PhoneHelper::format($validated['phone']),
                 'role' => $validated['role'],
                 'status' => $validated['status'] ?? 'active',
             ];

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Helpers\ApiResponse;
+use App\Helpers\PhoneHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Api\Auth\LoginRequest;
@@ -41,7 +42,7 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'phone' => $request->phone,
+            'phone' => PhoneHelper::format($request->phone),
             'password' => Hash::make($request->password),
             'role' => 'user',
         ]);

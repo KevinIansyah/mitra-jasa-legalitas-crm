@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Projects;
 
-use App\Http\Controllers\Controller;
 use App\Helpers\ActivityHelper;
+use App\Helpers\PhoneHelper;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Projects\StoreRequest;
 use App\Http\Requests\Projects\UpdateRequest;
 use App\Models\Company;
@@ -35,11 +36,11 @@ class ProjectController extends Controller
         $perPage = $request->get('per_page', 20);
         $perPage = in_array($perPage, [20, 30, 40, 50]) ? $perPage : 20;
 
-        $search     = $request->get('search');
-        $status     = $request->get('status');
+        $search = $request->get('search');
+        $status = $request->get('status');
         $customerId = $request->get('customer_id');
-        $companyId  = $request->get('company_id');
-        $serviceId  = $request->get('service_id');
+        $companyId = $request->get('company_id');
+        $serviceId = $request->get('service_id');
 
         $projects = Project::query()
             ->with(
@@ -49,48 +50,48 @@ class ProjectController extends Controller
                 'servicePackage:id,name',
                 'projectLeaders:id,name'
             )
-            ->when($search, fn($q) => $q->search($search))
-            ->when($status, fn($q) => $q->where('status', $status))
-            ->when($customerId, fn($q) => $q->where('customer_id', $customerId))
-            ->when($companyId, fn($q) => $q->where('company_id', $companyId))
-            ->when($serviceId, fn($q) => $q->where('service_id', $serviceId))
+            ->when($search, fn ($q) => $q->search($search))
+            ->when($status, fn ($q) => $q->where('status', $status))
+            ->when($customerId, fn ($q) => $q->where('customer_id', $customerId))
+            ->when($companyId, fn ($q) => $q->where('company_id', $companyId))
+            ->when($serviceId, fn ($q) => $q->where('service_id', $serviceId))
             ->latest()
             ->paginate($perPage)
-            ->through(fn($project) => $project->append([
+            ->through(fn ($project) => $project->append([
                 'progress_percentage',
-                'project_leader'
+                'project_leader',
             ]));
 
         $customers = Customer::select('id', 'name')->get();
         $companies = Company::select('id', 'name')->get();
-        $services  = Service::select('id', 'name')->get();
+        $services = Service::select('id', 'name')->get();
 
         $statusCounts = Project::selectRaw('status, count(*) as count')
             ->groupBy('status')
             ->pluck('count', 'status');
 
         $summary = [
-            'total'       => Project::count(),
-            'planning'    => (int) ($statusCounts['planning'] ?? 0),
+            'total' => Project::count(),
+            'planning' => (int) ($statusCounts['planning'] ?? 0),
             'in_progress' => (int) ($statusCounts['in_progress'] ?? 0),
-            'on_hold'     => (int) ($statusCounts['on_hold'] ?? 0),
-            'completed'   => (int) ($statusCounts['completed'] ?? 0),
-            'cancelled'   => (int) ($statusCounts['cancelled'] ?? 0),
+            'on_hold' => (int) ($statusCounts['on_hold'] ?? 0),
+            'completed' => (int) ($statusCounts['completed'] ?? 0),
+            'cancelled' => (int) ($statusCounts['cancelled'] ?? 0),
         ];
 
         return Inertia::render('projects/index', [
-            'projects'  => $projects,
-            'summary'   => $summary,
+            'projects' => $projects,
+            'summary' => $summary,
             'customers' => $customers,
             'companies' => $companies,
-            'services'  => $services,
+            'services' => $services,
             'filters' => [
-                'search'      => $search,
-                'per_page'    => $perPage,
-                'status'      => $status,
+                'search' => $search,
+                'per_page' => $perPage,
+                'status' => $status,
                 'customer_id' => $customerId,
-                'company_id'  => $companyId,
-                'service_id'  => $serviceId,
+                'company_id' => $companyId,
+                'service_id' => $serviceId,
             ],
         ]);
     }
@@ -142,7 +143,7 @@ class ProjectController extends Controller
 
         $project = DB::transaction(function () use ($validated) {
 
-            $quote = !empty($validated['quote_id'])
+            $quote = ! empty($validated['quote_id'])
                 ? Quote::find($validated['quote_id'])
                 : null;
 
@@ -151,19 +152,19 @@ class ProjectController extends Controller
 
                 $customer = Customer::create([
                     'user_id' => $quote?->user_id,
-                    'name'    => $validated['customer_name'],
-                    'email'   => $validated['customer_email'],
-                    'phone'   => $validated['customer_phone'],
-                    'tier'    => $validated['customer_tier'] ?? 'bronze',
-                    'status'  => 'active',
-                    'notes'   => $validated['customer_notes'] ?? null,
+                    'name' => $validated['customer_name'],
+                    'email' => $validated['customer_email'],
+                    'phone' => PhoneHelper::format($validated['customer_phone']),
+                    'tier' => $validated['customer_tier'] ?? 'bronze',
+                    'status' => 'active',
+                    'notes' => $validated['customer_notes'] ?? null,
                 ]);
 
                 $validated['customer_id'] = $customer->id;
 
                 if ($quote) {
                     $quote->update([
-                        'customer_id' => $customer->id
+                        'customer_id' => $customer->id,
                     ]);
                 }
             }
@@ -172,48 +173,48 @@ class ProjectController extends Controller
             $company = null;
             $companyMode = $validated['company_mode'] ?? 'none';
 
-            if (!empty($validated['company_id'])) {
+            if (! empty($validated['company_id'])) {
                 $company = Company::find($validated['company_id']);
             }
 
             if ($companyMode === 'create') {
                 $company = Company::create([
-                    'name'              => $validated['company_name'],
-                    'phone'             => $validated['company_phone'] ?? null,
-                    'email'             => $validated['company_email'] ?? null,
-                    'website'           => $validated['company_website'] ?? null,
-                    'address'           => $validated['company_address'] ?? null,
-                    'city'              => $validated['company_city'] ?? null,
-                    'province'          => $validated['company_province'] ?? null,
-                    'postal_code'       => $validated['company_postal_code'] ?? null,
-                    'npwp'              => $validated['company_npwp'] ?? null,
-                    'status_legal'      => $validated['company_status_legal'],
+                    'name' => $validated['company_name'],
+                    'phone' => PhoneHelper::format($validated['company_phone'] ?? null),
+                    'email' => $validated['company_email'] ?? null,
+                    'website' => $validated['company_website'] ?? null,
+                    'address' => $validated['company_address'] ?? null,
+                    'city' => $validated['company_city'] ?? null,
+                    'province' => $validated['company_province'] ?? null,
+                    'postal_code' => $validated['company_postal_code'] ?? null,
+                    'npwp' => $validated['company_npwp'] ?? null,
+                    'status_legal' => $validated['company_status_legal'],
                     'category_business' => $validated['company_category_business'],
-                    'notes'             => $validated['company_notes'] ?? null,
+                    'notes' => $validated['company_notes'] ?? null,
                 ]);
             }
 
             // 3. Attach customer to company
-            if ($company && !$company->customers()->where('customer_id', $validated['customer_id'])->exists()) {
+            if ($company && ! $company->customers()->where('customer_id', $validated['customer_id'])->exists()) {
                 $company->customers()->attach($validated['customer_id'], ['is_primary' => true]);
             }
 
             // 4. Create project
             $project = Project::create([
-                'customer_id'        => $validated['customer_id'],
-                'company_id'         => $company?->id,
-                'service_id'         => $validated['service_id'] ?? null,
+                'customer_id' => $validated['customer_id'],
+                'company_id' => $company?->id,
+                'service_id' => $validated['service_id'] ?? null,
                 'service_package_id' => $validated['service_package_id'] ?? null,
-                'name'               => $validated['name'],
-                'description'        => $validated['description'] ?? null,
-                'budget'             => $validated['budget'],
-                'start_date'         => $validated['start_date'],
-                'planned_end_date'   => $validated['planned_end_date'],
-                'status'             => $validated['status'] ?? 'planning',
+                'name' => $validated['name'],
+                'description' => $validated['description'] ?? null,
+                'budget' => $validated['budget'],
+                'start_date' => $validated['start_date'],
+                'planned_end_date' => $validated['planned_end_date'],
+                'status' => $validated['status'] ?? 'planning',
             ]);
 
             // 5. Copy template
-            if (!empty($validated['project_template_id'])) {
+            if (! empty($validated['project_template_id'])) {
                 $template = ProjectTemplate::find($validated['project_template_id']);
                 if ($template) {
                     $this->copyTemplateToProject($project, $template);
@@ -234,7 +235,7 @@ class ProjectController extends Controller
             $project->customer->user->notify(new NewProjectNotification($project));
         }
 
-        if (!empty($validated['quote_id'])) {
+        if (! empty($validated['quote_id'])) {
             return to_route('projects.show', $project)
                 ->with('success', 'Quote berhasil dikonversi menjadi project.');
         }
@@ -255,17 +256,17 @@ class ProjectController extends Controller
         return Inertia::render('projects/detail/index', [
             'project' => $project,
             'services' => $services,
-            'tab'     => 'overview',
+            'tab' => 'overview',
         ]);
     }
 
     public function finance(Project $project)
     {
         $project->load([
-            'invoices' => fn($q) => $q->latest(),
+            'invoices' => fn ($q) => $q->latest(),
             'invoices.items',
             'invoices.payments.verifier',
-            'expenses' => fn($q) => $q->latest(),
+            'expenses' => fn ($q) => $q->latest(),
             'expenses.user',
             'customer',
         ]);
@@ -297,20 +298,20 @@ class ProjectController extends Controller
 
         return Inertia::render('projects/detail/index', [
             'project' => $project,
-            'tab'     => 'finance',
+            'tab' => 'finance',
         ]);
     }
 
     public function team(Project $project)
     {
         $project->load([
-            'members' => fn($q) => $q->latest(),
-            'members.user'
+            'members' => fn ($q) => $q->latest(),
+            'members.user',
         ]);
 
         return Inertia::render('projects/detail/index', [
             'project' => $project,
-            'tab'     => 'team',
+            'tab' => 'team',
         ]);
     }
 
@@ -324,7 +325,7 @@ class ProjectController extends Controller
 
         return Inertia::render('projects/detail/index', [
             'project' => $project,
-            'tab'     => 'milestones',
+            'tab' => 'milestones',
         ]);
     }
 
@@ -362,23 +363,23 @@ class ProjectController extends Controller
                 $query->where('subject_type', ProjectDeliverable::class)
                     ->whereIn('subject_id', $project->deliverables()->withTrashed()->pluck('id'));
             })
-            ->with(['causer', 'subject' => fn($q) => $q->withTrashed()])
+            ->with(['causer', 'subject' => fn ($q) => $q->withTrashed()])
             ->latest()
             ->paginate(20);
 
-        $activities->through(fn($activity) => [
-            'id'          => $activity->id,
-            'event'       => $activity->event,
-            'log_name'    => $activity->log_name,
+        $activities->through(fn ($activity) => [
+            'id' => $activity->id,
+            'event' => $activity->event,
+            'log_name' => $activity->log_name,
             'description' => ActivityHelper::describe($activity),
-            'properties'  => $activity->properties,
-            'causer'      => $activity->causer?->only('id', 'name'),
-            'created_at'  => $activity->created_at,
+            'properties' => $activity->properties,
+            'causer' => $activity->causer?->only('id', 'name'),
+            'created_at' => $activity->created_at,
         ]);
 
         return Inertia::render('projects/detail/index', [
-            'project'    => $project,
-            'tab'        => 'activities',
+            'project' => $project,
+            'tab' => 'activities',
             'activities' => $activities,
         ]);
     }
@@ -394,7 +395,7 @@ class ProjectController extends Controller
 
         return Inertia::render('projects/detail/index', [
             'project' => $project,
-            'tab'     => 'documents',
+            'tab' => 'documents',
             'can_approve_documents' => $canApproveDocuments,
         ]);
     }
@@ -408,16 +409,16 @@ class ProjectController extends Controller
 
         return Inertia::render('projects/detail/index', [
             'project' => $project,
-            'tab'     => 'deliverables',
+            'tab' => 'deliverables',
         ]);
     }
 
     public function discussions(Project $project)
     {
         $project->load([
-            'comments' => fn($q) => $q
+            'comments' => fn ($q) => $q
                 ->whereNull('parent_id')
-                ->with(['user', 'replies' => fn($q) => $q->with('user')->withTrashed()])
+                ->with(['user', 'replies' => fn ($q) => $q->with('user')->withTrashed()])
                 ->withTrashed()
                 ->latest(),
             'members.user',
@@ -425,27 +426,27 @@ class ProjectController extends Controller
 
         return Inertia::render('projects/detail/index', [
             'project' => $project,
-            'tab'     => 'discussions',
+            'tab' => 'discussions',
         ]);
     }
 
     public function tasks(Project $project)
     {
         $project->load([
-            'tasks' => fn($q) => $q->with(['assignee', 'milestone'])->orderBy('sort_order'),
+            'tasks' => fn ($q) => $q->with(['assignee', 'milestone'])->orderBy('sort_order'),
             'milestones',
             'members.user',
         ]);
 
         return Inertia::render('projects/detail/index', [
             'project' => $project,
-            'tab'     => 'tasks',
+            'tab' => 'tasks',
         ]);
     }
 
     public function update(UpdateRequest $request, Project $project)
     {
-        $validated =  $request->validated();
+        $validated = $request->validated();
 
         $project->update($validated);
 
@@ -467,10 +468,10 @@ class ProjectController extends Controller
 
         match ($status) {
             'in_progress' => $data['actual_start_date'] = now()->toDateString(),
-            'completed'   => $data['actual_end_date']   = now()->toDateString(),
+            'completed' => $data['actual_end_date'] = now()->toDateString(),
             'planning' => $data = array_merge($data, [
                 'actual_start_date' => null,
-                'actual_end_date'   => null,
+                'actual_end_date' => null,
             ]),
             default => null,
         };
@@ -479,12 +480,11 @@ class ProjectController extends Controller
 
         if ($status === 'completed') {
             $project->loadMissing(['customer.user']);
-            
+
             if ($project->customer?->user) {
                 $project->customer->user->notify(new ProjectCompletedNotification($project));
             }
         }
-
 
         return back()->with('success', 'Status project berhasil diperbarui.');
     }
@@ -495,7 +495,7 @@ class ProjectController extends Controller
 
         if ($project->invoices()->exists()) {
             return back()->withErrors([
-                'error' => 'Project tidak dapat dihapus karena sudah memiliki invoice.'
+                'error' => 'Project tidak dapat dihapus karena sudah memiliki invoice.',
             ]);
         }
 
