@@ -3,8 +3,8 @@
 namespace App\Http\Requests\Api\Auth;
 
 use App\Helpers\PhoneHelper;
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 class RegisterRequest extends FormRequest
@@ -28,7 +28,25 @@ class RegisterRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email'],
-            'phone' => ['required', 'string', 'max:255', Rule::unique('users', 'phone')],
+            'phone' => [
+                'required',
+                'string',
+                'max:255',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    if ($value === null || $value === '') {
+                        return;
+                    }
+                    $existing = User::query()->where('phone', $value)->first();
+                    if (! $existing) {
+                        return;
+                    }
+                    $incomingEmail = strtolower((string) $this->input('email'));
+                    if (strtolower($existing->email) === $incomingEmail) {
+                        return;
+                    }
+                    $fail('Nomor telepon sudah terdaftar.');
+                },
+            ],
             'password' => ['required', 'confirmed', Password::min(8)],
         ];
     }
@@ -42,7 +60,6 @@ class RegisterRequest extends FormRequest
             'phone.required' => 'Nomor telepon wajib diisi.',
             'phone.string' => 'Nomor telepon harus berupa string.',
             'phone.max' => 'Nomor telepon maksimal 255 karakter.',
-            'phone.unique' => 'Nomor telepon sudah terdaftar.',
             'password.required' => 'Password wajib diisi.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
             'password.min' => 'Password minimal 8 karakter.',
