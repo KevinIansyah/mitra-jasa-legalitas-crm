@@ -136,6 +136,12 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
+        $user = $request->user();
+
+        $r2Url = rtrim(config('filesystems.disks.r2_public.url', ''), '/');
+
+        $user->avatar = $user->avatar ? "{$r2Url}/{$user->avatar}" : null;
+
         return ApiResponse::success($request->user(), 'Data pengguna berhasil diambil.');
     }
 
