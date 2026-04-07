@@ -40,7 +40,7 @@ class AiImagenService
         ]);
 
         if ($response->failed()) {
-            throw new Exception('Gagal generate gambar: '.$response->body());
+            throw new Exception('Gagal generate gambar: ' . $response->body());
         }
 
         $predictions = $response->json('predictions') ?? [];
@@ -54,7 +54,7 @@ class AiImagenService
         $images = collect($predictions)
             ->pluck('bytesBase64Encoded')
             ->filter()
-            ->map(fn (string $base64) => $this->processImage($manager, $base64))
+            ->map(fn(string $base64) => $this->processImage($manager, $base64))
             ->values()
             ->toArray();
 
@@ -69,7 +69,7 @@ class AiImagenService
             throw new Exception('Base64 decode gagal - data dari Imagen tidak valid.');
         }
 
-        $tmpFile = tempnam(sys_get_temp_dir(), 'imagen_').'.png';
+        $tmpFile = tempnam(sys_get_temp_dir(), 'imagen_') . '.png';
         file_put_contents($tmpFile, $decoded);
 
         try {
@@ -80,9 +80,9 @@ class AiImagenService
             $twitter = (clone $image)->cover(1200, 628);
 
             return [
-                'original' => base64_encode($original->toPng()),
-                'og' => base64_encode($og->toPng()),
-                'twitter' => base64_encode($twitter->toPng()),
+                'original' => base64_encode($original->toWebp(quality: 85)),
+                'og'       => base64_encode($og->toWebp(quality: 85)),
+                'twitter'  => base64_encode($twitter->toWebp(quality: 85)),
             ];
         } finally {
             @unlink($tmpFile);

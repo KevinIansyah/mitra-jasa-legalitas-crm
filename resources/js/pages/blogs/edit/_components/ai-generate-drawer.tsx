@@ -422,7 +422,7 @@ export function AiGenerateDrawer({ open, onOpenChange, type, blog, onApply }: Ai
 
                         {!loading && result && (
                             <div className="space-y-2">
-                                {tokensUsed > 0 && (
+                                {tokensUsed > 0 && type !== 'image' && (
                                     <div className="flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2 text-sm text-muted-foreground">
                                         <span>Token digunakan</span>
                                         <span className="font-medium">{tokensUsed.toLocaleString('id-ID')}</span>

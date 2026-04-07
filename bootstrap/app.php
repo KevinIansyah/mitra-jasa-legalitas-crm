@@ -148,14 +148,19 @@ return Application::configure(basePath: dirname(__DIR__))
 
             if ($e instanceof HttpException) {
                 $status = $e->getStatusCode();
+                $msg = $e->getMessage();
 
                 return match (true) {
-                    $status === 404 => Inertia::render('errors/404', ['message' => $e->getMessage() ?: null])
+                    $status === 404 => Inertia::render('errors/404', ['message' => $msg ?: null])
                         ->toResponse($request)->setStatusCode(404),
-                    $status === 403 => Inertia::render('errors/403', ['message' => $e->getMessage() ?: null])
+                    $status === 403 => Inertia::render('errors/403', ['message' => $msg ?: null])
                         ->toResponse($request)->setStatusCode(403),
                     $status === 419 => Inertia::render('errors/419')
                         ->toResponse($request)->setStatusCode(419),
+                    $status === 503 => Inertia::render('errors/503', [
+                        'message' => $msg && $msg !== 'Service Unavailable' ? $msg : null,
+                    ])
+                        ->toResponse($request)->setStatusCode(503),
                     $status >= 500 && ! config('app.debug') => Inertia::render('errors/500', ['message' => null])
                         ->toResponse($request)->setStatusCode($status),
                     default => null,

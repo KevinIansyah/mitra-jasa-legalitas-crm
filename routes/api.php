@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\ClientProjectDocumentController;
 use App\Http\Controllers\Api\CompanyInformationController;
 use App\Http\Controllers\Api\ContactMessageController;
 use App\Http\Controllers\Api\EstimateController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ProposalController;
@@ -200,6 +201,18 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/profile', [ProfileController::class, 'updateProfile'])->name('profile');
         Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password');
     });
+});
+
+/*
+|--------------------------------------------------------------------------
+| NOTIFICATIONS (authenticated)
+|--------------------------------------------------------------------------
+| GET /notifications?per_page=20&unread_only=1  -> Daftar notifikasi + meta unread_count
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('api.notifications.index');
 });
 
 /*
