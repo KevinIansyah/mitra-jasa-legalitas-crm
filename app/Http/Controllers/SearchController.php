@@ -36,7 +36,7 @@ class SearchController extends Controller
             });
         }
 
-        $customers = $query->select('id', 'name', 'email', 'phone', 'tier', 'avatar')
+        $customers = $query->select('id', 'name', 'email', 'phone', 'tier')->with('user:id,avatar')
             ->limit(10)
             ->get();
 
@@ -113,10 +113,10 @@ class SearchController extends Controller
 
         $query = User::where('role', '!=', 'user')
             ->where('status', 'active')
-            ->whereHas('staffProfile', fn ($q) => $q->where('availability_status', 'available'))
+            ->whereHas('staffProfile', fn($q) => $q->where('availability_status', 'available'))
             ->with('staffProfile')
             ->withCount([
-                'projects as active_projects_count' => fn ($q) => $q->whereIn('status', ['planning', 'in_progress', 'on_hold']),
+                'projects as active_projects_count' => fn($q) => $q->whereIn('status', ['planning', 'in_progress', 'on_hold']),
             ]);
 
         if ($search) {
@@ -142,7 +142,7 @@ class SearchController extends Controller
 
                 return $user->active_projects_count < $maxProjects;
             })
-            ->map(fn ($user) => [
+            ->map(fn($user) => [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
@@ -193,7 +193,7 @@ class SearchController extends Controller
         $search = $request->get('search', '');
 
         $quotes = Quote::with(['user:id,name', 'service:id,name'])
-            ->when($search, fn ($q) => $q->where(function ($q) use ($search) {
+            ->when($search, fn($q) => $q->where(function ($q) use ($search) {
                 $q->where('reference_number', 'like', "%{$search}%")
                     ->orWhere('project_name', 'like', "%{$search}%");
             }))

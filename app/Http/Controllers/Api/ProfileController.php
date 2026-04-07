@@ -36,6 +36,9 @@ class ProfileController extends Controller
 
         $user->save();
 
+        $r2Url = rtrim(config('filesystems.disks.r2_public.url', ''), '/');
+        $user->avatar = $user->avatar ? "{$r2Url}/{$user->avatar}" : null;
+
         return ApiResponse::updated($user, 'Profil berhasil diperbarui.');
     }
 

@@ -49,6 +49,11 @@ class Customer extends Model
         return $this->hasMany(Proposal::class);
     }
 
+    public function estimates()
+    {
+        return $this->hasMany(Estimate::class);
+    }
+
     public function hasAccount(): bool
     {
         return ! is_null($this->user_id);
