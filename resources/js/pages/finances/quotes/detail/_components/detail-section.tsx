@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { DialogDelete } from '@/components/dialog-delete';
 import { HasPermission } from '@/components/has-permission';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -16,7 +17,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
-import { formatRupiah } from '@/lib/service';
+import { formatRupiah, getInitials } from '@/lib/service';
 import { formatDate } from '@/lib/utils';
 import finances from '@/routes/finances';
 import { CATEGORY_BUSINESS_MAP, STATUS_LEGAL_MAP } from '@/types/contacts';
@@ -35,6 +36,7 @@ function InfoRow({ label, value, children }: { label: string; value?: string | n
 }
 
 export function DetailSection({ quote }: { quote: Quote }) {
+    const R2_PUBLIC_URL = import.meta.env.VITE_CLOUDFLARE_R2_PUBLIC_URL as string;
     const [confirmStatus, setConfirmStatus] = useState<QuoteStatus | null>(null);
     const [estimateConfirmStatus, setEstimateConfirmStatus] = useState<{ estimate: Estimate; status: EstimateStatus } | null>(null);
     const [rejectedReason, setRejectedReason] = useState('');
@@ -50,6 +52,7 @@ export function DetailSection({ quote }: { quote: Quote }) {
     const targetStatus = confirmStatus ? QUOTE_STATUSES_MAP[confirmStatus] : null;
     const isFinalized = quote.status === 'rejected' || quote.status === 'converted';
     const estimates = quote.estimates ?? [];
+    const linkedCustomer = quote.customer ?? quote.user?.customer ?? null;
 
     function goToCreateEstimates() {
         router.visit(finances.estimates.create().url, { data: { quote_id: quote.id } });
@@ -263,9 +266,10 @@ export function DetailSection({ quote }: { quote: Quote }) {
             {/* ───────────────── Pemohon & Customer Section ───────────────── */}
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                 <div className="w-full space-y-3 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                        <User className="size-5 text-primary" />
-                    </div>
+                    <Avatar className="mb-6 h-12 w-12 rounded-xl">
+                        <AvatarImage src={`${R2_PUBLIC_URL}/${quote.user?.avatar}`} alt={quote.user?.name} />
+                        <AvatarFallback className="rounded-xl bg-primary/10 text-lg text-primary">{getInitials(quote.user?.name)}</AvatarFallback>
+                    </Avatar>
                     <FieldLabel>Pemohon</FieldLabel>
                     <div className="grid grid-cols-[130px_1fr] gap-x-2 gap-y-2">
                         <InfoRow label="Nama" value={quote.user?.name} />
@@ -277,18 +281,26 @@ export function DetailSection({ quote }: { quote: Quote }) {
                 </div>
 
                 <div className="min-40 w-full space-y-3 rounded-xl bg-sidebar p-4 shadow md:p-6 dark:shadow-none">
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                        <User className="size-5 text-primary" />
-                    </div>
-                    <FieldLabel>Customer Terhubung</FieldLabel>
-                    {quote.customer ? (
-                        <div className="grid grid-cols-[130px_1fr] gap-x-2 gap-y-2">
-                            <InfoRow label="Nama" value={quote.customer.name} />
-                            <InfoRow label="Email" value={quote.customer.email} />
-                            <InfoRow label="Telepon" value={quote.customer.phone} />
-                        </div>
+                    {linkedCustomer ? (
+                        <>
+                            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                <User className="size-5 text-primary" />
+                            </div>
+                            <FieldLabel>Customer Terhubung</FieldLabel>
+                            <div className="grid grid-cols-[130px_1fr] gap-x-2 gap-y-2">
+                                <InfoRow label="Nama" value={linkedCustomer.name} />
+                                <InfoRow label="Email" value={linkedCustomer.email} />
+                                <InfoRow label="Telepon" value={linkedCustomer.phone} />
+                            </div>
+                        </>
                     ) : (
-                        <FieldDescription>Belum ada customer terhubung</FieldDescription>
+                        <>
+                            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                                <User className="size-5 text-primary" />
+                            </div>
+                            <FieldLabel>Customer Terhubung</FieldLabel>
+                            <FieldDescription>Belum ada customer terhubung</FieldDescription>
+                        </>
                     )}
                 </div>
             </div>

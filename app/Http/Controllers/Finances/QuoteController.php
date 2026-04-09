@@ -65,13 +65,23 @@ class QuoteController extends Controller
     public function show(Quote $quote)
     {
         $quote->load([
-            'user:id,name,email',
-            'customer:id,name,phone,email',
+            'user' => fn($q) => $q->select('id', 'name', 'email', 'phone', 'avatar')->with([
+                'customer' => fn($cq) => $cq->select('id', 'user_id', 'name', 'phone', 'email')->with([
+                    'user' => fn($uq) => $uq->select('id', 'avatar'),
+                ]),
+            ]),
+            'customer' => fn($q) => $q->select('id', 'user_id', 'name', 'phone', 'email')->with([
+                'user' => fn($uq) => $uq->select('id', 'avatar'),
+            ]),
             'service:id,name',
             'servicePackage:id,name',
             'project:id,name,status',
             'estimates' => fn($q) => $q->with('items')->orderBy('version', 'desc'),
         ]);
+
+        if ($quote->customer === null && ($userCustomer = $quote->user?->customer)) {
+            $quote->setRelation('customer', $userCustomer);
+        }
 
         return Inertia::render('finances/quotes/detail/index', [
             'quote' => $quote,
