@@ -121,10 +121,7 @@ export function PaymentCard({ invoice }: PaymentCardProps) {
                                     <div key={payment.id} className={`space-y-4 rounded-lg bg-primary/10 p-4 text-sm dark:bg-muted/40 ${index !== payments.length - 1 ? '' : ''}`}>
                                         <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
                                             <div className="order-2 space-y-2 lg:order-1">
-                                                <div className="flex items-center gap-2">
-                                                    <p className="text-sm font-medium tabular-nums">{formatRupiah(Number(payment.amount))}</p>
-                                                    <Badge className={status.classes}>{status.label}</Badge>
-                                                </div>
+                                                <p className="text-sm font-medium tabular-nums">{formatRupiah(Number(payment.amount))}</p>
 
                                                 <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                                                     <span>

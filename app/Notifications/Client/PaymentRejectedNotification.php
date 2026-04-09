@@ -32,22 +32,22 @@ class PaymentRejectedNotification extends Notification implements ShouldQueue
 
     public function toDatabase(): array
     {
-        $invoice  = $this->payment->invoice;
+        $invoice = $this->payment->invoice;
         $customer = $invoice->customer ?? $invoice->project?->customer;
 
         return [
-            'title'      => 'Pembayaran Ditolak',
-            'message'    => "Pembayaran sebesar Rp " . number_format($this->payment->amount, 0, ',', '.') . " untuk faktur {$invoice->invoice_number} ditolak." .
+            'title' => 'Pembayaran Ditolak',
+            'message' => 'Pembayaran sebesar Rp '.number_format($this->payment->amount, 0, ',', '.')." untuk faktur {$invoice->invoice_number} ditolak.".
                 ($this->payment->rejection_reason ? " Alasan: {$this->payment->rejection_reason}" : ''),
-            'action_url' => "/portal/faktur/{$invoice->id}",
-            'icon'       => 'warning',
-            'type'       => 'payment_rejected',
-            'meta'       => [
-                'payment_id'       => $this->payment->id,
-                'invoice_id'       => $invoice->id,
-                'invoice_number'   => $invoice->invoice_number,
-                'amount'           => $this->payment->amount,
-                'customer_name'    => $customer?->name,
+            'action_url' => frontend_url("/portal/faktur/{$invoice->id}"),
+            'icon' => 'warning',
+            'type' => 'payment_rejected',
+            'meta' => [
+                'payment_id' => $this->payment->id,
+                'invoice_id' => $invoice->id,
+                'invoice_number' => $invoice->invoice_number,
+                'amount' => $this->payment->amount,
+                'customer_name' => $customer?->name,
                 'rejection_reason' => $this->payment->rejection_reason,
             ],
         ];

@@ -31,13 +31,13 @@ class NewProposalNotification extends Notification implements ShouldQueue
 
         if ($this->proposal->file_path) {
             try {
-                $content  = \App\Helpers\FileHelper::downloadFromR2Public($this->proposal->file_path);
-                $filename = 'proposal-' . $this->proposal->proposal_number . '.pdf';
+                $content = \App\Helpers\FileHelper::downloadFromR2Public($this->proposal->file_path);
+                $filename = 'proposal-'.$this->proposal->proposal_number.'.pdf';
                 $mail->attachData($content, $filename, ['mime' => 'application/pdf']);
             } catch (\Exception $e) {
                 \Illuminate\Support\Facades\Log::warning('Failed to attach proposal PDF', [
                     'proposal_id' => $this->proposal->id,
-                    'error'       => $e->getMessage(),
+                    'error' => $e->getMessage(),
                 ]);
             }
         }
@@ -48,17 +48,17 @@ class NewProposalNotification extends Notification implements ShouldQueue
     public function toDatabase(): array
     {
         return [
-            'title'      => 'Proposal Baru',
-            'message'    => "Proposal {$this->proposal->proposal_number} untuk \"{$this->proposal->project_name}\" telah dikirimkan.",
-            'action_url' => "/portal/proposal/{$this->proposal->id}",
-            'icon'       => 'document',
-            'type'       => 'new_proposal',
-            'meta'       => [
-                'proposal_id'     => $this->proposal->id,
+            'title' => 'Proposal Baru',
+            'message' => "Proposal {$this->proposal->proposal_number} untuk \"{$this->proposal->project_name}\" telah dikirimkan.",
+            'action_url' => frontend_url("/portal/proposal/{$this->proposal->id}"),
+            'icon' => 'document',
+            'type' => 'new_proposal',
+            'meta' => [
+                'proposal_id' => $this->proposal->id,
                 'proposal_number' => $this->proposal->proposal_number,
-                'project_name'    => $this->proposal->project_name,
-                'total_amount'    => $this->proposal->total_amount,
-                'valid_until'     => $this->proposal->valid_until?->format('Y-m-d'),
+                'project_name' => $this->proposal->project_name,
+                'total_amount' => $this->proposal->total_amount,
+                'valid_until' => $this->proposal->valid_until?->format('Y-m-d'),
             ],
         ];
     }

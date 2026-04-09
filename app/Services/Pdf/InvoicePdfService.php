@@ -10,40 +10,42 @@ use Spatie\Browsershot\Browsershot;
 
 class InvoicePdfService
 {
-  public function generate(ProjectInvoice $invoice): string
-  {
-    $invoice->loadMissing([
-      'project.customer',
-      'project.company',
-      'customer',
-      'items',
-    ]);
+    public function generate(ProjectInvoice $invoice): string
+    {
+        $invoice->loadMissing([
+            'project.customer',
+            'project.company',
+            'customer',
+            'items',
+        ]);
 
-    $settings = SiteSetting::get();
+        $settings = SiteSetting::get();
 
-    $html = view('pdf.finances.invoices.invoice', [
-      'invoice'  => $invoice,
-      'settings' => $settings,
-    ])->render();
+        $html = view('pdf.finances.invoices.invoice', [
+            'invoice' => $invoice,
+            'settings' => $settings,
+        ])->render();
 
-    $pdfContent = Browsershot::html($html)
-      ->format('A4')
-      ->margins(15, 15, 15, 15)
-      ->showBackground()
-      ->waitUntilNetworkIdle()
-      ->timeout(30)
-      ->pdf();
+        set_time_limit(180);
 
-    $filename = 'invoices/' . $invoice->invoice_number . '.pdf';
-    Storage::disk('r2_public')->put($filename, $pdfContent);
+        $pdfContent = Browsershot::html($html)
+            ->format('A4')
+            ->margins(15, 15, 15, 15)
+            ->showBackground()
+            ->waitUntilNetworkIdle()
+            ->timeout(120)
+            ->pdf();
 
-    return $filename;
-  }
+        $filename = 'invoices/'.$invoice->invoice_number.'.pdf';
+        Storage::disk('r2_public')->put($filename, $pdfContent);
 
-  public function delete(ProjectInvoice $invoice): void
-  {
-    if ($invoice->file_path) {
-      FileHelper::deleteFromR2($invoice->file_path, isPublic: true);
+        return $filename;
     }
-  }
+
+    public function delete(ProjectInvoice $invoice): void
+    {
+        if ($invoice->file_path) {
+            FileHelper::deleteFromR2($invoice->file_path, isPublic: true);
+        }
+    }
 }

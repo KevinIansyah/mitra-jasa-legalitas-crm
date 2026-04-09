@@ -33,15 +33,15 @@ class NewProjectNotification extends Notification implements ShouldQueue
     public function toDatabase(): array
     {
         return [
-            'title'      => 'Project Baru Dibuat',
-            'message'    => "Project \"{$this->project->name}\" telah dibuat dan siap diproses.",
-            'action_url' => "/portal/proyek/{$this->project->id}",
-            'icon'       => 'briefcase',
-            'type'       => 'new_project',
-            'meta'       => [
-                'project_id'   => $this->project->id,
+            'title' => 'Project Baru Dibuat',
+            'message' => "Project \"{$this->project->name}\" telah dibuat dan siap diproses.",
+            'action_url' => frontend_url("/portal/proyek/{$this->project->id}"),
+            'icon' => 'briefcase',
+            'type' => 'new_project',
+            'meta' => [
+                'project_id' => $this->project->id,
                 'project_name' => $this->project->name,
-                'start_date'   => $this->project->start_date?->format('Y-m-d'),
+                'start_date' => $this->project->start_date?->format('Y-m-d'),
                 'planned_end_date' => $this->project->planned_end_date?->format('Y-m-d'),
             ],
         ];

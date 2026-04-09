@@ -10,35 +10,37 @@ use Spatie\Browsershot\Browsershot;
 
 class ProposalPdfService
 {
-  public function generate(Proposal $proposal): string
-  {
-    $proposal->loadMissing(['customer', 'items']);
+    public function generate(Proposal $proposal): string
+    {
+        $proposal->loadMissing(['customer', 'items']);
 
-    $settings = SiteSetting::get();
+        $settings = SiteSetting::get();
 
-    $html = view('pdf.finances.proposals.proposal', [
-      'proposal' => $proposal,
-      'settings' => $settings,
-    ])->render();
+        $html = view('pdf.finances.proposals.proposal', [
+            'proposal' => $proposal,
+            'settings' => $settings,
+        ])->render();
 
-    $pdfContent = Browsershot::html($html)
-      ->format('A4')
-      ->margins(15, 15, 15, 15)
-      ->showBackground()
-      ->waitUntilNetworkIdle()
-      ->timeout(30)
-      ->pdf();
+        set_time_limit(180);
 
-    $filename = 'proposals/' . $proposal->proposal_number . '.pdf';
-    Storage::disk('r2_public')->put($filename, $pdfContent);
+        $pdfContent = Browsershot::html($html)
+            ->format('A4')
+            ->margins(15, 15, 15, 15)
+            ->showBackground()
+            ->waitUntilNetworkIdle()
+            ->timeout(120)
+            ->pdf();
 
-    return $filename;
-  }
+        $filename = 'proposals/'.$proposal->proposal_number.'.pdf';
+        Storage::disk('r2_public')->put($filename, $pdfContent);
 
-  public function delete(Proposal $proposal): void
-  {
-    if ($proposal->file_path) {
-      FileHelper::deleteFromR2($proposal->file_path, isPublic: true);
+        return $filename;
     }
-  }
+
+    public function delete(Proposal $proposal): void
+    {
+        if ($proposal->file_path) {
+            FileHelper::deleteFromR2($proposal->file_path, isPublic: true);
+        }
+    }
 }

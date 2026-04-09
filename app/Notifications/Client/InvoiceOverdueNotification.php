@@ -33,16 +33,16 @@ class InvoiceOverdueNotification extends Notification implements ShouldQueue
     public function toDatabase(): array
     {
         return [
-            'title'      => 'Faktur Jatuh Tempo',
-            'message'    => "Faktur {$this->invoice->invoice_number} sebesar Rp " . number_format($this->invoice->total_amount, 0, ',', '.') . " telah melewati jatuh tempo.",
-            'action_url' => "/portal/faktur/{$this->invoice->id}",
-            'icon'       => 'warning',
-            'type'       => 'invoice_overdue',
-            'meta'       => [
-                'invoice_id'     => $this->invoice->id,
+            'title' => 'Faktur Jatuh Tempo',
+            'message' => "Faktur {$this->invoice->invoice_number} sebesar Rp ".number_format($this->invoice->total_amount, 0, ',', '.').' telah melewati jatuh tempo.',
+            'action_url' => frontend_url("/portal/faktur/{$this->invoice->id}"),
+            'icon' => 'warning',
+            'type' => 'invoice_overdue',
+            'meta' => [
+                'invoice_id' => $this->invoice->id,
                 'invoice_number' => $this->invoice->invoice_number,
-                'total_amount'   => $this->invoice->total_amount,
-                'due_date'       => $this->invoice->due_date->format('Y-m-d'),
+                'total_amount' => $this->invoice->total_amount,
+                'due_date' => $this->invoice->due_date->format('Y-m-d'),
             ],
         ];
     }

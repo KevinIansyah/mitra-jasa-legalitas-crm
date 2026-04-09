@@ -46,5 +46,5 @@
   </p>
 @endsection
 
-@section('action_url', url("/portal/proyek/{$document->project->id}/dokumen"))
+@section('action_url', frontend_url("/portal/proyek/{$document->project->id}/dokumen"))
 @section('action_label', 'Unggah Ulang Dokumen')

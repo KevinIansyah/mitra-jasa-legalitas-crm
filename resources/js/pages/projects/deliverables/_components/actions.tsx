@@ -5,8 +5,8 @@ import { HasPermission } from '@/components/has-permission';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
-import projects from '@/routes/projects';
 import type { ProjectDeliverable } from '@/types/projects';
+import projects from '@/routes/projects';
 
 type ActionsProps = {
     deliverable: ProjectDeliverable;
@@ -51,7 +51,7 @@ export default function Actions({ deliverable, isExpanded, onToggleExpand }: Act
                     {hasFile && (
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Button variant="secondary" className="h-8 w-8" onClick={handleView}>
+                                <Button variant="secondary" className="h-8 w-8" onClick={handleView} disabled={deliverable.is_encrypted}>
                                     <FileCheck className="size-3.5" />
                                 </Button>
                             </TooltipTrigger>

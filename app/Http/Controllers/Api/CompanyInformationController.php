@@ -18,54 +18,54 @@ class CompanyInformationController extends Controller
 
         $data = [
             'company_identity' => [
-                'name'    => $site->company_name,
+                'name' => $site->company_name,
                 'tagline' => $site->company_tagline,
-                'logo'    => $site->company_logo    ? "{$r2Url}/{$site->company_logo}"    : null,
+                'logo' => $site->company_logo ? "{$r2Url}/{$site->company_logo}" : null,
                 'favicon' => $site->company_favicon ? "{$r2Url}/{$site->company_favicon}" : null,
                 'website' => $site->company_website,
             ],
             'contact' => [
-                'phone'         => $site->company_phone,
-                'phone_alt'     => $site->company_phone_alt,
-                'whatsapp'      => $site->company_whatsapp,
-                'email'         => $site->company_email,
+                'phone' => $site->company_phone,
+                'phone_alt' => $site->company_phone_alt,
+                'whatsapp' => $site->company_whatsapp,
+                'email' => $site->company_email,
                 'email_support' => $site->company_email_support,
             ],
             'address' => [
-                'full'              => $site->getFullAddress(),
-                'street'            => $site->company_address,
-                'city'              => $site->company_city,
-                'province'          => $site->company_province,
-                'postal_code'       => $site->company_postal_code,
-                'country'           => $site->company_country,
-                'maps_embed_url'    => $site->maps_embed_url,
-                'maps_coordinates'  => $site->maps_coordinates,
-                'maps_place_id'     => $site->maps_place_id,
+                'full' => $site->getFullAddress(),
+                'street' => $site->company_address,
+                'city' => $site->company_city,
+                'province' => $site->company_province,
+                'postal_code' => $site->company_postal_code,
+                'country' => $site->company_country,
+                'maps_embed_url' => $site->maps_embed_url,
+                'maps_coordinates' => $site->maps_coordinates,
+                'maps_place_id' => $site->maps_place_id,
             ],
             'business_hours' => $site->business_hours,
             'stats' => [
-                'total_clients'    => $site->stat_total_clients,
-                'total_documents'  => $site->stat_total_documents,
-                'rating'           => $site->stat_rating,
-                'total_reviews'    => $site->stat_total_reviews,
+                'total_clients' => $site->stat_total_clients,
+                'total_documents' => $site->stat_total_documents,
+                'rating' => $site->stat_rating,
+                'total_reviews' => $site->stat_total_reviews,
                 'years_experience' => $site->stat_years_experience,
-                'total_services'   => Service::published()->count(),
+                'total_services' => Service::published()->count(),
             ],
             'legal' => [
-                'entity_type'         => $site->legal_entity_type,
-                'npwp'                => $site->legal_npwp,
+                'entity_type' => $site->legal_entity_type,
+                'npwp' => $site->legal_npwp,
                 'registration_number' => $site->legal_registration_number,
-                'nib'                 => $site->legal_nib,
+                'nib' => $site->legal_nib,
             ],
             'social_media' => [
-                'facebook'  => $site->social_facebook,
+                'facebook' => $site->social_facebook,
                 'instagram' => $site->social_instagram,
-                'whatsapp'  => $site->social_whatsapp,
-                'linkedin'  => $site->social_linkedin,
-                'tiktok'    => $site->social_tiktok,
-                'youtube'   => $site->social_youtube,
-                'twitter'   => $site->social_twitter,
-                'threads'   => $site->social_threads,
+                'whatsapp' => $site->social_whatsapp,
+                'linkedin' => $site->social_linkedin,
+                'tiktok' => $site->social_tiktok,
+                'youtube' => $site->social_youtube,
+                'twitter' => $site->social_twitter,
+                'threads' => $site->social_threads,
             ],
             'seo_defaults' => $this->buildSeoDefaults($site, $r2Url),
         ];
@@ -89,36 +89,36 @@ class CompanyInformationController extends Controller
 
         return [
             'title_template' => $site->default_title_template
-                ?? '{page_title} - ' . (($site->company_name ?? 'CV. Mitra Jasa Legalitas')),
+                ?? '{page_title} - '.(($site->company_name ?? 'CV. Mitra Jasa Legalitas')),
             'default_description' => $site->default_meta_description,
-            'default_keywords'    => $site->default_keywords,
-            'default_og_image'    => $ogImage,
-            'canonical_base'      => $canonicalBase,
-            'locale'              => 'id_ID',
-            'language'            => 'id-ID',
-            'site_name'           => $site->company_name,
-            'robots'              => 'index, follow',
-            'hreflang_base'       => [
+            'default_keywords' => $site->default_keywords,
+            'default_og_image' => $ogImage,
+            'canonical_base' => $canonicalBase,
+            'locale' => 'id_ID',
+            'language' => 'id-ID',
+            'site_name' => $site->company_name,
+            'robots' => 'index, follow',
+            'hreflang_base' => [
                 'id' => $canonicalBase,
             ],
             'open_graph_defaults' => array_filter([
-                'og:type'      => 'website',
+                'og:type' => 'website',
                 'og:site_name' => $site->company_name,
-                'og:locale'    => 'id_ID',
-                'og:image'     => $ogImage,
+                'og:locale' => 'id_ID',
+                'og:image' => $ogImage,
             ]),
-            'twitter_defaults'    => array_filter([
-                'twitter:card'  => 'summary_large_image',
+            'twitter_defaults' => array_filter([
+                'twitter:card' => 'summary_large_image',
                 'twitter:image' => $ogImage,
             ]),
-            'json_ld_base'        => $this->buildJsonLdBase($site, $r2Url, $canonicalBase),
+            'json_ld_base' => $this->buildJsonLdBase($site, $r2Url, $canonicalBase),
         ];
     }
 
     private function buildJsonLdBase(SiteSetting $site, string $r2Url, string $canonicalBase): array
     {
-        $orgId     = $canonicalBase . '#organization';
-        $websiteId = $canonicalBase . '#website';
+        $orgId = $canonicalBase.'#organization';
+        $websiteId = $canonicalBase.'#website';
 
         $organization = $site->toOrganizationSchema();
         unset($organization['@context']);
@@ -131,17 +131,17 @@ class CompanyInformationController extends Controller
         $activeCities = City::query()->active()->orderBy('name')->pluck('name')->toArray();
         if (! empty($activeCities)) {
             $organization['areaServed'] = array_map(
-                fn(string $city) => ['@type' => 'City', 'name' => $city],
+                fn (string $city) => ['@type' => 'City', 'name' => $city],
                 $activeCities
             );
         }
 
         if ($site->stat_rating && $site->stat_total_reviews) {
             $organization['aggregateRating'] = [
-                '@type'       => 'AggregateRating',
+                '@type' => 'AggregateRating',
                 'ratingValue' => $site->stat_rating,
                 'reviewCount' => $site->stat_total_reviews,
-                'bestRating'  => 5,
+                'bestRating' => 5,
                 'worstRating' => 1,
             ];
         }
@@ -152,13 +152,13 @@ class CompanyInformationController extends Controller
         }
 
         $websiteSchema = array_filter([
-            '@type'       => 'WebSite',
-            '@id'         => $websiteId,
-            'name'        => $site->org_name ?? $site->company_name,
-            'url'         => $canonicalBase,
+            '@type' => 'WebSite',
+            '@id' => $websiteId,
+            'name' => $site->org_name ?? $site->company_name,
+            'url' => $canonicalBase,
             'description' => $site->org_description ?? $site->default_meta_description,
-            'publisher'   => ['@id' => $orgId],
-            'inLanguage'  => 'id-ID',
+            'publisher' => ['@id' => $orgId],
+            'inLanguage' => 'id-ID',
         ]);
 
         return [
@@ -169,7 +169,7 @@ class CompanyInformationController extends Controller
             ])),
             '_ids' => [
                 'organization' => $orgId,
-                'website'      => $websiteId,
+                'website' => $websiteId,
             ],
         ];
     }
@@ -207,10 +207,10 @@ class CompanyInformationController extends Controller
             }
 
             $specs[] = [
-                '@type'      => 'OpeningHoursSpecification',
-                'dayOfWeek'  => 'https://schema.org/' . $schemaDay,
-                'opens'      => trim($parts[0]),
-                'closes'     => trim($parts[1]),
+                '@type' => 'OpeningHoursSpecification',
+                'dayOfWeek' => 'https://schema.org/'.$schemaDay,
+                'opens' => trim($parts[0]),
+                'closes' => trim($parts[1]),
             ];
         }
 

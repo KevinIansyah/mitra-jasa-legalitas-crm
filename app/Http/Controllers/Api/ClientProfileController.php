@@ -7,8 +7,9 @@ use App\Helpers\FileHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Profile\PasswordUpdateRequest;
 use App\Http\Requests\Api\Profile\ProfileUpdateRequest;
+use App\Support\ApiFileUrls;
 
-class ProfileController extends Controller
+class ClientProfileController extends Controller
 {
     public function updateProfile(ProfileUpdateRequest $request)
     {
@@ -36,8 +37,7 @@ class ProfileController extends Controller
 
         $user->save();
 
-        $r2Url = rtrim(config('filesystems.disks.r2_public.url', ''), '/');
-        $user->avatar = $user->avatar ? "{$r2Url}/{$user->avatar}" : null;
+        ApiFileUrls::userAvatar($user);
 
         return ApiResponse::updated($user, 'Profil berhasil diperbarui.');
     }

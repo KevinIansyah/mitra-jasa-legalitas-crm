@@ -25,16 +25,16 @@ class PublicNavigationController extends Controller
         $serviceCategories = ServiceCategory::query()
             ->active()
             ->with([
-                'services' => fn($q) => $q
+                'services' => fn ($q) => $q
                     ->published()
                     ->select(['id', 'service_category_id', 'name', 'slug', 'short_description', 'is_featured', 'is_popular']),
             ])
             ->get(['id', 'name', 'slug'])
-            ->map(fn(ServiceCategory $cat) => [
+            ->map(fn (ServiceCategory $cat) => [
                 'id' => $cat->id,
                 'name' => $cat->name,
                 'slug' => $cat->slug,
-                'services' => $cat->services->map(fn(Service $service) => [
+                'services' => $cat->services->map(fn (Service $service) => [
                     'id' => $service->id,
                     'name' => $service->name,
                     'slug' => $service->slug,
@@ -43,7 +43,7 @@ class PublicNavigationController extends Controller
                     'is_popular' => $service->is_popular,
                 ]),
             ])
-            ->filter(fn($cat) => $cat['services']->isNotEmpty())
+            ->filter(fn ($cat) => $cat['services']->isNotEmpty())
             ->values();
 
         $featuredServices = Service::query()
@@ -51,7 +51,7 @@ class PublicNavigationController extends Controller
             ->featured()
             ->limit(self::FEATURED_SERVICES_LIMIT)
             ->get(['id', 'service_category_id', 'name', 'slug', 'short_description', 'featured_image', 'is_popular'])
-            ->map(fn(Service $service) => [
+            ->map(fn (Service $service) => [
                 'id' => $service->id,
                 'name' => $service->name,
                 'slug' => $service->slug,
@@ -86,8 +86,8 @@ class PublicNavigationController extends Controller
 
         return [
             'phone_display' => $raw,
-            'wa_me' => 'https://wa.me/' . $digits,
-            'wa_me_with_message' => 'https://wa.me/' . $digits . '?text=' . rawurlencode($message),
+            'wa_me' => 'https://wa.me/'.$digits,
+            'wa_me_with_message' => 'https://wa.me/'.$digits.'?text='.rawurlencode($message),
         ];
     }
 

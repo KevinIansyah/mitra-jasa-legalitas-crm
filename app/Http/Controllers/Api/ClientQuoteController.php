@@ -11,7 +11,7 @@ use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class QuoteController extends Controller
+class ClientQuoteController extends Controller
 {
     public function index(Request $request)
     {
@@ -42,7 +42,7 @@ class QuoteController extends Controller
             ->whereIn('status', ['pending', 'contacted'])
             ->when(
                 isset($validated['service_id']),
-                fn($q) => $q->where('service_id', $validated['service_id'])
+                fn ($q) => $q->where('service_id', $validated['service_id'])
             )
             ->first();
 
@@ -52,10 +52,10 @@ class QuoteController extends Controller
 
         $quote = Quote::create([
             ...$validated,
-            'user_id'          => Auth::id(),
+            'user_id' => Auth::id(),
             'reference_number' => Quote::generateReferenceNumber(),
-            'source'           => 'portal',
-            'status'           => 'pending',
+            'source' => 'portal',
+            'status' => 'pending',
         ]);
 
         $quote->load(['service', 'servicePackage']);
@@ -74,7 +74,7 @@ class QuoteController extends Controller
             return ApiResponse::forbidden();
         }
 
-        if (!in_array($quote->status, ['pending', 'rejected'])) {
+        if (! in_array($quote->status, ['pending', 'rejected'])) {
             return ApiResponse::conflict('Quote yang sedang diproses tidak dapat dihapus.');
         }
 

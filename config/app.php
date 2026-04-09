@@ -56,6 +56,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Frontend (portal / React) base URL
+    |--------------------------------------------------------------------------
+    |
+    | Digunakan untuk link di email & notifikasi ke pelanggan (beda domain dari API).
+    | Contoh: https://portal.example.com — tanpa trailing slash.
+    |
+    */
+
+    'frontend_url' => rtrim((string) env('FRONTEND_URL', env('APP_URL', 'http://localhost')), '/'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

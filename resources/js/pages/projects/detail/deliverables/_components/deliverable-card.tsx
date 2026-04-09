@@ -10,9 +10,9 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import { formatDate, formatFileSize } from '@/lib/utils';
-import projects from '@/routes/projects';
 import type { ProjectDeliverable } from '@/types/projects';
 import { DeliverableEditForm } from './deliverable-edit-form';
+import projects from '@/routes/projects';
 
 function FileIcon({ fileType }: { fileType: string }) {
     let icon = <FileText className="size-5 text-muted-foreground" />;
@@ -130,7 +130,7 @@ export function DeliverableCard({ deliverable, projectId }: DeliverableCardProps
                             <HasPermission permission="view-project-deliverables">
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                        <Button variant="secondary" className="h-8 w-8" onClick={handleView}>
+                                        <Button variant="secondary" className="h-8 w-8" onClick={handleView} disabled={deliverable.is_encrypted}>
                                             <FileCheck className="size-3.5" />
                                         </Button>
                                     </TooltipTrigger>

@@ -14,6 +14,7 @@ use App\Http\Requests\Api\Auth\VerifyEmailRequest;
 use App\Models\Customer;
 use App\Models\User;
 use App\Services\Api\OtpService;
+use App\Support\ApiFileUrls;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -81,6 +82,9 @@ class AuthController extends Controller
         $deviceName = $request->device_name ?? $request->userAgent() ?? 'web';
         $token = $user->createToken($deviceName)->plainTextToken;
 
+        $user->refresh();
+        ApiFileUrls::userAvatar($user);
+
         return ApiResponse::success(
             [
                 'user' => $user,
@@ -125,6 +129,8 @@ class AuthController extends Controller
         $deviceName = $request->device_name ?? $request->userAgent() ?? 'web';
         $token = $user->createToken($deviceName)->plainTextToken;
 
+        ApiFileUrls::userAvatar($user);
+
         return ApiResponse::success(
             [
                 'user' => $user,
@@ -139,11 +145,9 @@ class AuthController extends Controller
     {
         $user = $request->user();
 
-        $r2Url = rtrim(config('filesystems.disks.r2_public.url', ''), '/');
+        ApiFileUrls::userAvatar($user);
 
-        $user->avatar = $user->avatar ? "{$r2Url}/{$user->avatar}" : null;
-
-        return ApiResponse::success($request->user(), 'Data pengguna berhasil diambil.');
+        return ApiResponse::success($user, 'Data pengguna berhasil diambil.');
     }
 
     public function logout(Request $request)

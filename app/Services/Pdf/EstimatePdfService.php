@@ -10,40 +10,42 @@ use Spatie\Browsershot\Browsershot;
 
 class EstimatePdfService
 {
-  public function generate(Estimate $estimate): string
-  {
-    $estimate->loadMissing([
-      'customer',
-      'proposal.customer',
-      'quote.customer',
-      'items',
-    ]);
+    public function generate(Estimate $estimate): string
+    {
+        $estimate->loadMissing([
+            'customer',
+            'proposal.customer',
+            'quote.customer',
+            'items',
+        ]);
 
-    $settings = SiteSetting::get();
+        $settings = SiteSetting::get();
 
-    $html = view('pdf.finances.estimates.estimate', [
-      'estimate' => $estimate,
-      'settings' => $settings,
-    ])->render();
+        $html = view('pdf.finances.estimates.estimate', [
+            'estimate' => $estimate,
+            'settings' => $settings,
+        ])->render();
 
-    $pdfContent = Browsershot::html($html)
-      ->format('A4')
-      ->margins(15, 15, 15, 15)
-      ->showBackground()
-      ->waitUntilNetworkIdle()
-      ->timeout(30)
-      ->pdf();
+        set_time_limit(180);
 
-    $filename = 'estimates/' . $estimate->estimate_number . '.pdf';
-    Storage::disk('r2_public')->put($filename, $pdfContent);
+        $pdfContent = Browsershot::html($html)
+            ->format('A4')
+            ->margins(15, 15, 15, 15)
+            ->showBackground()
+            ->waitUntilNetworkIdle()
+            ->timeout(120)
+            ->pdf();
 
-    return $filename;
-  }
+        $filename = 'estimates/'.$estimate->estimate_number.'.pdf';
+        Storage::disk('r2_public')->put($filename, $pdfContent);
 
-  public function delete(Estimate $estimate): void
-  {
-    if ($estimate->file_path) {
-      FileHelper::deleteFromR2($estimate->file_path, isPublic: true);
+        return $filename;
     }
-  }
+
+    public function delete(Estimate $estimate): void
+    {
+        if ($estimate->file_path) {
+            FileHelper::deleteFromR2($estimate->file_path, isPublic: true);
+        }
+    }
 }

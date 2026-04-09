@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Log;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
@@ -29,9 +30,9 @@ class ProjectPayment extends Model
     ];
 
     protected $casts = [
-        'amount'       => 'decimal:2',
+        'amount' => 'decimal:2',
         'payment_date' => 'date',
-        'verified_at'  => 'datetime',
+        'verified_at' => 'datetime',
     ];
 
     public function getActivitylogOptions(): LogOptions
@@ -53,7 +54,6 @@ class ProjectPayment extends Model
     | RELATIONS
     |--------------------------------------------------------------------------
     */
-
 
     public function invoice(): BelongsTo
     {
@@ -83,7 +83,7 @@ class ProjectPayment extends Model
 
     /*
     |--------------------------------------------------------------------------
-    | COMPUTED 
+    | COMPUTED
     |--------------------------------------------------------------------------
     */
 
@@ -105,24 +105,24 @@ class ProjectPayment extends Model
     public function verify(User $verifier): void
     {
         $this->update([
-            'status'         => 'verified',
-            'verified_by'    => $verifier->id,
-            'verified_at'    => now(),
+            'status' => 'verified',
+            'verified_by' => $verifier->id,
+            'verified_at' => now(),
             'rejection_reason' => null,
             'receipt_number' => static::generateReceiptNumber(),
         ]);
 
         try {
             $filePath = app(\App\Services\Pdf\ReceiptPdfService::class)->generate($this->fresh());
-            $this->update(['receipt_file' => $filePath]);
+            $this->update(['file_path' => $filePath]);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Receipt PDF generation failed', [
+            Log::error('Receipt PDF generation failed', [
                 'payment_id' => $this->id,
-                'error'      => $e->getMessage(),
+                'error' => $e->getMessage(),
             ]);
         }
 
-        $invoice   = $this->invoice;
+        $invoice = $this->invoice;
         $totalPaid = $invoice->payments()->where('status', 'verified')->sum('amount');
 
         if ($totalPaid >= $invoice->total_amount) {
@@ -133,30 +133,30 @@ class ProjectPayment extends Model
     public function reject(string $reason): void
     {
         $this->update([
-            'status'           => 'rejected',
-            'verified_by'      => null,
-            'verified_at'      => null,
+            'status' => 'rejected',
+            'verified_by' => null,
+            'verified_at' => null,
             'rejection_reason' => $reason,
         ]);
     }
 
     public static function generateReceiptNumber(): string
     {
-        $prefix = 'RCP-' . now()->format('Ym') . '-';
+        $prefix = 'RCP-'.now()->format('Ym').'-';
 
         $last = static::withTrashed()
             ->whereNotNull('receipt_number')
-            ->where('receipt_number', 'like', $prefix . '%')
+            ->where('receipt_number', 'like', $prefix.'%')
             ->orderBy('receipt_number', 'desc')
             ->first();
 
-        if (!$last) {
-            return $prefix . '0001';
+        if (! $last) {
+            return $prefix.'0001';
         }
 
         $lastNumber = (int) substr($last->receipt_number, -4);
-        $newNumber  = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+        $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
 
-        return $prefix . $newNumber;
+        return $prefix.$newNumber;
     }
 }

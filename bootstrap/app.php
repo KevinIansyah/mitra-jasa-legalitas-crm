@@ -42,6 +42,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'restrict_user' => \App\Http\Middleware\RestrictUserRole::class,
             'customer.owns.project' => \App\Http\Middleware\EnsureProjectOwnedByCustomer::class,
+            'customer.owns.proposal' => \App\Http\Middleware\EnsureProposalOwnedByCustomer::class,
+            'customer.can.access.estimate' => \App\Http\Middleware\EnsureEstimateAccessibleByCustomer::class,
+            'customer.owns.invoice' => \App\Http\Middleware\EnsureInvoiceAccessibleByCustomer::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

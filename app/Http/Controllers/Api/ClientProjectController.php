@@ -24,13 +24,16 @@ class ClientProjectController extends Controller
                 'service:id,name,slug',
                 'servicePackage:id,name',
                 'company:id,name',
+                'milestones' => function ($query) {
+                    $query->orderBy('sort_order');
+                },
             ])
-            ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
+            ->when($request->filled('status'), fn($q) => $q->where('status', $request->string('status')))
             ->latest()
             ->get();
 
         $projects->each(
-            fn (Project $project) => $project->append([
+            fn(Project $project) => $project->append([
                 'progress_percentage',
             ])
         );
@@ -44,8 +47,12 @@ class ClientProjectController extends Controller
             'service',
             'servicePackage',
             'company',
-            'documents' => fn ($q) => $q->orderBy('sort_order'),
-            'milestones' => fn ($q) => $q->orderBy('sort_order'),
+            'documents' => function ($query) {
+                $query->orderBy('sort_order');
+            },
+            'milestones' => function ($query) {
+                $query->orderBy('sort_order');
+            },
             'deliverables',
         ]);
 

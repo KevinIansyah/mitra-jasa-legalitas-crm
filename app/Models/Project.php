@@ -53,7 +53,6 @@ class Project extends Model
     |--------------------------------------------------------------------------
     */
 
-
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
@@ -364,15 +363,19 @@ class Project extends Model
 
     public function getProgressPercentageAttribute(): int
     {
-        $totalMilestones = $this->milestones()->count();
+        $milestones = $this->relationLoaded('milestones')
+            ? $this->milestones
+            : $this->milestones()->get();
 
-        if ($totalMilestones === 0) {
+        $total = $milestones->count();
+
+        if ($total === 0) {
             return 0;
         }
 
-        $completedMilestones = $this->milestones()->where('status', 'completed')->count();
+        $completed = $milestones->where('status', 'completed')->count();
 
-        return (int) round(($completedMilestones / $totalMilestones) * 100);
+        return (int) round(($completed / $total) * 100);
     }
 
     public function isOverdue(): bool

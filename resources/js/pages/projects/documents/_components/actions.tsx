@@ -12,10 +12,10 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
-import projects from '@/routes/projects';
 import type { DocumentStatus } from '@/types/projects';
 import { DOCUMENT_STATUSES, DOCUMENT_STATUSES_MAP, UNDELETABLE_DOCUMENT_STATUSES, type ProjectDocument } from '@/types/projects';
 import { DocumentUploadDrawer } from '../../detail/documents/_components/document-upload-drawer';
+import projects from '@/routes/projects';
 
 type ActionsProps = {
     document: ProjectDocument;
@@ -128,14 +128,14 @@ export default function Actions({ document, isExpanded, onToggleExpand }: Action
                 </Tooltip>
 
                 <HasPermission permission="view-project-documents">
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button variant="secondary" className="h-8 w-8" disabled={!hasFile} onClick={handleView}>
-                                <FileCheck className="size-3.5" />
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Lihat Dokumen</TooltipContent>
-                    </Tooltip>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button variant="secondary" className="h-8 w-8" disabled={!hasFile || document.is_encrypted} onClick={handleView}>
+                                    <FileCheck className="size-3.5" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Lihat Dokumen</TooltipContent>
+                        </Tooltip>
 
                     <Tooltip>
                         <TooltipTrigger asChild>

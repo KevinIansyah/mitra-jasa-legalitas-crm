@@ -1,9 +1,5 @@
 <?php
 
-// ============================================================
-// config/ai.php
-// ============================================================
-
 return [
 
     /*
@@ -30,7 +26,6 @@ return [
     */
     'chatbot_cache_ttl' => env('CHATBOT_CACHE_TTL', 86400),
 
-
     /*
     |--------------------------------------------------------------------------
     | Imagen (Image Generation)
@@ -46,13 +41,4 @@ return [
     'lovable_api_key' => env('LOVABLE_API_KEY'),
     'lovable_model' => env('LOVABLE_MODEL', 'google/gemini-2.5-flash'),
     'lovable_chatbot_model' => env('LOVABLE_CHATBOT_MODEL', 'google/gemini-2.5-flash-lite'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Cloudflare Workers AI (Image Generation)
-    |--------------------------------------------------------------------------
-    */
-    'cloudflare_account_id' => env('CLOUDFLARE_ACCOUNT_ID'),
-    'cloudflare_api_token'  => env('CLOUDFLARE_API_TOKEN'),
-    'cloudflare_image_model' => env('CLOUDFLARE_IMAGE_MODEL', '@cf/black-forest-labs/flux-1-schnell'),
 ];

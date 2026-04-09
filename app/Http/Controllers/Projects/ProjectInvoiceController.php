@@ -40,14 +40,14 @@ class ProjectInvoiceController extends Controller
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('invoice_number', 'like', "%{$search}%")
-                        ->orWhereHas('project', fn($q) => $q->where('name', 'like', "%{$search}%"))
-                        ->orWhereHas('customer', fn($q) => $q->where('name', 'like', "%{$search}%"));
+                        ->orWhereHas('project', fn ($q) => $q->where('name', 'like', "%{$search}%"))
+                        ->orWhereHas('customer', fn ($q) => $q->where('name', 'like', "%{$search}%"));
                 });
             })
-            ->when($status, fn($q, $status) => $q->where('status', $status))
-            ->when($type, fn($q, $type) => $q->where('type', $type))
-            ->when($source === 'project', fn($q) => $q->whereNotNull('project_id'))
-            ->when($source === 'customer', fn($q) => $q->whereNull('project_id')->whereNotNull('customer_id'))
+            ->when($status, fn ($q, $status) => $q->where('status', $status))
+            ->when($type, fn ($q, $type) => $q->where('type', $type))
+            ->when($source === 'project', fn ($q) => $q->whereNotNull('project_id'))
+            ->when($source === 'customer', fn ($q) => $q->whereNull('project_id')->whereNotNull('customer_id'))
             ->latest()
             ->paginate($perPage);
 
@@ -167,11 +167,6 @@ class ProjectInvoiceController extends Controller
         }
 
         $invoice->loadMissing(['project.customer.user', 'customer.user']);
-        $user = $invoice->customer?->user ?? $invoice->project?->customer?->user;
-
-        if ($user) {
-            $user->notify(new NewInvoiceNotification($invoice));
-        }
 
         if ($fromProject) {
             return redirect()->route('projects.finance', $invoice->project_id)
@@ -291,6 +286,13 @@ class ProjectInvoiceController extends Controller
 
         $invoice->update($data);
 
+        if ($status === 'sent') {
+            $user = $invoice->customer?->user ?? $invoice->project?->customer?->user;
+            if ($user) {
+                $user->notify(new NewInvoiceNotification($invoice));
+            }
+        }
+
         return back()->with('success', 'Status invoice berhasil diperbarui.');
     }
 
@@ -328,18 +330,18 @@ class ProjectInvoiceController extends Controller
                 'error' => $e->getMessage(),
             ]);
 
-            return back()->withErrors(['error' => 'Gagal generate PDF: ' . $e->getMessage()]);
+            return back()->withErrors(['error' => 'Gagal generate PDF: '.$e->getMessage()]);
         }
     }
 
     public function download(ProjectInvoice $invoice)
     {
         $content = FileHelper::downloadFromR2Public($invoice->file_path);
-        $filename = 'invoice-' . $invoice->invoice_number . '.pdf';
+        $filename = 'invoice-'.$invoice->invoice_number.'.pdf';
 
         return response($content, 200)
             ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+            ->header('Content-Disposition', 'attachment; filename="'.$filename.'"');
     }
 
     private function syncItems(ProjectInvoice $invoice, array $validated): void
@@ -416,7 +418,7 @@ class ProjectInvoiceController extends Controller
         }
 
         $clean = array_values(array_filter(array_map(
-            fn($line) => is_string($line) ? trim($line) : '',
+            fn ($line) => is_string($line) ? trim($line) : '',
             $raw
         )));
 

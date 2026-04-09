@@ -40,5 +40,5 @@
   </p>
 @endsection
 
-@section('action_url', url("/portal/proyek/{$project->id}"))
+@section('action_url', frontend_url("/portal/proyek/{$project->id}"))
 @section('action_label', 'Lihat Proyek')

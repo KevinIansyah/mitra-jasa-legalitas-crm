@@ -46,5 +46,5 @@
   </p>
 @endsection
 
-@section('action_url', url("/portal/permintaan-penawaran/{$quote->id}"))
+@section('action_url', frontend_url("/portal/permintaan-penawaran/{$quote->id}"))
 @section('action_label', 'Lihat Detail')

@@ -31,13 +31,13 @@ class NewInvoiceNotification extends Notification implements ShouldQueue
 
         if ($this->invoice->file_path) {
             try {
-                $content  = \App\Helpers\FileHelper::downloadFromR2Public($this->invoice->file_path);
-                $filename = 'faktur-' . $this->invoice->invoice_number . '.pdf';
+                $content = \App\Helpers\FileHelper::downloadFromR2Public($this->invoice->file_path);
+                $filename = 'faktur-'.$this->invoice->invoice_number.'.pdf';
                 $mail->attachData($content, $filename, ['mime' => 'application/pdf']);
             } catch (\Exception $e) {
                 \Illuminate\Support\Facades\Log::warning('Failed to attach invoice to email', [
                     'invoice_id' => $this->invoice->id,
-                    'error'      => $e->getMessage(),
+                    'error' => $e->getMessage(),
                 ]);
             }
         }
@@ -48,17 +48,17 @@ class NewInvoiceNotification extends Notification implements ShouldQueue
     public function toDatabase(): array
     {
         return [
-            'title'      => 'Faktur Baru',
-            'message'    => "Faktur {$this->invoice->invoice_number} sebesar Rp " . number_format($this->invoice->total_amount, 0, ',', '.') . " telah diterbitkan.",
-            'action_url' => "/portal/faktur/{$this->invoice->id}",
-            'icon'       => 'invoice',
-            'type'       => 'new_invoice',
-            'meta'       => [
-                'invoice_id'     => $this->invoice->id,
+            'title' => 'Faktur Baru',
+            'message' => "Faktur {$this->invoice->invoice_number} sebesar Rp ".number_format($this->invoice->total_amount, 0, ',', '.').' telah diterbitkan.',
+            'action_url' => frontend_url("/portal/faktur/{$this->invoice->id}"),
+            'icon' => 'invoice',
+            'type' => 'new_invoice',
+            'meta' => [
+                'invoice_id' => $this->invoice->id,
                 'invoice_number' => $this->invoice->invoice_number,
-                'total_amount'   => $this->invoice->total_amount,
-                'due_date'       => $this->invoice->due_date->format('Y-m-d'),
-                'type'           => $this->invoice->type,
+                'total_amount' => $this->invoice->total_amount,
+                'due_date' => $this->invoice->due_date->format('Y-m-d'),
+                'type' => $this->invoice->type,
             ],
         ];
     }

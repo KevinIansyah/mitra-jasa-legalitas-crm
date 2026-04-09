@@ -7,14 +7,22 @@ use App\Http\Controllers\Controller;
 use App\Models\Proposal;
 use App\Notifications\Staff\ProposalRejectedNotification;
 use App\Services\NotificationService;
+use App\Support\ApiFileUrls;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class ProposalController extends Controller
+class ClientProposalController extends Controller
 {
     public function index(Request $request)
     {
-        $proposals = Proposal::where('customer_id', Auth::user()->customer?->id)
+        $customerId = Auth::user()->customer?->id;
+
+        if (! $customerId) {
+            return ApiResponse::success([]);
+        }
+
+        $proposals = Proposal::where('customer_id', $customerId)
+            ->where('status', '!=', 'draft')
             ->with('items')
             ->latest()
             ->get();
@@ -24,34 +32,28 @@ class ProposalController extends Controller
 
     public function show(Proposal $proposal)
     {
-        if ($proposal->customer_id !== Auth::user()->customer?->id) {
-            return ApiResponse::forbidden();
-        }
-
         $proposal->load('items');
+
+        ApiFileUrls::proposal($proposal);
 
         return ApiResponse::success($proposal);
     }
 
     public function updateStatus(Request $request, Proposal $proposal)
     {
-        if ($proposal->customer_id !== Auth::user()->customer?->id) {
-            return ApiResponse::forbidden();
-        }
-
         if ($proposal->status === 'accepted') {
             return ApiResponse::conflict('Proposal yang sudah diterima tidak dapat diubah.');
         }
 
         $request->validate([
-            'status'          => 'required|in:accepted,rejected',
+            'status' => 'required|in:accepted,rejected',
             'rejected_reason' => 'required_if:status,rejected|nullable|string|max:500',
         ]);
 
         match ($request->status) {
             'rejected' => $proposal->reject($request->rejected_reason),
-            default    => $proposal->update([
-                'status'          => $request->status,
+            default => $proposal->update([
+                'status' => $request->status,
                 'rejected_reason' => null,
             ]),
         };
@@ -61,6 +63,10 @@ class ProposalController extends Controller
             NotificationService::notifyAllStaff(new ProposalRejectedNotification($proposal));
         }
 
-        return ApiResponse::success($proposal->fresh(), 'Status proposal berhasil diperbarui.');
+        $proposal = $proposal->fresh();
+        $proposal->load('items');
+        ApiFileUrls::proposal($proposal);
+
+        return ApiResponse::success($proposal, 'Status proposal berhasil diperbarui.');
     }
 }

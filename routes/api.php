@@ -5,20 +5,22 @@ use App\Http\Controllers\Api\BlogCategoryController;
 use App\Http\Controllers\Api\BlogSubscriberController;
 use App\Http\Controllers\Api\ChatbotController;
 use App\Http\Controllers\Api\CityController;
+use App\Http\Controllers\Api\ClientEstimateController;
+use App\Http\Controllers\Api\ClientInvoiceController;
+use App\Http\Controllers\Api\ClientNotificationController;
+use App\Http\Controllers\Api\ClientPaymentController;
+use App\Http\Controllers\Api\ClientProfileController;
 use App\Http\Controllers\Api\ClientProjectController;
+use App\Http\Controllers\Api\ClientProjectDeliverableController;
 use App\Http\Controllers\Api\ClientProjectDocumentController;
+use App\Http\Controllers\Api\ClientProposalController;
+use App\Http\Controllers\Api\ClientQuoteController;
 use App\Http\Controllers\Api\CompanyInformationController;
 use App\Http\Controllers\Api\ContactMessageController;
-use App\Http\Controllers\Api\EstimateController;
-use App\Http\Controllers\Api\NotificationController;
-use App\Http\Controllers\Api\PaymentController;
-use App\Http\Controllers\Api\ProfileController;
-use App\Http\Controllers\Api\ProposalController;
 use App\Http\Controllers\Api\PublicBlogController;
 use App\Http\Controllers\Api\PublicHomeController;
 use App\Http\Controllers\Api\PublicNavigationController;
 use App\Http\Controllers\Api\PublicServiceController;
-use App\Http\Controllers\Api\QuoteController;
 use App\Http\Controllers\Api\ServiceCategoryController;
 use Illuminate\Support\Facades\Route;
 
@@ -97,28 +99,53 @@ Route::prefix('auth')->name('auth.')->group(function () {
 */
 
 Route::middleware(['auth:sanctum'])->group(function () {
+
     Route::prefix('quotes')->name('quotes.')->group(function () {
-        Route::get('/', [QuoteController::class, 'index'])->name('index');
-        Route::post('/', [QuoteController::class, 'store'])->name('store');
-        Route::get('{quote}', [QuoteController::class, 'show'])->name('show');
+        Route::get('/', [ClientQuoteController::class, 'index'])
+            ->name('index');
+
+        Route::post('/', [ClientQuoteController::class, 'store'])
+            ->name('store');
+
+        Route::get('{quote}', [ClientQuoteController::class, 'show'])
+            ->name('show');
     });
 });
 
 /*
 |--------------------------------------------------------------------------
-| PAYMENTS
+| INVOICES & PAYMENTS (CLIENT PORTAL)
 |--------------------------------------------------------------------------
-| GET /invoices/{invoice}/payments              -> List payments
-| POST /invoices/{invoice}/payments             -> Create payment
-| DELETE /invoices/{invoice}/payments/{payment} -> Delete payment
+| GET    /invoices                              -> list invoices customer
+| GET    /invoices/{invoice}                    -> detail invoice customer
+| GET    /invoices/{invoice}/payments           -> list payments invoice customer
+| POST   /invoices/{invoice}/payments           -> create payment invoice customer
+| POST   /invoices/{invoice}/payments/{payment} -> update payment invoice customer
+| DELETE /invoices/{invoice}/payments/{payment} -> delete payment invoice customer
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::prefix('invoices/{invoice}/payments')->group(function () {
-        Route::get('/', [PaymentController::class, 'index']);
-        Route::post('/', [PaymentController::class, 'store']);
-        Route::delete('{payment}', [PaymentController::class, 'destroy']);
+Route::middleware(['auth:sanctum', 'customer.owns.invoice'])->group(function () {
+
+    Route::get('/invoices', [ClientInvoiceController::class, 'index'])
+        ->name('client.invoices.index');
+
+    Route::get('/invoices/{invoice}', [ClientInvoiceController::class, 'show'])
+        ->name('client.invoices.show');
+
+    Route::prefix('invoices/{invoice}/payments')->name('invoices.payments.')->group(function () {
+
+        Route::get('/', [ClientPaymentController::class, 'index'])
+            ->name('index');
+
+        Route::post('/', [ClientPaymentController::class, 'store'])
+            ->name('store');
+
+        Route::post('{payment}', [ClientPaymentController::class, 'update'])
+            ->name('update');
+
+        Route::delete('{payment}', [ClientPaymentController::class, 'destroy'])
+            ->name('destroy');
     });
 });
 
@@ -133,10 +160,19 @@ Route::middleware('auth:sanctum')->group(function () {
 */
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::prefix('proposals')->group(function () {
-        Route::get('/', [ProposalController::class, 'index']);
-        Route::get('{proposal}', [ProposalController::class, 'show']);
-        Route::patch('{proposal}/status', [ProposalController::class, 'updateStatus']);
+    Route::prefix('proposals')->name('proposals.')->group(function () {
+
+        Route::get('/', [ClientProposalController::class, 'index'])
+            ->name('index');
+
+        Route::middleware('customer.owns.proposal')->group(function () {
+
+            Route::get('{proposal}', [ClientProposalController::class, 'show'])
+                ->name('show');
+
+            Route::patch('{proposal}/status', [ClientProposalController::class, 'updateStatus'])
+                ->name('update-status');
+        });
     });
 });
 
@@ -148,24 +184,27 @@ Route::middleware('auth:sanctum')->group(function () {
 | GET  /projects/{project}               -> Detail proyek (middleware: milik customer)
 | GET  /projects/{project}/documents     -> Daftar dokumen
 | POST /projects/{project}/documents/{document}/upload -> Unggah / unggah ulang (setelah ditolak)
-| GET  /projects/{project}/documents/{document}/download-url -> URL unduh sementara
+| GET  /projects/{project}/documents/{document}/download      -> Stream file (dekripsi di server jika perlu)
+| GET  /projects/{project}/deliverables/{deliverable}/download -> Stream hasil akhir (dekripsi di server jika perlu)
 |--------------------------------------------------------------------------
 */
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/projects', [ClientProjectController::class, 'index'])->name('client.projects.index');
+    Route::get('/projects', [ClientProjectController::class, 'index'])
+        ->name('client.projects.index');
 
     Route::middleware('customer.owns.project')->group(function () {
-        Route::get('/projects/{project}', [ClientProjectController::class, 'show'])->name('client.projects.show');
 
-        Route::get('/projects/{project}/documents', [ClientProjectDocumentController::class, 'index'])
-            ->name('client.projects.documents.index');
+        Route::get('/projects/{project}', [ClientProjectController::class, 'show'])->name('client.projects.show');
 
         Route::post('/projects/{project}/documents/{document}/upload', [ClientProjectDocumentController::class, 'upload'])
             ->name('client.projects.documents.upload');
 
-        Route::get('/projects/{project}/documents/{document}/download-url', [ClientProjectDocumentController::class, 'downloadUrl'])
-            ->name('client.projects.documents.download-url');
+        Route::get('/projects/{project}/documents/{document}/download', [ClientProjectDocumentController::class, 'download'])
+            ->name('client.projects.documents.download');
+
+        Route::get('/projects/{project}/deliverables/{deliverable}/download', [ClientProjectDeliverableController::class, 'download'])
+            ->name('client.projects.deliverables.download');
     });
 });
 
@@ -174,16 +213,24 @@ Route::middleware('auth:sanctum')->group(function () {
 | ESTIMATES
 |--------------------------------------------------------------------------
 | GET /estimates                        -> List estimates
-| GET /estimates/{estimate}             -> Show estimate
+| GET /estimates/{estimate}             -> Show estimate (middleware: customer.can.access.estimate)
 | PATCH /estimates/{estimate}/status    -> Update estimate status
 |--------------------------------------------------------------------------
 */
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::prefix('estimates')->group(function () {
-        Route::get('/', [EstimateController::class, 'index']);
-        Route::get('{estimate}', [EstimateController::class, 'show']);
-        Route::patch('{estimate}/status', [EstimateController::class, 'updateStatus']);
+    Route::prefix('estimates')->name('estimates.')->group(function () {
+        Route::get('/', [ClientEstimateController::class, 'index'])
+            ->name('index');
+
+        Route::middleware('customer.can.access.estimate')->group(function () {
+
+            Route::get('{estimate}', [ClientEstimateController::class, 'show'])
+                ->name('show');
+
+            Route::patch('{estimate}/status', [ClientEstimateController::class, 'updateStatus'])
+                ->name('update-status');
+        });
     });
 });
 
@@ -198,8 +245,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::prefix('settings')->name('settings.')->group(function () {
-        Route::post('/profile', [ProfileController::class, 'updateProfile'])->name('profile');
-        Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password');
+
+        Route::post('/profile', [ClientProfileController::class, 'updateProfile'])
+            ->name('profile');
+
+        Route::put('/password', [ClientProfileController::class, 'updatePassword'])
+            ->name('password');
     });
 });
 
@@ -207,12 +258,26 @@ Route::middleware(['auth:sanctum'])->group(function () {
 |--------------------------------------------------------------------------
 | NOTIFICATIONS (authenticated)
 |--------------------------------------------------------------------------
-| GET /notifications?per_page=20&unread_only=1  -> Daftar notifikasi + meta unread_count
+| GET  /notifications/unread-count     -> Hanya { unread_count }
+| GET  /notifications?per_page=20&unread_only=1  -> Daftar + meta + unread_count
+| POST /notifications/{id}/read        -> Baca satu; response sertakan unread_count terbaru
+| POST /notifications/read-all         -> Baca semua; unread_count = 0
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth:sanctum'])->group(function () {
-    Route::get('/notifications', [NotificationController::class, 'index'])->name('api.notifications.index');
+Route::middleware(['auth:sanctum'])->prefix('notifications')->name('api.notifications.')->group(function () {
+    
+    Route::get('/unread-count', [ClientNotificationController::class, 'unreadCount'])
+    ->name('unread-count');
+
+    Route::post('/read-all', [ClientNotificationController::class, 'readAll'])
+    ->name('read-all');
+
+    Route::get('/', [ClientNotificationController::class, 'index'])
+    ->name('index');
+
+    Route::post('{id}/read', [ClientNotificationController::class, 'read'])
+    ->name('read');
 });
 
 /*
@@ -264,10 +329,13 @@ Route::prefix('services')->group(function () {
 */
 
 Route::prefix('blogs')->group(function () {
+
     Route::get('/', [PublicBlogController::class, 'index']);
 
     Route::post('/subscribers', [BlogSubscriberController::class, 'subscribe']);
+
     Route::get('/subscribers/verify/{token}', [BlogSubscriberController::class, 'verify']);
+
     Route::get('/subscribers/unsubscribe/{token}', [BlogSubscriberController::class, 'unsubscribe']);
 
     Route::get('/{blogSlug}', [PublicBlogController::class, 'show'])
@@ -285,8 +353,11 @@ Route::prefix('blogs')->group(function () {
 */
 
 Route::prefix('chatbots')->group(function () {
+
     Route::post('/session', [ChatbotController::class, 'session']);
+
     Route::post('/{sessionToken}/send', [ChatbotController::class, 'send']);
+
     Route::patch('/{sessionToken}/lead', [ChatbotController::class, 'updateLead']);
 });
 
@@ -299,6 +370,7 @@ Route::prefix('chatbots')->group(function () {
 */
 
 Route::prefix('contact-messages')->group(function () {
+
     Route::post('/', [ContactMessageController::class, 'store']);
 });
 
@@ -314,17 +386,21 @@ Route::prefix('contact-messages')->group(function () {
 */
 
 Route::prefix('cities')->group(function () {
+
     Route::get('/', [CityController::class, 'index']);
 });
 
 Route::prefix('blog-categories')->group(function () {
+
     Route::get('/', [BlogCategoryController::class, 'index']);
 });
 
 Route::prefix('service-categories')->group(function () {
+
     Route::get('/', [ServiceCategoryController::class, 'index']);
 });
 
 Route::prefix('company-information')->group(function () {
+
     Route::get('/', [CompanyInformationController::class, 'index']);
 });

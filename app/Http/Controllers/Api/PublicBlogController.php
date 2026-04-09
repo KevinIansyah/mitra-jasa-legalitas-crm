@@ -40,16 +40,16 @@ class PublicBlogController extends Controller
             ])
             ->when(
                 ! empty($categorySlugs),
-                fn($q) => $q->whereHas(
+                fn ($q) => $q->whereHas(
                     'category',
-                    fn($q) => $q->whereIn('slug', $categorySlugs)
+                    fn ($q) => $q->whereIn('slug', $categorySlugs)
                 )
             )
             ->when(
                 ! empty($tagSlugs),
-                fn($q) => $q->whereHas(
+                fn ($q) => $q->whereHas(
                     'tags',
-                    fn($q) => $q->whereIn('slug', $tagSlugs)
+                    fn ($q) => $q->whereIn('slug', $tagSlugs)
                 )
             )
             ->latest('published_at')
@@ -57,7 +57,7 @@ class PublicBlogController extends Controller
 
         return ApiResponse::success([
             'seo' => $this->buildSeoListBlog(),
-            'blogs' => $blogs->map(fn($blog) => $this->formatBlogCard($blog)),
+            'blogs' => $blogs->map(fn ($blog) => $this->formatBlogCard($blog)),
             'meta' => [
                 'current_page' => $blogs->currentPage(),
                 'last_page' => $blogs->lastPage(),
@@ -84,7 +84,7 @@ class PublicBlogController extends Controller
             ])
             ->first();
 
-        if (!$blog) {
+        if (! $blog) {
             return ApiResponse::notFound('Artikel tidak ditemukan.');
         }
 
@@ -103,16 +103,16 @@ class PublicBlogController extends Controller
             ])
             ->when(
                 $tagIds->isNotEmpty(),
-                fn($q) => $q->whereHas(
+                fn ($q) => $q->whereHas(
                     'tags',
-                    fn($q) => $q->whereIn('blog_tags.id', $tagIds)
+                    fn ($q) => $q->whereIn('blog_tags.id', $tagIds)
                 ),
-                fn($q) => $q->where('blog_category_id', $blog->blog_category_id)
+                fn ($q) => $q->where('blog_category_id', $blog->blog_category_id)
             )
             ->latest('published_at')
             ->limit(4)
             ->get()
-            ->map(fn($b) => $this->formatBlogCard($b));
+            ->map(fn ($b) => $this->formatBlogCard($b));
 
         return ApiResponse::success([
             'id' => $blog->id,
@@ -137,7 +137,7 @@ class PublicBlogController extends Controller
                 'position' => $blog->author->staffProfile?->position,
                 'bio' => $blog->author->staffProfile?->bio,
             ] : null,
-            'tags' => $blog->tags->map(fn($tag) => [
+            'tags' => $blog->tags->map(fn ($tag) => [
                 'id' => $tag->id,
                 'name' => $tag->name,
                 'slug' => $tag->slug,
@@ -195,7 +195,7 @@ class PublicBlogController extends Controller
                 'position' => $blog->author->staffProfile?->position,
                 'bio' => $blog->author->staffProfile?->bio,
             ] : null,
-            'tags' => $blog->tags->map(fn($tag) => [
+            'tags' => $blog->tags->map(fn ($tag) => [
                 'id' => $tag->id,
                 'name' => $tag->name,
                 'slug' => $tag->slug,
@@ -208,7 +208,7 @@ class PublicBlogController extends Controller
         $site = SiteSetting::get();
         $r2Url = rtrim(config('filesystems.disks.r2_public.url', ''), '/');
         $base = rtrim((string) ($site->org_url ?? $site->company_website ?? config('app.url')), '/');
-        $pageUrl = $base . '/blog';
+        $pageUrl = $base.'/blog';
 
         $metaTitle = $site->getPageTitle('Blog');
         $metaDescription = 'Baca artikel dan tips terbaru seputar legalitas bisnis, perizinan, dan layanan perusahaan.';
@@ -230,8 +230,8 @@ class PublicBlogController extends Controller
             'name' => $metaTitle,
             'description' => $metaDescription,
             'inLanguage' => 'id-ID',
-            'isPartOf' => ['@id' => $base . '#website'],
-            'about' => ['@id' => $base . '#organization'],
+            'isPartOf' => ['@id' => $base.'#website'],
+            'about' => ['@id' => $base.'#organization'],
         ];
 
         return [
@@ -258,7 +258,7 @@ class PublicBlogController extends Controller
             ]),
             'json_ld' => [
                 '@context' => 'https://schema.org',
-                '@graph'   => [
+                '@graph' => [
                     $this->buildOrganizationSchema($site, $r2Url, $base),
                     $this->buildWebSiteSchema($site, $base),
                     $webPage,

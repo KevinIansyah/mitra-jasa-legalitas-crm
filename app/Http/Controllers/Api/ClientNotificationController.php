@@ -8,7 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
 
-class NotificationController extends Controller
+class ClientNotificationController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
@@ -48,5 +48,46 @@ class NotificationController extends Controller
         ];
 
         return ApiResponse::success($data, 'Berhasil');
+    }
+
+    /**
+     * Hanya jumlah notifikasi belum dibaca (untuk badge / polling ringan).
+     */
+    public function unreadCount(Request $request): JsonResponse
+    {
+        $count = $request->user()->unreadNotifications()->count();
+
+        return ApiResponse::success(['unread_count' => $count], 'Berhasil');
+    }
+
+    /**
+     * Tandai satu notifikasi sebagai sudah dibaca.
+     */
+    public function read(Request $request, string $id): JsonResponse
+    {
+        $request->user()
+            ->notifications()
+            ->findOrFail($id)
+            ->markAsRead();
+
+        $unreadCount = $request->user()->unreadNotifications()->count();
+
+        return ApiResponse::success(
+            ['unread_count' => $unreadCount],
+            'Notifikasi ditandai sudah dibaca.'
+        );
+    }
+
+    /**
+     * Tandai semua notifikasi belum dibaca sebagai sudah dibaca.
+     */
+    public function readAll(Request $request): JsonResponse
+    {
+        $request->user()->unreadNotifications->markAsRead();
+
+        return ApiResponse::success(
+            ['unread_count' => 0],
+            'Semua notifikasi ditandai sudah dibaca.'
+        );
     }
 }

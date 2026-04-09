@@ -50,5 +50,5 @@
   </p>
 @endsection
 
-@section('action_url', url("/portal/proyek/{$deliverable->project->id}/hasil-akhir"))
+@section('action_url', frontend_url("/portal/proyek/{$deliverable->project->id}/hasil-akhir"))
 @section('action_label', 'Unduh Dokumen')

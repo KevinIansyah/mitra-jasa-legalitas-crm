@@ -7,33 +7,39 @@ use App\Http\Controllers\Controller;
 use App\Models\Estimate;
 use App\Notifications\Staff\EstimateRejectedNotification;
 use App\Services\NotificationService;
+use App\Support\ApiFileUrls;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class EstimateController extends Controller
+class ClientEstimateController extends Controller
 {
     public function index(Request $request)
     {
-        $customerId = Auth::user()->customer?->id;
+        $user = Auth::user();
+        $customerId = $user->customer?->id;
 
-        $estimates = Estimate::where(function ($q) use ($customerId) {
-            $q->where('customer_id', $customerId)
-                ->orWhereHas('proposal', fn($q) => $q->where('customer_id', $customerId))
-                ->orWhereHas('quote', fn($q) => $q->where('user_id', Auth::id()));
-        })
+        $estimates = Estimate::query()
+            ->where(function ($q) use ($customerId, $user) {
+                if ($customerId !== null) {
+                    $q->where(function ($inner) use ($customerId) {
+                        $inner->where('customer_id', $customerId)
+                            ->orWhereHas('proposal', fn ($p) => $p->where('customer_id', $customerId));
+                    })->orWhereHas('quote', fn ($q2) => $q2->where('user_id', $user->id));
+                } else {
+                    $q->whereHas('quote', fn ($q2) => $q2->where('user_id', $user->id));
+                }
+            })
             ->with(['items', 'proposal', 'quote'])
             ->latest()
             ->get();
+
+        $estimates->each(fn (Estimate $e) => ApiFileUrls::estimate($e));
 
         return ApiResponse::success($estimates);
     }
 
     public function show(Estimate $estimate)
     {
-        if (!$this->isAuthorized($estimate)) {
-            return ApiResponse::forbidden();
-        }
-
         $estimate->load(['items', 'proposal', 'quote']);
 
         return ApiResponse::success($estimate);
@@ -41,23 +47,19 @@ class EstimateController extends Controller
 
     public function updateStatus(Request $request, Estimate $estimate)
     {
-        if (!$this->isAuthorized($estimate)) {
-            return ApiResponse::forbidden();
-        }
-
         if ($estimate->status === 'accepted') {
             return ApiResponse::error('Estimasi yang sudah diterima tidak dapat diubah.', 422);
         }
 
         $request->validate([
-            'status'          => 'required|in:accepted,rejected',
+            'status' => 'required|in:accepted,rejected',
             'rejected_reason' => 'required_if:status,rejected|nullable|string|max:500',
         ]);
 
         match ($request->status) {
             'rejected' => $estimate->reject($request->rejected_reason),
-            default    => $estimate->update([
-                'status'          => $request->status,
+            default => $estimate->update([
+                'status' => $request->status,
                 'rejected_reason' => null,
             ]),
         };
@@ -67,16 +69,10 @@ class EstimateController extends Controller
             NotificationService::notifyAllStaff(new EstimateRejectedNotification($estimate));
         }
 
-        return ApiResponse::success($estimate->fresh(), 'Status estimasi berhasil diperbarui.');
-    }
+        $estimate = $estimate->fresh();
+        $estimate->load(['items', 'proposal', 'quote']);
+        ApiFileUrls::estimate($estimate);
 
-    private function isAuthorized(Estimate $estimate): bool
-    {
-        $customerId = Auth::user()->customer?->id;
-        $userId     = Auth::id();
-
-        return $estimate->customer_id === $customerId
-            || $estimate->proposal?->customer_id === $customerId
-            || $estimate->quote?->user_id === $userId;
+        return ApiResponse::success($estimate, 'Status estimasi berhasil diperbarui.');
     }
 }

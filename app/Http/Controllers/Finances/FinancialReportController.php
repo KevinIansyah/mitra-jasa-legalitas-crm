@@ -16,7 +16,7 @@ class FinancialReportController extends Controller
     {
         $request->validate([
             'from' => 'nullable|date',
-            'to'   => 'nullable|date|after_or_equal:from',
+            'to' => 'nullable|date|after_or_equal:from',
         ]);
 
         $from = $request->filled('from')
@@ -30,10 +30,10 @@ class FinancialReportController extends Controller
         $report = FinancialReportService::labaRugi($from, $to);
 
         return Inertia::render('finances/reports/profit-loss', [
-            'report'  => $report,
+            'report' => $report,
             'filters' => [
                 'from' => $from->toDateString(),
-                'to'   => $to->toDateString(),
+                'to' => $to->toDateString(),
             ],
         ]);
     }
@@ -51,7 +51,7 @@ class FinancialReportController extends Controller
         $report = FinancialReportService::neraca($asOf);
 
         return Inertia::render('finances/reports/balance-sheet', [
-            'report'  => $report,
+            'report' => $report,
             'filters' => [
                 'as_of' => $asOf->toDateString(),
             ],
@@ -62,7 +62,7 @@ class FinancialReportController extends Controller
     {
         $request->validate([
             'from' => 'nullable|date',
-            'to'   => 'nullable|date|after_or_equal:from',
+            'to' => 'nullable|date|after_or_equal:from',
         ]);
 
         $from = $request->filled('from')
@@ -76,10 +76,10 @@ class FinancialReportController extends Controller
         $report = FinancialReportService::cashFlow($from, $to);
 
         return Inertia::render('finances/reports/cash-flow', [
-            'report'  => $report,
+            'report' => $report,
             'filters' => [
                 'from' => $from->toDateString(),
-                'to'   => $to->toDateString(),
+                'to' => $to->toDateString(),
             ],
         ]);
     }
@@ -88,76 +88,82 @@ class FinancialReportController extends Controller
     {
         $request->validate([
             'from' => 'nullable|date',
-            'to'   => 'nullable|date|after_or_equal:from',
+            'to' => 'nullable|date|after_or_equal:from',
         ]);
 
-        $from     = Carbon::parse($request->filled('from') ? $request->from : now()->startOfMonth())->startOfDay();
-        $to       = Carbon::parse($request->filled('to')   ? $request->to   : now()->endOfMonth())->endOfDay();
-        $report   = FinancialReportService::labaRugi($from, $to);
+        $from = Carbon::parse($request->filled('from') ? $request->from : now()->startOfMonth())->startOfDay();
+        $to = Carbon::parse($request->filled('to') ? $request->to : now()->endOfMonth())->endOfDay();
+        $report = FinancialReportService::labaRugi($from, $to);
         $settings = SiteSetting::get();
 
         $html = view('pdf.finances.reports.profit-loss', compact('report', 'settings'))->render();
+
+        set_time_limit(180);
 
         $pdf = Browsershot::html($html)
             ->format('A4')
             ->margins(15, 15, 15, 15)
             ->showBackground()
             ->waitUntilNetworkIdle()
-            ->timeout(30)
+            ->timeout(120)
             ->pdf();
 
         return response($pdf, 200)
             ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'attachment; filename="laba-rugi-' . $from->format('Ymd') . '-' . $to->format('Ymd') . '.pdf"');
+            ->header('Content-Disposition', 'attachment; filename="laba-rugi-'.$from->format('Ymd').'-'.$to->format('Ymd').'.pdf"');
     }
 
     public function neracaPdf(Request $request)
     {
         $request->validate(['as_of' => 'nullable|date']);
 
-        $asOf     = Carbon::parse($request->filled('as_of') ? $request->as_of : now())->endOfDay();
-        $report   = FinancialReportService::neraca($asOf);
+        $asOf = Carbon::parse($request->filled('as_of') ? $request->as_of : now())->endOfDay();
+        $report = FinancialReportService::neraca($asOf);
         $settings = SiteSetting::get();
 
         $html = view('pdf.finances.reports.balance-sheet', compact('report', 'settings'))->render();
+
+        set_time_limit(180);
 
         $pdf = Browsershot::html($html)
             ->format('A4')
             ->margins(15, 15, 15, 15)
             ->showBackground()
             ->waitUntilNetworkIdle()
-            ->timeout(30)
+            ->timeout(120)
             ->pdf();
 
         return response($pdf, 200)
             ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'attachment; filename="neraca-' . $asOf->format('Ymd') . '.pdf"');
+            ->header('Content-Disposition', 'attachment; filename="neraca-'.$asOf->format('Ymd').'.pdf"');
     }
 
     public function cashFlowPdf(Request $request)
     {
         $request->validate([
             'from' => 'nullable|date',
-            'to'   => 'nullable|date|after_or_equal:from',
+            'to' => 'nullable|date|after_or_equal:from',
         ]);
 
-        $from     = Carbon::parse($request->filled('from') ? $request->from : now()->startOfMonth())->startOfDay();
-        $to       = Carbon::parse($request->filled('to')   ? $request->to   : now()->endOfMonth())->endOfDay();
-        $report   = FinancialReportService::cashFlow($from, $to);
+        $from = Carbon::parse($request->filled('from') ? $request->from : now()->startOfMonth())->startOfDay();
+        $to = Carbon::parse($request->filled('to') ? $request->to : now()->endOfMonth())->endOfDay();
+        $report = FinancialReportService::cashFlow($from, $to);
         $settings = SiteSetting::get();
 
         $html = view('pdf.finances.reports.cash-flow', compact('report', 'settings'))->render();
+
+        set_time_limit(180);
 
         $pdf = Browsershot::html($html)
             ->format('A4')
             ->margins(15, 15, 15, 15)
             ->showBackground()
             ->waitUntilNetworkIdle()
-            ->timeout(30)
+            ->timeout(120)
             ->pdf();
 
         return response($pdf, 200)
             ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'attachment; filename="arus-kas-' . $from->format('Ymd') . '-' . $to->format('Ymd') . '.pdf"');
+            ->header('Content-Disposition', 'attachment; filename="arus-kas-'.$from->format('Ymd').'-'.$to->format('Ymd').'.pdf"');
     }
 }

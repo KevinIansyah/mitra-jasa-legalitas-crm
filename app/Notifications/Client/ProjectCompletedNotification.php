@@ -33,14 +33,14 @@ class ProjectCompletedNotification extends Notification implements ShouldQueue
     public function toDatabase(): array
     {
         return [
-            'title'      => 'Project Selesai',
-            'message'    => "Project \"{$this->project->name}\" telah selesai dikerjakan.",
-            'action_url' => "/portal/proyek/{$this->project->id}",
-            'icon'       => 'briefcase',
-            'type'       => 'project_completed',
-            'meta'       => [
-                'project_id'      => $this->project->id,
-                'project_name'    => $this->project->name,
+            'title' => 'Project Selesai',
+            'message' => "Project \"{$this->project->name}\" telah selesai dikerjakan.",
+            'action_url' => frontend_url("/portal/proyek/{$this->project->id}"),
+            'icon' => 'briefcase',
+            'type' => 'project_completed',
+            'meta' => [
+                'project_id' => $this->project->id,
+                'project_name' => $this->project->name,
                 'actual_end_date' => $this->project->actual_end_date?->format('Y-m-d'),
             ],
         ];

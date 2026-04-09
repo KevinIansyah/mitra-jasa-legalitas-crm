@@ -33,33 +33,32 @@ class PublicServiceController extends Controller
         if (is_string($priceRanges)) {
             $priceRanges = [$priceRanges];
         }
-        $priceRanges = array_filter($priceRanges, fn($v) => in_array((string)$v, ['1', '2', '3', '4', '5']));
+        $priceRanges = array_filter($priceRanges, fn ($v) => in_array((string) $v, ['1', '2', '3', '4', '5']));
 
         $services = Service::query()
             ->with([
                 'category:id,name,slug,palette_color',
                 'cheapestPackage.includedFeatures',
-                'cityPages' => fn($q) => $q->where('is_published', true)->with([
-                    'city' => fn($q) => $q->select('id', 'name'),
+                'cityPages' => fn ($q) => $q->where('is_published', true)->with([
+                    'city' => fn ($q) => $q->select('id', 'name'),
                 ]),
             ])
             ->where('is_published', true)
             ->where('status', 'active')
             ->when(
-                !empty($categorySlugs),
-                fn($q) =>
-                $q->whereHas('category', fn($q) => $q->whereIn('slug', $categorySlugs))
+                ! empty($categorySlugs),
+                fn ($q) => $q->whereHas('category', fn ($q) => $q->whereIn('slug', $categorySlugs))
             )
-            ->when(!empty($priceRanges), function ($q) use ($priceRanges) {
+            ->when(! empty($priceRanges), function ($q) use ($priceRanges) {
                 $q->whereHas('cheapestPackage', function ($q) use ($priceRanges) {
                     $q->where(function ($q) use ($priceRanges) {
                         foreach ($priceRanges as $index => $range) {
                             $method = $index === 0 ? 'where' : 'orWhere';
                             match ((string) $range) {
                                 '1' => $q->{$method}('price', '<', 1_000_000),
-                                '2' => $q->{$method . 'Between'}('price', [1_000_000, 2_999_999]),
-                                '3' => $q->{$method . 'Between'}('price', [3_000_000, 4_999_999]),
-                                '4' => $q->{$method . 'Between'}('price', [5_000_000, 9_999_999]),
+                                '2' => $q->{$method.'Between'}('price', [1_000_000, 2_999_999]),
+                                '3' => $q->{$method.'Between'}('price', [3_000_000, 4_999_999]),
+                                '4' => $q->{$method.'Between'}('price', [5_000_000, 9_999_999]),
                                 '5' => $q->{$method}('price', '>=', 10_000_000),
                                 default => null,
                             };
@@ -94,7 +93,7 @@ class PublicServiceController extends Controller
 
         $services = $services
             ->get(['id', 'service_category_id', 'name', 'slug', 'short_description', 'featured_image', 'is_featured', 'is_popular'])
-            ->map(fn($service) => $this->formatServiceCard($service));
+            ->map(fn ($service) => $this->formatServiceCard($service));
 
         return ApiResponse::success([
             'seo' => $this->buildSeoList($services->toArray()),
@@ -112,7 +111,7 @@ class PublicServiceController extends Controller
             ->where('status', 'active')
             ->first();
 
-        if (!$city) {
+        if (! $city) {
             return ApiResponse::notFound('Kota tidak ditemukan.');
         }
 
@@ -127,7 +126,7 @@ class PublicServiceController extends Controller
             $priceRanges = [$priceRanges];
         }
 
-        $priceRanges = array_filter($priceRanges, fn($v) => in_array((string)$v, ['1', '2', '3', '4', '5']));
+        $priceRanges = array_filter($priceRanges, fn ($v) => in_array((string) $v, ['1', '2', '3', '4', '5']));
 
         $cityPages = ServiceCityPage::where('city_id', $city->id)
             ->where('service_city_pages.is_published', true)
@@ -135,14 +134,14 @@ class PublicServiceController extends Controller
                 $q->where('services.is_published', true)
                     ->where('services.status', 'active')
                     ->when(
-                        !empty($categorySlugs),
-                        fn($q) => $q->whereHas(
+                        ! empty($categorySlugs),
+                        fn ($q) => $q->whereHas(
                             'category',
-                            fn($q) => $q->whereIn('slug', $categorySlugs)
+                            fn ($q) => $q->whereIn('slug', $categorySlugs)
                         )
                     )
                     ->when(
-                        !empty($priceRanges),
+                        ! empty($priceRanges),
                         function ($q) use ($priceRanges) {
                             $q->whereHas('cheapestPackage', function ($q) use ($priceRanges) {
                                 $q->where(function ($q) use ($priceRanges) {
@@ -150,9 +149,9 @@ class PublicServiceController extends Controller
                                         $method = $index === 0 ? 'where' : 'orWhere';
                                         match ((string) $range) {
                                             '1' => $q->{$method}('price', '<', 1_000_000),
-                                            '2' => $q->{$method . 'Between'}('price', [1_000_000, 2_999_999]),
-                                            '3' => $q->{$method . 'Between'}('price', [3_000_000, 4_999_999]),
-                                            '4' => $q->{$method . 'Between'}('price', [5_000_000, 9_999_999]),
+                                            '2' => $q->{$method.'Between'}('price', [1_000_000, 2_999_999]),
+                                            '3' => $q->{$method.'Between'}('price', [3_000_000, 4_999_999]),
+                                            '4' => $q->{$method.'Between'}('price', [5_000_000, 9_999_999]),
                                             '5' => $q->{$method}('price', '>=', 10_000_000),
                                             default => null,
                                         };
@@ -163,7 +162,7 @@ class PublicServiceController extends Controller
                     );
             })
             ->with([
-                'service' => fn($query) => $query
+                'service' => fn ($query) => $query
                     ->where('is_published', true)
                     ->where('status', 'active')
                     ->with('category:id,name,slug,palette_color'),
@@ -199,11 +198,11 @@ class PublicServiceController extends Controller
 
         $cityPages = $cityPages
             ->get(['service_city_pages.*'])
-            ->filter(fn($page) => $page->service !== null);
+            ->filter(fn ($page) => $page->service !== null);
 
         $r2Url = rtrim(config('filesystems.disks.r2_public.url', ''), '/');
 
-        $mappedServices = $cityPages->map(fn($page) => [
+        $mappedServices = $cityPages->map(fn ($page) => [
             'id' => $page->service->id,
             'name' => $page->service->name,
             'slug' => $page->service->slug,
@@ -226,7 +225,7 @@ class PublicServiceController extends Controller
                 'duration' => $page->service->cheapestPackage->duration,
                 'duration_days' => $page->service->cheapestPackage->duration_days,
                 'short_description' => $page->service->cheapestPackage->short_description,
-                'features' => $page->service->cheapestPackage->features->map(fn($feature) => [
+                'features' => $page->service->cheapestPackage->features->map(fn ($feature) => [
                     'feature_name' => $feature->feature_name,
                     'description' => $feature->description,
                     'is_included' => $feature->is_included,
@@ -263,22 +262,22 @@ class PublicServiceController extends Controller
             ->with([
                 'category:id,name,slug,palette_color',
                 'seo',
-                'packages' => fn($query) => $query->where('status', 'active')->orderBy('sort_order')->with([
-                    'features' => fn($query) => $query->orderBy('sort_order'),
+                'packages' => fn ($query) => $query->where('status', 'active')->orderBy('sort_order')->with([
+                    'features' => fn ($query) => $query->orderBy('sort_order'),
                 ]),
-                'processSteps' => fn($query) => $query->where('status', 'active')->orderBy('sort_order'),
-                'requirementCategories' => fn($query) => $query->where('status', 'active')->orderBy('sort_order')->with([
-                    'requirements' => fn($query) => $query->where('status', 'active')->orderBy('sort_order'),
+                'processSteps' => fn ($query) => $query->where('status', 'active')->orderBy('sort_order'),
+                'requirementCategories' => fn ($query) => $query->where('status', 'active')->orderBy('sort_order')->with([
+                    'requirements' => fn ($query) => $query->where('status', 'active')->orderBy('sort_order'),
                 ]),
-                'legalBases' => fn($query) => $query->where('status', 'active')->orderBy('sort_order'),
-                'faqs' => fn($query) => $query->where('status', 'active')->orderBy('sort_order'),
-                'cityPages' => fn($q) => $q->where('is_published', true)->with([
-                    'city' => fn($q) => $q->select('id', 'name', 'province', 'slug'),
+                'legalBases' => fn ($query) => $query->where('status', 'active')->orderBy('sort_order'),
+                'faqs' => fn ($query) => $query->where('status', 'active')->orderBy('sort_order'),
+                'cityPages' => fn ($q) => $q->where('is_published', true)->with([
+                    'city' => fn ($q) => $q->select('id', 'name', 'province', 'slug'),
                 ]),
             ])
             ->first();
 
-        if (!$service) {
+        if (! $service) {
             return ApiResponse::notFound('Layanan tidak ditemukan.');
         }
 
@@ -300,7 +299,7 @@ class PublicServiceController extends Controller
                 'slug' => $service->category->slug,
                 'palette_color' => $service->category->palette_color,
             ] : null,
-            'city_pages' => $service->cityPages->map(fn($cityPage) => [
+            'city_pages' => $service->cityPages->map(fn ($cityPage) => [
                 'id' => $cityPage->id,
                 'name' => $cityPage->city->name,
                 'slug' => $cityPage->city->slug,
@@ -324,7 +323,7 @@ class PublicServiceController extends Controller
             'process_steps' => $this->formatProcessSteps($service->processSteps),
             'requirement_categories' => $this->formatRequirementCategories($service->requirementCategories),
             'legal_bases' => $this->formatLegalBases($service->legalBases),
-            'faqs' => $service->faqs->map(fn($faq) => [
+            'faqs' => $service->faqs->map(fn ($faq) => [
                 'question' => $faq->question,
                 'answer' => $faq->answer,
                 'sort_order' => $faq->sort_order,
@@ -342,28 +341,28 @@ class PublicServiceController extends Controller
             ->where('is_published', true)
             ->where('status', 'active')
             ->with([
-                'packages' => fn($query) => $query->where('status', 'active')->orderBy('sort_order')->with([
-                    'features' => fn($query) => $query->orderBy('sort_order'),
+                'packages' => fn ($query) => $query->where('status', 'active')->orderBy('sort_order')->with([
+                    'features' => fn ($query) => $query->orderBy('sort_order'),
                 ]),
-                'processSteps' => fn($query) => $query->where('status', 'active')->orderBy('sort_order'),
-                'requirementCategories' => fn($query) => $query->where('status', 'active')->orderBy('sort_order')->with([
-                    'requirements' => fn($query) => $query->where('status', 'active')->orderBy('sort_order'),
+                'processSteps' => fn ($query) => $query->where('status', 'active')->orderBy('sort_order'),
+                'requirementCategories' => fn ($query) => $query->where('status', 'active')->orderBy('sort_order')->with([
+                    'requirements' => fn ($query) => $query->where('status', 'active')->orderBy('sort_order'),
                 ]),
-                'legalBases' => fn($query) => $query->where('status', 'active')->orderBy('sort_order'),
+                'legalBases' => fn ($query) => $query->where('status', 'active')->orderBy('sort_order'),
             ])
             ->first();
 
-        if (!$service) {
+        if (! $service) {
             return ApiResponse::error('Layanan tidak ditemukan', 404);
         }
 
         $cityPage = ServiceCityPage::where('service_id', $service->id)
             ->where('is_published', true)
-            ->whereHas('city', fn($query) => $query->where('slug', $citySlug))
+            ->whereHas('city', fn ($query) => $query->where('slug', $citySlug))
             ->with('city:id,name,slug,province')
             ->first();
 
-        if (!$cityPage) {
+        if (! $cityPage) {
             return ApiResponse::error('Halaman kota tidak ditemukan', 404);
         }
 
@@ -432,14 +431,14 @@ class PublicServiceController extends Controller
                 'duration' => $service->cheapestPackage->duration,
                 'duration_days' => $service->cheapestPackage->duration_days,
                 'short_description' => $service->cheapestPackage->short_description,
-                'features' => $service->cheapestPackage->features->map(fn($feature) => [
+                'features' => $service->cheapestPackage->features->map(fn ($feature) => [
                     'feature_name' => $feature->feature_name,
                     'description' => $feature->description,
                     'is_included' => $feature->is_included,
                     'sort_order' => $feature->sort_order,
                 ]),
             ] : null,
-            'city_pages' => $service->cityPages->map(fn($cityPage) => [
+            'city_pages' => $service->cityPages->map(fn ($cityPage) => [
                 'id' => $cityPage->id,
                 'name' => $cityPage->city->name,
             ]),
@@ -448,7 +447,7 @@ class PublicServiceController extends Controller
 
     private function formatPackages($packages): array
     {
-        return $packages->map(fn($package) => [
+        return $packages->map(fn ($package) => [
             'name' => $package->name,
             'price' => $package->price,
             'duration' => $package->duration,
@@ -457,7 +456,7 @@ class PublicServiceController extends Controller
             'is_highlighted' => $package->is_highlighted,
             'badge' => $package->badge,
             'sort_order' => $package->sort_order,
-            'features' => $package->features->map(fn($feature) => [
+            'features' => $package->features->map(fn ($feature) => [
                 'feature_name' => $feature->feature_name,
                 'description' => $feature->description,
                 'is_included' => $feature->is_included,
@@ -468,7 +467,7 @@ class PublicServiceController extends Controller
 
     private function formatProcessSteps($steps): array
     {
-        return $steps->map(fn($step) => [
+        return $steps->map(fn ($step) => [
             'title' => $step->title,
             'description' => $step->description,
             'duration' => $step->duration,
@@ -482,11 +481,11 @@ class PublicServiceController extends Controller
 
     private function formatRequirementCategories($categories): array
     {
-        return $categories->map(fn($category) => [
+        return $categories->map(fn ($category) => [
             'name' => $category->name,
             'description' => $category->description,
             'sort_order' => $category->sort_order,
-            'requirements' => $category->requirements->map(fn($requirement) => [
+            'requirements' => $category->requirements->map(fn ($requirement) => [
                 'name' => $requirement->name,
                 'description' => $requirement->description,
                 'is_required' => $requirement->is_required,
@@ -499,7 +498,7 @@ class PublicServiceController extends Controller
 
     private function formatLegalBases($legalBases): array
     {
-        return $legalBases->map(fn($legalBasis) => [
+        return $legalBases->map(fn ($legalBasis) => [
             'document_type' => $legalBasis->document_type,
             'document_number' => $legalBasis->document_number,
             'title' => $legalBasis->title,
@@ -515,7 +514,7 @@ class PublicServiceController extends Controller
         $site = SiteSetting::get();
         $r2Url = rtrim(config('filesystems.disks.r2_public.url', ''), '/');
         $base = rtrim((string) ($site->org_url ?? $site->company_website ?? config('app.url')), '/');
-        $pageUrl = $base . '/layanan';
+        $pageUrl = $base.'/layanan';
 
         $metaTitle = $site->getPageTitle('Layanan');
         $metaDescription = 'Temukan berbagai layanan profesional yang kami tawarkan. Pilih sesuai kebutuhan bisnis Anda.';
@@ -524,20 +523,20 @@ class PublicServiceController extends Controller
             : ($site->company_logo ? "{$r2Url}/{$site->company_logo}" : null);
 
         $itemList = [
-            '@type'           => 'ItemList',
-            'name'            => 'Daftar Layanan',
-            'url'             => $pageUrl,
-            'numberOfItems'   => count($services),
-            'itemListElement' => collect($services)->values()->map(fn($service, $i) => [
-                '@type'    => 'ListItem',
+            '@type' => 'ItemList',
+            'name' => 'Daftar Layanan',
+            'url' => $pageUrl,
+            'numberOfItems' => count($services),
+            'itemListElement' => collect($services)->values()->map(fn ($service, $i) => [
+                '@type' => 'ListItem',
                 'position' => $i + 1,
-                'name'     => $service['name'],
-                'url'      => $base . '/layanan/' . $service['slug'],
+                'name' => $service['name'],
+                'url' => $base.'/layanan/'.$service['slug'],
             ])->toArray(),
         ];
 
         $breadcrumb = [
-            '@type'           => 'BreadcrumbList',
+            '@type' => 'BreadcrumbList',
             'itemListElement' => [
                 ['@type' => 'ListItem', 'position' => 1, 'name' => 'Beranda', 'item' => $base],
                 ['@type' => 'ListItem', 'position' => 2, 'name' => 'Layanan', 'item' => $pageUrl],
@@ -545,41 +544,41 @@ class PublicServiceController extends Controller
         ];
 
         $webPage = [
-            '@type'       => 'WebPage',
-            '@id'         => $pageUrl . '#webpage',
-            'url'         => $pageUrl,
-            'name'        => $metaTitle,
+            '@type' => 'WebPage',
+            '@id' => $pageUrl.'#webpage',
+            'url' => $pageUrl,
+            'name' => $metaTitle,
             'description' => $metaDescription,
-            'inLanguage'  => 'id-ID',
-            'isPartOf'    => ['@id' => $base . '#website'],
-            'about'       => ['@id' => $base . '#organization'],
+            'inLanguage' => 'id-ID',
+            'isPartOf' => ['@id' => $base.'#website'],
+            'about' => ['@id' => $base.'#organization'],
         ];
 
         return [
-            'meta_title'       => $metaTitle,
+            'meta_title' => $metaTitle,
             'meta_description' => $metaDescription,
-            'canonical_url'    => $pageUrl,
-            'robots'           => 'index, follow',
-            'in_sitemap'       => true,
+            'canonical_url' => $pageUrl,
+            'robots' => 'index, follow',
+            'in_sitemap' => true,
             'sitemap_priority' => '0.8',
-            'open_graph'       => array_filter([
-                'og:type'        => 'website',
-                'og:site_name'   => $site->company_name,
-                'og:title'       => $metaTitle,
+            'open_graph' => array_filter([
+                'og:type' => 'website',
+                'og:site_name' => $site->company_name,
+                'og:title' => $metaTitle,
                 'og:description' => $metaDescription,
-                'og:url'         => $pageUrl,
-                'og:image'       => $ogImage,
-                'og:locale'      => 'id_ID',
+                'og:url' => $pageUrl,
+                'og:image' => $ogImage,
+                'og:locale' => 'id_ID',
             ]),
-            'twitter'          => array_filter([
-                'twitter:card'        => 'summary_large_image',
-                'twitter:title'       => $metaTitle,
+            'twitter' => array_filter([
+                'twitter:card' => 'summary_large_image',
+                'twitter:title' => $metaTitle,
                 'twitter:description' => $metaDescription,
-                'twitter:image'       => $ogImage,
+                'twitter:image' => $ogImage,
             ]),
-            'json_ld'          => [
+            'json_ld' => [
                 '@context' => 'https://schema.org',
-                '@graph'   => [
+                '@graph' => [
                     $this->buildOrganizationSchema($site, $r2Url, $base),
                     $this->buildWebSiteSchema($site, $base),
                     $itemList,
@@ -595,30 +594,30 @@ class PublicServiceController extends Controller
         $site = SiteSetting::get();
         $r2Url = rtrim(config('filesystems.disks.r2_public.url', ''), '/');
         $base = rtrim((string) ($site->org_url ?? $site->company_website ?? config('app.url')), '/');
-        $pageUrl = $base . '/layanan/kota/' . $city->slug;
-        $listUrl = $base . '/layanan';
+        $pageUrl = $base.'/layanan/kota/'.$city->slug;
+        $listUrl = $base.'/layanan';
 
-        $metaTitle = $site->getPageTitle('Layanan di ' . $city->name);
-        $metaDescription = 'Temukan layanan profesional di ' . $city->name . ', ' . ($city->province ?? '') . '. Kami siap membantu kebutuhan bisnis Anda.';
+        $metaTitle = $site->getPageTitle('Layanan di '.$city->name);
+        $metaDescription = 'Temukan layanan profesional di '.$city->name.', '.($city->province ?? '').'. Kami siap membantu kebutuhan bisnis Anda.';
         $ogImage = $site->default_og_image
             ? "{$r2Url}/{$site->default_og_image}"
             : ($site->company_logo ? "{$r2Url}/{$site->company_logo}" : null);
 
         $itemList = [
-            '@type'           => 'ItemList',
-            'name'            => 'Daftar Layanan di ' . $city->name,
-            'url'             => $pageUrl,
-            'numberOfItems'   => count($services),
-            'itemListElement' => collect($services)->values()->map(fn($service, $i) => [
-                '@type'    => 'ListItem',
+            '@type' => 'ItemList',
+            'name' => 'Daftar Layanan di '.$city->name,
+            'url' => $pageUrl,
+            'numberOfItems' => count($services),
+            'itemListElement' => collect($services)->values()->map(fn ($service, $i) => [
+                '@type' => 'ListItem',
                 'position' => $i + 1,
-                'name'     => $service['name'],
-                'url'      => $base . '/layanan/' . $service['slug'] . '/' . $city->slug,
+                'name' => $service['name'],
+                'url' => $base.'/layanan/'.$service['slug'].'/'.$city->slug,
             ])->toArray(),
         ];
 
         $breadcrumb = [
-            '@type'           => 'BreadcrumbList',
+            '@type' => 'BreadcrumbList',
             'itemListElement' => [
                 ['@type' => 'ListItem', 'position' => 1, 'name' => 'Beranda', 'item' => $base],
                 ['@type' => 'ListItem', 'position' => 2, 'name' => 'Layanan', 'item' => $listUrl],
@@ -627,41 +626,41 @@ class PublicServiceController extends Controller
         ];
 
         $webPage = [
-            '@type'       => 'WebPage',
-            '@id'         => $pageUrl . '#webpage',
-            'url'         => $pageUrl,
-            'name'        => $metaTitle,
+            '@type' => 'WebPage',
+            '@id' => $pageUrl.'#webpage',
+            'url' => $pageUrl,
+            'name' => $metaTitle,
             'description' => $metaDescription,
-            'inLanguage'  => 'id-ID',
-            'isPartOf'    => ['@id' => $base . '#website'],
-            'about'       => ['@id' => $base . '#organization'],
+            'inLanguage' => 'id-ID',
+            'isPartOf' => ['@id' => $base.'#website'],
+            'about' => ['@id' => $base.'#organization'],
         ];
 
         return [
-            'meta_title'       => $metaTitle,
+            'meta_title' => $metaTitle,
             'meta_description' => $metaDescription,
-            'canonical_url'    => $pageUrl,
-            'robots'           => 'index, follow',
-            'in_sitemap'       => true,
+            'canonical_url' => $pageUrl,
+            'robots' => 'index, follow',
+            'in_sitemap' => true,
             'sitemap_priority' => '0.7',
-            'open_graph'       => array_filter([
-                'og:type'        => 'website',
-                'og:site_name'   => $site->company_name,
-                'og:title'       => $metaTitle,
+            'open_graph' => array_filter([
+                'og:type' => 'website',
+                'og:site_name' => $site->company_name,
+                'og:title' => $metaTitle,
                 'og:description' => $metaDescription,
-                'og:url'         => $pageUrl,
-                'og:image'       => $ogImage,
-                'og:locale'      => 'id_ID',
+                'og:url' => $pageUrl,
+                'og:image' => $ogImage,
+                'og:locale' => 'id_ID',
             ]),
-            'twitter'          => array_filter([
-                'twitter:card'        => 'summary_large_image',
-                'twitter:title'       => $metaTitle,
+            'twitter' => array_filter([
+                'twitter:card' => 'summary_large_image',
+                'twitter:title' => $metaTitle,
                 'twitter:description' => $metaDescription,
-                'twitter:image'       => $ogImage,
+                'twitter:image' => $ogImage,
             ]),
-            'json_ld'          => [
+            'json_ld' => [
                 '@context' => 'https://schema.org',
-                '@graph'   => [
+                '@graph' => [
                     $this->buildOrganizationSchema($site, $r2Url, $base),
                     $this->buildWebSiteSchema($site, $base),
                     $itemList,

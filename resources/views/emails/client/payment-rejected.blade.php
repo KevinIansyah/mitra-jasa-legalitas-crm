@@ -50,5 +50,5 @@
   </p>
 @endsection
 
-@section('action_url', url("/portal/faktur/{$invoice->id}"))
+@section('action_url', frontend_url("/portal/faktur/{$invoice->id}"))
 @section('action_label', 'Bayar Ulang')

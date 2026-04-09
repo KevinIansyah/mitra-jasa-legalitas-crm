@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Projects;
 
-use App\Http\Controllers\Controller;
 use App\Helpers\FileHelper;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Projects\Payments\StoreRequest;
 use App\Http\Requests\Projects\Payments\UpdateRequest;
 use App\Models\ProjectInvoice;
@@ -39,18 +39,16 @@ class ProjectPaymentController extends Controller
                     $q->where('reference_number', 'like', "%{$search}%")
                         ->orWhereHas(
                             'invoice',
-                            fn($q) =>
-                            $q->where('invoice_number', 'like', "%{$search}%")
+                            fn ($q) => $q->where('invoice_number', 'like', "%{$search}%")
                         )
                         ->orWhereHas(
                             'invoice.project',
-                            fn($q) =>
-                            $q->where('name', 'like', "%{$search}%")
+                            fn ($q) => $q->where('name', 'like', "%{$search}%")
                         );
                 });
             })
-            ->when($status, fn($q, $status) => $q->where('status', $status))
-            ->when($method, fn($q, $method) => $q->where('payment_method', $method))
+            ->when($status, fn ($q, $status) => $q->where('status', $status))
+            ->when($method, fn ($q, $method) => $q->where('payment_method', $method))
             ->latest()
             ->paginate($perPage);
 
@@ -67,11 +65,11 @@ class ProjectPaymentController extends Controller
 
         return Inertia::render('finances/payments/index', [
             'payments' => $payments,
-            'summary'  => $summary,
-            'filters'  => [
-                'search'         => $search,
-                'per_page'       => $perPage,
-                'status'         => $status,
+            'summary' => $summary,
+            'filters' => [
+                'search' => $search,
+                'per_page' => $perPage,
+                'status' => $status,
                 'payment_method' => $method,
             ],
         ]);
@@ -83,12 +81,12 @@ class ProjectPaymentController extends Controller
             'invoice.project.customer',
             'invoice.project.company',
             'invoice.customer',
-            'invoice.payments' => fn($q) => $q->where('status', 'verified'),
+            'invoice.payments' => fn ($q) => $q->where('status', 'verified'),
             'verifier',
         ]);
 
         return Inertia::render('finances/payments/detail/index', [
-            'payment'  => $payment,
+            'payment' => $payment,
             'settings' => SiteSetting::get(),
         ]);
     }
@@ -112,8 +110,12 @@ class ProjectPaymentController extends Controller
 
     public function update(UpdateRequest $request, ProjectInvoice $invoice, ProjectPayment $payment)
     {
-        if ($error = $this->validatePaymentBelongsToInvoice($invoice, $payment)) return $error;
-        if ($error = $this->validatePaymentEditable($payment)) return $error;
+        if ($error = $this->validatePaymentBelongsToInvoice($invoice, $payment)) {
+            return $error;
+        }
+        if ($error = $this->validatePaymentEditable($payment)) {
+            return $error;
+        }
 
         $validated = $request->validated();
 
@@ -137,7 +139,7 @@ class ProjectPaymentController extends Controller
 
         if ($request->boolean('resubmit') && $payment->isRejected()) {
             $payment->update([
-                'status'           => 'pending',
+                'status' => 'pending',
                 'rejection_reason' => null,
             ]);
         }
@@ -147,11 +149,15 @@ class ProjectPaymentController extends Controller
 
     public function updateStatus(Request $request, ProjectInvoice $invoice, ProjectPayment $payment)
     {
-        if ($error = $this->validatePaymentBelongsToInvoice($invoice, $payment)) return $error;
-        if ($error = $this->validatePaymentPending($payment)) return $error;
+        if ($error = $this->validatePaymentBelongsToInvoice($invoice, $payment)) {
+            return $error;
+        }
+        if ($error = $this->validatePaymentPending($payment)) {
+            return $error;
+        }
 
         $request->validate([
-            'status'           => 'required|in:verified,rejected',
+            'status' => 'required|in:verified,rejected',
             'rejection_reason' => 'required_if:status,rejected|nullable|string|max:1000',
         ]);
 
@@ -186,8 +192,12 @@ class ProjectPaymentController extends Controller
 
     public function destroy(ProjectInvoice $invoice, ProjectPayment $payment)
     {
-        if ($error = $this->validatePaymentBelongsToInvoice($invoice, $payment)) return $error;
-        if ($error = $this->validatePaymentEditable($payment)) return $error;
+        if ($error = $this->validatePaymentBelongsToInvoice($invoice, $payment)) {
+            return $error;
+        }
+        if ($error = $this->validatePaymentEditable($payment)) {
+            return $error;
+        }
 
         if ($payment->proof_file) {
             FileHelper::deleteFromR2($payment->proof_file);
@@ -200,21 +210,21 @@ class ProjectPaymentController extends Controller
 
     public function downloadReceiptPdf(ProjectInvoice $invoice, ProjectPayment $payment)
     {
-        if (!$payment->file_path) {
+        if (! $payment->file_path) {
             abort(404, 'Kwitansi belum tersedia.');
         }
 
-        $content  = FileHelper::downloadFromR2Public($payment->file_path);
-        $filename = 'kwitansi-' . $payment->receipt_number . '.pdf';
+        $content = FileHelper::downloadFromR2Public($payment->file_path);
+        $filename = 'kwitansi-'.$payment->receipt_number.'.pdf';
 
         return response($content, 200)
             ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+            ->header('Content-Disposition', 'attachment; filename="'.$filename.'"');
     }
 
     public function regenerateReceiptPdf(ProjectInvoice $invoice, ProjectPayment $payment)
     {
-        if (!$payment->isVerified()) {
+        if (! $payment->isVerified()) {
             return back()->withErrors(['error' => 'Hanya pembayaran terverifikasi yang dapat digenerate kwitansinya.']);
         }
 
@@ -222,16 +232,16 @@ class ProjectPaymentController extends Controller
             $pdfService = app(ReceiptPdfService::class);
             $pdfService->delete($payment);
             $filePath = $pdfService->generate($payment->fresh());
-            $payment->update(['file_pathpath' => $filePath]);
+            $payment->update(['file_path' => $filePath]);
 
             return back()->with('success', 'Kwitansi berhasil di-generate ulang.');
         } catch (\Exception $e) {
             Log::error('Receipt PDF manual regeneration failed', [
                 'payment_id' => $payment->id,
-                'error'      => $e->getMessage(),
+                'error' => $e->getMessage(),
             ]);
 
-            return back()->withErrors(['error' => 'Gagal generate kwitansi: ' . $e->getMessage()]);
+            return back()->withErrors(['error' => 'Gagal generate kwitansi: '.$e->getMessage()]);
         }
     }
 
@@ -255,7 +265,7 @@ class ProjectPaymentController extends Controller
 
     private function validatePaymentPending(ProjectPayment $payment)
     {
-        if (!$payment->isPending()) {
+        if (! $payment->isPending()) {
             return back()->withErrors(['error' => 'Hanya pembayaran pending yang dapat diubah statusnya.']);
         }
 

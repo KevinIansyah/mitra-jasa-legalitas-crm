@@ -35,18 +35,18 @@ class NewDeliverableNotification extends Notification implements ShouldQueue
         $project = $this->deliverable->project;
 
         return [
-            'title'      => 'Hasil Akhir Tersedia',
-            'message'    => "Hasil akhir \"{$this->deliverable->name}\" untuk project \"{$project->name}\" telah tersedia.",
-            'action_url' => "/portal/proyek/{$project->id}/hasil-akhir",
-            'icon'       => 'document',
-            'type'       => 'new_deliverable',
-            'meta'       => [
-                'deliverable_id'   => $this->deliverable->id,
+            'title' => 'Hasil Akhir Tersedia',
+            'message' => "Hasil akhir \"{$this->deliverable->name}\" untuk project \"{$project->name}\" telah tersedia.",
+            'action_url' => frontend_url("/portal/proyek/{$project->id}/hasil-akhir"),
+            'icon' => 'document',
+            'type' => 'new_deliverable',
+            'meta' => [
+                'deliverable_id' => $this->deliverable->id,
                 'deliverable_name' => $this->deliverable->name,
-                'project_id'       => $project->id,
-                'project_name'     => $project->name,
-                'is_final'         => $this->deliverable->is_final,
-                'version'          => $this->deliverable->version,
+                'project_id' => $project->id,
+                'project_name' => $project->name,
+                'is_final' => $this->deliverable->is_final,
+                'version' => $this->deliverable->version,
             ],
         ];
     }

@@ -33,11 +33,21 @@ use Illuminate\Support\Facades\Storage;
 */
 
 Route::middleware('auth')->prefix('notifications')->name('notifications.')->group(function () {
-    Route::get('/', [NotificationController::class, 'index'])->name('index');
-    Route::post('{id}/read', [NotificationController::class, 'read'])->name('read');
-    Route::post('mark-all-read', [NotificationController::class, 'markAllRead'])->name('markAllRead');
-    Route::delete('{id}', [NotificationController::class, 'destroy'])->name('destroy');
-    Route::delete('/', [NotificationController::class, 'destroyAll'])->name('destroyAll');
+    
+    Route::get('/', [NotificationController::class, 'index'])
+        ->name('index');
+
+    Route::post('{id}/read', [NotificationController::class, 'read'])
+        ->name('read');
+
+    Route::post('mark-all-read', [NotificationController::class, 'markAllRead'])
+        ->name('markAllRead');
+
+    Route::delete('{id}', [NotificationController::class, 'destroy'])
+        ->name('destroy');
+
+    Route::delete('/', [NotificationController::class, 'destroyAll'])
+        ->name('destroyAll');
 });
 
 /*
@@ -188,7 +198,7 @@ Route::prefix('test-r2')->group(function () {
 
             return 'File uploaded successfully! Path: test/test-file.txt';
         } catch (\Exception $e) {
-            return 'Error: '.$e->getMessage();
+            return 'Error: ' . $e->getMessage();
         }
     });
 
@@ -197,10 +207,10 @@ Route::prefix('test-r2')->group(function () {
             $path = 'test/test-file.txt';
 
             return Storage::disk('r2_public')->exists($path)
-                ? 'File content: '.Storage::disk('r2_public')->get($path)
+                ? 'File content: ' . Storage::disk('r2_public')->get($path)
                 : 'File not found';
         } catch (\Exception $e) {
-            return 'Error: '.$e->getMessage();
+            return 'Error: ' . $e->getMessage();
         }
     });
 
@@ -210,7 +220,7 @@ Route::prefix('test-r2')->group(function () {
 
             return 'File deleted successfully!';
         } catch (\Exception $e) {
-            return 'Error: '.$e->getMessage();
+            return 'Error: ' . $e->getMessage();
         }
     });
 
@@ -229,13 +239,13 @@ Route::prefix('test-r2')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-require __DIR__.'/settings.php';
-require __DIR__.'/contacts.php';
-require __DIR__.'/services.php';
-require __DIR__.'/projects.php';
-require __DIR__.'/finances.php';
-require __DIR__.'/staff.php';
-require __DIR__.'/master-data.php';
-require __DIR__.'/blogs.php';
-require __DIR__.'/ai.php';
-require __DIR__.'/contents.php';
+require __DIR__ . '/settings.php';
+require __DIR__ . '/contacts.php';
+require __DIR__ . '/services.php';
+require __DIR__ . '/projects.php';
+require __DIR__ . '/finances.php';
+require __DIR__ . '/staff.php';
+require __DIR__ . '/master-data.php';
+require __DIR__ . '/blogs.php';
+require __DIR__ . '/ai.php';
+require __DIR__ . '/contents.php';

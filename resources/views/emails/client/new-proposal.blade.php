@@ -55,5 +55,5 @@
   </p>
 @endsection
 
-@section('action_url', url("/portal/proposal/{$proposal->id}"))
+@section('action_url', frontend_url("/portal/proposal/{$proposal->id}"))
 @section('action_label', 'Tinjau Proposal')

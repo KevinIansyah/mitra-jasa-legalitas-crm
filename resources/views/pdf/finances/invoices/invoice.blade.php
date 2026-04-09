@@ -27,7 +27,7 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background-image: url("{{ \App\Helpers\FileHelper::getR2Url($settings->company_logo) }}");
+      background-image: @if(filled($settings->company_logo)) url("{{ \App\Helpers\FileHelper::getR2Url($settings->company_logo) }}") @else none @endif;
       background-repeat: no-repeat;
       background-position: center center;
       background-size: 420px;

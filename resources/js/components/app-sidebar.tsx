@@ -38,13 +38,11 @@ import {
 import { usePermission } from '@/hooks/use-permission';
 import { useThemeSettings } from '@/hooks/use-theme-settings';
 import ai from '@/routes/ai';
+import blogs from '@/routes/blogs';
 import contacts from '@/routes/contacts';
 import contents from '@/routes/contents';
-import finances from '@/routes/finances';
-import type { NavItem, NavSection } from '@/types';
-import type { SharedData } from '@/types';
-import blogs from '@/routes/blogs';
 import dashboard from '@/routes/dashboard';
+import finances from '@/routes/finances';
 import masterData from '@/routes/master-data';
 import projects from '@/routes/projects';
 import { index as deliverablesIndex } from '@/routes/projects/deliverables';
@@ -53,6 +51,8 @@ import roles from '@/routes/roles';
 import services from '@/routes/services';
 import siteSettings from '@/routes/site-settings';
 import staffRoutes from '@/routes/staff';
+import type { SharedData } from '@/types';
+import type { NavItem, NavSection } from '@/types';
 
 function buildNavData(userId: number): {
     navMain: NavSection;

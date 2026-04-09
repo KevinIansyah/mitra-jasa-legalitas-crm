@@ -15,9 +15,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import { formatDate, formatFileSize } from '@/lib/utils';
-import projects from '@/routes/projects';
 import { DOCUMENT_STATUS_ICONS, DOCUMENT_STATUSES, DOCUMENT_STATUSES_MAP, UNDELETABLE_DOCUMENT_STATUSES, type DocumentStatus, type ProjectDocument } from '@/types/projects';
 import { DocumentForm } from './document-form';
+import projects from '@/routes/projects';
 
 export type DocumentStatusMeta = {
     label: string;
@@ -209,7 +209,7 @@ export function DocumentCard({ document, index, projectId, isFirst, isLast, onRe
                                         {hasFile && (
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
-                                                    <Button variant="secondary" className="h-8 w-8" onClick={handleView}>
+                                                    <Button variant="secondary" className="h-8 w-8" onClick={handleView} disabled={document.is_encrypted}>
                                                         <FileCheck className="size-3.5" />
                                                     </Button>
                                                 </TooltipTrigger>

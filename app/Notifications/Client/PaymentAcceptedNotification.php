@@ -31,13 +31,13 @@ class PaymentAcceptedNotification extends Notification implements ShouldQueue
 
         if ($this->payment->file_path) {
             try {
-                $content  = \App\Helpers\FileHelper::downloadFromR2Public($this->payment->file_path);
-                $filename = 'kwitansi-' . $this->payment->receipt_number . '.pdf';
+                $content = \App\Helpers\FileHelper::downloadFromR2Public($this->payment->file_path);
+                $filename = 'kwitansi-'.$this->payment->receipt_number.'.pdf';
                 $mail->attachData($content, $filename, ['mime' => 'application/pdf']);
             } catch (\Exception $e) {
                 \Illuminate\Support\Facades\Log::warning('Failed to attach receipt to email', [
                     'payment_id' => $this->payment->id,
-                    'error'      => $e->getMessage(),
+                    'error' => $e->getMessage(),
                 ]);
             }
         }
@@ -47,23 +47,23 @@ class PaymentAcceptedNotification extends Notification implements ShouldQueue
 
     public function toDatabase(): array
     {
-        $invoice  = $this->payment->invoice;
+        $invoice = $this->payment->invoice;
         $customer = $invoice->customer ?? $invoice->project?->customer;
 
         return [
-            'title'      => 'Pembayaran Diterima',
-            'message'    => "Pembayaran sebesar Rp " . number_format($this->payment->amount, 0, ',', '.') . " untuk invoice {$invoice->invoice_number} telah diverifikasi. Kwitansi tersedia.",
-            'action_url' => "/portal/pembayaran/{$this->payment->id}",
-            'icon'       => 'invoice',
-            'type'       => 'payment_accepted',
-            'meta'       => [
-                'payment_id'     => $this->payment->id,
+            'title' => 'Pembayaran Diterima',
+            'message' => 'Pembayaran sebesar Rp '.number_format($this->payment->amount, 0, ',', '.')." untuk invoice {$invoice->invoice_number} telah diverifikasi. Kwitansi tersedia.",
+            'action_url' => frontend_url("/portal/faktur/{$invoice->id}"),
+            'icon' => 'invoice',
+            'type' => 'payment_accepted',
+            'meta' => [
+                'payment_id' => $this->payment->id,
                 'receipt_number' => $this->payment->receipt_number,
-                'invoice_id'     => $invoice->id,
+                'invoice_id' => $invoice->id,
                 'invoice_number' => $invoice->invoice_number,
-                'amount'         => $this->payment->amount,
-                'customer_name'  => $customer?->name,
-                'verified_at'    => $this->payment->verified_at?->format('Y-m-d H:i:s'),
+                'amount' => $this->payment->amount,
+                'customer_name' => $customer?->name,
+                'verified_at' => $this->payment->verified_at?->format('Y-m-d H:i:s'),
             ],
         ];
     }

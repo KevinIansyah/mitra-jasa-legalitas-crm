@@ -8,19 +8,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\ClientProjects\UploadDocumentRequest;
 use App\Models\Project;
 use App\Models\ProjectDocument;
+use App\Support\ApiFileUrls;
 use Illuminate\Support\Facades\Auth;
 
 class ClientProjectDocumentController extends Controller
 {
-    public function index(Project $project)
-    {
-        $documents = $project->documents()
-            ->orderBy('sort_order')
-            ->get();
-
-        return ApiResponse::success($documents);
-    }
-
     public function upload(UploadDocumentRequest $request, Project $project, ProjectDocument $document)
     {
         if ($document->project_id !== $project->id) {
@@ -61,13 +53,15 @@ class ClientProjectDocumentController extends Controller
 
         $document->refresh();
 
+        ApiFileUrls::projectDocument($document);
+
         return ApiResponse::updated(
             $document,
             'Dokumen berhasil diunggah dan menunggu review.'
         );
     }
 
-    public function downloadUrl(Project $project, ProjectDocument $document)
+    public function download(Project $project, ProjectDocument $document)
     {
         if ($document->project_id !== $project->id) {
             return ApiResponse::notFound('Dokumen tidak ditemukan.');
@@ -77,13 +71,12 @@ class ClientProjectDocumentController extends Controller
             return ApiResponse::error('Dokumen belum memiliki file.', 422);
         }
 
-        $url = FileHelper::getSignedUrl($document->file_path, 30);
+        $content = FileHelper::downloadFromR2($document->file_path, $document->is_encrypted);
         $filename = FileHelper::buildFilename($document);
 
-        return ApiResponse::success([
-            'download_url' => $url,
-            'filename' => $filename,
-            'expires_in_minutes' => 30,
+        return response($content, 200, [
+            'Content-Type' => $document->file_type ?? 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
         ]);
     }
 }

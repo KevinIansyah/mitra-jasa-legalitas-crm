@@ -39,5 +39,5 @@
   </div>
 @endsection
 
-@section('action_url', url("/portal/estimasi/{$estimate->id}"))
+@section('action_url', frontend_url("/portal/estimasi/{$estimate->id}"))
 @section('action_label', 'Lihat Estimasi')

@@ -33,16 +33,16 @@ class ProposalExpiredNotification extends Notification implements ShouldQueue
     public function toDatabase(): array
     {
         return [
-            'title'      => 'Proposal Kadaluarsa',
-            'message'    => "Proposal {$this->proposal->proposal_number} untuk \"{$this->proposal->project_name}\" telah kadaluarsa.",
-            'action_url' => "/portal/proposal/{$this->proposal->id}",
-            'icon'       => 'warning',
-            'type'       => 'proposal_expired',
-            'meta'       => [
-                'proposal_id'     => $this->proposal->id,
+            'title' => 'Proposal Kadaluarsa',
+            'message' => "Proposal {$this->proposal->proposal_number} untuk \"{$this->proposal->project_name}\" telah kadaluarsa.",
+            'action_url' => frontend_url("/portal/proposal/{$this->proposal->id}"),
+            'icon' => 'warning',
+            'type' => 'proposal_expired',
+            'meta' => [
+                'proposal_id' => $this->proposal->id,
                 'proposal_number' => $this->proposal->proposal_number,
-                'project_name'    => $this->proposal->project_name,
-                'valid_until'     => $this->proposal->valid_until?->format('Y-m-d'),
+                'project_name' => $this->proposal->project_name,
+                'valid_until' => $this->proposal->valid_until?->format('Y-m-d'),
             ],
         ];
     }

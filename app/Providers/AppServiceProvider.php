@@ -42,6 +42,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        if (file_exists($path = app_path('helpers.php'))) {
+            require_once $path;
+        }
+
         $this->app->bind(AiServiceInterface::class, function () {
             return match (config('ai.provider', 'gemini')) {
                 'lovable' => new LovableAiService,
@@ -83,13 +87,13 @@ class AppServiceProvider extends ServiceProvider
         );
 
         Password::defaults(
-            fn(): ?Password => app()->isProduction()
+            fn (): ?Password => app()->isProduction()
                 ? Password::min(12)
-                ->mixedCase()
-                ->letters()
-                ->numbers()
-                ->symbols()
-                ->uncompromised()
+                    ->mixedCase()
+                    ->letters()
+                    ->numbers()
+                    ->symbols()
+                    ->uncompromised()
                 : null
         );
     }

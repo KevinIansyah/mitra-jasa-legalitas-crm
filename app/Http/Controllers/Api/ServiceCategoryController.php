@@ -13,7 +13,7 @@ class ServiceCategoryController extends Controller
     {
         $categories = ServiceCategory::where('status', 'active')->orderBy('name')->get();
 
-        $mappedCategories = $categories->map(fn($category) => [
+        $mappedCategories = $categories->map(fn ($category) => [
             'id' => $category->id,
             'name' => $category->name,
             'slug' => $category->slug,

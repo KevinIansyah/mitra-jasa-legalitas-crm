@@ -13,7 +13,7 @@ class CityController extends Controller
     {
         $cities = City::where('status', 'active')->orderBy('name')->get();
 
-        $mappedCities = $cities->map(fn($city) => [
+        $mappedCities = $cities->map(fn ($city) => [
             'id' => $city->id,
             'name' => $city->name,
             'slug' => $city->slug,

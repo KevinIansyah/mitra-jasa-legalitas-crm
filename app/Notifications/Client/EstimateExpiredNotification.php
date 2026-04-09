@@ -37,17 +37,17 @@ class EstimateExpiredNotification extends Notification implements ShouldQueue
             ?? $this->estimate->quote?->customer;
 
         return [
-            'title'      => 'Estimasi Kadaluarsa',
-            'message'    => "Estimasi {$this->estimate->estimate_number} ({$this->estimate->version_label}) telah kadaluarsa.",
-            'action_url' => "/portal/estimasi/{$this->estimate->id}",
-            'icon'       => 'warning',
-            'type'       => 'estimate_expired',
-            'meta'       => [
-                'estimate_id'     => $this->estimate->id,
+            'title' => 'Estimasi Kadaluarsa',
+            'message' => "Estimasi {$this->estimate->estimate_number} ({$this->estimate->version_label}) telah kadaluarsa.",
+            'action_url' => frontend_url("/portal/estimasi/{$this->estimate->id}"),
+            'icon' => 'warning',
+            'type' => 'estimate_expired',
+            'meta' => [
+                'estimate_id' => $this->estimate->id,
                 'estimate_number' => $this->estimate->estimate_number,
-                'version'         => $this->estimate->version,
-                'valid_until'     => $this->estimate->valid_until?->format('Y-m-d'),
-                'customer_name'   => $customer?->name,
+                'version' => $this->estimate->version,
+                'valid_until' => $this->estimate->valid_until?->format('Y-m-d'),
+                'customer_name' => $customer?->name,
             ],
         ];
     }

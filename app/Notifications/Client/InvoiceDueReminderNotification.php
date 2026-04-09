@@ -27,7 +27,7 @@ class InvoiceDueReminderNotification extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject("Pengingat: Faktur {$this->invoice->invoice_number} Jatuh Tempo {$this->daysLeft} Hari Lagi")
             ->view('emails.client.invoice-due-reminder', [
-                'invoice'  => $this->invoice,
+                'invoice' => $this->invoice,
                 'daysLeft' => $this->daysLeft,
             ]);
     }
@@ -35,17 +35,17 @@ class InvoiceDueReminderNotification extends Notification implements ShouldQueue
     public function toDatabase(): array
     {
         return [
-            'title'      => "Faktur Jatuh Tempo {$this->daysLeft} Hari Lagi",
-            'message'    => "Faktur {$this->invoice->invoice_number} sebesar Rp " . number_format($this->invoice->total_amount, 0, ',', '.') . " akan jatuh tempo pada {$this->invoice->due_date->translatedFormat('d F Y')}.",
-            'action_url' => "/portal/faktur/{$this->invoice->id}",
-            'icon'       => 'warning',
-            'type'       => 'invoice_due_reminder',
-            'meta'       => [
-                'invoice_id'     => $this->invoice->id,
+            'title' => "Faktur Jatuh Tempo {$this->daysLeft} Hari Lagi",
+            'message' => "Faktur {$this->invoice->invoice_number} sebesar Rp ".number_format($this->invoice->total_amount, 0, ',', '.')." akan jatuh tempo pada {$this->invoice->due_date->translatedFormat('d F Y')}.",
+            'action_url' => frontend_url("/portal/faktur/{$this->invoice->id}"),
+            'icon' => 'warning',
+            'type' => 'invoice_due_reminder',
+            'meta' => [
+                'invoice_id' => $this->invoice->id,
                 'invoice_number' => $this->invoice->invoice_number,
-                'total_amount'   => $this->invoice->total_amount,
-                'due_date'       => $this->invoice->due_date->format('Y-m-d'),
-                'days_left'      => $this->daysLeft,
+                'total_amount' => $this->invoice->total_amount,
+                'due_date' => $this->invoice->due_date->format('Y-m-d'),
+                'days_left' => $this->daysLeft,
             ],
         ];
     }
