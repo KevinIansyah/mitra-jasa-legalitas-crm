@@ -10,9 +10,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnsureInvoiceAccessibleByCustomer
 {
-    /**
-     * Memastikan invoice (pembayaran) hanya diakses oleh user pemilik customer terkait invoice/proyek.
-     */
     public function handle(Request $request, Closure $next): Response
     {
         $invoice = $request->route('invoice');

@@ -125,6 +125,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
 |--------------------------------------------------------------------------
 */
 
+Route::middleware(['auth:sanctum'])->group(function () {
+
+    Route::get('/invoices', [ClientInvoiceController::class, 'index'])
+        ->name('client.invoices.index');
+});
+
 Route::middleware(['auth:sanctum', 'customer.owns.invoice'])->group(function () {
 
     Route::get('/invoices', [ClientInvoiceController::class, 'index'])
@@ -266,18 +272,18 @@ Route::middleware(['auth:sanctum'])->group(function () {
 */
 
 Route::middleware(['auth:sanctum'])->prefix('notifications')->name('api.notifications.')->group(function () {
-    
+
     Route::get('/unread-count', [ClientNotificationController::class, 'unreadCount'])
-    ->name('unread-count');
+        ->name('unread-count');
 
     Route::post('/read-all', [ClientNotificationController::class, 'readAll'])
-    ->name('read-all');
+        ->name('read-all');
 
     Route::get('/', [ClientNotificationController::class, 'index'])
-    ->name('index');
+        ->name('index');
 
     Route::post('{id}/read', [ClientNotificationController::class, 'read'])
-    ->name('read');
+        ->name('read');
 });
 
 /*
