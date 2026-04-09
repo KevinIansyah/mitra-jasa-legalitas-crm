@@ -8,6 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\ClientProjects\UploadDocumentRequest;
 use App\Models\Project;
 use App\Models\ProjectDocument;
+use App\Notifications\Staff\DocumentUploadedByClientNotification;
+use App\Services\NotificationService;
 use App\Support\ApiFileUrls;
 use Illuminate\Support\Facades\Auth;
 
@@ -52,6 +54,8 @@ class ClientProjectDocumentController extends Controller
         ]);
 
         $document->refresh();
+
+        NotificationService::notifyAllStaff(new DocumentUploadedByClientNotification($document));
 
         ApiFileUrls::projectDocument($document);
 

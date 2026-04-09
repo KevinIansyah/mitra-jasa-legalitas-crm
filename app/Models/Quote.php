@@ -166,8 +166,9 @@ class Quote extends Model
     public function markAsContacted(): void
     {
         $this->update([
-            'status'       => 'contacted',
+            'status' => 'contacted',
             'contacted_at' => now(),
+            'rejected_reason' => null,
         ]);
     }
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Estimate;
+use App\Notifications\Staff\EstimateAcceptedNotification;
 use App\Notifications\Staff\EstimateRejectedNotification;
 use App\Services\NotificationService;
 use App\Support\ApiFileUrls;
@@ -29,6 +30,7 @@ class ClientEstimateController extends Controller
                     $q->whereHas('quote', fn ($q2) => $q2->where('user_id', $user->id));
                 }
             })
+            ->where('status', '!=', 'draft')
             ->with(['items', 'proposal', 'quote'])
             ->latest()
             ->get();
@@ -67,6 +69,11 @@ class ClientEstimateController extends Controller
         if ($request->status === 'rejected') {
             $estimate->loadMissing(['customer', 'proposal.customer', 'quote.customer']);
             NotificationService::notifyAllStaff(new EstimateRejectedNotification($estimate));
+        }
+
+        if ($request->status === 'accepted') {
+            $estimate->loadMissing(['customer', 'proposal.customer', 'quote.customer']);
+            NotificationService::notifyAllStaff(new EstimateAcceptedNotification($estimate));
         }
 
         $estimate = $estimate->fresh();

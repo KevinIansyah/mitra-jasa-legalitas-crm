@@ -18,6 +18,76 @@ class PublicServiceController extends Controller
     use BuildSeoSchema;
 
     // ========================================================================
+    // GET /services/compact
+    // ========================================================================
+
+    public function compactList(): JsonResponse
+    {
+        $services = Service::query()
+            ->where('is_published', true)
+            ->where('status', 'active')
+            ->with([
+                'category:id,name,slug,palette_color',
+            ])
+            ->orderBy('name')
+            ->get([
+                'id',
+                'service_category_id',
+                'name',
+                'slug',
+                'short_description',
+                'is_featured',
+                'is_popular',
+            ]);
+
+        $mapped = $services->map(fn (Service $s) => [
+            'id' => $s->id,
+            'name' => $s->name,
+            'slug' => $s->slug,
+            'short_description' => $s->short_description,
+            'is_featured' => $s->is_featured,
+            'is_popular' => $s->is_popular,
+            'category' => $s->category ? [
+                'id' => $s->category->id,
+                'name' => $s->category->name,
+                'slug' => $s->category->slug,
+                'palette_color' => $s->category->palette_color,
+            ] : null,
+        ]);
+
+        return ApiResponse::success(['services' => $mapped]);
+    }
+
+    // ========================================================================
+    // GET /services/{service}/packages  (service = numeric id)
+    // ========================================================================
+
+    /**
+     * Paket aktif untuk satu layanan (by service id). Hanya layanan published + active.
+     */
+    public function packagesByService(Service $service): JsonResponse
+    {
+        if (! $service->is_published || $service->status !== 'active') {
+            return ApiResponse::notFound('Layanan tidak ditemukan.');
+        }
+
+        $packages = $service->packages()
+            ->where('status', 'active')
+            ->orderBy('sort_order')
+            ->with(['features' => fn ($q) => $q->orderBy('sort_order')])
+            ->get();
+
+        return ApiResponse::success([
+            'service' => [
+                'id' => $service->id,
+                'name' => $service->name,
+                'slug' => $service->slug,
+            ],
+            'packages' => $this->formatPackages($packages),
+        ]);
+    }
+
+    // ========================================================================
     // GET /services
     // ========================================================================
 
@@ -99,6 +169,20 @@ class PublicServiceController extends Controller
             'seo' => $this->buildSeoList($services->toArray()),
             'services' => $services,
         ]);
+    }
+
+    // ========================================================================
+    // GET /services/categories/{categorySlug}
+    // ========================================================================
+
+    /**
+     * Sama seperti GET /services?category[]=slug, tapi lewat path (SEO-friendly).
+     */
+    public function byCategory(Request $request, string $categorySlug): JsonResponse
+    {
+        $request->merge(['category' => [$categorySlug]]);
+
+        return $this->index($request);
     }
 
     // ========================================================================
@@ -448,8 +532,10 @@ class PublicServiceController extends Controller
     private function formatPackages($packages): array
     {
         return $packages->map(fn ($package) => [
+            'id' => $package->id,
             'name' => $package->name,
             'price' => $package->price,
+            'original_price' => $package->original_price,
             'duration' => $package->duration,
             'duration_days' => $package->duration_days,
             'short_description' => $package->short_description,

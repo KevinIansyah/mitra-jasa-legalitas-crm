@@ -135,7 +135,7 @@ export default function Actions({ invoice, isExpanded, onToggleExpand }: Actions
                     if (!open) setConfirmStatus(null);
                 }}
             >
-                <DialogContent>
+                <DialogContent className="w-fit max-w-[calc(100%-2rem)] sm:max-w-none">
                     <DialogHeader>
                         <DialogTitle>Ubah Status Invoice</DialogTitle>
                         <DialogDescription asChild>

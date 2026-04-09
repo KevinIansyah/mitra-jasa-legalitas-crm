@@ -24,6 +24,7 @@ class ClientInvoiceController extends Controller
                 $q->where('customer_id', $customer->id)
                     ->orWhereHas('project', fn ($p) => $p->where('customer_id', $customer->id));
             })
+            ->where('status', '!=', 'draft')
             ->with([
                 'project:id,name,status',
             ])

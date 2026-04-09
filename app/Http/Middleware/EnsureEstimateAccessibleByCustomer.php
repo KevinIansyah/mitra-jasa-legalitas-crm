@@ -27,11 +27,15 @@ class EnsureEstimateAccessibleByCustomer
 
         $estimate->loadMissing(['proposal', 'quote']);
 
-        if ($this->isAuthorized($estimate, $customerId, $userId)) {
-            return $next($request);
+        if (! $this->isAuthorized($estimate, $customerId, $userId)) {
+            return ApiResponse::forbidden('Anda tidak memiliki akses ke estimasi ini.');
         }
 
-        return ApiResponse::forbidden('Anda tidak memiliki akses ke estimasi ini.');
+        if ($estimate->status === 'draft') {
+            return ApiResponse::notFound('Estimasi tidak ditemukan.');
+        }
+
+        return $next($request);
     }
 
     private function isAuthorized(Estimate $estimate, ?int $customerId, int $userId): bool

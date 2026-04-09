@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\ClientEstimateController;
 use App\Http\Controllers\Api\ClientInvoiceController;
 use App\Http\Controllers\Api\ClientNotificationController;
 use App\Http\Controllers\Api\ClientPaymentController;
+use App\Http\Controllers\Api\ClientPortalSummaryController;
 use App\Http\Controllers\Api\ClientProfileController;
 use App\Http\Controllers\Api\ClientProjectController;
 use App\Http\Controllers\Api\ClientProjectDeliverableController;
@@ -85,6 +86,18 @@ Route::prefix('auth')->name('auth.')->group(function () {
         Route::post('/logout-all-devices', [AuthController::class, 'logoutAllDevices'])
             ->name('logout-all-devices');
     });
+});
+
+/*
+|--------------------------------------------------------------------------
+| PORTAL SUMMARY (DASHBOARD RINGKASAN)
+|--------------------------------------------------------------------------
+| GET /summary -> Summary for the authenticated user (notifications, quotes, proposals, etc.)
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/summary', ClientPortalSummaryController::class)->name('client.summary');
 });
 
 /*
@@ -300,6 +313,8 @@ Route::get('/navigation', [PublicNavigationController::class, 'index'])->name('n
 | PUBLIC SERVICE API ROUTES
 |--------------------------------------------------------------------------
 | GET /services                                  → List all services
+| GET /services/compact                          → List services (ringkas: tanpa gambar/konten panjang/timestamp)
+| GET /services/{id}/packages                    → Packages by service id (numeric)
 | GET /services/categories/{categorySlug}        → List services by category
 | GET /services/cities/{citySlug}                → List services by city
 | GET /services/{serviceSlug}/{citySlug}         → Service details for a specific city
@@ -310,13 +325,20 @@ Route::get('/navigation', [PublicNavigationController::class, 'index'])->name('n
 Route::prefix('services')->group(function () {
     Route::get('/', [PublicServiceController::class, 'index']);
 
+    Route::get('/compact', [PublicServiceController::class, 'compactList']);
+
     Route::get('/categories/{categorySlug}', [PublicServiceController::class, 'byCategory']);
+    
     Route::get('/cities/{citySlug}', [PublicServiceController::class, 'byCity']);
 
-    Route::get('/{serviceSlug}/{citySlug}', [PublicServiceController::class, 'showCityPage']);
+    Route::get('/{service}/packages', [PublicServiceController::class, 'packagesByService'])
+        ->whereNumber('service');
+
+    Route::get('/{serviceSlug}/{citySlug}', [PublicServiceController::class, 'showCityPage'])
+        ->where('serviceSlug', '^(?!categories|cities|compact|packages)[a-z0-9\-]+$');
 
     Route::get('/{serviceSlug}', [PublicServiceController::class, 'show'])
-        ->where('serviceSlug', '^(?!categories|cities)[a-z0-9\-]+$');
+        ->where('serviceSlug', '^(?!categories|cities|compact|packages)[a-z0-9\-]+$');
 });
 
 /*

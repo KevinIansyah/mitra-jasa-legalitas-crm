@@ -294,7 +294,7 @@ export function InvoiceCard({ project }: InvoiceCardProps) {
                     setSelectedInvoice(null);
                 }}
             >
-                <DialogContent>
+                <DialogContent className="w-fit max-w-[calc(100%-2rem)] sm:max-w-none">
                     <DialogHeader>
                         <DialogTitle>Ubah Status Invoice</DialogTitle>
                         <DialogDescription asChild>

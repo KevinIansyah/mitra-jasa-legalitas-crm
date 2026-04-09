@@ -31,6 +31,10 @@ class EnsureProposalOwnedByCustomer
             return ApiResponse::forbidden('Anda tidak memiliki akses ke proposal ini.');
         }
 
+        if ($proposal->status === 'draft') {
+            return ApiResponse::notFound('Proposal tidak ditemukan.');
+        }
+
         return $next($request);
     }
 }

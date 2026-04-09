@@ -16,7 +16,11 @@ class ClientQuoteController extends Controller
     public function index(Request $request)
     {
         $quotes = Quote::where('user_id', Auth::id())
-            ->with(['service', 'servicePackage', 'activeEstimate'])
+            ->with([
+                'service:id,name,slug,short_description',
+                'servicePackage:id,name,price,duration,duration_days,short_description',
+                'activeEstimate' => fn($q) => $q->where('status', '!=', 'draft'),
+            ])
             ->latest()
             ->get();
 
@@ -29,7 +33,12 @@ class ClientQuoteController extends Controller
             return ApiResponse::forbidden();
         }
 
-        $quote->load(['service', 'servicePackage', 'estimates', 'activeEstimate']);
+        $quote->load([
+            'service:id,name,slug,short_description',
+            'servicePackage',
+            'estimates' => fn($q) => $q->where('status', '!=', 'draft'),
+            'activeEstimate' => fn($q) => $q->where('status', '!=', 'draft'),
+        ]);
 
         return ApiResponse::success($quote);
     }
@@ -42,7 +51,7 @@ class ClientQuoteController extends Controller
             ->whereIn('status', ['pending', 'contacted'])
             ->when(
                 isset($validated['service_id']),
-                fn ($q) => $q->where('service_id', $validated['service_id'])
+                fn($q) => $q->where('service_id', $validated['service_id'])
             )
             ->first();
 

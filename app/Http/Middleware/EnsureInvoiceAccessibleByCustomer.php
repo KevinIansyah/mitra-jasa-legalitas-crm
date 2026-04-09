@@ -29,6 +29,10 @@ class EnsureInvoiceAccessibleByCustomer
             return ApiResponse::forbidden('Anda tidak memiliki akses ke invoice ini.');
         }
 
+        if ($invoice->status === 'draft') {
+            return ApiResponse::notFound('Invoice tidak ditemukan.');
+        }
+
         return $next($request);
     }
 }

@@ -84,7 +84,7 @@ class QuoteController extends Controller
             return back()->withErrors(['error' => 'Quote yang sudah dikonversi tidak dapat diubah.']);
         }
 
-        $request->validate([
+        $validated = $request->validate([
             'status'          => 'required|in:pending,contacted,estimated,accepted,rejected',
             'rejected_reason' => 'required_if:status,rejected|nullable|string|max:500',
         ], [
@@ -93,7 +93,18 @@ class QuoteController extends Controller
             'rejected_reason.required_if' => 'Alasan penolakan wajib diisi.',
         ]);
 
-        if ($request->status === 'rejected') {
+        $status = $validated['status'];
+
+        match ($status) {
+            'rejected' => $quote->reject($validated['rejected_reason'] ?? ''),
+            'contacted' => $quote->markAsContacted(),
+            default => $quote->update([
+                'status' => $status,
+                'rejected_reason' => null,
+            ]),
+        };
+
+        if ($status === 'rejected') {
             $quote->loadMissing(['user', 'service']);
             if ($quote->user) {
                 $quote->user->notify(new QuoteRejectedNotification($quote->fresh()));
@@ -108,7 +119,7 @@ class QuoteController extends Controller
             'rejected'  => 'permintaan penawaran berhasil ditolak.',
         ];
 
-        return back()->with('success', $messages[$request->status]);
+        return back()->with('success', $messages[$status]);
     }
 
     public function convert(Quote $quote)

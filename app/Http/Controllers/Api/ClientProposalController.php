@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Proposal;
+use App\Notifications\Staff\ProposalAcceptedNotification;
 use App\Notifications\Staff\ProposalRejectedNotification;
 use App\Services\NotificationService;
 use App\Support\ApiFileUrls;
@@ -61,6 +62,11 @@ class ClientProposalController extends Controller
         if ($request->status === 'rejected') {
             $proposal->loadMissing('customer');
             NotificationService::notifyAllStaff(new ProposalRejectedNotification($proposal));
+        }
+
+        if ($request->status === 'accepted') {
+            $proposal->loadMissing('customer');
+            NotificationService::notifyAllStaff(new ProposalAcceptedNotification($proposal));
         }
 
         $proposal = $proposal->fresh();
