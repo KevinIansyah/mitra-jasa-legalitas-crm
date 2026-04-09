@@ -92,7 +92,7 @@ Route::prefix('auth')->name('auth.')->group(function () {
 |--------------------------------------------------------------------------
 | PORTAL SUMMARY (DASHBOARD RINGKASAN)
 |--------------------------------------------------------------------------
-| GET /summary -> Summary for the authenticated user (notifications, quotes, proposals, etc.)
+| GET /summary -> Portal ringkasan (quotes, proposals, estimates, projects, invoices, documents)
 |--------------------------------------------------------------------------
 */
 

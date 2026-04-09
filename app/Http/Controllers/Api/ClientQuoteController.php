@@ -62,6 +62,7 @@ class ClientQuoteController extends Controller
         $quote = Quote::create([
             ...$validated,
             'user_id' => Auth::id(),
+            'customer_id' => Auth::user()->customer?->id,
             'reference_number' => Quote::generateReferenceNumber(),
             'source' => 'portal',
             'status' => 'pending',

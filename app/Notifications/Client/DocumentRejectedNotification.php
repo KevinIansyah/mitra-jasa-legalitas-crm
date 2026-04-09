@@ -38,7 +38,7 @@ class DocumentRejectedNotification extends Notification implements ShouldQueue
             'title' => 'Dokumen Ditolak',
             'message' => "Dokumen \"{$this->document->name}\" pada project \"{$project->name}\" ditolak.".
                 ($this->document->rejection_reason ? " Alasan: {$this->document->rejection_reason}" : ''),
-            'action_url' => frontend_url("/portal/proyek/{$project->id}/dokumen"),
+            'action_url' => frontend_url("/portal/proyek/{$project->id}"),
             'icon' => 'warning',
             'type' => 'document_rejected',
             'meta' => [

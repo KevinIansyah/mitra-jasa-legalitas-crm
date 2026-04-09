@@ -8,7 +8,6 @@ use App\Http\Requests\Blogs\StoreRequest;
 use App\Http\Requests\Blogs\UpdateBasicInformationRequest;
 use App\Http\Requests\Blogs\UpdateContentRequest;
 use App\Http\Requests\Blogs\UpdateSeoRequest;
-use App\Jobs\SendNewBlogPostNotification;
 use App\Models\Blog;
 use App\Models\BlogCategory;
 use App\Models\BlogSeo;
@@ -267,9 +266,9 @@ class BlogController extends Controller
             $blog->tags()->sync($validated['tag_ids'] ?? []);
         });
 
-        if ($blog->wasChanged('is_published') && $blog->is_published) {
-            SendNewBlogPostNotification::dispatch($blog)->delay(now()->addMinutes(5));
-        }
+        // if ($blog->wasChanged('is_published') && $blog->is_published) {
+        //     SendNewBlogPostNotification::dispatch($blog)->delay(now()->addMinutes(5));
+        // }
 
         return back()->with('success', 'Informasi dasar berhasil diperbarui.');
     }

@@ -137,6 +137,10 @@ class QuoteController extends Controller
             'user.customer',
         ]);
 
+        if ($quote->customer === null && ($userCustomer = $quote->user?->customer)) {
+            $quote->setRelation('customer', $userCustomer);
+        }
+
         $services = Service::orderBy('name')->get(['id', 'name']);
 
         return Inertia::render('projects/create/index', [

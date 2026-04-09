@@ -19,6 +19,9 @@ class ClientPortalSummaryController extends Controller
     /**
      * Ringkasan angka untuk dashboard portal klien (FE: halaman Ringkasan).
      *
+     * Enam blok metrik (quotes, proposals, estimates, projects, invoices, documents) — cocok untuk grid 3 kolom × 2 baris.
+     * Tanpa notifikasi; badge notifikasi tetap dari endpoint notifikasi terpisah.
+     *
      * Lingkup mengikuti endpoint portal lain: quote per user, sisanya per customer
      * (jika user punya profil customer). Tanpa customer, banyak metrik bernilai 0.
      */
@@ -27,8 +30,6 @@ class ClientPortalSummaryController extends Controller
         /** @var User $user */
         $user = Auth::user();
         $customerId = $user->customer?->id;
-
-        $notificationsUnread = $user->unreadNotifications()->count();
 
         $quotes = [
             'total' => Quote::where('user_id', $user->id)->count(),
@@ -39,7 +40,6 @@ class ClientPortalSummaryController extends Controller
 
         if (! $customerId) {
             return ApiResponse::success([
-                'notifications' => ['unread_count' => $notificationsUnread],
                 'quotes' => $quotes,
                 'proposals' => self::emptyProposalBlock(),
                 'estimates' => self::emptyEstimateBlock(),
@@ -52,8 +52,6 @@ class ClientPortalSummaryController extends Controller
         $estimateBase = self::estimateBaseQuery($user, $customerId);
 
         return ApiResponse::success([
-            'notifications' => ['unread_count' => $notificationsUnread],
-
             'quotes' => $quotes,
 
             'proposals' => [
