@@ -133,9 +133,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 Route::middleware(['auth:sanctum', 'customer.owns.invoice'])->group(function () {
 
-    Route::get('/invoices', [ClientInvoiceController::class, 'index'])
-        ->name('client.invoices.index');
-
     Route::get('/invoices/{invoice}', [ClientInvoiceController::class, 'show'])
         ->name('client.invoices.show');
 
