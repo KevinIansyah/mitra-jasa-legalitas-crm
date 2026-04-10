@@ -44,6 +44,8 @@ class ClientEstimateController extends Controller
     {
         $estimate->load(['items', 'proposal', 'quote']);
 
+        ApiFileUrls::estimate($estimate);
+
         return ApiResponse::success($estimate);
     }
 
