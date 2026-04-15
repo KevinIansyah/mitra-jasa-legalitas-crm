@@ -411,10 +411,11 @@ class ServiceController extends Controller
     public function updatePackages(UpdatePackagesRequest $request, Service $service)
     {
         $validated = $request->validated();
+        $packagesInput = $validated['packages'] ?? [];
 
-        DB::transaction(function () use ($validated, $service) {
+        DB::transaction(function () use ($packagesInput, $service) {
             $existingPackageIds = $service->packages()->pluck('id')->toArray();
-            $submittedPackageIds = collect($validated['packages'])
+            $submittedPackageIds = collect($packagesInput)
                 ->pluck('id')
                 ->filter()
                 ->toArray();
@@ -424,7 +425,7 @@ class ServiceController extends Controller
                 ServicePackage::whereIn('id', $packagesToDelete)->delete();
             }
 
-            foreach ($validated['packages'] as $pkgIndex => $pkgData) {
+            foreach ($packagesInput as $pkgIndex => $pkgData) {
                 if (!empty($pkgData['id'])) {
                     $package = ServicePackage::findOrFail($pkgData['id']);
                     $package->update([

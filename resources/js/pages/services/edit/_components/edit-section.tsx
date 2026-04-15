@@ -474,13 +474,6 @@ export function EditSection({ service, categories }: EditSectionProps) {
     const handleSubmitPackages = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (packageForm.data.packages.length === 0) {
-            toast.error('Gagal', {
-                description: 'Minimal harus ada 1 paket harga',
-            });
-            return;
-        }
-
         const id = toast.loading('Memproses...', {
             description: 'Paket harga sedang diperbarui.',
         });

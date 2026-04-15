@@ -14,7 +14,7 @@ class UpdatePackagesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'packages'                           => 'required|array|min:1',
+            'packages'                           => 'nullable|array',
             'packages.*.id'                      => 'nullable|exists:service_packages,id',
             'packages.*.name'                    => 'required|string|max:255',
             'packages.*.price'                   => 'required|numeric|min:0',
@@ -38,9 +38,7 @@ class UpdatePackagesRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'packages.required'                              => 'Paket layanan wajib diisi.',
             'packages.array'                                 => 'Paket layanan harus berupa array.',
-            'packages.min'                                   => 'Minimal harus ada 1 paket layanan.',
 
             'packages.*.id.exists'                           => 'Data paket tidak valid.',
 
