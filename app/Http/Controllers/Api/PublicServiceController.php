@@ -537,9 +537,6 @@ class PublicServiceController extends Controller
         ];
     }
 
-    /**
-     * URL publik aset (sama pola dengan {@see PublicHomeController::publicAssetUrl()}).
-     */
     private function publicAssetUrl(?string $path, string $r2Url): ?string
     {
         if ($path === null || $path === '') {
@@ -555,9 +552,6 @@ class PublicServiceController extends Controller
         return "{$r2Url}/{$path}";
     }
 
-    /**
-     * Sama struktur kartu blog dengan {@see PublicBlogController::formatBlogCard()}.
-     */
     private function formatBlogCard(Blog $blog): array
     {
         $r2Url = rtrim(config('filesystems.disks.r2_public.url', ''), '/');
@@ -577,18 +571,6 @@ class PublicServiceController extends Controller
                 'name' => $blog->category->name,
                 'slug' => $blog->category->slug,
             ] : null,
-            'author' => $blog->author ? [
-                'id' => $blog->author->id,
-                'name' => $blog->author->name,
-                'avatar' => $this->publicAssetUrl($blog->author->avatar, $r2Url),
-                'position' => $blog->author->staffProfile?->position,
-                'bio' => $blog->author->staffProfile?->bio,
-            ] : null,
-            'tags' => $blog->tags->map(fn($tag) => [
-                'id' => $tag->id,
-                'name' => $tag->name,
-                'slug' => $tag->slug,
-            ]),
         ];
     }
 
