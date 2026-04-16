@@ -60,7 +60,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | Digunakan untuk link di email & notifikasi ke pelanggan (beda domain dari API).
-    | Contoh: https://portal.example.com — tanpa trailing slash.
+    | Contoh: https://portal.example.com - tanpa trailing slash.
     |
     */
 

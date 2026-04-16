@@ -4,7 +4,6 @@ const STORAGE_KEY = 'theme-settings';
 
 export type ThemePreset = 'default' | 'lavender' | 'ocean' | 'forest' | 'sunset' | 'rose' | 'slate';
 export type SidebarVariantSetting = 'sidebar' | 'floating' | 'inset';
-/** Label UI: Default / Compact / Full Layout — dipetakan ke `sidebarCollapsible`. */
 export type SidebarModeSetting = 'default' | 'icon' | 'offcanvas';
 export type SidebarCollapsibleSetting = 'none' | 'icon' | 'offcanvas';
 export type RadiusSetting = 'none' | 'sm' | 'md' | 'lg' | 'xl';

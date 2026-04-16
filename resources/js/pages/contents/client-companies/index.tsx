@@ -24,7 +24,7 @@ export default function Page() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Logo Klien" />
             <div className="p-4 md:p-6">
-                <Heading title="Logo Klien" description="Perusahaan yang pernah menjadi klien — nama dan logo untuk ditampilkan di situs" />
+                <Heading title="Logo Klien" description="Perusahaan yang pernah menjadi klien - nama dan logo untuk ditampilkan di situs" />
 
                 <ClientCompanySection clientCompanies={client_companies} summary={summary} filters={filters} />
             </div>

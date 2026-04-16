@@ -10,7 +10,7 @@ class GeminiAiService implements AiServiceInterface
 {
   private string $apiKey;
   private string $model;
-  private string $baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models';
+  private string $baseUrl = 'https://generativelanguage.googleapis.com/v1/models';
 
   public function __construct()
   {
@@ -81,7 +81,7 @@ class GeminiAiService implements AiServiceInterface
     }
 
     if (in_array($status, [429, 503], true)) {
-      return "{$base} (Beban layanan biasanya sementara — silakan coba lagi dalam beberapa menit.)";
+      return "{$base} (Beban layanan biasanya sementara - silakan coba lagi dalam beberapa menit.)";
     }
 
     return $base;

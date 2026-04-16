@@ -84,7 +84,7 @@ export const TESTIMONIAL_PUBLISHED_FILTERS = [
 export const TESTIMONIAL_RATING_OPTIONS = [5, 4, 3, 2, 1] as const;
 
 // ============================================================
-// CLIENT COMPANIES (pernah jadi klien — nama + logo)
+// CLIENT COMPANIES
 // ============================================================
 
 export interface ClientCompany {

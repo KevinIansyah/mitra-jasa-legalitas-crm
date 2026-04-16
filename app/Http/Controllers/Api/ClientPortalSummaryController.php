@@ -16,18 +16,8 @@ use Illuminate\Support\Facades\Auth;
 
 class ClientPortalSummaryController extends Controller
 {
-    /**
-     * Ringkasan angka untuk dashboard portal klien (FE: halaman Ringkasan).
-     *
-     * Enam blok metrik (quotes, proposals, estimates, projects, invoices, documents) — cocok untuk grid 3 kolom × 2 baris.
-     * Tanpa notifikasi; badge notifikasi tetap dari endpoint notifikasi terpisah.
-     *
-     * Lingkup mengikuti endpoint portal lain: quote per user, sisanya per customer
-     * (jika user punya profil customer). Tanpa customer, banyak metrik bernilai 0.
-     */
     public function __invoke(Request $request)
     {
-        /** @var User $user */
         $user = Auth::user();
         $customerId = $user->customer?->id;
 

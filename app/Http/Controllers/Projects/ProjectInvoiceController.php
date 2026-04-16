@@ -384,7 +384,7 @@ class ProjectInvoiceController extends Controller
         $item = new ProjectInvoiceItem([
             'invoice_id' => $invoice->id,
             'expense_id' => null,
-            'description' => $desc !== '' ? $desc : '—',
+            'description' => $desc !== '' ? $desc : '-',
             'item_details' => $details,
             'quantity' => 1,
             'unit_price' => $subtotal,

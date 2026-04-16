@@ -33,7 +33,7 @@ function invoiceToFormData(invoice: ProjectInvoice): ProjectInvoiceFormData {
         discount_percent: Number(invoice.discount_percent),
         notes: invoice.notes ?? '',
         payment_instructions: invoice.payment_instructions ?? '',
-        contract_item_description: isContract && first ? (first.description === '—' ? '' : first.description) : '',
+        contract_item_description: isContract && first ? (first.description === '-' ? '' : first.description) : '',
         contract_item_details: isContract && first && Array.isArray(first.item_details) ? [...first.item_details] : [],
         items:
             invoice.type === 'additional'
