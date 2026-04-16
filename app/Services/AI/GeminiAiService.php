@@ -10,7 +10,7 @@ class GeminiAiService implements AiServiceInterface
 {
   private string $apiKey;
   private string $model;
-  private string $baseUrl = 'https://generativelanguage.googleapis.com/v1/models';
+  private string $baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models';
 
   public function __construct()
   {

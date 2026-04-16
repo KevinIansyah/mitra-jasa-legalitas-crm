@@ -30,7 +30,7 @@ class ChatbotService
         } else {
             $this->apiKey  = config('ai.gemini_api_key');
             $this->model   = config('ai.gemini_chatbot_model', 'gemini-2.5-flash-lite');
-            $this->baseUrl = 'https://generativelanguage.googleapis.com/v1';
+            $this->baseUrl = 'https://generativelanguage.googleapis.com/v1beta';
         }
 
         // TTL context cache in Google. Min 3600 (1 hour), max 2592000 (30 days).
