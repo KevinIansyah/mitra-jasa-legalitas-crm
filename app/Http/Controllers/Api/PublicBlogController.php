@@ -40,16 +40,16 @@ class PublicBlogController extends Controller
             ])
             ->when(
                 ! empty($categorySlugs),
-                fn ($q) => $q->whereHas(
+                fn($q) => $q->whereHas(
                     'category',
-                    fn ($q) => $q->whereIn('slug', $categorySlugs)
+                    fn($q) => $q->whereIn('slug', $categorySlugs)
                 )
             )
             ->when(
                 ! empty($tagSlugs),
-                fn ($q) => $q->whereHas(
+                fn($q) => $q->whereHas(
                     'tags',
-                    fn ($q) => $q->whereIn('slug', $tagSlugs)
+                    fn($q) => $q->whereIn('slug', $tagSlugs)
                 )
             )
             ->latest('published_at')
@@ -57,7 +57,7 @@ class PublicBlogController extends Controller
 
         return ApiResponse::success([
             'seo' => $this->buildSeoListBlog(),
-            'blogs' => $blogs->map(fn ($blog) => $this->formatBlogCard($blog)),
+            'blogs' => $blogs->map(fn($blog) => $this->formatBlogCard($blog)),
             'meta' => [
                 'current_page' => $blogs->currentPage(),
                 'last_page' => $blogs->lastPage(),
@@ -98,21 +98,19 @@ class PublicBlogController extends Controller
             ->where('id', '!=', $blog->id)
             ->with([
                 'category:id,name,slug',
-                'author:id,name,avatar',
-                'tags:id,name,slug',
             ])
             ->when(
                 $tagIds->isNotEmpty(),
-                fn ($q) => $q->whereHas(
+                fn($q) => $q->whereHas(
                     'tags',
-                    fn ($q) => $q->whereIn('blog_tags.id', $tagIds)
+                    fn($q) => $q->whereIn('blog_tags.id', $tagIds)
                 ),
-                fn ($q) => $q->where('blog_category_id', $blog->blog_category_id)
+                fn($q) => $q->where('blog_category_id', $blog->blog_category_id)
             )
             ->latest('published_at')
-            ->limit(4)
+            ->limit(6)
             ->get()
-            ->map(fn ($b) => $this->formatBlogCard($b));
+            ->map(fn($b) => $this->formatBlogCard($b));
 
         return ApiResponse::success([
             'id' => $blog->id,
@@ -120,7 +118,7 @@ class PublicBlogController extends Controller
             'slug' => $blog->slug,
             'short_description' => $blog->short_description,
             'content' => $blog->content,
-            'featured_image' => $blog->featured_image ? "{$r2Url}/{$blog->featured_image}" : null,
+            'featured_image' => $this->publicAssetUrl($blog->featured_image, $r2Url),
             'is_featured' => $blog->is_featured,
             'views' => $blog->views,
             'reading_time' => $blog->reading_time,
@@ -133,11 +131,11 @@ class PublicBlogController extends Controller
             'author' => $blog->author ? [
                 'id' => $blog->author->id,
                 'name' => $blog->author->name,
-                'avatar' => $blog->author->avatar ? "{$r2Url}/{$blog->author->avatar}" : null,
+                'avatar' => $this->publicAssetUrl($blog->author->avatar, $r2Url),
                 'position' => $blog->author->staffProfile?->position,
                 'bio' => $blog->author->staffProfile?->bio,
             ] : null,
-            'tags' => $blog->tags->map(fn ($tag) => [
+            'tags' => $blog->tags->map(fn($tag) => [
                 'id' => $tag->id,
                 'name' => $tag->name,
                 'slug' => $tag->slug,
@@ -150,11 +148,11 @@ class PublicBlogController extends Controller
                 'secondary_keywords' => $blog->seo->secondary_keywords,
                 'og_title' => $blog->seo->og_title,
                 'og_description' => $blog->seo->og_description,
-                'og_image' => $blog->seo->og_image ? "{$r2Url}/{$blog->seo->og_image}" : null,
+                'og_image' => $this->publicAssetUrl($blog->seo->og_image, $r2Url),
                 'twitter_card' => $blog->seo->twitter_card,
                 'twitter_title' => $blog->seo->twitter_title,
                 'twitter_description' => $blog->seo->twitter_description,
-                'twitter_image' => $blog->seo->twitter_image ? "{$r2Url}/{$blog->seo->twitter_image}" : null,
+                'twitter_image' => $this->publicAssetUrl($blog->seo->twitter_image, $r2Url),
                 'robots' => $blog->seo->robots,
                 'schema_markup' => $blog->seo->schema_markup,
                 'in_sitemap' => $blog->seo->in_sitemap,
@@ -169,6 +167,24 @@ class PublicBlogController extends Controller
     // HELPERS
     // ========================================================================
 
+    /**
+     * URL publik aset (sama pola dengan {@see PublicHomeController::publicAssetUrl()}).
+     */
+    private function publicAssetUrl(?string $path, string $r2Url): ?string
+    {
+        if ($path === null || $path === '') {
+            return null;
+        }
+
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+
+        $path = ltrim($path, '/');
+
+        return "{$r2Url}/{$path}";
+    }
+
     private function formatBlogCard(Blog $blog): array
     {
         $r2Url = rtrim(config('filesystems.disks.r2_public.url', ''), '/');
@@ -178,7 +194,7 @@ class PublicBlogController extends Controller
             'title' => $blog->title,
             'slug' => $blog->slug,
             'short_description' => $blog->short_description,
-            'featured_image' => $blog->featured_image ? "{$r2Url}/{$blog->featured_image}" : null,
+            'featured_image' => $this->publicAssetUrl($blog->featured_image, $r2Url),
             'is_featured' => $blog->is_featured,
             'views' => $blog->views,
             'reading_time' => $blog->reading_time,
@@ -191,11 +207,11 @@ class PublicBlogController extends Controller
             'author' => $blog->author ? [
                 'id' => $blog->author->id,
                 'name' => $blog->author->name,
-                'avatar' => $blog->author->avatar ? "{$r2Url}/{$blog->author->avatar}" : null,
+                'avatar' => $this->publicAssetUrl($blog->author->avatar, $r2Url),
                 'position' => $blog->author->staffProfile?->position,
                 'bio' => $blog->author->staffProfile?->bio,
             ] : null,
-            'tags' => $blog->tags->map(fn ($tag) => [
+            'tags' => $blog->tags->map(fn($tag) => [
                 'id' => $tag->id,
                 'name' => $tag->name,
                 'slug' => $tag->slug,
@@ -208,7 +224,7 @@ class PublicBlogController extends Controller
         $site = SiteSetting::get();
         $r2Url = rtrim(config('filesystems.disks.r2_public.url', ''), '/');
         $base = rtrim((string) ($site->org_url ?? $site->company_website ?? config('app.url')), '/');
-        $pageUrl = $base.'/blog';
+        $pageUrl = $base . '/blog';
 
         $metaTitle = $site->getPageTitle('Blog');
         $metaDescription = 'Baca artikel dan tips terbaru seputar legalitas bisnis, perizinan, dan layanan perusahaan.';
@@ -230,8 +246,8 @@ class PublicBlogController extends Controller
             'name' => $metaTitle,
             'description' => $metaDescription,
             'inLanguage' => 'id-ID',
-            'isPartOf' => ['@id' => $base.'#website'],
-            'about' => ['@id' => $base.'#organization'],
+            'isPartOf' => ['@id' => $base . '#website'],
+            'about' => ['@id' => $base . '#organization'],
         ];
 
         return [

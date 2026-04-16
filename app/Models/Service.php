@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
@@ -137,6 +138,11 @@ class Service extends Model
         return $this->hasMany(ServiceCityPage::class);
     }
 
+    public function blogs(): BelongsToMany
+    {
+        return $this->belongsToMany(Blog::class, 'blog_service');
+    }
+
     /*
     |--------------------------------------------------------------------------
     | SCOPES
@@ -175,7 +181,7 @@ class Service extends Model
 
     /*
     |--------------------------------------------------------------------------
-    | COMPUTED 
+    | COMPUTED
     |--------------------------------------------------------------------------
     */
 
@@ -196,8 +202,8 @@ class Service extends Model
 
     public function isComplete(): bool
     {
-        return !empty($this->content) &&
-            !empty($this->featured_image) &&
+        return ! empty($this->content) &&
+            ! empty($this->featured_image) &&
             $this->packages()->exists() &&
             $this->faqs()->exists() &&
             $this->processSteps()->exists();
