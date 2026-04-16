@@ -119,7 +119,7 @@ class BlogController extends Controller
                 );
                 $featuredImagePath = $fileData['path'];
             }
-            
+
             $isPublished = false;
 
             $blog = Blog::create([
@@ -264,6 +264,7 @@ class BlogController extends Controller
             ]);
 
             $blog->tags()->sync($validated['tag_ids'] ?? []);
+            $blog->services()->sync($validated['service_ids'] ?? []);
         });
 
         // if ($blog->wasChanged('is_published') && $blog->is_published) {
