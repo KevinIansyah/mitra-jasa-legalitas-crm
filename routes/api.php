@@ -56,23 +56,27 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('auth')->name('auth.')->group(function () {
 
     Route::post('/register', [AuthController::class, 'register'])
+        ->middleware(['throttle:auth-register', 'turnstile'])
         ->name('register');
 
     Route::post('/login', [AuthController::class, 'login'])
+        ->middleware(['throttle:auth-login', 'turnstile:optional'])
         ->name('login');
 
     Route::post('/verify-email', [AuthController::class, 'verifyEmail'])
+        ->middleware('throttle:auth-otp')
         ->name('verify-email');
 
     Route::post('/resend-verification-otp', [AuthController::class, 'resendVerificationOtp'])
-        ->middleware('throttle:5,1')
+        ->middleware(['throttle:auth-otp', 'turnstile'])
         ->name('resend-verification-otp');
 
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])
-        ->middleware('throttle:5,1')
+        ->middleware(['throttle:auth-otp', 'turnstile'])
         ->name('forgot-password');
 
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])
+        ->middleware('throttle:auth-otp')
         ->name('reset-password');
 
     Route::middleware('auth:sanctum')->group(function () {
@@ -217,9 +221,11 @@ Route::middleware('auth:sanctum')->group(function () {
             ->name('client.projects.documents.upload');
 
         Route::get('/projects/{project}/documents/{document}/download', [ClientProjectDocumentController::class, 'download'])
+            ->middleware('throttle:60,1')
             ->name('client.projects.documents.download');
 
         Route::get('/projects/{project}/deliverables/{deliverable}/download', [ClientProjectDeliverableController::class, 'download'])
+            ->middleware('throttle:60,1')
             ->name('client.projects.deliverables.download');
     });
 });
@@ -328,7 +334,7 @@ Route::prefix('services')->group(function () {
     Route::get('/compact', [PublicServiceController::class, 'compactList']);
 
     Route::get('/categories/{categorySlug}', [PublicServiceController::class, 'byCategory']);
-    
+
     Route::get('/cities/{citySlug}', [PublicServiceController::class, 'byCity']);
 
     Route::get('/{service}/packages', [PublicServiceController::class, 'packagesByService'])
@@ -357,7 +363,8 @@ Route::prefix('blogs')->group(function () {
 
     Route::get('/', [PublicBlogController::class, 'index']);
 
-    Route::post('/subscribers', [BlogSubscriberController::class, 'subscribe']);
+    Route::post('/subscribers', [BlogSubscriberController::class, 'subscribe'])
+        ->middleware(['throttle:blog-subscribe', 'turnstile']);
 
     Route::get('/subscribers/verify/{token}', [BlogSubscriberController::class, 'verify']);
 
@@ -396,7 +403,8 @@ Route::prefix('chatbots')->group(function () {
 
 Route::prefix('contact-messages')->group(function () {
 
-    Route::post('/', [ContactMessageController::class, 'store']);
+    Route::post('/', [ContactMessageController::class, 'store'])
+        ->middleware(['throttle:contact-form', 'turnstile']);
 });
 
 /*

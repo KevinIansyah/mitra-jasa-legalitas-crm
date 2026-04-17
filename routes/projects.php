@@ -279,7 +279,7 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
     |--------------------------------------------------------------------------
     | PROJECT DOCUMENTS
     |--------------------------------------------------------------------------
-    | GET    /projects/{project}/documents/{document}/view/{filename}  -> View document
+    | GET    /projects/{project}/documents/{document}/view             -> View document
     | GET    /projects/{project}/documents/{document}/download         -> Download document
     | GET    /projects/{project}/documents/download-all                -> Download all documents
     |
@@ -297,9 +297,15 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
   Route::prefix('projects/{project}/documents')->whereNumber('project')->name('projects.documents.')->group(function () {
 
     Route::middleware('permission:view-project-documents')->group(function () {
-      Route::get('/{document}/view/{filename}', [ProjectDocumentController::class, 'view'])->name('view');
-      Route::get('/{document}/download', [ProjectDocumentController::class, 'download'])->name('download');
-      Route::get('/download-all', [ProjectDocumentController::class, 'downloadAll'])->name('download-all');
+      Route::get('/{document}/view', [ProjectDocumentController::class, 'view'])
+        ->middleware('throttle:60,1')
+        ->name('view');
+      Route::get('/{document}/download', [ProjectDocumentController::class, 'download'])
+        ->middleware('throttle:60,1')
+        ->name('download');
+      Route::get('/download-all', [ProjectDocumentController::class, 'downloadAll'])
+        ->middleware('throttle:10,1')
+        ->name('download-all');
     });
 
     Route::post('/', [ProjectDocumentController::class, 'store'])
@@ -340,7 +346,7 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
     |--------------------------------------------------------------------------
     | PROJECT DELIVERABLES
     |--------------------------------------------------------------------------
-    | GET    /projects/{project}/deliverables/{deliverable}/view/{filename} -> View deliverable
+    | GET    /projects/{project}/deliverables/{deliverable}/view            -> View deliverable
     | GET    /projects/{project}/deliverables/{deliverable}/download        -> Download deliverable
     | GET    /projects/{project}/deliverables/download-all                  -> Download all deliverables
     |
@@ -353,9 +359,15 @@ Route::middleware(['auth', 'verified', 'restrict_user'])->group(function () {
   Route::prefix('projects/{project}/deliverables')->whereNumber('project')->name('projects.deliverables.')->group(function () {
 
     Route::middleware('permission:view-project-deliverables')->group(function () {
-      Route::get('/{deliverable}/view/{filename}', [ProjectDeliverableController::class, 'view'])->name('view');
-      Route::get('/{deliverable}/download', [ProjectDeliverableController::class, 'download'])->name('download');
-      Route::get('/download-all', [ProjectDeliverableController::class, 'downloadAll'])->name('download-all');
+      Route::get('/{deliverable}/view', [ProjectDeliverableController::class, 'view'])
+        ->middleware('throttle:60,1')
+        ->name('view');
+      Route::get('/{deliverable}/download', [ProjectDeliverableController::class, 'download'])
+        ->middleware('throttle:60,1')
+        ->name('download');
+      Route::get('/download-all', [ProjectDeliverableController::class, 'downloadAll'])
+        ->middleware('throttle:10,1')
+        ->name('download-all');
     });
 
     Route::post('/', [ProjectDeliverableController::class, 'store'])

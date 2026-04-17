@@ -60,7 +60,6 @@ export function DocumentCard({ document, index, projectId, isFirst, isLast, onRe
             projects.documents.view({
                 project: document.project_id,
                 document: document.id,
-                filename: document.name,
             }).url,
             '_blank',
             'noopener,noreferrer',

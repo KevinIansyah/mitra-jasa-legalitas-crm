@@ -11,6 +11,7 @@ use App\Models\ProjectDocument;
 use App\Notifications\Staff\DocumentUploadedByClientNotification;
 use App\Services\NotificationService;
 use App\Support\ApiFileUrls;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Auth;
 
 class ClientProjectDocumentController extends Controller
@@ -75,12 +76,25 @@ class ClientProjectDocumentController extends Controller
             return ApiResponse::error('Dokumen belum memiliki file.', 422);
         }
 
-        $content = FileHelper::downloadFromR2($document->file_path, $document->is_encrypted);
         $filename = FileHelper::buildFilename($document);
 
-        return response($content, 200, [
-            'Content-Type' => $document->file_type ?? 'application/octet-stream',
-            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
-        ]);
+        if ($document->is_encrypted) {
+            try {
+                $content = FileHelper::downloadFromR2($document->file_path, isEncrypted: true);
+            } catch (DecryptException) {
+                return ApiResponse::error('File dokumen tidak dapat didekripsi atau sudah rusak.', 422);
+            }
+
+            return response($content, 200, [
+                'Content-Type'           => $document->file_type ?? 'application/octet-stream',
+                'Content-Length'         => strlen($content),
+                'Content-Disposition'    => 'attachment; filename="'.$filename.'"',
+                'Cache-Control'          => 'private, no-store, max-age=0',
+                'Pragma'                 => 'no-cache',
+                'X-Content-Type-Options' => 'nosniff',
+            ]);
+        }
+
+        return FileHelper::streamFromR2($document->file_path, $filename, forceDownload: true);
     }
 }

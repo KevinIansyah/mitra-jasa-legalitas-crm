@@ -10,6 +10,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class FileHelper
 {
@@ -182,6 +183,52 @@ class FileHelper
         }
 
         return round($size, 2).' '.$units[$unit];
+    }
+
+    /**
+     * Stream private file from R2 langsung via Laravel (pass-through).
+     */
+    public static function streamFromR2(
+        string $path,
+        ?string $downloadName = null,
+        bool $forceDownload = false
+    ): StreamedResponse {
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+        $disk = Storage::disk('r2');
+
+        abort_if(! $disk->exists($path), 404, 'File tidak ditemukan.');
+
+        $stream = $disk->readStream($path);
+        abort_if($stream === false || $stream === null, 404, 'File tidak ditemukan.');
+
+        $mimeType = $disk->mimeType($path) ?: 'application/octet-stream';
+        $size = $disk->size($path);
+        $filename = $downloadName ?: basename($path);
+        $disposition = $forceDownload ? 'attachment' : 'inline';
+
+        $safeFilename = str_replace('"', '', $filename);
+        $encodedFilename = rawurlencode($filename);
+
+        $headers = [
+            'Content-Type' => $mimeType,
+            'Content-Length' => (string) $size,
+            'Content-Disposition' => sprintf(
+                '%s; filename="%s"; filename*=UTF-8\'\'%s',
+                $disposition,
+                $safeFilename,
+                $encodedFilename
+            ),
+            'Cache-Control' => 'private, no-store, max-age=0',
+            'Pragma' => 'no-cache',
+            'X-Content-Type-Options' => 'nosniff',
+        ];
+
+        return response()->stream(function () use ($stream) {
+            if (is_resource($stream)) {
+                fpassthru($stream);
+                fclose($stream);
+            }
+        }, 200, $headers);
     }
 
     /**

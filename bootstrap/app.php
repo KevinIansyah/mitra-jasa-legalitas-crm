@@ -45,6 +45,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'customer.owns.proposal' => \App\Http\Middleware\EnsureProposalOwnedByCustomer::class,
             'customer.can.access.estimate' => \App\Http\Middleware\EnsureEstimateAccessibleByCustomer::class,
             'customer.owns.invoice' => \App\Http\Middleware\EnsureInvoiceAccessibleByCustomer::class,
+            'turnstile' => \App\Http\Middleware\VerifyTurnstile::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

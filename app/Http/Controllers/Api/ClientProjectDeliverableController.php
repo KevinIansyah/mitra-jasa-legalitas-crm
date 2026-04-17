@@ -7,6 +7,7 @@ use App\Helpers\FileHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\ProjectDeliverable;
+use Illuminate\Contracts\Encryption\DecryptException;
 
 class ClientProjectDeliverableController extends Controller
 {
@@ -20,12 +21,25 @@ class ClientProjectDeliverableController extends Controller
             return ApiResponse::error('Belum ada file.', 422);
         }
 
-        $content = FileHelper::downloadFromR2($deliverable->file_path, $deliverable->is_encrypted);
         $filename = FileHelper::buildFilename($deliverable);
 
-        return response($content, 200, [
-            'Content-Type' => 'application/octet-stream',
-            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
-        ]);
+        if ($deliverable->is_encrypted) {
+            try {
+                $content = FileHelper::downloadFromR2($deliverable->file_path, isEncrypted: true);
+            } catch (DecryptException) {
+                return ApiResponse::error('File hasil akhir tidak dapat didekripsi atau sudah rusak.', 422);
+            }
+
+            return response($content, 200, [
+                'Content-Type'           => $deliverable->file_type ?? 'application/octet-stream',
+                'Content-Length'         => strlen($content),
+                'Content-Disposition'    => 'attachment; filename="'.$filename.'"',
+                'Cache-Control'          => 'private, no-store, max-age=0',
+                'Pragma'                 => 'no-cache',
+                'X-Content-Type-Options' => 'nosniff',
+            ]);
+        }
+
+        return FileHelper::streamFromR2($deliverable->file_path, $filename, forceDownload: true);
     }
 }

@@ -65,30 +65,30 @@ class FortifyServiceProvider extends ServiceProvider
      */
     private function configureViews(): void
     {
-        Fortify::loginView(fn (Request $request) => Inertia::render('auth/login', [
+        Fortify::loginView(fn(Request $request) => Inertia::render('auth/login', [
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
             'canRegister' => Features::enabled(Features::registration()),
             'status' => $request->session()->get('status'),
         ]));
 
-        Fortify::resetPasswordView(fn (Request $request) => Inertia::render('auth/reset-password', [
+        Fortify::resetPasswordView(fn(Request $request) => Inertia::render('auth/reset-password', [
             'email' => $request->email,
             'token' => $request->route('token'),
         ]));
 
-        Fortify::requestPasswordResetLinkView(fn (Request $request) => Inertia::render('auth/forgot-password', [
+        Fortify::requestPasswordResetLinkView(fn(Request $request) => Inertia::render('auth/forgot-password', [
             'status' => $request->session()->get('status'),
         ]));
 
-        Fortify::verifyEmailView(fn (Request $request) => Inertia::render('auth/verify-email', [
+        Fortify::verifyEmailView(fn(Request $request) => Inertia::render('auth/verify-email', [
             'status' => $request->session()->get('status'),
         ]));
 
-        Fortify::registerView(fn () => Inertia::render('auth/register'));
+        Fortify::registerView(fn() => Inertia::render('auth/register'));
 
-        Fortify::twoFactorChallengeView(fn () => Inertia::render('auth/two-factor-challenge'));
+        Fortify::twoFactorChallengeView(fn() => Inertia::render('auth/two-factor-challenge'));
 
-        Fortify::confirmPasswordView(fn () => Inertia::render('auth/confirm-password'));
+        Fortify::confirmPasswordView(fn() => Inertia::render('auth/confirm-password'));
     }
 
     /**
@@ -101,9 +101,57 @@ class FortifyServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('login', function (Request $request) {
-            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
+            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());
 
             return Limit::perMinute(5)->by($throttleKey);
+        });
+
+        RateLimiter::for('auth-register', function (Request $request) {
+            return [
+                Limit::perMinute(3)->by('auth-reg:ip:' . $request->ip()),
+                Limit::perDay(10)->by('auth-reg:ip-day:' . $request->ip()),
+            ];
+        });
+
+        RateLimiter::for('auth-otp', function (Request $request) {
+            $email = Str::lower((string) $request->input('email', ''));
+
+            return [
+                Limit::perMinute(5)->by('auth-otp:email:' . $email),
+                Limit::perMinute(10)->by('auth-otp:ip:' . $request->ip()),
+                Limit::perDay(20)->by('auth-otp:ip-day:' . $request->ip()),
+            ];
+        });
+
+        RateLimiter::for('auth-login', function (Request $request) {
+            $email = Str::lower((string) $request->input('email', ''));
+
+            return [
+                Limit::perMinute(5)->by('auth-login:email:' . $email),
+                Limit::perMinute(20)->by('auth-login:ip:' . $request->ip()),
+                Limit::perDay(100)->by('auth-login:ip-day:' . $request->ip()),
+            ];
+        });
+
+        RateLimiter::for('contact-form', function (Request $request) {
+            $waKey = (string) $request->input('whatsapp_number', '');
+            $waNormalized = (string) Str::of($waKey)->replaceMatches('/[^0-9]/', '');
+
+            return [
+                Limit::perMinute(5)->by('contact:ip:' . $request->ip()),
+                Limit::perMinute(3)->by('contact:wa:' . ($waNormalized !== '' ? $waNormalized : 'none')),
+                Limit::perDay(30)->by('contact:ip-day:' . $request->ip()),
+            ];
+        });
+
+        RateLimiter::for('blog-subscribe', function (Request $request) {
+            $email = Str::lower((string) $request->input('email', ''));
+
+            return [
+                Limit::perMinute(3)->by('blog-sub:email:' . $email),
+                Limit::perMinute(10)->by('blog-sub:ip:' . $request->ip()),
+                Limit::perDay(20)->by('blog-sub:ip-day:' . $request->ip()),
+            ];
         });
     }
 }

@@ -9,8 +9,11 @@ use App\Http\Requests\Projects\Deliverables\UpdateRequest;
 use App\Models\Project;
 use App\Models\ProjectDeliverable;
 use App\Notifications\Client\NewDeliverableNotification;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use ZipArchive;
 
@@ -112,7 +115,7 @@ class ProjectDeliverableController extends Controller
         return back()->with('success', 'Hasil akhir berhasil dihapus.');
     }
 
-    public function view(Project $project, ProjectDeliverable $deliverable, string $filename)
+    public function view(Project $project, ProjectDeliverable $deliverable)
     {
         if ($error = $this->validateDeliverable($project, $deliverable)) return $error;
 
@@ -120,17 +123,28 @@ class ProjectDeliverableController extends Controller
             return back()->withErrors(['error' => 'Hasil akhir belum memiliki file.']);
         }
 
-        if (!$deliverable->is_encrypted) {
-            return redirect(FileHelper::getSignedUrl($deliverable->file_path));
+        $filename = FileHelper::buildFilename($deliverable);
+
+        if ($deliverable->is_encrypted) {
+            try {
+                $content = FileHelper::downloadFromR2($deliverable->file_path, isEncrypted: true);
+            } catch (DecryptException) {
+                return back()->withErrors(['error' => 'File hasil akhir tidak dapat didekripsi atau sudah rusak.']);
+            }
+
+            $mimeType = $deliverable->file_type ?? 'application/pdf';
+
+            return response($content, 200, [
+                'Content-Type'           => $mimeType,
+                'Content-Length'         => strlen($content),
+                'Content-Disposition'    => 'inline; filename="' . $filename . '"',
+                'Cache-Control'          => 'private, no-store, max-age=0',
+                'Pragma'                 => 'no-cache',
+                'X-Content-Type-Options' => 'nosniff',
+            ]);
         }
 
-        $content  = FileHelper::downloadFromR2($deliverable->file_path, isEncrypted: true);
-        $mimeType = $deliverable->file_type ?? 'application/pdf';
-
-        return response($content, 200)
-            ->header('Content-Type', $mimeType)
-            ->header('Content-Length', strlen($content))
-            ->header('Content-Disposition', 'inline; filename="' . $filename . '"');
+        return FileHelper::streamFromR2($deliverable->file_path, $filename, forceDownload: false);
     }
 
     public function download(Project $project, ProjectDeliverable $deliverable)
@@ -141,41 +155,87 @@ class ProjectDeliverableController extends Controller
             return back()->withErrors(['error' => 'Dokumen belum memiliki file.']);
         }
 
-        $content = FileHelper::downloadFromR2(
-            $deliverable->file_path,
-            $deliverable->is_encrypted
-        );
-
         $filename = FileHelper::buildFilename($deliverable);
 
-        return response($content, 200, [
-            'Content-Type' => 'application/octet-stream',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ]);
+        if ($deliverable->is_encrypted) {
+            try {
+                $content = FileHelper::downloadFromR2($deliverable->file_path, isEncrypted: true);
+            } catch (DecryptException) {
+                return back()->withErrors(['error' => 'File hasil akhir tidak dapat didekripsi atau sudah rusak.']);
+            }
+
+            return response($content, 200, [
+                'Content-Type'           => 'application/octet-stream',
+                'Content-Length'         => strlen($content),
+                'Content-Disposition'    => 'attachment; filename="' . $filename . '"',
+                'Cache-Control'          => 'private, no-store, max-age=0',
+                'Pragma'                 => 'no-cache',
+                'X-Content-Type-Options' => 'nosniff',
+            ]);
+        }
+
+        return FileHelper::streamFromR2($deliverable->file_path, $filename, forceDownload: true);
     }
 
     public function downloadAll(Project $project)
     {
-        $documents = $project->documents()
+        $deliverables = $project->deliverables()
             ->whereNotNull('file_path')
             ->get();
 
-        if ($documents->isEmpty()) {
-            return back()->withErrors(['error' => 'Tidak ada dokumen yang bisa diunduh.']);
+        if ($deliverables->isEmpty()) {
+            return back()->withErrors(['error' => 'Tidak ada hasil akhir yang bisa diunduh.']);
         }
 
-        $zipPath = tempnam(sys_get_temp_dir(), 'docs_') . '.zip';
+        $zipPath = tempnam(sys_get_temp_dir(), 'delv_') . '.zip';
+        $tempFiles = [];
 
         $zip = new ZipArchive();
         if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
-            abort(500, 'Gagal membuat file ZIP.');
+            @unlink($zipPath);
+            return back()->withErrors(['error' => 'Gagal membuat file ZIP.']);
         }
 
-        foreach ($documents as $document) {
+        $disk = Storage::disk('r2');
+
+        foreach ($deliverables as $deliverable) {
             try {
-                $content  = FileHelper::downloadFromR2($document->file_path, $document->is_encrypted);
-                $filename = FileHelper::buildFilename($document);
-                $zip->addFromString($filename, $content);
+                $filename = FileHelper::buildFilename($deliverable);
+
+                if ($deliverable->is_encrypted) {
+                    try {
+                        $content = FileHelper::downloadFromR2($deliverable->file_path, isEncrypted: true);
+                    } catch (DecryptException) {
+                        continue;
+                    }
+                    $zip->addFromString($filename, $content);
+                    unset($content);
+                    continue;
+                }
+
+                if (! $disk->exists($deliverable->file_path)) {
+                    continue;
+                }
+
+                $srcStream = $disk->readStream($deliverable->file_path);
+                if (! is_resource($srcStream)) {
+                    continue;
+                }
+
+                $tmp = tempnam(sys_get_temp_dir(), 'delvf_');
+                $dstStream = fopen($tmp, 'wb');
+                if ($dstStream === false) {
+                    fclose($srcStream);
+                    @unlink($tmp);
+                    continue;
+                }
+
+                stream_copy_to_stream($srcStream, $dstStream);
+                fclose($srcStream);
+                fclose($dstStream);
+
+                $zip->addFile($tmp, $filename);
+                $tempFiles[] = $tmp;
             } catch (\Throwable) {
                 continue;
             }
@@ -183,10 +243,17 @@ class ProjectDeliverableController extends Controller
 
         $zip->close();
 
-        $zipName = 'dokumen-' . \Illuminate\Support\Str::slug($project->name) . '-' . now()->format('Ymd') . '.zip';
+        foreach ($tempFiles as $tmp) {
+            @unlink($tmp);
+        }
+
+        $zipName = 'hasil-akhir-' . Str::slug($project->name) . '-' . now()->format('Ymd') . '.zip';
 
         return response()->download($zipPath, $zipName, [
-            'Content-Type' => 'application/zip',
+            'Content-Type'           => 'application/zip',
+            'Cache-Control'          => 'private, no-store, max-age=0',
+            'Pragma'                 => 'no-cache',
+            'X-Content-Type-Options' => 'nosniff',
         ])->deleteFileAfterSend(true);
     }
 

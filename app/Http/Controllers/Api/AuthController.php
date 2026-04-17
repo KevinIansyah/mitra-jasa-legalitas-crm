@@ -26,17 +26,10 @@ class AuthController extends Controller
     {
         $user = User::where('email', $request->email)->first();
 
-        if ($user && $user->hasVerifiedEmail()) {
-            return ApiResponse::error('Email sudah terdaftar.', 422);
-        }
-
-        if ($user && ! $user->hasVerifiedEmail()) {
-            $this->otpService->send($user, 'email_verification');
-
-            return ApiResponse::success(
-                ['email' => $user->email],
-                'Email sudah terdaftar tapi belum diverifikasi. Kode OTP baru telah dikirim.',
-                200
+        if ($user) {
+            return ApiResponse::error(
+                'Email sudah terdaftar. Silakan login atau gunakan fitur kirim ulang kode OTP jika belum diverifikasi.',
+                422
             );
         }
 
@@ -61,7 +54,11 @@ class AuthController extends Controller
 
     public function verifyEmail(VerifyEmailRequest $request)
     {
-        $user = User::where('email', $request->email)->firstOrFail();
+        $user = User::where('email', $request->email)->first();
+
+        if (! $user) {
+            return ApiResponse::error('Kode OTP tidak valid atau sudah kadaluarsa.', 422);
+        }
 
         if ($user->hasVerifiedEmail()) {
             return ApiResponse::error('Email sudah terverifikasi sebelumnya.', 422);
@@ -97,15 +94,20 @@ class AuthController extends Controller
 
     public function resendVerificationOtp(ResendOtpRequest $request)
     {
-        $user = User::where('email', $request->email)->firstOrFail();
+        $user = User::where('email', $request->email)->first();
 
-        if ($user->hasVerifiedEmail()) {
-            return ApiResponse::error('Email sudah terverifikasi.', 422);
+        $genericResponse = ApiResponse::success(
+            null,
+            'Jika email terdaftar dan belum diverifikasi, kode OTP baru telah dikirim.'
+        );
+
+        if (! $user || $user->hasVerifiedEmail()) {
+            return $genericResponse;
         }
 
         $this->otpService->send($user, 'email_verification');
 
-        return ApiResponse::success(null, 'Kode OTP baru telah dikirim ke email Anda.');
+        return $genericResponse;
     }
 
     public function login(LoginRequest $request)
@@ -166,19 +168,29 @@ class AuthController extends Controller
 
     public function forgotPassword(ForgotPasswordRequest $request)
     {
-        $user = User::where('email', $request->email)->firstOrFail();
+        $user = User::where('email', $request->email)->first();
+
+        $genericResponse = ApiResponse::success(
+            ['email' => $request->email],
+            'Jika email terdaftar, kode OTP untuk reset password telah dikirim.'
+        );
+
+        if (! $user) {
+            return $genericResponse;
+        }
 
         $this->otpService->send($user, 'password_reset');
 
-        return ApiResponse::success(
-            ['email' => $user->email],
-            'Kode OTP untuk reset password telah dikirim ke email Anda.'
-        );
+        return $genericResponse;
     }
 
     public function resetPassword(ResetPasswordRequest $request)
     {
-        $user = User::where('email', $request->email)->firstOrFail();
+        $user = User::where('email', $request->email)->first();
+
+        if (! $user) {
+            return ApiResponse::error('Kode OTP tidak valid atau sudah kadaluarsa.', 422);
+        }
 
         $valid = $this->otpService->verify($user, $request->otp, 'password_reset');
 

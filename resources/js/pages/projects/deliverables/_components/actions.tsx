@@ -23,7 +23,6 @@ export default function Actions({ deliverable, isExpanded, onToggleExpand }: Act
             projects.deliverables.view({
                 project: deliverable.project_id,
                 deliverable: deliverable.id,
-                filename: deliverable.name,
             }).url,
             '_blank',
             'noopener,noreferrer',

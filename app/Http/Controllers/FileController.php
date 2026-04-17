@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\FileHelper;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class FileController extends Controller
 {
-    public function show(string $path)
+    public function show(string $path): StreamedResponse
     {
         FileHelper::resolveFile($path);
 
-        return redirect(FileHelper::getSignedUrl($path));
+        return FileHelper::streamFromR2($path);
     }
 }

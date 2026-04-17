@@ -16,27 +16,35 @@ class BlogSubscriberController extends Controller
 {
     public function subscribe(Request $request): JsonResponse
     {
-        $request->validate([
-            'email' => 'required|email|max:255',
-            'name' => 'nullable|string|max:255',
+        $validated = $request->validate([
+            'email' => 'required|email:rfc,dns|max:255',
+            'name' => 'nullable|string|min:2|max:255',
+            'website' => 'nullable|string|max:0',
+            'company_website' => 'nullable|string|max:0',
         ], [
             'email.required' => 'Email wajib diisi.',
             'email.email' => 'Format email tidak valid.',
         ]);
 
+        $genericMessage = 'Terima kasih! Jika email Anda valid, silakan cek inbox untuk konfirmasi langganan.';
+
+        if (! empty($request->input('website')) || ! empty($request->input('company_website'))) {
+            return ApiResponse::success(null, $genericMessage);
+        }
+
         $subscriber = BlogSubscriber::firstOrCreate(
-            ['email' => $request->email],
-            ['name' => $request->name],
+            ['email' => $validated['email']],
+            ['name' => $validated['name'] ?? null],
         );
 
         if ($subscriber->isVerified()) {
-            return ApiResponse::conflict('Email ini sudah terdaftar dan terverifikasi.');
+            return ApiResponse::success(null, $genericMessage);
         }
 
         if (! $subscriber->wasRecentlyCreated) {
             $subscriber->update([
                 'token' => Str::random(64),
-                'name' => $request->name ?? $subscriber->name,
+                'name' => $validated['name'] ?? $subscriber->name,
             ]);
         }
 
@@ -44,7 +52,7 @@ class BlogSubscriberController extends Controller
             new BlogSubscriberVerificationMail($subscriber->fresh())
         );
 
-        return ApiResponse::success(null, 'Terima kasih! Silakan cek email Anda untuk konfirmasi langganan.');
+        return ApiResponse::success(null, $genericMessage);
     }
 
     public function verify(string $token): RedirectResponse

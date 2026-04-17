@@ -91,7 +91,7 @@ export default function Deliverables({ project }: DeliverablesProps) {
                     {summary.total > 0 && (
                         <HasPermission permission="view-project-deliverables">
                             <Button variant="secondary" className="flex-1 md:min-w-40 md:flex-none" asChild>
-                                <a href={projects.documents.downloadAll(project.id).url}>
+                                <a href={projects.deliverables.downloadAll(project.id).url}>
                                     <ArrowDownToLine className="size-3.5" />
                                     Unduh Semua
                                 </a>

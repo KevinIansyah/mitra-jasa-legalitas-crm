@@ -73,7 +73,6 @@ export function DeliverableCard({ deliverable, projectId }: DeliverableCardProps
             projects.deliverables.view({
                 project: deliverable.project_id,
                 deliverable: deliverable.id,
-                filename: deliverable.name,
             }).url,
             '_blank',
             'noopener,noreferrer',

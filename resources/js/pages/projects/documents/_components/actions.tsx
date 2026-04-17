@@ -43,7 +43,6 @@ export default function Actions({ document, isExpanded, onToggleExpand }: Action
             projects.documents.view({
                 project: document.project_id,
                 document: document.id,
-                filename: document.name,
             }).url,
             '_blank',
             'noopener,noreferrer',
@@ -128,14 +127,14 @@ export default function Actions({ document, isExpanded, onToggleExpand }: Action
                 </Tooltip>
 
                 <HasPermission permission="view-project-documents">
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button variant="secondary" className="h-8 w-8" disabled={!hasFile || document.is_encrypted} onClick={handleView}>
-                                    <FileCheck className="size-3.5" />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Lihat Dokumen</TooltipContent>
-                        </Tooltip>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button variant="secondary" className="h-8 w-8" disabled={!hasFile || document.is_encrypted} onClick={handleView}>
+                                <FileCheck className="size-3.5" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Lihat Dokumen</TooltipContent>
+                    </Tooltip>
 
                     <Tooltip>
                         <TooltipTrigger asChild>

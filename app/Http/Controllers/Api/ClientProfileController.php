@@ -30,11 +30,6 @@ class ClientProfileController extends Controller
         }
 
         $user->fill($validated);
-
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
-        }
-
         $user->save();
 
         ApiFileUrls::userAvatar($user);
@@ -44,10 +39,19 @@ class ClientProfileController extends Controller
 
     public function updatePassword(PasswordUpdateRequest $request)
     {
-        $request->user()->update([
+        $user = $request->user();
+
+        $user->update([
             'password' => $request->password,
         ]);
 
-        return ApiResponse::updated(null, 'Password berhasil diperbarui.');
+        $currentToken = $user->currentAccessToken();
+        $currentTokenId = $currentToken?->id;
+
+        $user->tokens()
+            ->when($currentTokenId, fn ($query) => $query->where('id', '!=', $currentTokenId))
+            ->delete();
+
+        return ApiResponse::updated(null, 'Password berhasil diperbarui. Sesi di perangkat lain telah diakhiri.');
     }
 }

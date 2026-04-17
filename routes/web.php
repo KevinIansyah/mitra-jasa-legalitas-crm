@@ -182,7 +182,7 @@ Route::post('/tiptap/image-upload', [TiptapController::class, 'store'])
 
 Route::get('/files/{path}', [FileController::class, 'show'])
     ->where('path', '.*')
-    ->middleware(['auth', 'verified', 'permission:view-projects']);
+    ->middleware(['auth', 'verified', 'permission:view-projects', 'throttle:60,1']);
 
 /*
 |--------------------------------------------------------------------------
