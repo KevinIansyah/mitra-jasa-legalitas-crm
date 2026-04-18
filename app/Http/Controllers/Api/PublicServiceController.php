@@ -63,9 +63,6 @@ class PublicServiceController extends Controller
     // GET /services/{service}/packages  (service = numeric id)
     // ========================================================================
 
-    /**
-     * Paket aktif untuk satu layanan (by service id). Hanya layanan published + active.
-     */
     public function packagesByService(Service $service): JsonResponse
     {
         if (! $service->is_published || $service->status !== 'active') {
@@ -176,9 +173,6 @@ class PublicServiceController extends Controller
     // GET /services/categories/{categorySlug}
     // ========================================================================
 
-    /**
-     * Sama seperti GET /services?category[]=slug, tapi lewat path (SEO-friendly).
-     */
     public function byCategory(Request $request, string $categorySlug): JsonResponse
     {
         $request->merge(['category' => [$categorySlug]]);
@@ -303,7 +297,7 @@ class PublicServiceController extends Controller
                 'slug' => $page->service->category->slug,
                 'palette_color' => $page->service->category->palette_color,
             ] : null,
-            'packages' => [
+            'packages' => $page->service->cheapestPackage ? [
                 'id' => $page->service->cheapestPackage->id,
                 'name' => $page->service->cheapestPackage->name,
                 'price' => $page->service->cheapestPackage->price,
@@ -316,7 +310,7 @@ class PublicServiceController extends Controller
                     'is_included' => $feature->is_included,
                     'sort_order' => $feature->sort_order,
                 ]),
-            ],
+            ] : null,
             'city_page' => [
                 'heading' => $page->heading,
                 'meta_description' => $page->meta_description,

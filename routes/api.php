@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\PublicBlogController;
 use App\Http\Controllers\Api\PublicHomeController;
 use App\Http\Controllers\Api\PublicNavigationController;
 use App\Http\Controllers\Api\PublicServiceController;
+use App\Http\Controllers\Api\PublicSitemapController;
 use App\Http\Controllers\Api\ServiceCategoryController;
 use Illuminate\Support\Facades\Route;
 
@@ -313,6 +314,17 @@ Route::middleware(['auth:sanctum'])->prefix('notifications')->name('api.notifica
 
 Route::get('/home', [PublicHomeController::class, 'index']);
 Route::get('/navigation', [PublicNavigationController::class, 'index'])->name('navigation');
+
+/*
+|--------------------------------------------------------------------------
+| PUBLIC SITEMAP
+|--------------------------------------------------------------------------
+| GET /sitemap  → Data agregat untuk sitemap Next.js
+|                 (static pages, services, city pages, blogs).
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/sitemap', [PublicSitemapController::class, 'index'])->name('sitemap');
 
 /*
 |--------------------------------------------------------------------------
