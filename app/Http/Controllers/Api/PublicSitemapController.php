@@ -75,6 +75,18 @@ class PublicSitemapController extends Controller
                 'changefreq'  => 'monthly',
                 'priority'    => 0.85,
             ],
+            [
+                'path'        => '/kebijakan-privasi',
+                'lastmod'     => $siteUpdatedAt,
+                'changefreq'  => 'yearly',
+                'priority'    => 0.3,
+            ],
+            [
+                'path'        => '/syarat-ketentuan-layanan',
+                'lastmod'     => $siteUpdatedAt,
+                'changefreq'  => 'yearly',
+                'priority'    => 0.3,
+            ],
         ];
 
         $services = Service::query()
