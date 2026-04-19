@@ -303,8 +303,19 @@ export function EditSection({ blog, categories, tags, services }: EditSectionPro
         }
 
         const seoUpdates: Partial<LocalBlogSeo> = {};
-        if (data.meta_title !== undefined) seoUpdates.meta_title = data.meta_title as string;
-        if (data.meta_description !== undefined) seoUpdates.meta_description = data.meta_description as string;
+        const curSeo = seoData.seo;
+        if (data.meta_title !== undefined) {
+            const val = data.meta_title as string;
+            seoUpdates.meta_title = val;
+            if (curSeo.og_title === '') seoUpdates.og_title = val;
+            if (curSeo.twitter_title === '') seoUpdates.twitter_title = val;
+        }
+        if (data.meta_description !== undefined) {
+            const val = data.meta_description as string;
+            seoUpdates.meta_description = val;
+            if (curSeo.og_description === '') seoUpdates.og_description = val;
+            if (curSeo.twitter_description === '') seoUpdates.twitter_description = val;
+        }
         if (data.focus_keyword !== undefined) seoUpdates.focus_keyword = data.focus_keyword as string;
         if (Object.keys(seoUpdates).length > 0) {
             setSeoData('seo', { ...seoData.seo, ...seoUpdates });

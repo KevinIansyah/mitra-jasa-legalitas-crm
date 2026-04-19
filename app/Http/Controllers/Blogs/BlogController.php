@@ -146,6 +146,16 @@ class BlogController extends Controller
             if (! empty($validated['seo'])) {
                 $seo = $validated['seo'];
 
+                $metaDescription = $seo['meta_description'] ?? null;
+                $ogDescription = $seo['og_description'] ?? null;
+                if (blank($ogDescription) && filled($metaDescription)) {
+                    $ogDescription = $metaDescription;
+                }
+                $twitterDescription = $seo['twitter_description'] ?? null;
+                if (blank($twitterDescription) && filled($metaDescription)) {
+                    $twitterDescription = $metaDescription;
+                }
+
                 $ogImagePath = null;
                 if ($request->hasFile('seo.og_image')) {
                     $file = FileHelper::uploadToR2Public($request->file('seo.og_image'), 'blogs/seo');
@@ -161,16 +171,16 @@ class BlogController extends Controller
                 BlogSeo::create([
                     'blog_id' => $blog->id,
                     'meta_title' => $seo['meta_title'] ?? null,
-                    'meta_description' => $seo['meta_description'] ?? null,
+                    'meta_description' => $metaDescription,
                     'canonical_url' => $seo['canonical_url'] ?? null,
                     'focus_keyword' => $seo['focus_keyword'] ?? null,
                     'secondary_keywords' => $seo['secondary_keywords'] ?? [],
                     'og_title' => $seo['og_title'] ?? null,
-                    'og_description' => $seo['og_description'] ?? null,
+                    'og_description' => $ogDescription,
                     'og_image' => $ogImagePath,
                     'twitter_card' => $seo['twitter_card'] ?? 'summary_large_image',
                     'twitter_title' => $seo['twitter_title'] ?? null,
-                    'twitter_description' => $seo['twitter_description'] ?? null,
+                    'twitter_description' => $twitterDescription,
                     'twitter_image' => $twitterImagePath,
                     'robots' => $seo['robots'] ?? 'index,follow',
                     'in_sitemap' => $seo['in_sitemap'] ?? true,
@@ -305,6 +315,14 @@ class BlogController extends Controller
 
         if (empty($validated['twitter_title']) && ! empty($validated['meta_title'])) {
             $validated['twitter_title'] = $validated['meta_title'];
+        }
+
+        if (blank($validated['og_description'] ?? null) && filled($validated['meta_description'] ?? null)) {
+            $validated['og_description'] = $validated['meta_description'];
+        }
+
+        if (blank($validated['twitter_description'] ?? null) && filled($validated['meta_description'] ?? null)) {
+            $validated['twitter_description'] = $validated['meta_description'];
         }
 
         if ($request->boolean('remove_og_image') && $seo->og_image) {

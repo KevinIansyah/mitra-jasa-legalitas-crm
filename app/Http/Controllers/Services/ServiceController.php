@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Services;
 
-use App\Http\Controllers\Controller;
 use App\Helpers\FileHelper;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Services\StoreRequest;
 use App\Http\Requests\Services\UpdateBasicInformationRequest;
 use App\Http\Requests\Services\UpdateContentRequest;
@@ -36,18 +36,18 @@ class ServiceController extends Controller
         $perPage = $request->get('per_page', 20);
         $perPage = in_array($perPage, [20, 30, 40, 50]) ? $perPage : 20;
 
-        $search      = $request->get('search');
-        $status      = $request->get('status');
-        $category    = $request->get('category');
+        $search = $request->get('search');
+        $status = $request->get('status');
+        $category = $request->get('category');
         $isPublished = $request->get('is_published');
 
         $services = Service::query()
             ->with('category')
-            ->when($search, fn($q) => $q->search($search))
-            ->when($status, fn($q) => $q->where('status', $status))
-            ->when($category, fn($q) => $q->where('service_category_id', $category))
-            ->when($isPublished === 'published', fn($q) => $q->where('is_published', true))
-            ->when($isPublished === 'unpublished', fn($q) => $q->where('is_published', false))
+            ->when($search, fn ($q) => $q->search($search))
+            ->when($status, fn ($q) => $q->where('status', $status))
+            ->when($category, fn ($q) => $q->where('service_category_id', $category))
+            ->when($isPublished === 'published', fn ($q) => $q->where('is_published', true))
+            ->when($isPublished === 'unpublished', fn ($q) => $q->where('is_published', false))
             ->latest()
             ->paginate($perPage);
 
@@ -55,21 +55,21 @@ class ServiceController extends Controller
             ->get(['id', 'name']);
 
         $summary = [
-            'total'     => Service::count(),
+            'total' => Service::count(),
             'published' => Service::where('is_published', true)->count(),
-            'featured'  => Service::where('is_featured', true)->count(),
-            'popular'   => Service::where('is_popular', true)->count(),
+            'featured' => Service::where('is_featured', true)->count(),
+            'popular' => Service::where('is_popular', true)->count(),
         ];
 
         return Inertia::render('services/index', [
-            'services'   => $services,
-            'summary'    => $summary,
+            'services' => $services,
+            'summary' => $summary,
             'categories' => $categories,
             'filters' => [
-                'search'      => $search,
-                'per_page'    => $perPage,
-                'status'      => $status,
-                'category'    => $category,
+                'search' => $search,
+                'per_page' => $perPage,
+                'status' => $status,
+                'category' => $category,
                 'is_published' => $isPublished,
             ],
         ]);
@@ -132,43 +132,43 @@ class ServiceController extends Controller
             // Create service
             $service = Service::create([
                 'service_category_id' => $validated['service_category_id'],
-                'name'                => $validated['name'],
-                'slug'                => $slug,
-                'short_description'   => $validated['short_description'] ?? null,
-                'icon'                => $validated['icon'] ?? null,
-                'introduction'        => $validated['introduction'] ?? null,
-                'content'             => $validated['content'] ?? null,
-                'featured_image'      => $featuredImagePath,
-                'is_published'        => $validated['is_published'] ?? false,
-                'is_featured'         => $validated['is_featured'] ?? false,
-                'is_popular'          => $validated['is_popular'] ?? false,
-                'published_at'        => ($validated['is_published'] ?? false) ? now() : null,
-                'status'              => ($validated['is_published'] ?? false) ? 'active' : 'inactive',
+                'name' => $validated['name'],
+                'slug' => $slug,
+                'short_description' => $validated['short_description'] ?? null,
+                'icon' => $validated['icon'] ?? null,
+                'introduction' => $validated['introduction'] ?? null,
+                'content' => $validated['content'] ?? null,
+                'featured_image' => $featuredImagePath,
+                'is_published' => $validated['is_published'] ?? false,
+                'is_featured' => $validated['is_featured'] ?? false,
+                'is_popular' => $validated['is_popular'] ?? false,
+                'published_at' => ($validated['is_published'] ?? false) ? now() : null,
+                'status' => ($validated['is_published'] ?? false) ? 'active' : 'inactive',
             ]);
 
             // Create packages and features
             foreach (($validated['packages'] ?? []) as $pkgIndex => $pkgData) {
                 $package = ServicePackage::create([
-                    'service_id'        => $service->id,
-                    'name'              => $pkgData['name'],
-                    'price'             => $pkgData['price'],
-                    'original_price'    => $pkgData['original_price'] ?? null,
-                    'duration'          => $pkgData['duration'],
-                    'duration_days'     => $pkgData['duration_days'] ?? null,
+                    'service_id' => $service->id,
+                    'name' => $pkgData['name'],
+                    'price' => $pkgData['price'],
+                    'original_price' => $pkgData['original_price'] ?? null,
+                    'duration' => $pkgData['duration'],
+                    'duration_days' => $pkgData['duration_days'] ?? null,
                     'short_description' => $pkgData['short_description'] ?? null,
-                    'is_highlighted'    => $pkgData['is_highlighted'] ?? false,
-                    'badge'             => $pkgData['badge'] ?? null,
-                    'sort_order'        => $pkgData['sort_order'] ?? $pkgIndex,
-                    'status'            => 'active',
+                    'is_highlighted' => $pkgData['is_highlighted'] ?? false,
+                    'badge' => $pkgData['badge'] ?? null,
+                    'sort_order' => $pkgData['sort_order'] ?? $pkgIndex,
+                    'status' => 'active',
                 ]);
 
                 foreach (($pkgData['features'] ?? []) as $featIndex => $featData) {
                     ServicePackageFeature::create([
                         'service_package_id' => $package->id,
-                        'feature_name'       => $featData['feature_name'],
-                        'description'        => $featData['description'] ?? null,
-                        'is_included'        => $featData['is_included'] ?? true,
-                        'sort_order'         => $featData['sort_order'] ?? $featIndex,
+                        'feature_name' => $featData['feature_name'],
+                        'description' => $featData['description'] ?? null,
+                        'is_included' => $featData['is_included'] ?? true,
+                        'sort_order' => $featData['sort_order'] ?? $featIndex,
                     ]);
                 }
             }
@@ -177,48 +177,48 @@ class ServiceController extends Controller
             foreach (($validated['faqs'] ?? []) as $faqIndex => $faqData) {
                 ServiceFaq::create([
                     'service_id' => $service->id,
-                    'question'   => $faqData['question'],
-                    'answer'     => $faqData['answer'],
+                    'question' => $faqData['question'],
+                    'answer' => $faqData['answer'],
                     'sort_order' => $faqData['sort_order'] ?? $faqIndex,
-                    'status'     => 'active',
+                    'status' => 'active',
                 ]);
             }
 
             // Create legal bases
             foreach (($validated['legal_bases'] ?? []) as $legalIndex => $legalData) {
                 ServiceLegalBasis::create([
-                    'service_id'      => $service->id,
-                    'document_type'   => $legalData['document_type'],
+                    'service_id' => $service->id,
+                    'document_type' => $legalData['document_type'],
                     'document_number' => $legalData['document_number'],
-                    'title'           => $legalData['title'],
-                    'issued_date'     => $legalData['issued_date'] ?? null,
-                    'url'             => $legalData['url'] ?? null,
-                    'description'     => $legalData['description'] ?? null,
-                    'sort_order'      => $legalData['sort_order'] ?? $legalIndex,
-                    'status'          => 'active',
+                    'title' => $legalData['title'],
+                    'issued_date' => $legalData['issued_date'] ?? null,
+                    'url' => $legalData['url'] ?? null,
+                    'description' => $legalData['description'] ?? null,
+                    'sort_order' => $legalData['sort_order'] ?? $legalIndex,
+                    'status' => 'active',
                 ]);
             }
 
             // Create requirement categories and requirements
             foreach (($validated['requirement_categories'] ?? []) as $catIndex => $catData) {
                 $category = ServiceRequirementCategory::create([
-                    'service_id'  => $service->id,
-                    'name'        => $catData['name'],
+                    'service_id' => $service->id,
+                    'name' => $catData['name'],
                     'description' => $catData['description'] ?? null,
-                    'sort_order'  => $catData['sort_order'] ?? $catIndex,
-                    'status'      => 'active',
+                    'sort_order' => $catData['sort_order'] ?? $catIndex,
+                    'status' => 'active',
                 ]);
 
                 foreach (($catData['requirements'] ?? []) as $reqIndex => $reqData) {
                     ServiceRequirement::create([
                         'service_requirement_category_id' => $category->id,
-                        'name'                            => $reqData['name'],
-                        'description'                     => $reqData['description'] ?? null,
-                        'is_required'                     => $reqData['is_required'] ?? true,
-                        'document_format'                 => $reqData['document_format'] ?? null,
-                        'notes'                           => $reqData['notes'] ?? null,
-                        'sort_order'                      => $reqData['sort_order'] ?? $reqIndex,
-                        'status'                          => 'active',
+                        'name' => $reqData['name'],
+                        'description' => $reqData['description'] ?? null,
+                        'is_required' => $reqData['is_required'] ?? true,
+                        'document_format' => $reqData['document_format'] ?? null,
+                        'notes' => $reqData['notes'] ?? null,
+                        'sort_order' => $reqData['sort_order'] ?? $reqIndex,
+                        'status' => 'active',
                     ]);
                 }
             }
@@ -226,22 +226,32 @@ class ServiceController extends Controller
             // Create process steps
             foreach (($validated['process_steps'] ?? []) as $stepIndex => $stepData) {
                 ServiceProcessStep::create([
-                    'service_id'         => $service->id,
-                    'title'              => $stepData['title'],
-                    'description'        => $stepData['description'] ?? null,
-                    'duration'           => $stepData['duration'] ?? null,
-                    'duration_days'      => $stepData['duration_days'] ?? null,
+                    'service_id' => $service->id,
+                    'title' => $stepData['title'],
+                    'description' => $stepData['description'] ?? null,
+                    'duration' => $stepData['duration'] ?? null,
+                    'duration_days' => $stepData['duration_days'] ?? null,
                     'required_documents' => $stepData['required_documents'] ?? null,
-                    'notes'              => $stepData['notes'] ?? null,
-                    'icon'               => $stepData['icon'] ?? null,
-                    'sort_order'         => $stepData['sort_order'] ?? $stepIndex,
-                    'status'             => 'active',
+                    'notes' => $stepData['notes'] ?? null,
+                    'icon' => $stepData['icon'] ?? null,
+                    'sort_order' => $stepData['sort_order'] ?? $stepIndex,
+                    'status' => 'active',
                 ]);
             }
 
             // Create SEO
-            if (!empty($validated['seo'])) {
+            if (! empty($validated['seo'])) {
                 $seo = $validated['seo'];
+
+                $metaDescription = $seo['meta_description'] ?? null;
+                $ogDescription = $seo['og_description'] ?? null;
+                if (blank($ogDescription) && filled($metaDescription)) {
+                    $ogDescription = $metaDescription;
+                }
+                $twitterDescription = $seo['twitter_description'] ?? null;
+                if (blank($twitterDescription) && filled($metaDescription)) {
+                    $twitterDescription = $metaDescription;
+                }
 
                 $ogImagePath = null;
                 if ($request->hasFile('seo.og_image')) {
@@ -256,23 +266,23 @@ class ServiceController extends Controller
                 }
 
                 ServiceSeo::create([
-                    'service_id'          => $service->id,
-                    'meta_title'          => $seo['meta_title'] ?? null,
-                    'meta_description'    => $seo['meta_description'] ?? null,
-                    'canonical_url'       => $seo['canonical_url'] ?? null,
-                    'focus_keyword'       => $seo['focus_keyword'] ?? null,
-                    'secondary_keywords'  => $seo['secondary_keywords'] ?? [],
-                    'og_title'            => $seo['og_title'] ?? null,
-                    'og_description'      => $seo['og_description'] ?? null,
-                    'og_image'            => $ogImagePath,
-                    'twitter_card'        => $seo['twitter_card'] ?? 'summary_large_image',
-                    'twitter_title'       => $seo['twitter_title'] ?? null,
-                    'twitter_description' => $seo['twitter_description'] ?? null,
-                    'twitter_image'       => $twitterImagePath,
-                    'robots'              => $seo['robots'] ?? 'index,follow',
-                    'in_sitemap'          => $seo['in_sitemap'] ?? true,
-                    'sitemap_priority'    => $seo['sitemap_priority'] ?? '0.7',
-                    'sitemap_changefreq'  => $seo['sitemap_changefreq'] ?? 'monthly',
+                    'service_id' => $service->id,
+                    'meta_title' => $seo['meta_title'] ?? null,
+                    'meta_description' => $metaDescription,
+                    'canonical_url' => $seo['canonical_url'] ?? null,
+                    'focus_keyword' => $seo['focus_keyword'] ?? null,
+                    'secondary_keywords' => $seo['secondary_keywords'] ?? [],
+                    'og_title' => $seo['og_title'] ?? null,
+                    'og_description' => $ogDescription,
+                    'og_image' => $ogImagePath,
+                    'twitter_card' => $seo['twitter_card'] ?? 'summary_large_image',
+                    'twitter_title' => $seo['twitter_title'] ?? null,
+                    'twitter_description' => $twitterDescription,
+                    'twitter_image' => $twitterImagePath,
+                    'robots' => $seo['robots'] ?? 'index,follow',
+                    'in_sitemap' => $seo['in_sitemap'] ?? true,
+                    'sitemap_priority' => $seo['sitemap_priority'] ?? '0.7',
+                    'sitemap_changefreq' => $seo['sitemap_changefreq'] ?? 'monthly',
                 ]);
             }
 
@@ -292,17 +302,17 @@ class ServiceController extends Controller
             'category',
             'packages' => function ($query) {
                 $query->orderBy('sort_order')->with([
-                    'features' => fn($q) => $q->orderBy('sort_order'),
+                    'features' => fn ($q) => $q->orderBy('sort_order'),
                 ]);
             },
-            'faqs' => fn($query) => $query->orderBy('sort_order'),
-            'legalBases' => fn($query) => $query->orderBy('sort_order'),
+            'faqs' => fn ($query) => $query->orderBy('sort_order'),
+            'legalBases' => fn ($query) => $query->orderBy('sort_order'),
             'requirementCategories' => function ($query) {
                 $query->orderBy('sort_order')->with([
-                    'requirements' => fn($q) => $q->orderBy('sort_order'),
+                    'requirements' => fn ($q) => $q->orderBy('sort_order'),
                 ]);
             },
-            'processSteps' => fn($query) => $query->orderBy('sort_order'),
+            'processSteps' => fn ($query) => $query->orderBy('sort_order'),
             'seo',
         ]);
 
@@ -361,24 +371,24 @@ class ServiceController extends Controller
             $publishedAt = $service->published_at;
             $status = $service->status;
 
-            if ($isPublished && !$service->is_published) {
+            if ($isPublished && ! $service->is_published) {
                 $publishedAt = now();
                 $status = 'active';
-            } elseif (!$isPublished && $service->is_published) {
+            } elseif (! $isPublished && $service->is_published) {
                 $status = 'inactive';
             }
 
             $service->update([
                 'service_category_id' => $validated['service_category_id'],
-                'name'                => $validated['name'],
-                'short_description'   => $validated['short_description'] ?? null,
-                'icon'                => $validated['icon'] ?? null,
-                'featured_image'      => $featuredImagePath,
-                'is_published'        => $isPublished,
-                'is_featured'         => $validated['is_featured'] ?? $service->is_featured,
-                'is_popular'          => $validated['is_popular'] ?? $service->is_popular,
-                'published_at'        => $publishedAt,
-                'status'              => $status,
+                'name' => $validated['name'],
+                'short_description' => $validated['short_description'] ?? null,
+                'icon' => $validated['icon'] ?? null,
+                'featured_image' => $featuredImagePath,
+                'is_published' => $isPublished,
+                'is_featured' => $validated['is_featured'] ?? $service->is_featured,
+                'is_popular' => $validated['is_popular'] ?? $service->is_popular,
+                'published_at' => $publishedAt,
+                'status' => $status,
             ]);
         });
 
@@ -391,7 +401,7 @@ class ServiceController extends Controller
 
         $service->update([
             'introduction' => $validated['introduction'],
-            'content'      => $validated['content'],
+            'content' => $validated['content'],
         ]);
 
         return back()->with('success', 'Konten layanan berhasil diperbarui.');
@@ -421,38 +431,38 @@ class ServiceController extends Controller
                 ->toArray();
 
             $packagesToDelete = array_diff($existingPackageIds, $submittedPackageIds);
-            if (!empty($packagesToDelete)) {
+            if (! empty($packagesToDelete)) {
                 ServicePackage::whereIn('id', $packagesToDelete)->delete();
             }
 
             foreach ($packagesInput as $pkgIndex => $pkgData) {
-                if (!empty($pkgData['id'])) {
+                if (! empty($pkgData['id'])) {
                     $package = ServicePackage::findOrFail($pkgData['id']);
                     $package->update([
-                        'name'              => $pkgData['name'],
-                        'price'             => $pkgData['price'],
-                        'original_price'    => $pkgData['original_price'] ?? null,
-                        'duration'          => $pkgData['duration'],
-                        'duration_days'     => $pkgData['duration_days'] ?? null,
+                        'name' => $pkgData['name'],
+                        'price' => $pkgData['price'],
+                        'original_price' => $pkgData['original_price'] ?? null,
+                        'duration' => $pkgData['duration'],
+                        'duration_days' => $pkgData['duration_days'] ?? null,
                         'short_description' => $pkgData['short_description'] ?? null,
-                        'is_highlighted'    => $pkgData['is_highlighted'] ?? false,
-                        'badge'             => $pkgData['badge'] ?? null,
-                        'sort_order'        => $pkgData['sort_order'] ?? $pkgIndex,
-                        'status'            => $pkgData['status'] ?? 'active',
+                        'is_highlighted' => $pkgData['is_highlighted'] ?? false,
+                        'badge' => $pkgData['badge'] ?? null,
+                        'sort_order' => $pkgData['sort_order'] ?? $pkgIndex,
+                        'status' => $pkgData['status'] ?? 'active',
                     ]);
                 } else {
                     $package = ServicePackage::create([
-                        'service_id'        => $service->id,
-                        'name'              => $pkgData['name'],
-                        'price'             => $pkgData['price'],
-                        'original_price'    => $pkgData['original_price'] ?? null,
-                        'duration'          => $pkgData['duration'],
-                        'duration_days'     => $pkgData['duration_days'] ?? null,
+                        'service_id' => $service->id,
+                        'name' => $pkgData['name'],
+                        'price' => $pkgData['price'],
+                        'original_price' => $pkgData['original_price'] ?? null,
+                        'duration' => $pkgData['duration'],
+                        'duration_days' => $pkgData['duration_days'] ?? null,
                         'short_description' => $pkgData['short_description'] ?? null,
-                        'is_highlighted'    => $pkgData['is_highlighted'] ?? false,
-                        'badge'             => $pkgData['badge'] ?? null,
-                        'sort_order'        => $pkgData['sort_order'] ?? $pkgIndex,
-                        'status'            => 'active',
+                        'is_highlighted' => $pkgData['is_highlighted'] ?? false,
+                        'badge' => $pkgData['badge'] ?? null,
+                        'sort_order' => $pkgData['sort_order'] ?? $pkgIndex,
+                        'status' => 'active',
                     ]);
                 }
 
@@ -464,26 +474,26 @@ class ServiceController extends Controller
                         ->toArray();
 
                     $featuresToDelete = array_diff($existingFeatureIds, $submittedFeatureIds);
-                    if (!empty($featuresToDelete)) {
+                    if (! empty($featuresToDelete)) {
                         ServicePackageFeature::whereIn('id', $featuresToDelete)->delete();
                     }
 
                     foreach ($pkgData['features'] as $featIndex => $featData) {
-                        if (!empty($featData['id'])) {
+                        if (! empty($featData['id'])) {
                             $feature = ServicePackageFeature::findOrFail($featData['id']);
                             $feature->update([
                                 'feature_name' => $featData['feature_name'],
-                                'description'  => $featData['description'] ?? null,
-                                'is_included'  => $featData['is_included'] ?? true,
-                                'sort_order'   => $featData['sort_order'] ?? $featIndex,
+                                'description' => $featData['description'] ?? null,
+                                'is_included' => $featData['is_included'] ?? true,
+                                'sort_order' => $featData['sort_order'] ?? $featIndex,
                             ]);
                         } else {
                             ServicePackageFeature::create([
                                 'service_package_id' => $package->id,
-                                'feature_name'       => $featData['feature_name'],
-                                'description'        => $featData['description'] ?? null,
-                                'is_included'        => $featData['is_included'] ?? true,
-                                'sort_order'         => $featData['sort_order'] ?? $featIndex,
+                                'feature_name' => $featData['feature_name'],
+                                'description' => $featData['description'] ?? null,
+                                'is_included' => $featData['is_included'] ?? true,
+                                'sort_order' => $featData['sort_order'] ?? $featIndex,
                             ]);
                         }
                     }
@@ -514,26 +524,26 @@ class ServiceController extends Controller
                 ->toArray();
 
             $faqsToDelete = array_diff($existingFaqIds, $submittedFaqIds);
-            if (!empty($faqsToDelete)) {
+            if (! empty($faqsToDelete)) {
                 ServiceFaq::whereIn('id', $faqsToDelete)->delete();
             }
 
             foreach (($validated['faqs'] ?? []) as $faqIndex => $faqData) {
-                if (!empty($faqData['id'])) {
+                if (! empty($faqData['id'])) {
                     $faq = ServiceFaq::findOrFail($faqData['id']);
                     $faq->update([
-                        'question'   => $faqData['question'],
-                        'answer'     => $faqData['answer'],
+                        'question' => $faqData['question'],
+                        'answer' => $faqData['answer'],
                         'sort_order' => $faqData['sort_order'] ?? $faqIndex,
-                        'status'     => $faqData['status'] ?? 'active',
+                        'status' => $faqData['status'] ?? 'active',
                     ]);
                 } else {
                     ServiceFaq::create([
                         'service_id' => $service->id,
-                        'question'   => $faqData['question'],
-                        'answer'     => $faqData['answer'],
+                        'question' => $faqData['question'],
+                        'answer' => $faqData['answer'],
                         'sort_order' => $faqData['sort_order'] ?? $faqIndex,
-                        'status'     => 'active',
+                        'status' => 'active',
                     ]);
                 }
             }
@@ -562,34 +572,34 @@ class ServiceController extends Controller
                 ->toArray();
 
             $legalToDelete = array_diff($existingLegalIds, $submittedLegalIds);
-            if (!empty($legalToDelete)) {
+            if (! empty($legalToDelete)) {
                 ServiceLegalBasis::whereIn('id', $legalToDelete)->delete();
             }
 
             foreach (($validated['legal_bases'] ?? []) as $legalIndex => $legalData) {
-                if (!empty($legalData['id'])) {
+                if (! empty($legalData['id'])) {
                     $legal = ServiceLegalBasis::findOrFail($legalData['id']);
                     $legal->update([
-                        'document_type'   => $legalData['document_type'],
+                        'document_type' => $legalData['document_type'],
                         'document_number' => $legalData['document_number'],
-                        'title'           => $legalData['title'],
-                        'issued_date'     => $legalData['issued_date'] ?? null,
-                        'url'             => $legalData['url'] ?? null,
-                        'description'     => $legalData['description'] ?? null,
-                        'sort_order'      => $legalData['sort_order'] ?? $legalIndex,
-                        'status'          => $legalData['status'] ?? 'active',
+                        'title' => $legalData['title'],
+                        'issued_date' => $legalData['issued_date'] ?? null,
+                        'url' => $legalData['url'] ?? null,
+                        'description' => $legalData['description'] ?? null,
+                        'sort_order' => $legalData['sort_order'] ?? $legalIndex,
+                        'status' => $legalData['status'] ?? 'active',
                     ]);
                 } else {
                     ServiceLegalBasis::create([
-                        'service_id'      => $service->id,
-                        'document_type'   => $legalData['document_type'],
+                        'service_id' => $service->id,
+                        'document_type' => $legalData['document_type'],
                         'document_number' => $legalData['document_number'],
-                        'title'           => $legalData['title'],
-                        'issued_date'     => $legalData['issued_date'] ?? null,
-                        'url'             => $legalData['url'] ?? null,
-                        'description'     => $legalData['description'] ?? null,
-                        'sort_order'      => $legalData['sort_order'] ?? $legalIndex,
-                        'status'          => 'active',
+                        'title' => $legalData['title'],
+                        'issued_date' => $legalData['issued_date'] ?? null,
+                        'url' => $legalData['url'] ?? null,
+                        'description' => $legalData['description'] ?? null,
+                        'sort_order' => $legalData['sort_order'] ?? $legalIndex,
+                        'status' => 'active',
                     ]);
                 }
             }
@@ -619,26 +629,26 @@ class ServiceController extends Controller
                 ->toArray();
 
             $categoriesToDelete = array_diff($existingCategoryIds, $submittedCategoryIds);
-            if (!empty($categoriesToDelete)) {
+            if (! empty($categoriesToDelete)) {
                 ServiceRequirementCategory::whereIn('id', $categoriesToDelete)->delete();
             }
 
             foreach (($validated['requirement_categories'] ?? []) as $catIndex => $catData) {
-                if (!empty($catData['id'])) {
+                if (! empty($catData['id'])) {
                     $category = ServiceRequirementCategory::findOrFail($catData['id']);
                     $category->update([
-                        'name'        => $catData['name'],
+                        'name' => $catData['name'],
                         'description' => $catData['description'] ?? null,
-                        'sort_order'  => $catData['sort_order'] ?? $catIndex,
-                        'status'      => $catData['status'] ?? 'active',
+                        'sort_order' => $catData['sort_order'] ?? $catIndex,
+                        'status' => $catData['status'] ?? 'active',
                     ]);
                 } else {
                     $category = ServiceRequirementCategory::create([
-                        'service_id'  => $service->id,
-                        'name'        => $catData['name'],
+                        'service_id' => $service->id,
+                        'name' => $catData['name'],
                         'description' => $catData['description'] ?? null,
-                        'sort_order'  => $catData['sort_order'] ?? $catIndex,
-                        'status'      => 'active',
+                        'sort_order' => $catData['sort_order'] ?? $catIndex,
+                        'status' => 'active',
                     ]);
                 }
 
@@ -650,31 +660,31 @@ class ServiceController extends Controller
                         ->toArray();
 
                     $requirementsToDelete = array_diff($existingRequirementIds, $submittedRequirementIds);
-                    if (!empty($requirementsToDelete)) {
+                    if (! empty($requirementsToDelete)) {
                         ServiceRequirement::whereIn('id', $requirementsToDelete)->delete();
                     }
 
                     foreach ($catData['requirements'] as $reqIndex => $reqData) {
-                        if (!empty($reqData['id'])) {
+                        if (! empty($reqData['id'])) {
                             $requirement = ServiceRequirement::findOrFail($reqData['id']);
                             $requirement->update([
-                                'name'            => $reqData['name'],
-                                'description'     => $reqData['description'] ?? null,
-                                'is_required'     => $reqData['is_required'] ?? true,
+                                'name' => $reqData['name'],
+                                'description' => $reqData['description'] ?? null,
+                                'is_required' => $reqData['is_required'] ?? true,
                                 'document_format' => $reqData['document_format'] ?? null,
-                                'notes'           => $reqData['notes'] ?? null,
-                                'sort_order'      => $reqData['sort_order'] ?? $reqIndex,
+                                'notes' => $reqData['notes'] ?? null,
+                                'sort_order' => $reqData['sort_order'] ?? $reqIndex,
                             ]);
                         } else {
                             ServiceRequirement::create([
                                 'service_requirement_category_id' => $category->id,
-                                'name'                            => $reqData['name'],
-                                'description'                     => $reqData['description'] ?? null,
-                                'is_required'                     => $reqData['is_required'] ?? true,
-                                'document_format'                 => $reqData['document_format'] ?? null,
-                                'notes'                           => $reqData['notes'] ?? null,
-                                'sort_order'                      => $reqData['sort_order'] ?? $reqIndex,
-                                'status'                          => 'active',
+                                'name' => $reqData['name'],
+                                'description' => $reqData['description'] ?? null,
+                                'is_required' => $reqData['is_required'] ?? true,
+                                'document_format' => $reqData['document_format'] ?? null,
+                                'notes' => $reqData['notes'] ?? null,
+                                'sort_order' => $reqData['sort_order'] ?? $reqIndex,
+                                'status' => 'active',
                             ]);
                         }
                     }
@@ -705,36 +715,36 @@ class ServiceController extends Controller
                 ->toArray();
 
             $stepsToDelete = array_diff($existingStepIds, $submittedStepIds);
-            if (!empty($stepsToDelete)) {
+            if (! empty($stepsToDelete)) {
                 ServiceProcessStep::whereIn('id', $stepsToDelete)->delete();
             }
 
             foreach (($validated['process_steps'] ?? []) as $stepIndex => $stepData) {
-                if (!empty($stepData['id'])) {
+                if (! empty($stepData['id'])) {
                     $step = ServiceProcessStep::findOrFail($stepData['id']);
                     $step->update([
-                        'title'              => $stepData['title'],
-                        'description'        => $stepData['description'] ?? null,
-                        'duration'           => $stepData['duration'] ?? null,
-                        'duration_days'      => $stepData['duration_days'] ?? null,
+                        'title' => $stepData['title'],
+                        'description' => $stepData['description'] ?? null,
+                        'duration' => $stepData['duration'] ?? null,
+                        'duration_days' => $stepData['duration_days'] ?? null,
                         'required_documents' => $stepData['required_documents'] ?? null,
-                        'notes'              => $stepData['notes'] ?? null,
-                        'icon'               => $stepData['icon'] ?? null,
-                        'sort_order'         => $stepData['sort_order'] ?? $stepIndex,
-                        'status'             => $stepData['status'] ?? 'active',
+                        'notes' => $stepData['notes'] ?? null,
+                        'icon' => $stepData['icon'] ?? null,
+                        'sort_order' => $stepData['sort_order'] ?? $stepIndex,
+                        'status' => $stepData['status'] ?? 'active',
                     ]);
                 } else {
                     ServiceProcessStep::create([
-                        'service_id'         => $service->id,
-                        'title'              => $stepData['title'],
-                        'description'        => $stepData['description'] ?? null,
-                        'duration'           => $stepData['duration'] ?? null,
-                        'duration_days'      => $stepData['duration_days'] ?? null,
+                        'service_id' => $service->id,
+                        'title' => $stepData['title'],
+                        'description' => $stepData['description'] ?? null,
+                        'duration' => $stepData['duration'] ?? null,
+                        'duration_days' => $stepData['duration_days'] ?? null,
                         'required_documents' => $stepData['required_documents'] ?? null,
-                        'notes'              => $stepData['notes'] ?? null,
-                        'icon'               => $stepData['icon'] ?? null,
-                        'sort_order'         => $stepData['sort_order'] ?? $stepIndex,
-                        'status'             => 'active',
+                        'notes' => $stepData['notes'] ?? null,
+                        'icon' => $stepData['icon'] ?? null,
+                        'sort_order' => $stepData['sort_order'] ?? $stepIndex,
+                        'status' => 'active',
                     ]);
                 }
             }
@@ -754,14 +764,21 @@ class ServiceController extends Controller
 
         $seo = $service->getSeoOrCreate();
 
-        if (empty($validated['og_title']) && !empty($validated['meta_title'])) {
+        if (empty($validated['og_title']) && ! empty($validated['meta_title'])) {
             $validated['og_title'] = $validated['meta_title'];
         }
 
-        if (empty($validated['twitter_title']) && !empty($validated['meta_title'])) {
+        if (empty($validated['twitter_title']) && ! empty($validated['meta_title'])) {
             $validated['twitter_title'] = $validated['meta_title'];
         }
 
+        if (blank($validated['og_description'] ?? null) && filled($validated['meta_description'] ?? null)) {
+            $validated['og_description'] = $validated['meta_description'];
+        }
+
+        if (blank($validated['twitter_description'] ?? null) && filled($validated['meta_description'] ?? null)) {
+            $validated['twitter_description'] = $validated['meta_description'];
+        }
 
         if ($request->boolean('remove_og_image') && $seo->og_image) {
             FileHelper::deleteFromR2($seo->og_image, isPublic: true);
@@ -769,7 +786,9 @@ class ServiceController extends Controller
         }
 
         if ($request->hasFile('og_image')) {
-            if ($seo->og_image) FileHelper::deleteFromR2($seo->og_image, isPublic: true);
+            if ($seo->og_image) {
+                FileHelper::deleteFromR2($seo->og_image, isPublic: true);
+            }
             $validated['og_image'] = FileHelper::uploadToR2Public($request->file('og_image'), 'services/seo')['path'];
         }
 
@@ -779,7 +798,9 @@ class ServiceController extends Controller
         }
 
         if ($request->hasFile('twitter_image')) {
-            if ($seo->twitter_image) FileHelper::deleteFromR2($seo->twitter_image, isPublic: true);
+            if ($seo->twitter_image) {
+                FileHelper::deleteFromR2($seo->twitter_image, isPublic: true);
+            }
             $validated['twitter_image'] = FileHelper::uploadToR2Public($request->file('twitter_image'), 'services/seo')['path'];
         }
 

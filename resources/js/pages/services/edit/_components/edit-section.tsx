@@ -638,9 +638,24 @@ export function EditSection({ service, categories }: EditSectionProps) {
     const handleAiApply = async (data: Record<string, unknown>) => {
         if (data.introduction !== undefined) contentForm.setData('introduction', data.introduction as string);
         if (data.content !== undefined) contentForm.setData('content', data.content as string);
-        if (data.meta_title !== undefined) seoForm.setData('meta_title', data.meta_title as string);
-        if (data.meta_description !== undefined) seoForm.setData('meta_description', data.meta_description as string);
-        if (data.focus_keyword !== undefined) seoForm.setData('focus_keyword', data.focus_keyword as string);
+        if (data.meta_title !== undefined || data.meta_description !== undefined || data.focus_keyword !== undefined) {
+            const cur = seoForm.data;
+            const next = { ...cur };
+            if (data.meta_title !== undefined) {
+                const val = data.meta_title as string;
+                next.meta_title = val;
+                if (next.og_title === '') next.og_title = val;
+                if (next.twitter_title === '') next.twitter_title = val;
+            }
+            if (data.meta_description !== undefined) {
+                const val = data.meta_description as string;
+                next.meta_description = val;
+                if (next.og_description === '') next.og_description = val;
+                if (next.twitter_description === '') next.twitter_description = val;
+            }
+            if (data.focus_keyword !== undefined) next.focus_keyword = data.focus_keyword as string;
+            seoForm.setData(next);
+        }
         if (data.faqs !== undefined) faqForm.setData('faqs', data.faqs as LocalFaq[]);
         if (data.packages !== undefined) packageForm.setData('packages', data.packages as LocalPackage[]);
         if (data.process_steps !== undefined) processStepsForm.setData('process_steps', data.process_steps as LocalProcessStep[]);
