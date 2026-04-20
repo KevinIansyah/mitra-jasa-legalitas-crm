@@ -15,7 +15,7 @@ import { formatRupiahNoSymbol } from '@/lib/service';
 import staffRoutes from '@/routes/staff';
 import { USER_STATUS } from '@/types/auth';
 import type { Role } from '@/types/roles';
-import { AVAILABILITY_STATUSES, AVAILABILITY_STATUSES_MAP, type Staff, type StaffUpdateFormData } from '@/types/staff';
+import { AVAILABILITY_STATUSES, type Staff, type StaffUpdateFormData } from '@/types/staff';
 
 type DrawerEditProps = {
     staff: Staff;
@@ -208,9 +208,9 @@ export function DrawerEdit({ staff, roles, open, onOpenChange }: DrawerEditProps
                                     <FieldLabel htmlFor="availability_status">
                                         Ketersediaan untuk project <span className="text-destructive">*</span>
                                     </FieldLabel>
-                                    <p className="text-xs text-muted-foreground">
+                                    {/* <p className="text-xs text-muted-foreground">
                                         Terpisah dari status akun (aktif / nonaktif / suspend). Hanya memengaruhi penjadwalan kerja.
-                                    </p>
+                                    </p> */}
                                     <Select
                                         required
                                         value={data.availability_status}
@@ -231,9 +231,9 @@ export function DrawerEdit({ staff, roles, open, onOpenChange }: DrawerEditProps
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
-                                    {AVAILABILITY_STATUSES_MAP[data.availability_status]?.hint && (
+                                    {/* {AVAILABILITY_STATUSES_MAP[data.availability_status]?.hint && (
                                         <p className="text-xs text-muted-foreground">{AVAILABILITY_STATUSES_MAP[data.availability_status].hint}</p>
-                                    )}
+                                    )} */}
                                     {errors.availability_status && <FieldError>{errors.availability_status}</FieldError>}
                                 </Field>
 

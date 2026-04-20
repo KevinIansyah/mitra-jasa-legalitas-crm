@@ -15,7 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { formatRupiahNoSymbol } from '@/lib/service';
 import staffRoutes from '@/routes/staff';
 import type { Role } from '@/types/roles';
-import { AVAILABILITY_STATUSES, AVAILABILITY_STATUSES_MAP, type StaffCreateFormData } from '@/types/staff';
+import { AVAILABILITY_STATUSES, type StaffCreateFormData } from '@/types/staff';
 
 export function DrawerAdd({ roles }: { roles: Role[] }) {
     const [open, setOpen] = React.useState(false);
@@ -190,9 +190,9 @@ export function DrawerAdd({ roles }: { roles: Role[] }) {
                                     <FieldLabel htmlFor="availability_status">
                                         Ketersediaan untuk project <span className="text-destructive">*</span>
                                     </FieldLabel>
-                                    <p className="text-xs text-muted-foreground">
+                                    {/* <p className="text-xs text-muted-foreground">
                                         Terpisah dari status akun (aktif / nonaktif / suspend). Hanya memengaruhi penjadwalan kerja.
-                                    </p>
+                                    </p> */}
                                     <Select
                                         required
                                         value={data.availability_status}
@@ -213,9 +213,9 @@ export function DrawerAdd({ roles }: { roles: Role[] }) {
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
-                                    {AVAILABILITY_STATUSES_MAP[data.availability_status]?.hint && (
+                                    {/* {AVAILABILITY_STATUSES_MAP[data.availability_status]?.hint && (
                                         <p className="text-xs text-muted-foreground">{AVAILABILITY_STATUSES_MAP[data.availability_status].hint}</p>
-                                    )}
+                                    )} */}
                                     {errors.availability_status && <FieldError>{errors.availability_status}</FieldError>}
                                 </Field>
 
