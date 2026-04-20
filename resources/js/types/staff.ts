@@ -123,9 +123,24 @@ export interface StaffFilterParams {
 // ============================================================
 
 export const AVAILABILITY_STATUSES = [
-    { value: 'available', label: 'Available', classes: 'bg-emerald-500 text-white' },
-    { value: 'busy', label: 'Busy', classes: 'bg-yellow-500 text-white' },
-    { value: 'on_leave', label: 'On Leave', classes: 'bg-red-500 text-white' },
+    {
+        value: 'available',
+        label: 'Tersedia',
+        hint: 'Siap ditugaskan ke project baru.',
+        classes: 'bg-emerald-500 text-white',
+    },
+    {
+        value: 'busy',
+        label: 'Sibuk',
+        hint: 'Masih aktif bekerja; kapasitas project biasanya sudah terisi.',
+        classes: 'bg-yellow-500 text-white',
+    },
+    {
+        value: 'on_leave',
+        label: 'Cuti / tidak tersedia',
+        hint: 'Tidak dijadwalkan project selama cuti. Ini bukan keluar perusahaan dan tidak mematikan akun login.',
+        classes: 'bg-red-500 text-white',
+    },
 ] as const;
 
 export const AVAILABILITY_STATUSES_MAP = Object.fromEntries(AVAILABILITY_STATUSES.map((item) => [item.value, item]));

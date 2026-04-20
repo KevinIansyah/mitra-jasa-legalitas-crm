@@ -64,6 +64,20 @@ class AuthController extends Controller
             return ApiResponse::error('Email sudah terverifikasi sebelumnya.', 422);
         }
 
+        if ($user->isSuspended()) {
+            return ApiResponse::error(
+                __('Akun Anda telah disuspend. Hubungi administrator.'),
+                403
+            );
+        }
+
+        if ($user->isInactive()) {
+            return ApiResponse::error(
+                __('Akun Anda tidak aktif. Hubungi administrator.'),
+                403
+            );
+        }
+
         $valid = $this->otpService->verify($user, $request->otp, 'email_verification');
 
         if (! $valid) {
@@ -101,7 +115,7 @@ class AuthController extends Controller
             'Jika email terdaftar dan belum diverifikasi, kode OTP baru telah dikirim.'
         );
 
-        if (! $user || $user->hasVerifiedEmail()) {
+        if (! $user || $user->hasVerifiedEmail() || $user->isSuspended() || $user->isInactive()) {
             return $genericResponse;
         }
 
@@ -116,6 +130,20 @@ class AuthController extends Controller
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
             return ApiResponse::error('Email atau password salah.', 401);
+        }
+
+        if ($user->isSuspended()) {
+            return ApiResponse::error(
+                __('Akun Anda telah disuspend. Hubungi administrator.'),
+                403
+            );
+        }
+
+        if ($user->isInactive()) {
+            return ApiResponse::error(
+                __('Akun Anda tidak aktif. Hubungi administrator.'),
+                403
+            );
         }
 
         if (! $user->hasVerifiedEmail()) {

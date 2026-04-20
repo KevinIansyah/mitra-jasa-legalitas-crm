@@ -121,6 +121,11 @@ class User extends Authenticatable
         return $this->status === 'suspended';
     }
 
+    public function isInactive(): bool
+    {
+        return $this->status === 'inactive';
+    }
+
     public function isStaff(): bool
     {
         return $this->hasAnyRole(['staff', 'super_admin']);

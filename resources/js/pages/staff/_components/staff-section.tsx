@@ -33,7 +33,7 @@ export function StaffSection({ staffList, summary, filters, roles }: StaffSectio
             ),
         },
         {
-            label: 'Available',
+            label: 'Tersedia',
             value: summary.available,
             badge: 'bg-emerald-500 text-white dark:bg-emerald-500/15 dark:text-emerald-500 px-2.5 py-1.5',
             icon: <CheckCircle2 className="size-3.5" />,
@@ -45,7 +45,7 @@ export function StaffSection({ staffList, summary, filters, roles }: StaffSectio
             ),
         },
         {
-            label: 'Busy',
+            label: 'Sibuk',
             value: summary.busy,
             badge: 'bg-yellow-500 text-white dark:bg-yellow-500/15 dark:text-yellow-500 px-2.5 py-1.5',
             icon: <Clock className="size-3.5" />,
@@ -57,14 +57,14 @@ export function StaffSection({ staffList, summary, filters, roles }: StaffSectio
             ),
         },
         {
-            label: 'On Leave',
+            label: 'Cuti / tidak tersedia',
             value: summary.on_leave,
             badge: 'bg-red-500 text-white dark:bg-red-500/15 dark:text-red-500 px-2.5 py-1.5',
             icon: <XCircle className="size-3.5" />,
             footer: (
                 <>
-                    <p className="font-medium">Staff sedang cuti</p>
-                    <p className="text-muted-foreground">Tidak tersedia sementara</p>
+                    <p className="font-medium">Tidak dijadwalkan project</p>
+                    <p className="text-muted-foreground">Bukan nonaktif akun; staff tetap bisa login ke dashboard</p>
                 </>
             ),
         },

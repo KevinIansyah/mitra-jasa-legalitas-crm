@@ -15,7 +15,7 @@ import { formatRupiahNoSymbol } from '@/lib/service';
 import staffRoutes from '@/routes/staff';
 import { USER_STATUS } from '@/types/auth';
 import type { Role } from '@/types/roles';
-import { AVAILABILITY_STATUSES, type Staff, type StaffUpdateFormData } from '@/types/staff';
+import { AVAILABILITY_STATUSES, AVAILABILITY_STATUSES_MAP, type Staff, type StaffUpdateFormData } from '@/types/staff';
 
 type DrawerEditProps = {
     staff: Staff;
@@ -206,8 +206,11 @@ export function DrawerEdit({ staff, roles, open, onOpenChange }: DrawerEditProps
                                 {/* Availability Status */}
                                 <Field>
                                     <FieldLabel htmlFor="availability_status">
-                                        Status Ketersediaan <span className="text-destructive">*</span>
+                                        Ketersediaan untuk project <span className="text-destructive">*</span>
                                     </FieldLabel>
+                                    <p className="text-xs text-muted-foreground">
+                                        Terpisah dari status akun (aktif / nonaktif / suspend). Hanya memengaruhi penjadwalan kerja.
+                                    </p>
                                     <Select
                                         required
                                         value={data.availability_status}
@@ -218,7 +221,7 @@ export function DrawerEdit({ staff, roles, open, onOpenChange }: DrawerEditProps
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
-                                                <SelectLabel>Status Ketersediaan</SelectLabel>
+                                                <SelectLabel>Ketersediaan untuk project</SelectLabel>
                                                 {AVAILABILITY_STATUSES.map((item) => (
                                                     <SelectItem key={item.value} value={item.value}>
                                                         <span className={`mr-2 inline-block h-2 w-2 rounded-full ${item.classes.replace('text-white', '')}`} />
@@ -228,6 +231,9 @@ export function DrawerEdit({ staff, roles, open, onOpenChange }: DrawerEditProps
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
+                                    {AVAILABILITY_STATUSES_MAP[data.availability_status]?.hint && (
+                                        <p className="text-xs text-muted-foreground">{AVAILABILITY_STATUSES_MAP[data.availability_status].hint}</p>
+                                    )}
                                     {errors.availability_status && <FieldError>{errors.availability_status}</FieldError>}
                                 </Field>
 

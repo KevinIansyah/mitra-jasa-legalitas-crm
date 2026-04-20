@@ -19,7 +19,7 @@ import staffRoutes from '@/routes/staff';
 import { USER_STATUS } from '@/types/auth';
 import type { Role } from '@/types/roles';
 import type { Staff } from '@/types/staff';
-import { AVAILABILITY_STATUSES } from '@/types/staff';
+import { AVAILABILITY_STATUSES, AVAILABILITY_STATUSES_MAP } from '@/types/staff';
 import getColumns from './columns';
 import { DrawerAdd } from './drawer-add';
 
@@ -126,14 +126,14 @@ export function DataTable({ data, roles, pageIndex, setPageIndex, totalPages, to
                                     </Field>
 
                                     <Field>
-                                        <FieldLabel htmlFor="availability_status">Status Ketersediaan</FieldLabel>
+                                        <FieldLabel htmlFor="availability_status">Ketersediaan project</FieldLabel>
                                         <Select value={filters.availability_status || ''} onValueChange={(value) => updateFilter('availability_status', value || undefined)}>
                                             <SelectTrigger className="w-full">
                                                 <SelectValue placeholder="Pilih status" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
-                                                    <SelectLabel>Status Ketersediaan</SelectLabel>
+                                                    <SelectLabel>Ketersediaan untuk project</SelectLabel>
                                                     {AVAILABILITY_STATUSES.map((item) => (
                                                         <SelectItem key={item.value} value={item.value}>
                                                             {item.label}
@@ -194,8 +194,10 @@ export function DataTable({ data, roles, pageIndex, setPageIndex, totalPages, to
                             </Badge>
                         )}
                         {filters.availability_status && (
-                            <Badge variant="secondary" className="flex items-center gap-2 capitalize">
-                                Status Ketersediaan: {filters.availability_status.replace('_', ' ')}
+                            <Badge variant="secondary" className="flex items-center gap-2">
+                                Ketersediaan project:{' '}
+                                {AVAILABILITY_STATUSES_MAP[filters.availability_status as keyof typeof AVAILABILITY_STATUSES_MAP]?.label ??
+                                    filters.availability_status}
                                 <Button variant="ghost" size="sm" className="h-6 w-6 text-xs" onClick={() => updateFilter('availability_status', undefined)}>
                                     <X className="size-3" />
                                 </Button>

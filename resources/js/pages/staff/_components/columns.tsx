@@ -47,7 +47,7 @@ export default function getColumns(roles: Role[]): ColumnDef<Staff>[] {
         },
         {
             accessorKey: 'staff_profile.availability_status',
-            header: 'Status',
+            header: 'Ketersediaan & akun',
             cell: ({ row }) => {
                 const statusAvailability = row.original.staff_profile?.availability_status as AvailabilityStatus;
                 const statusUser = row.original.status as UserStatus;

@@ -81,15 +81,16 @@ Route::prefix('auth')->name('auth.')->group(function () {
         ->name('reset-password');
 
     Route::middleware('auth:sanctum')->group(function () {
-
-        Route::get('/me', [AuthController::class, 'me'])
-            ->name('me');
-
         Route::post('/logout', [AuthController::class, 'logout'])
             ->name('logout');
 
         Route::post('/logout-all-devices', [AuthController::class, 'logoutAllDevices'])
             ->name('logout-all-devices');
+    });
+
+    Route::middleware(['auth:sanctum', 'user.not_suspended'])->group(function () {
+        Route::get('/me', [AuthController::class, 'me'])
+            ->name('me');
     });
 });
 
@@ -101,7 +102,7 @@ Route::prefix('auth')->name('auth.')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:sanctum', 'user.not_suspended'])->group(function () {
     Route::get('/summary', ClientPortalSummaryController::class)->name('client.summary');
 });
 
@@ -116,7 +117,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:sanctum', 'user.not_suspended'])->group(function () {
 
     Route::prefix('quotes')->name('quotes.')->group(function () {
         Route::get('/', [ClientQuoteController::class, 'index'])
@@ -143,13 +144,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:sanctum', 'user.not_suspended'])->group(function () {
 
     Route::get('/invoices', [ClientInvoiceController::class, 'index'])
         ->name('client.invoices.index');
 });
 
-Route::middleware(['auth:sanctum', 'customer.owns.invoice'])->group(function () {
+Route::middleware(['auth:sanctum', 'user.not_suspended', 'customer.owns.invoice'])->group(function () {
 
     Route::get('/invoices/{invoice}', [ClientInvoiceController::class, 'show'])
         ->name('client.invoices.show');
@@ -180,7 +181,7 @@ Route::middleware(['auth:sanctum', 'customer.owns.invoice'])->group(function () 
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'user.not_suspended'])->group(function () {
     Route::prefix('proposals')->name('proposals.')->group(function () {
 
         Route::get('/', [ClientProposalController::class, 'index'])
@@ -210,7 +211,7 @@ Route::middleware('auth:sanctum')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'user.not_suspended'])->group(function () {
     Route::get('/projects', [ClientProjectController::class, 'index'])
         ->name('client.projects.index');
 
@@ -241,7 +242,7 @@ Route::middleware('auth:sanctum')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'user.not_suspended'])->group(function () {
     Route::prefix('estimates')->name('estimates.')->group(function () {
         Route::get('/', [ClientEstimateController::class, 'index'])
             ->name('index');
@@ -266,7 +267,7 @@ Route::middleware('auth:sanctum')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:sanctum', 'user.not_suspended'])->group(function () {
     Route::prefix('settings')->name('settings.')->group(function () {
 
         Route::post('/profile', [ClientProfileController::class, 'updateProfile'])
@@ -288,7 +289,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth:sanctum'])->prefix('notifications')->name('api.notifications.')->group(function () {
+Route::middleware(['auth:sanctum', 'user.not_suspended'])->prefix('notifications')->name('api.notifications.')->group(function () {
 
     Route::get('/unread-count', [ClientNotificationController::class, 'unreadCount'])
         ->name('unread-count');
