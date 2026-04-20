@@ -10,6 +10,7 @@ use App\Models\SiteSetting;
 use App\Services\ChatbotService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Throwable;
 
 class ChatbotController extends Controller
@@ -43,23 +44,34 @@ class ChatbotController extends Controller
 
         $sessionToken = $request->input('session_token');
 
-        $session = $sessionToken
-            ? ChatSession::firstOrCreate(
-                ['session_token' => $sessionToken],
-                ['page_url' => $request->input('page_url')],
-            )
-            : ChatSession::create([
-                'page_url' => $request->input('page_url'),
-            ]);
+        // Jangan buat baris di DB di sini: banyak pengunjung hanya memuat widget tanpa mengirim pesan.
+        // Sesi baru disimpan saat pesan pertama (send) atau saat lead disimpan (updateLead).
+        if ($sessionToken) {
+            $existing = ChatSession::where('session_token', $sessionToken)->first();
+            if ($existing) {
+                return ApiResponse::success([
+                    'enabled' => true,
+                    'session_token' => $existing->session_token,
+                    'is_converted' => $existing->isConverted(),
+                    'lead' => [
+                        'name' => $existing->name,
+                        'email' => $existing->email,
+                        'phone' => $existing->phone,
+                    ],
+                ]);
+            }
+        }
+
+        $token = $sessionToken ?: (string) Str::uuid();
 
         return ApiResponse::success([
             'enabled' => true,
-            'session_token' => $session->session_token,
-            'is_converted' => $session->isConverted(),
+            'session_token' => $token,
+            'is_converted' => false,
             'lead' => [
-                'name' => $session->name,
-                'email' => $session->email,
-                'phone' => $session->phone,
+                'name' => null,
+                'email' => null,
+                'phone' => null,
             ],
         ]);
     }
@@ -68,12 +80,19 @@ class ChatbotController extends Controller
     {
         $request->validate([
             'message' => 'required|string|max:1000',
+            'page_url' => 'nullable|string|max:2048',
         ]);
 
-        $session = ChatSession::where('session_token', $sessionToken)->first();
+        $session = ChatSession::firstOrCreate(
+            ['session_token' => $sessionToken],
+            [
+                'page_url' => $request->input('page_url'),
+                'status' => 'active',
+            ],
+        );
 
-        if (! $session) {
-            return ApiResponse::error('Sesi tidak ditemukan', 404);
+        if ($request->filled('page_url') && blank($session->page_url)) {
+            $session->update(['page_url' => $request->input('page_url')]);
         }
 
         try {
@@ -104,12 +123,19 @@ class ChatbotController extends Controller
             'name' => 'nullable|string|max:100',
             'email' => 'nullable|email|max:100',
             'phone' => 'nullable|string|max:20',
+            'page_url' => 'nullable|string|max:2048',
         ]);
 
-        $session = ChatSession::where('session_token', $sessionToken)->first();
+        $session = ChatSession::firstOrCreate(
+            ['session_token' => $sessionToken],
+            [
+                'page_url' => $request->input('page_url'),
+                'status' => 'active',
+            ],
+        );
 
-        if (! $session) {
-            return ApiResponse::error('Sesi tidak ditemukan', 404);
+        if ($request->filled('page_url') && blank($session->page_url)) {
+            $session->update(['page_url' => $request->input('page_url')]);
         }
 
         $session->update(array_filter([
