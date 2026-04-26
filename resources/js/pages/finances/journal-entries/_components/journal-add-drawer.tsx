@@ -24,7 +24,7 @@ type JournalAddDrawerProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     accounts: Account[];
-}
+};
 
 export function JournalAddDrawer({ open, onOpenChange, accounts }: JournalAddDrawerProps) {
     const { data, setData, post, processing, errors, reset } = useForm<ManualJournalFormData>({
@@ -33,7 +33,6 @@ export function JournalAddDrawer({ open, onOpenChange, accounts }: JournalAddDra
         lines: [{ ...EMPTY_LINE }, { ...EMPTY_LINE }],
     });
 
-    // nested dot-notation keys like "lines.0.account_id" - cast once here.
     const fieldErrors = errors as ManualJournalFormErrors;
 
     const addLine = () => setData('lines', [...data.lines, { ...EMPTY_LINE }]);
@@ -83,7 +82,7 @@ export function JournalAddDrawer({ open, onOpenChange, accounts }: JournalAddDra
 
                     <div className="flex-1 space-y-6 px-4 pb-4">
                         {/* Tanggal & Deskripsi */}
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <div className="grid grid-cols-1 gap-4">
                             <Field>
                                 <FieldLabel>
                                     Tanggal <span className="text-destructive">*</span>
@@ -178,22 +177,15 @@ export function JournalAddDrawer({ open, onOpenChange, accounts }: JournalAddDra
                                         <Input placeholder="Opsional..." value={line.notes} onChange={(e) => updateLine(i, 'notes', e.target.value)} />
                                     </div>
 
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-9 w-9 text-muted-foreground hover:text-destructive"
-                                        onClick={() => removeLine(i)}
-                                        disabled={data.lines.length <= 2}
-                                    >
-                                        <Trash2 className="size-3.5" />
+                                    <Button type="button" variant="destructive" size="icon" className="h-9 w-9" onClick={() => removeLine(i)} disabled={data.lines.length <= 2}>
+                                        <Trash2 className="size-4" />
                                     </Button>
                                 </div>
                             ))}
 
                             {fieldErrors.lines && <FieldError>{fieldErrors.lines}</FieldError>}
 
-                            <Button type="button" variant="outline" size="sm" onClick={addLine} className="gap-1.5">
+                            <Button type="button"  onClick={addLine} className="gap-1.5">
                                 <Plus className="size-3.5" />
                                 Tambah Baris
                             </Button>
@@ -212,7 +204,7 @@ export function JournalAddDrawer({ open, onOpenChange, accounts }: JournalAddDra
                                 <span className="font-semibold text-emerald-500 tabular-nums">{formatRupiah(totalCredit)}</span>
                             </div>
                             <Badge variant={isBalanced ? 'default' : 'destructive'} className={isBalanced ? 'bg-emerald-500 text-white' : ''}>
-                                {isBalanced ? 'Balance ✓' : 'Tidak Balance'}
+                                {isBalanced ? 'Balance' : 'Tidak Balance'}
                             </Badge>
                         </div>
                     </div>

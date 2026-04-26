@@ -9,6 +9,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import finances from '@/routes/finances';
@@ -23,12 +25,14 @@ type ActionsProps = {
 
 export default function Actions({ proposal, isExpanded, onToggleExpand }: ActionsProps) {
     const [confirmStatus, setConfirmStatus] = useState<ProposalStatus | null>(null);
+    const [rejectedReason, setRejectedReason] = useState('');
     const [loading, setLoading] = useState(false);
 
     const statusInfo = PROPOSAL_STATUSES_MAP[proposal.status];
     const targetStatus = confirmStatus ? PROPOSAL_STATUSES_MAP[confirmStatus] : null;
     const isAccepted = proposal.status === 'accepted';
-    const isFinalized = isAccepted || proposal.status === 'rejected';
+    const isRejected = proposal.status === 'rejected';
+    const isFinalized = isAccepted || isRejected;
 
     function goToCreateEstimates() {
         router.visit(finances.estimates.create().url, { data: { proposal_id: proposal.id } });
@@ -41,7 +45,10 @@ export default function Actions({ proposal, isExpanded, onToggleExpand }: Action
 
         router.patch(
             finances.proposals.updateStatus(proposal.id).url,
-            { status: confirmStatus },
+            {
+                status: confirmStatus,
+                ...(confirmStatus === 'rejected' ? { rejected_reason: rejectedReason } : {}),
+            },
             {
                 preserveScroll: true,
                 onSuccess: () => {
@@ -55,6 +62,7 @@ export default function Actions({ proposal, isExpanded, onToggleExpand }: Action
                     setLoading(false);
                     toast.dismiss(toastId);
                     setConfirmStatus(null);
+                    setRejectedReason('');
                 },
             },
         );
@@ -86,7 +94,7 @@ export default function Actions({ proposal, isExpanded, onToggleExpand }: Action
                 <HasPermission permission="create-finance-estimates">
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="secondary" className="h-8 w-8" disabled={isFinalized} onClick={goToCreateEstimates}>
+                            <Button variant="secondary" className="h-8 w-8" disabled={isRejected} onClick={goToCreateEstimates}>
                                 <FileText className="size-3.5" />
                             </Button>
                         </TooltipTrigger>
@@ -141,7 +149,10 @@ export default function Actions({ proposal, isExpanded, onToggleExpand }: Action
             <Dialog
                 open={!!confirmStatus}
                 onOpenChange={(open) => {
-                    if (!open) setConfirmStatus(null);
+                    if (!open) {
+                        setConfirmStatus(null);
+                        setRejectedReason('');
+                    }
                 }}
             >
                 <DialogContent>
@@ -156,11 +167,37 @@ export default function Actions({ proposal, isExpanded, onToggleExpand }: Action
                             </div>
                         </DialogDescription>
                     </DialogHeader>
+
+                    {confirmStatus === 'rejected' && (
+                        <div className="space-y-2">
+                            <Label className="text-sm font-medium">
+                                Alasan Penolakan <span className="text-destructive">*</span>
+                            </Label>
+                            <Textarea
+                                placeholder="Jelaskan alasan penolakan proposal..."
+                                className="min-h-24 resize-none"
+                                value={rejectedReason}
+                                onChange={(e) => setRejectedReason(e.target.value)}
+                            />
+                            <p className="text-xs text-muted-foreground">Alasan ini akan disimpan sebagai catatan penolakan.</p>
+                        </div>
+                    )}
+
                     <DialogFooter>
-                        <Button variant="secondary" onClick={() => setConfirmStatus(null)}>
+                        <Button
+                            variant="secondary"
+                            onClick={() => {
+                                setConfirmStatus(null);
+                                setRejectedReason('');
+                            }}
+                        >
                             Batal
                         </Button>
-                        <Button disabled={loading} onClick={handleUpdateStatus}>
+                        <Button
+                            onClick={handleUpdateStatus}
+                            disabled={loading || (confirmStatus === 'rejected' && !rejectedReason.trim())}
+                            variant={confirmStatus === 'rejected' ? 'destructive' : 'default'}
+                        >
                             Ya, Ubah Status
                         </Button>
                     </DialogFooter>

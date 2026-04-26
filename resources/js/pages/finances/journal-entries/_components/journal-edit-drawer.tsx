@@ -96,7 +96,7 @@ export function JournalEditDrawer({ entry, open, onOpenChange, accounts }: Journ
 
                     <div className="flex-1 space-y-6 px-4 pb-4">
                         {/* Tanggal & Deskripsi */}
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <div className="grid grid-cols-1 gap-4">
                             <Field>
                                 <FieldLabel>
                                     Tanggal <span className="text-destructive">*</span>
@@ -193,20 +193,20 @@ export function JournalEditDrawer({ entry, open, onOpenChange, accounts }: Journ
 
                                     <Button
                                         type="button"
-                                        variant="ghost"
+                                        variant="destructive"
                                         size="icon"
-                                        className="h-9 w-9 text-muted-foreground hover:text-destructive"
+                                        className="h-9 w-9"
                                         onClick={() => removeLine(i)}
                                         disabled={data.lines.length <= 2}
                                     >
-                                        <Trash2 className="size-3.5" />
+                                        <Trash2 className="size-4" />
                                     </Button>
                                 </div>
                             ))}
 
                             {fieldErrors.lines && <FieldError>{fieldErrors.lines}</FieldError>}
 
-                            <Button type="button" variant="outline" size="sm" onClick={addLine} className="gap-1.5">
+                            <Button type="button"  onClick={addLine} className="gap-1.5">
                                 <Plus className="size-3.5" />
                                 Tambah Baris
                             </Button>
@@ -225,7 +225,7 @@ export function JournalEditDrawer({ entry, open, onOpenChange, accounts }: Journ
                                 <span className="font-semibold text-emerald-500 tabular-nums">{formatRupiah(totalCredit)}</span>
                             </div>
                             <Badge variant={isBalanced ? 'default' : 'destructive'} className={isBalanced ? 'bg-emerald-500 text-white' : ''}>
-                                {isBalanced ? 'Balance ✓' : 'Tidak Balance'}
+                                {isBalanced ? 'Balance' : 'Tidak Balance'}
                             </Badge>
                         </div>
                     </div>

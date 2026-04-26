@@ -9,6 +9,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import finances from '@/routes/finances';
@@ -23,6 +25,7 @@ type ActionsProps = {
 
 export default function Actions({ estimate, isExpanded, onToggleExpand }: ActionsProps) {
     const [confirmStatus, setConfirmStatus] = useState<EstimateStatus | null>(null);
+    const [rejectedReason, setRejectedReason] = useState('');
     const [loading, setLoading] = useState(false);
 
     const statusInfo = ESTIMATE_STATUSES_MAP[estimate.status];
@@ -37,7 +40,10 @@ export default function Actions({ estimate, isExpanded, onToggleExpand }: Action
 
         router.patch(
             finances.estimates.updateStatus(estimate.id).url,
-            { status: confirmStatus },
+            {
+                status: confirmStatus,
+                ...(confirmStatus === 'rejected' ? { rejected_reason: rejectedReason } : {}),
+            },
             {
                 preserveScroll: true,
                 onSuccess: () => {
@@ -51,6 +57,7 @@ export default function Actions({ estimate, isExpanded, onToggleExpand }: Action
                     setLoading(false);
                     toast.dismiss(toastId);
                     setConfirmStatus(null);
+                    setRejectedReason('');
                 },
             },
         );
@@ -166,7 +173,10 @@ export default function Actions({ estimate, isExpanded, onToggleExpand }: Action
             <Dialog
                 open={!!confirmStatus}
                 onOpenChange={(open) => {
-                    if (!open) setConfirmStatus(null);
+                    if (!open) {
+                        setConfirmStatus(null);
+                        setRejectedReason('');
+                    }
                 }}
             >
                 <DialogContent>
@@ -181,11 +191,37 @@ export default function Actions({ estimate, isExpanded, onToggleExpand }: Action
                             </div>
                         </DialogDescription>
                     </DialogHeader>
+
+                    {confirmStatus === 'rejected' && (
+                        <div className="space-y-2">
+                            <Label className="text-sm font-medium">
+                                Alasan Penolakan <span className="text-destructive">*</span>
+                            </Label>
+                            <Textarea
+                                placeholder="Jelaskan alasan penolakan estimate..."
+                                className="min-h-24 resize-none"
+                                value={rejectedReason}
+                                onChange={(e) => setRejectedReason(e.target.value)}
+                            />
+                            <p className="text-xs text-muted-foreground">Alasan ini akan disimpan sebagai catatan penolakan.</p>
+                        </div>
+                    )}
+
                     <DialogFooter>
-                        <Button variant="secondary" onClick={() => setConfirmStatus(null)}>
+                        <Button
+                            variant="secondary"
+                            onClick={() => {
+                                setConfirmStatus(null);
+                                setRejectedReason('');
+                            }}
+                        >
                             Batal
                         </Button>
-                        <Button disabled={loading} onClick={handleUpdateStatus}>
+                        <Button
+                            onClick={handleUpdateStatus}
+                            disabled={loading || (confirmStatus === 'rejected' && !rejectedReason.trim())}
+                            variant={confirmStatus === 'rejected' ? 'destructive' : 'default'}
+                        >
                             Ya, Ubah Status
                         </Button>
                     </DialogFooter>

@@ -44,8 +44,6 @@ class ChatbotController extends Controller
 
         $sessionToken = $request->input('session_token');
 
-        // Jangan buat baris di DB di sini: banyak pengunjung hanya memuat widget tanpa mengirim pesan.
-        // Sesi baru disimpan saat pesan pertama (send) atau saat lead disimpan (updateLead).
         if ($sessionToken) {
             $existing = ChatSession::where('session_token', $sessionToken)->first();
             if ($existing) {
