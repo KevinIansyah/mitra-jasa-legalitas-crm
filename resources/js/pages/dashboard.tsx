@@ -157,7 +157,7 @@ function KpiStatCard({
                         {deltaPercent}%
                     </Badge>
                 ) : (
-                    <span className="shrink-0 rounded-full bg-secondary/50 px-3 py-[7px] text-xs text-muted-foreground">
+                    <span className="shrink-0 rounded-full bg-secondary/50 px-3 py-[1.75] text-xs text-muted-foreground">
                         <Minus className="size-3.5" />
                     </span>
                 )}

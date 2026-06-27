@@ -101,6 +101,8 @@ class FinancialReportController extends Controller
         set_time_limit(180);
 
         $pdf = Browsershot::html($html)
+            ->setChromePath('/usr/bin/google-chrome-stable')
+            ->noSandbox()
             ->format('A4')
             ->margins(15, 15, 15, 15)
             ->showBackground()
@@ -110,7 +112,7 @@ class FinancialReportController extends Controller
 
         return response($pdf, 200)
             ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'attachment; filename="laba-rugi-'.$from->format('Ymd').'-'.$to->format('Ymd').'.pdf"');
+            ->header('Content-Disposition', 'attachment; filename="laba-rugi-' . $from->format('Ymd') . '-' . $to->format('Ymd') . '.pdf"');
     }
 
     public function neracaPdf(Request $request)
@@ -126,6 +128,8 @@ class FinancialReportController extends Controller
         set_time_limit(180);
 
         $pdf = Browsershot::html($html)
+            ->setChromePath('/usr/bin/google-chrome-stable')
+            ->noSandbox()
             ->format('A4')
             ->margins(15, 15, 15, 15)
             ->showBackground()
@@ -135,7 +139,7 @@ class FinancialReportController extends Controller
 
         return response($pdf, 200)
             ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'attachment; filename="neraca-'.$asOf->format('Ymd').'.pdf"');
+            ->header('Content-Disposition', 'attachment; filename="neraca-' . $asOf->format('Ymd') . '.pdf"');
     }
 
     public function cashFlowPdf(Request $request)
@@ -155,6 +159,8 @@ class FinancialReportController extends Controller
         set_time_limit(180);
 
         $pdf = Browsershot::html($html)
+            ->setChromePath('/usr/bin/google-chrome-stable')
+            ->noSandbox()
             ->format('A4')
             ->margins(15, 15, 15, 15)
             ->showBackground()
@@ -164,6 +170,6 @@ class FinancialReportController extends Controller
 
         return response($pdf, 200)
             ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'attachment; filename="arus-kas-'.$from->format('Ymd').'-'.$to->format('Ymd').'.pdf"');
+            ->header('Content-Disposition', 'attachment; filename="arus-kas-' . $from->format('Ymd') . '-' . $to->format('Ymd') . '.pdf"');
     }
 }

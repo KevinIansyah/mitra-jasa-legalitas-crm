@@ -29,6 +29,8 @@ class InvoicePdfService
         set_time_limit(180);
 
         $pdfContent = Browsershot::html($html)
+            ->setChromePath('/usr/bin/google-chrome-stable')
+            ->noSandbox()
             ->format('A4')
             ->margins(15, 15, 15, 15)
             ->showBackground()
@@ -36,7 +38,7 @@ class InvoicePdfService
             ->timeout(120)
             ->pdf();
 
-        $filename = 'invoices/'.$invoice->invoice_number.'.pdf';
+        $filename = 'invoices/' . $invoice->invoice_number . '.pdf';
         Storage::disk('r2_public')->put($filename, $pdfContent);
 
         return $filename;

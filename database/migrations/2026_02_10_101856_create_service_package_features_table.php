@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('service_package_features', function (Blueprint $table) {
@@ -22,9 +19,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('service_package_features');
